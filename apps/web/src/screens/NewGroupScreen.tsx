@@ -28,7 +28,7 @@ export function NewGroupScreen() {
       <form className="form" onSubmit={submit}>
         <label className="field">
           <span>Group name</span>
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Okinawa trip" autoFocus />
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Okinawa trip" />
         </label>
         <label className="field">
           <span>Your name</span>

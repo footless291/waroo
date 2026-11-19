@@ -8,16 +8,17 @@ import {
 } from '@footless/ledger'
 import { useState, type FormEvent } from 'react'
 import { Header } from '../components/Header.tsx'
+import { Segmented } from '../components/Segmented.tsx'
 import { append, newId, type GroupMeta } from '../lib/db.ts'
 import { CURRENCIES, money, today, toInput } from '../lib/format.ts'
 import { go, useGroup } from '../lib/hooks.ts'
 
 type Mode = 'equal' | 'shares' | 'exact'
 
-const MODES: { mode: Mode; label: string }[] = [
-  { mode: 'equal', label: 'Equally' },
-  { mode: 'shares', label: 'By shares' },
-  { mode: 'exact', label: 'Exact' },
+const MODES: { value: Mode; label: string }[] = [
+  { value: 'equal', label: 'Equally' },
+  { value: 'shares', label: 'By shares' },
+  { value: 'exact', label: 'Exact' },
 ]
 
 export function ExpenseScreen({ groupId, expenseId }: { groupId: string; expenseId?: string }) {
@@ -177,7 +178,7 @@ function ExpenseForm({
       <form className="form" onSubmit={save}>
         <label className="field">
           <span>What for</span>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Izakaya dinner" autoFocus={!existing} />
+          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Izakaya dinner" />
         </label>
         <div className="field-row">
           <label className="field grow">
@@ -218,19 +219,7 @@ function ExpenseForm({
 
         <fieldset className="field">
           <legend>Split</legend>
-          <div className="segmented" role="radiogroup" aria-label="Split method">
-            {MODES.map(({ mode: m, label }) => (
-              <button
-                type="button"
-                key={m}
-                role="radio"
-                aria-checked={mode === m}
-                onClick={() => setMode(m)}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+          <Segmented label="Split method" options={MODES} value={mode} onChange={setMode} />
           <ul className="split-list">
             {members.map((m) => (
               <li key={m.id}>
@@ -273,22 +262,24 @@ function ExpenseForm({
               </li>
             ))}
           </ul>
-          {mode === 'exact' && total !== 0 && exactRemaining !== 0 && (
-            <p className="hint">
-              {exactRemaining > 0
+          <p className="hint" aria-live="polite">
+            {mode === 'exact' && total !== 0 && exactRemaining !== 0
+              ? exactRemaining > 0
                 ? `${money(exactRemaining, currency)} left to assign`
-                : `${money(-exactRemaining, currency)} too much`}
-            </p>
-          )}
+                : `${money(-exactRemaining, currency)} too much`
+              : ''}
+          </p>
         </fieldset>
 
-        {problems.length > 0 && (title || amountText) && (
-          <ul className="problems">
-            {[...new Set(problems)].map((p) => (
-              <li key={p}>{p}</li>
-            ))}
-          </ul>
-        )}
+        <div aria-live="polite">
+          {problems.length > 0 && (title || amountText) && (
+            <ul className="problems">
+              {[...new Set(problems)].map((p) => (
+                <li key={p}>{p}</li>
+              ))}
+            </ul>
+          )}
+        </div>
 
         <button className="button primary" disabled={problems.length > 0 || exactRemaining !== 0}>
           {existing ? 'Save changes' : 'Add expense'}

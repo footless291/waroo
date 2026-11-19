@@ -1,14 +1,15 @@
 import { parseAmount, type SettlementMethod } from '@footless/ledger'
 import { useState, type FormEvent } from 'react'
 import { Header } from '../components/Header.tsx'
+import { Segmented } from '../components/Segmented.tsx'
 import { append, newId } from '../lib/db.ts'
 import { money, toInput } from '../lib/format.ts'
 import { go, useGroup } from '../lib/hooks.ts'
 
-const METHODS: { method: SettlementMethod; label: string }[] = [
-  { method: 'cash', label: 'Cash' },
-  { method: 'bank', label: 'Bank transfer' },
-  { method: 'other', label: 'Other' },
+const METHODS: { value: SettlementMethod; label: string }[] = [
+  { value: 'cash', label: 'Cash' },
+  { value: 'bank', label: 'Bank transfer' },
+  { value: 'other', label: 'Other' },
 ]
 
 export function SettleScreen({ groupId, params }: { groupId: string; params: URLSearchParams }) {
@@ -59,9 +60,11 @@ export function SettleScreen({ groupId, params }: { groupId: string; params: URL
             inputMode="decimal"
           />
         </label>
-        {suggested > 0 && amount > 0 && amount !== suggested && (
-          <p className="hint">Partial payment: {money(suggested - amount, currency)} will still be owed.</p>
-        )}
+        <p className="hint" aria-live="polite">
+          {suggested > 0 && amount > 0 && amount < suggested
+            ? `Partial payment: ${money(suggested - amount, currency)} will still be owed.`
+            : ''}
+        </p>
 
         <section className="card bitcoin">
           <h2 className="card-title">Pay with bitcoin</h2>
@@ -78,13 +81,7 @@ export function SettleScreen({ groupId, params }: { groupId: string; params: URL
 
         <fieldset className="field">
           <legend>Or mark it as paid another way</legend>
-          <div className="segmented" role="radiogroup" aria-label="Payment method">
-            {METHODS.map(({ method: m, label }) => (
-              <button type="button" key={m} role="radio" aria-checked={method === m} onClick={() => setMethod(m)}>
-                {label}
-              </button>
-            ))}
-          </div>
+          <Segmented label="Payment method" options={METHODS} value={method} onChange={setMethod} />
         </fieldset>
         <button className="button primary" disabled={!!problem}>
           Mark as paid
