@@ -1,0 +1,13 @@
+{
+  // Cloudflare Workers config: serves the built PWA as static assets.
+  // Deployed by Workers Builds on every push to main (build: `pnpm build`,
+  // deploy: `pnpm exec wrangler deploy`), or by hand with the same commands.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "footless",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./apps/web/dist",
+    "not_found_handling": "single-page-application"
+  },
+  "observability": { "enabled": true }
+}

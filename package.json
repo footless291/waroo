@@ -12,5 +12,8 @@
     "build": "pnpm --filter @footless/web build",
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck"
+  },
+  "devDependencies": {
+    "wrangler": "^4.165.0"
   }
 }
