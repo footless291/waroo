@@ -1,0 +1,18 @@
+{
+  "name": "@footless/ledger",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Pure, dependency-free bill-splitting ledger: splits, balances, settlements and an event log.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "node --test \"test/**/*.test.ts\"",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18.0",
+    "typescript": "^5.9.0"
+  }
+}
