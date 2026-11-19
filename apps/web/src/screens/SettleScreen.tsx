@@ -66,9 +66,9 @@ export function SettleScreen({ groupId, params }: { groupId: string; params: URL
             : ''}
         </p>
 
-        <section className="card bitcoin">
-          <h2 className="card-title">Pay with bitcoin</h2>
-          <p className="muted">
+        <section className="bitcoin">
+          <h2>Pay with bitcoin</h2>
+          <p>
             Coming next: {from === meta.meId ? 'you pay' : `${fromName} pays`}{' '}
             {amount > 0 ? money(amount, currency) : 'the amount'} from{' '}
             {from === meta.meId ? 'your' : 'their'} own Lightning wallet straight to{' '}

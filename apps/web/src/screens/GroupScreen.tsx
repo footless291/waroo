@@ -1,6 +1,14 @@
-import { computeShares, groupBalances, suggestTransfers, type GroupState } from '@footless/ledger'
+import {
+  computeShares,
+  groupBalances,
+  suggestTransfers,
+  type GroupState,
+  type Transfer,
+} from '@footless/ledger'
 import { useState, type FormEvent } from 'react'
+import { Avatar } from '../components/Avatar.tsx'
 import { Header } from '../components/Header.tsx'
+import { PlusIcon } from '../components/icons.tsx'
 import { append, newId, type GroupMeta } from '../lib/db.ts'
 import { formatDate, money } from '../lib/format.ts'
 import { useGroup } from '../lib/hooks.ts'
@@ -45,6 +53,7 @@ export function GroupScreen({ groupId, tab }: { groupId: string; tab: Tab }) {
       {tab === 'people' && <People meta={meta} state={state} />}
       {tab !== 'people' && (
         <a className="fab" href={`#${base}/add`}>
+          <PlusIcon />
           Add expense
         </a>
       )}
@@ -59,6 +68,18 @@ const nameOf = (state: GroupState, id: string, meId?: string) =>
 const objectName = (state: GroupState, id: string, meId?: string) =>
   id === meId ? 'you' : nameOf(state, id, meId)
 
+/** "Bob", "Bob and Cai", "Bob, Cai and Dee". */
+const listNames = (names: string[]) =>
+  names.length <= 1 ? (names[0] ?? '') : `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`
+
+const settleHref = (groupId: string, t: Transfer) =>
+  `#/g/${groupId}/settle?${new URLSearchParams({
+    from: t.from,
+    to: t.to,
+    amount: String(t.amount),
+    currency: t.currency,
+  })}`
+
 function Balances({ meta, state }: { meta: GroupMeta; state: GroupState }) {
   const balances = groupBalances(state)
   const transfers = suggestTransfers(balances)
@@ -70,58 +91,103 @@ function Balances({ meta, state }: { meta: GroupMeta; state: GroupState }) {
       </section>
     )
   }
+
+  // The hero shows this person's own position, in the group's main currency
+  // when they have one there, else the first currency they're in.
+  const currencies = [...balances.keys()].sort((a, b) =>
+    a === meta.currency ? -1 : b === meta.currency ? 1 : a.localeCompare(b),
+  )
+  const heroCurrency = currencies.find((c) => balances.get(c)?.get(meta.meId)) ?? currencies[0]!
+  const mine = balances.get(heroCurrency)?.get(meta.meId) ?? 0
+  const myPayments = transfers.filter((t) => t.from === meta.meId && t.currency === heroCurrency)
+  const myIncoming = transfers.filter((t) => t.to === meta.meId && t.currency === heroCurrency)
+  const heroTransfer = myPayments.length === 1 ? myPayments[0] : undefined
+  const others = transfers.filter((t) => t !== heroTransfer)
+
   return (
     <>
-      {[...balances].map(([currency, byPerson]) => (
-        <section key={currency} className="card">
-          {balances.size > 1 && <h2 className="card-title">{currency}</h2>}
-          <ul className="balance-list">
-            {[...byPerson]
-              .sort((a, b) => b[1] - a[1])
-              .map(([person, amount]) => (
+      <section className="hero" aria-label="Your balance">
+        {mine === 0 ? (
+          <p className="hero-amount" style={{ fontSize: '2rem' }}>
+            You’re all square
+          </p>
+        ) : (
+          <>
+            <div className="avatar-stack">
+              <Avatar state={state} id={meta.meId} />
+              {(mine < 0 ? myPayments.map((t) => t.to) : myIncoming.map((t) => t.from))
+                .slice(0, 3)
+                .map((id) => (
+                  <Avatar key={id} state={state} id={id} />
+                ))}
+            </div>
+            <p className="hero-label">
+              {mine < 0
+                ? heroTransfer
+                  ? `You owe ${nameOf(state, heroTransfer.to)}`
+                  : 'You owe'
+                : myIncoming.length > 0
+                  ? `You get back from ${listNames(myIncoming.map((t) => nameOf(state, t.from)))}`
+                  : 'You get back'}
+            </p>
+            <p className="hero-amount">{money(Math.abs(mine), heroCurrency)}</p>
+            {heroTransfer && (
+              <a className="button primary" href={settleHref(meta.id, heroTransfer)}>
+                Settle up
+              </a>
+            )}
+          </>
+        )}
+      </section>
+
+      {currencies.map((currency) => (
+        <section key={currency} className="section">
+          <h2 className="section-title">{currencies.length > 1 ? `Everyone, in ${currency}` : 'Everyone'}</h2>
+          <ul className="people">
+            {[...state.members.keys()].map((person) => {
+              const amount = balances.get(currency)?.get(person) ?? 0
+              const me = person === meta.meId
+              return (
                 <li key={person}>
-                  <span>{nameOf(state, person, meta.meId)}</span>
-                  <span className={amount > 0 ? 'owed' : 'owes'}>
-                    {person === meta.meId
-                      ? amount > 0
-                        ? 'get back '
-                        : 'owe '
-                      : amount > 0
-                        ? 'gets back '
-                        : 'owes '}
-                    {money(Math.abs(amount), currency)}
-                  </span>
+                  <Avatar state={state} id={person} />
+                  <span className="name">{nameOf(state, person, meta.meId)}</span>
+                  {amount === 0 ? (
+                    <span className="muted">all square</span>
+                  ) : (
+                    <span className={`amount ${amount > 0 ? 'owed' : 'owes'}`}>
+                      {amount > 0 ? (me ? 'get back ' : 'gets back ') : me ? 'owe ' : 'owes '}
+                      {money(Math.abs(amount), currency)}
+                    </span>
+                  )}
                 </li>
-              ))}
+              )
+            })}
           </ul>
         </section>
       ))}
-      <section className="card">
-        <h2 className="card-title">To settle up</h2>
-        <ul className="list plain">
-          {transfers.map((t) => {
-            const params = new URLSearchParams({
-              from: t.from,
-              to: t.to,
-              amount: String(t.amount),
-              currency: t.currency,
-            })
-            return (
-              <li key={`${t.from}-${t.to}-${t.currency}`} className="transfer">
-                <span>
-                  <strong>{nameOf(state, t.from, meta.meId)}</strong>
-                  {t.from === meta.meId ? ' pay ' : ' pays '}
-                  <strong>{objectName(state, t.to, meta.meId)}</strong>
+
+      {others.length > 0 && (
+        <section className="section">
+          <h2 className="section-title">Settle up</h2>
+          <ul className="cards">
+            {others.map((t) => (
+              <li key={`${t.from}-${t.to}-${t.currency}`} className="card-row">
+                <span className="row-main">
+                  <span>
+                    <strong>{nameOf(state, t.from, meta.meId)}</strong>
+                    {t.from === meta.meId ? ' pay ' : ' pays '}
+                    <strong>{objectName(state, t.to, meta.meId)}</strong>
+                  </span>
                   <span className="amount">{money(t.amount, t.currency)}</span>
                 </span>
-                <a className="button small" href={`#/g/${meta.id}/settle?${params}`}>
+                <a className="button small outline" href={settleHref(meta.id, t)}>
                   Settle
                 </a>
               </li>
-            )
-          })}
-        </ul>
-      </section>
+            ))}
+          </ul>
+        </section>
+      )}
     </>
   )
 }
@@ -138,19 +204,18 @@ function Expenses({ meta, state }: { meta: GroupMeta; state: GroupState }) {
   const expenses = [...state.expenses.values()].sort((a, b) => b.date.localeCompare(a.date))
   return (
     <>
-      <ul className="list">
+      <ul className="cards section">
         {expenses.map((e) => {
           const payers = Object.keys(e.payers)
           const myShare = computeShares(e).get(meta.meId)
           return (
             <li key={e.id}>
-              <a className="row" href={`#/g/${meta.id}/e/${e.id}`}>
-                <span className="date">{formatDate(e.date)}</span>
+              <a className="card-row" href={`#/g/${meta.id}/e/${e.id}`}>
                 <span className="row-main">
                   <strong>{e.title}</strong>
                   <span className="muted">
-                    {payers.length === 1 ? nameOf(state, payers[0]!, meta.meId) : `${payers.length} people`} paid
-                    {myShare ? ` · your share ${money(myShare, e.currency)}` : ''}
+                    {formatDate(e.date)}, {payers.length === 1 ? nameOf(state, payers[0]!, meta.meId) : `${payers.length} people`} paid
+                    {myShare ? `, your share ${money(myShare, e.currency)}` : ''}
                   </span>
                 </span>
                 <span className="amount">{money(e.total, e.currency)}</span>
@@ -160,14 +225,16 @@ function Expenses({ meta, state }: { meta: GroupMeta; state: GroupState }) {
         })}
       </ul>
       {state.settlements.size > 0 && (
-        <section className="card">
-          <h2 className="card-title">Payments</h2>
-          <ul className="list plain">
+        <section className="section">
+          <h2 className="section-title">Payments</h2>
+          <ul className="cards">
             {[...state.settlements.values()].map((s) => (
-              <li key={s.id} className="transfer">
-                <span>
-                  {nameOf(state, s.from, meta.meId)} paid {objectName(state, s.to, meta.meId)}
-                  <span className="muted"> · {s.method}</span>
+              <li key={s.id} className="card-row">
+                <span className="row-main">
+                  <span>
+                    {nameOf(state, s.from, meta.meId)} paid {objectName(state, s.to, meta.meId)}
+                  </span>
+                  <span className="muted">{{ cash: 'Cash', bank: 'Bank transfer', other: 'Other', bitcoin: 'Bitcoin' }[s.method]}</span>
                 </span>
                 <span className="amount">{money(s.amount, s.currency)}</span>
               </li>
@@ -189,24 +256,24 @@ function People({ meta, state }: { meta: GroupMeta; state: GroupState }) {
   }
   return (
     <>
-      <ul className="list">
+      <ul className="people">
         {[...state.members.values()].map((m) => (
-          <li key={m.id} className="row static">
-            <span className="avatar" aria-hidden="true">{m.name.slice(0, 1).toUpperCase()}</span>
+          <li key={m.id}>
+            <Avatar state={state} id={m.id} />
             <span className="row-main">
-              <strong>{m.name}</strong>
-              {m.id === meta.meId && <span className="muted">You, on this device</span>}
+              <span className="name">{m.name}</span>
+              {m.id === meta.meId && <span className="muted">You, on this phone</span>}
             </span>
           </li>
         ))}
       </ul>
       <form className="inline-form" onSubmit={add}>
         <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Add a person" aria-label="Name" />
-        <button className="button" disabled={!name.trim()}>
+        <button className="button primary" disabled={!name.trim()}>
           Add
         </button>
       </form>
-      <p className="hint pad">Sharing groups with other devices comes with encrypted sync.</p>
+      <p className="hint pad">Sharing groups with other phones comes with encrypted sync.</p>
     </>
   )
 }

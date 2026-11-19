@@ -1,6 +1,7 @@
 import { groupBalances, replay } from '@footless/ledger'
 import { useEffect, useState } from 'react'
 import { Header } from '../components/Header.tsx'
+import { PlusIcon } from '../components/icons.tsx'
 import { getEvents, type GroupMeta } from '../lib/db.ts'
 import { money } from '../lib/format.ts'
 import { useGroups } from '../lib/hooks.ts'
@@ -24,7 +25,7 @@ function MyPosition({ group }: { group: GroupMeta }) {
     <span className="position">
       {lines.map(({ amount, currency }) => (
         <span key={currency} className={amount > 0 ? 'owed' : 'owes'}>
-          {amount > 0 ? 'You’re owed ' : 'You owe '}
+          {amount > 0 ? 'You get back ' : 'You owe '}
           {money(Math.abs(amount), currency)}
         </span>
       ))}
@@ -50,10 +51,10 @@ export function HomeScreen() {
       )}
       {groups && groups.length > 0 && (
         <>
-          <ul className="list">
+          <ul className="cards">
             {groups.map((g) => (
               <li key={g.id}>
-                <a className="row" href={`#/g/${g.id}`}>
+                <a className="card-row" href={`#/g/${g.id}`}>
                   <span className="row-main">
                     <strong>{g.name}</strong>
                     <MyPosition group={g} />
@@ -64,6 +65,7 @@ export function HomeScreen() {
             ))}
           </ul>
           <a className="fab" href="#/new">
+            <PlusIcon />
             New group
           </a>
         </>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, type ReactNode } from 'react'
+import { Logo } from './icons.tsx'
 
 let firstScreen = true
 
@@ -30,12 +31,8 @@ export function Header({
           </svg>
         </a>
       ) : (
-        <span className="logo" aria-hidden="true">
-          <svg viewBox="0 0 512 512" width="28" height="28">
-            <rect width="512" height="512" rx="112" fill="var(--brand)" />
-            <path d="M244 132a124 124 0 0 0 0 248z" fill="var(--paper)" />
-            <path d="M268 132a124 124 0 0 1 0 248z" fill="var(--accent)" />
-          </svg>
+        <span className="logo">
+          <Logo size={34} />
         </span>
       )}
       <h1 ref={heading} tabIndex={-1}>
