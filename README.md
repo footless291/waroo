@@ -2,7 +2,7 @@
 
 Split bills any way you like, track who owes whom, and settle up in bitcoin, all shown in your own currency. No one ever holds your money, and the server can't read your groups.
 
-Status: early development. The ledger library works and is tested. The app itself isn't built yet.
+Status: early development. You can create groups, add expenses with equal, share-based or exact splits, see balances and suggested payments, and mark debts as paid in cash or by bank transfer. Everything is stored on your device. Sync between devices and bitcoin payments come next.
 
 ## Principles
 
@@ -17,7 +17,7 @@ Status: early development. The ledger library works and is tested. The app itsel
 | Path | What |
 | --- | --- |
 | `packages/ledger` | Pure TypeScript ledger with no runtime dependencies: money handling, split methods, balances, settlements, suggested transfers, and the event-log replay. |
-| `apps/web` | The PWA (not started yet). |
+| `apps/web` | The PWA: Vite + React, stores each group's event log in IndexedDB, installable and works offline. |
 
 ## Development
 
@@ -25,8 +25,10 @@ Requires Node 22.18 or later (for built-in TypeScript type stripping) and pnpm.
 
 ```sh
 pnpm install
+pnpm dev         # runs the app at http://localhost:5173
 pnpm test        # runs every package's tests
 pnpm typecheck
+pnpm build       # production build of the app in apps/web/dist
 ```
 
 The ledger's tests also run with nothing installed: `cd packages/ledger && node --test "test/**/*.test.ts"`.
