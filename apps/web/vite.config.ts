@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'prompt',
       includeAssets: ['icon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'footless',
-        short_name: 'footless',
+        name: 'Footless',
+        short_name: 'Footless',
         description: 'Split bills and settle up, without anyone holding your money.',
         lang: 'en',
         start_url: '/',

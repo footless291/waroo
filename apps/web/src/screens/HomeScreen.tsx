@@ -36,7 +36,7 @@ export function HomeScreen() {
   const groups = useGroups()
   return (
     <main className="screen">
-      <Header title="footless" />
+      <Header title="Footless" />
       {groups && groups.length === 0 && (
         <section className="empty">
           <h2>Split anything with anyone</h2>

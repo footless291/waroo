@@ -1,6 +1,6 @@
-# footless design system
+# Footless design system
 
-footless should feel calm, plain and trustworthy: a place where money between friends gets sorted without fuss. It is not a crypto app, and nothing in the main flows should look or sound like one.
+Footless should feel calm, plain and trustworthy: a place where money between friends gets sorted without fuss. It is not a crypto app, and nothing in the main flows should look or sound like one.
 
 The tokens live as CSS variables at the top of `apps/web/src/styles.css`. Use the variables, never raw values.
 

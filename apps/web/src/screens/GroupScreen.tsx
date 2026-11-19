@@ -82,7 +82,13 @@ function Balances({ meta, state }: { meta: GroupMeta; state: GroupState }) {
                 <li key={person}>
                   <span>{nameOf(state, person, meta.meId)}</span>
                   <span className={amount > 0 ? 'owed' : 'owes'}>
-                    {amount > 0 ? 'gets back ' : 'owes '}
+                    {person === meta.meId
+                      ? amount > 0
+                        ? 'get back '
+                        : 'owe '
+                      : amount > 0
+                        ? 'gets back '
+                        : 'owes '}
                     {money(Math.abs(amount), currency)}
                   </span>
                 </li>
@@ -125,7 +131,7 @@ function Expenses({ meta, state }: { meta: GroupMeta; state: GroupState }) {
     return (
       <section className="empty">
         <h2>No expenses yet</h2>
-        <p>Add what someone paid for, and footless works out who owes what.</p>
+        <p>Add what someone paid for, and Footless works out who owes what.</p>
       </section>
     )
   }
