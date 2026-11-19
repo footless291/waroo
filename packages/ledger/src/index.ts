@@ -35,3 +35,4 @@ export {
   type Member,
   type Rejection,
 } from './events.ts'
+export { canonicalJson, signingBytes } from './canonical.ts'

@@ -5,18 +5,25 @@ import {
   type GroupState,
   type Transfer,
 } from '@footless/ledger'
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { Avatar } from '../components/Avatar.tsx'
 import { Header } from '../components/Header.tsx'
 import { PlusIcon } from '../components/icons.tsx'
+import { SyncLine } from '../components/SyncLine.tsx'
 import { append, newId, type GroupMeta } from '../lib/db.ts'
 import { formatDate, money } from '../lib/format.ts'
 import { useGroup } from '../lib/hooks.ts'
 
 type Tab = 'balances' | 'expenses' | 'people'
 
-export function GroupScreen({ groupId, tab }: { groupId: string; tab: Tab }) {
+export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Tab; joined?: boolean }) {
   const group = useGroup(groupId)
+  const [toast, setToast] = useState(joined)
+  useEffect(() => {
+    if (!toast) return
+    const t = setTimeout(() => setToast(false), 5000)
+    return () => clearTimeout(t)
+  }, [toast])
   if (group === undefined) return <main className="screen" />
   if (group === null) {
     return (
@@ -28,9 +35,34 @@ export function GroupScreen({ groupId, tab }: { groupId: string; tab: Tab }) {
   }
   const { meta, state } = group
   const base = `/g/${groupId}`
+  const name = state.name ?? meta.name
+  const notJoined = [...state.members.values()].filter((m) => !m.key && m.id !== meta.meId)
+  const alone = [...state.members.values()].every((m) => m.id === meta.meId || !m.key)
   return (
     <main className="screen">
-      <Header title={meta.name} back="/" />
+      <Header
+        title={name}
+        back="/"
+        action={
+          <a className="button small" href={`#${base}/invite`}>
+            Invite
+          </a>
+        }
+      />
+      <SyncLine groupId={groupId} state={state} meId={meta.meId} />
+      {alone && tab === 'balances' && (
+        <section className="invite-card">
+          <h2>
+            {notJoined.length > 0
+              ? `${listNames(notJoined.map((m) => m.name))} can’t see this yet`
+              : 'Splitting with friends?'}
+          </h2>
+          <p>Invite them, and everyone can add expenses and settle up from their own phone.</p>
+          <a className="button primary" href={`#${base}/invite`}>
+            Invite people
+          </a>
+        </section>
+      )}
       <nav className="tabs" aria-label="Group sections">
         {(['balances', 'expenses', 'people'] as const).map((t) => (
           <a
@@ -51,6 +83,11 @@ export function GroupScreen({ groupId, tab }: { groupId: string; tab: Tab }) {
       {tab === 'balances' && <Balances meta={meta} state={state} />}
       {tab === 'expenses' && <Expenses meta={meta} state={state} />}
       {tab === 'people' && <People meta={meta} state={state} />}
+      {toast && (
+        <div className="toast" role="status">
+          You joined {name} as {state.members.get(meta.meId)?.name}
+        </div>
+      )}
       {tab !== 'people' && (
         <a className="fab" href={`#${base}/add`}>
           <PlusIcon />
@@ -273,7 +310,9 @@ function People({ meta, state }: { meta: GroupMeta; state: GroupState }) {
           Add
         </button>
       </form>
-      <p className="hint pad">Sharing groups with other phones comes with encrypted sync.</p>
+      <p className="hint pad">
+        People you add here can join from their own phone with an invite link.
+      </p>
     </>
   )
 }

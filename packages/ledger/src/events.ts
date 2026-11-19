@@ -8,6 +8,11 @@
  * Nothing is ever edited in place: an edit is a new version of an expense, a
  * deletion is a tombstone, and a settlement can only be voided. That gives
  * every group a complete audit trail.
+ *
+ * Shared groups are "signed": each member writes from a phone holding a
+ * signing key, the member's public key is recorded in the log, and every
+ * event must come with the `signer` key its signature was verified against.
+ * Groups that have never been shared may be unsigned; nothing else changes.
  */
 
 import { computeBalances, type Balances, type Settlement } from './balances.ts'
@@ -26,6 +31,12 @@ function isKnownCurrency(code: string): boolean {
 export interface Member {
   id: PersonId
   name: string
+  /**
+   * Public signing key of the phone this member writes from, once they have
+   * joined on one. Members added by someone else have none until they claim
+   * their place.
+   */
+  key?: string
 }
 
 interface EventBase {
@@ -40,12 +51,25 @@ interface EventBase {
   clock: number
   /** Author's wall-clock time, ISO. For display only, never for ordering. */
   at: string
+  /**
+   * Public key whose signature over this event the transport verified. Set by
+   * the transport, never trusted from the event's own content.
+   */
+  signer?: string
 }
 
 export type LedgerEvent = EventBase &
   (
+    /**
+     * Adds a person. In a signed group, a phone joining as someone new adds
+     * itself: author and member are the same, with the phone's key.
+     */
     | { type: 'member.added'; member: Member }
     | { type: 'member.renamed'; memberId: PersonId; name: string }
+    /** A phone takes the place of a member who hasn't joined on a phone yet. */
+    | { type: 'member.claimed'; memberId: PersonId; key: string }
+    /** Sets the group's name and/or main currency. */
+    | { type: 'group.updated'; name?: string; currency?: string }
     /**
      * Creates or edits an expense. `basedOn` is the id of the event holding
      * the version this edit started from (absent for a new expense). If the
@@ -73,6 +97,11 @@ export interface Rejection {
 }
 
 export interface GroupState {
+  /** From the latest `group.updated`, if any. */
+  name?: string
+  currency?: string
+  /** True when the founder joined with a key: every event must then be signed. */
+  signed: boolean
   members: Map<PersonId, Member>
   expenses: Map<string, Expense>
   settlements: Map<string, Settlement>
@@ -102,6 +131,7 @@ export function orderEvents(events: Iterable<LedgerEvent>): LedgerEvent[] {
 
 export function emptyState(): GroupState {
   return {
+    signed: false,
     members: new Map(),
     expenses: new Map(),
     settlements: new Map(),
@@ -119,11 +149,13 @@ export function emptyState(): GroupState {
  *
  * Rules:
  * - Only members may write, except the very first `member.added`, which
- *   founds the group.
+ *   founds the group, and (in a signed group) a phone adding itself.
+ * - In a signed group, every event's `signer` must be its author's key.
+ *   A member nobody has claimed yet can't write until a phone claims them.
  * - Concurrent edits to one expense: the later event in the total order wins,
  *   and the overwritten one is reported in `conflicts` so the app can show it.
  * - A deletion beats a concurrent edit. The edit is reported as a conflict.
- * - Invalid expenses and settlements are rejected, never thrown.
+ * - Invalid events are rejected and reported, never thrown.
  */
 export function replay(events: Iterable<LedgerEvent>): GroupState {
   const state = emptyState()
@@ -134,8 +166,48 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
     state.clock = Math.max(state.clock, e.clock)
 
     const founding = state.members.size === 0 && e.type === 'member.added'
-    if (!founding && !state.members.has(e.author)) {
+    const selfJoin =
+      state.signed &&
+      e.type === 'member.added' &&
+      e.member.id === e.author &&
+      !state.members.has(e.author)
+
+    if (founding) {
+      if (e.type === 'member.added' && e.member.key !== undefined) {
+        if (e.signer !== e.member.key) {
+          reject(e, 'The founder must sign with their own key')
+          continue
+        }
+        state.signed = true
+      }
+    } else if (selfJoin) {
+      if (e.type !== 'member.added' || !e.member.key || e.signer !== e.member.key) {
+        reject(e, 'A phone joining must sign with the key it joins with')
+        continue
+      }
+    } else if (!state.members.has(e.author)) {
       reject(e, 'Author is not a member of this group')
+      continue
+    } else if (state.signed) {
+      const key = state.members.get(e.author)!.key
+      if (e.type === 'member.claimed') {
+        if (key !== undefined) {
+          reject(e, 'That person has already joined on a phone')
+          continue
+        }
+        if (e.memberId !== e.author || e.signer !== e.key) {
+          reject(e, 'A claim must be signed with the key it claims with')
+          continue
+        }
+      } else if (key === undefined) {
+        reject(e, 'Author has not joined on a phone yet')
+        continue
+      } else if (e.signer !== key) {
+        reject(e, 'Signed with the wrong key')
+        continue
+      }
+    } else if (e.type === 'member.claimed') {
+      reject(e, 'Only shared groups can be joined')
       continue
     }
 
@@ -143,7 +215,23 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
       case 'member.added':
         if (state.members.has(e.member.id)) reject(e, 'Already a member')
         else if (founding && e.member.id !== e.author) reject(e, 'The founder must add themselves')
+        else if (!founding && !selfJoin && e.member.key !== undefined) {
+          reject(e, 'Only the person themselves can add their key')
+        } else if (!e.member.name.trim()) reject(e, 'A person needs a name')
         else state.members.set(e.member.id, { ...e.member })
+        break
+
+      case 'member.claimed':
+        state.members.get(e.memberId)!.key = e.key
+        break
+
+      case 'group.updated':
+        if (e.currency !== undefined && !isKnownCurrency(e.currency)) {
+          reject(e, `Unknown currency code: ${e.currency}`)
+          break
+        }
+        if (e.name !== undefined) state.name = e.name
+        if (e.currency !== undefined) state.currency = e.currency
         break
 
       case 'member.renamed': {

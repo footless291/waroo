@@ -1,13 +1,21 @@
 {
-  // Cloudflare Workers config: serves the built PWA as static assets.
+  // Cloudflare Workers config: serves the built PWA and runs the sync relay.
   // Deployed by Workers Builds on every push to main (build: `pnpm build`,
   // deploy: `pnpm exec wrangler deploy`), or by hand with the same commands.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "footless",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-11-01",
   "assets": {
     "directory": "./apps/web/dist",
-    "not_found_handling": "single-page-application"
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    // Only relay requests reach the Worker code; everything else is a static file.
+    "run_worker_first": ["/relay/*"]
   },
+  "durable_objects": {
+    "bindings": [{ "name": "ROOMS", "class_name": "RelayRoom" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["RelayRoom"] }],
   "observability": { "enabled": true }
 }

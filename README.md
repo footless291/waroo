@@ -2,7 +2,7 @@
 
 Split bills any way you like, track who owes whom, and settle up in bitcoin, all shown in your own currency. No one ever holds your money, and the server can't read your groups.
 
-Status: early development. You can create groups, add expenses with equal, share-based or exact splits, see balances and suggested payments, and mark debts as paid in cash or by bank transfer. Everything is stored on your device. Sync between devices and bitcoin payments come next.
+Status: early development. You can create groups, invite friends with a link, and everyone adds expenses from their own phone, with changes syncing live and end-to-end encrypted. Splits can be equal, by shares or exact; balances, suggested payments and "mark as paid" work. Bitcoin payments come next.
 
 ## Principles
 
@@ -18,6 +18,9 @@ Status: early development. You can create groups, add expenses with equal, share
 | --- | --- |
 | `packages/ledger` | Pure TypeScript ledger with no runtime dependencies: money handling, split methods, balances, settlements, suggested transfers, and the event-log replay. |
 | `apps/web` | The PWA: Vite + React, stores each group's event log in IndexedDB, installable and works offline. |
+| `worker` | The Cloudflare Worker: serves the app and runs the sync relay (one Durable Object per group). |
+| `docs` | [How sync works](docs/sync.md), [design system](docs/design.md). |
+| `e2e` | Browser tests that act as several phones at once. |
 
 ## Development
 
@@ -25,10 +28,12 @@ Requires Node 22.18 or later (for built-in TypeScript type stripping) and pnpm.
 
 ```sh
 pnpm install
-pnpm dev         # runs the app at http://localhost:5173
-pnpm test        # runs every package's tests
-pnpm typecheck
+pnpm dev         # the app alone at http://localhost:5173 (no sync)
 pnpm build       # production build of the app in apps/web/dist
+pnpm relay       # app + sync relay at http://127.0.0.1:8787 (serves the last build)
+pnpm test        # unit tests
+pnpm typecheck
+pnpm e2e         # multi-phone browser tests; needs `pnpm relay` running
 ```
 
 The ledger's tests also run with nothing installed: `cd packages/ledger && node --test "test/**/*.test.ts"`.

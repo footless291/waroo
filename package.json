@@ -11,9 +11,13 @@
     "dev": "pnpm --filter @footless/web dev",
     "build": "pnpm --filter @footless/web build",
     "test": "pnpm -r test",
-    "typecheck": "pnpm -r typecheck"
+    "typecheck": "pnpm -r typecheck && tsc -p worker",
+    "relay": "wrangler dev --port 8787 --ip 127.0.0.1",
+    "e2e": "node e2e/sync.cjs && node e2e/upgrade-and-tampering.cjs"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261119.1",
+    "playwright": "^1.63.0",
     "wrangler": "^4.165.0"
   }
 }
