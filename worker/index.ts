@@ -8,11 +8,15 @@
  */
 import { DurableObject } from 'cloudflare:workers'
 import { agree, type Quote } from './price.ts'
+import { InviteBox } from './invites.ts'
 import { isPushEndpoint, sendPush, type PushEnv } from './push.ts'
+
+export { InviteBox }
 
 export interface Env extends PushEnv {
   ASSETS: Fetcher
   ROOMS: DurableObjectNamespace<RelayRoom>
+  INVITES: DurableObjectNamespace<InviteBox>
 }
 
 /** A room id is base64url of a SHA-256 digest: 43 characters. */
@@ -36,6 +40,12 @@ export default {
       return env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_JWK
         ? Response.json({ key: env.VAPID_PUBLIC_KEY })
         : Response.json({ error: 'Notifications aren’t set up on this relay' }, { status: 501 })
+    }
+
+    const invite = /^\/relay\/invites\/([^/]+)(\/open)?$/.exec(url.pathname)
+    if (invite) {
+      if (!ROOM_ID.test(invite[1]!)) return new Response('Bad invite id', { status: 400 })
+      return env.INVITES.getByName(invite[1]!).fetch(request)
     }
 
     const match = /^\/relay\/rooms\/([^/]+)(\/items)?$/.exec(url.pathname)

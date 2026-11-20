@@ -4,6 +4,7 @@ import { Logo } from '../components/icons.tsx'
 import { isGroupKey, newSigningKeys } from '../lib/crypto.ts'
 import { append, getGroup, newId, publishProfile, saveJoinedGroup, type GroupMeta } from '../lib/db.ts'
 import { go } from '../lib/hooks.ts'
+import { InviteClosed, openInvite, type InviteTicket } from '../lib/invites.ts'
 import { fetchGroup, syncHub } from '../lib/sync.ts'
 
 type Loaded = {
@@ -22,9 +23,56 @@ function inBrowserTab() {
 }
 
 export function JoinScreen({ params }: { params: URLSearchParams }) {
-  const groupId = params.get('g') ?? ''
-  const key = params.get('k') ?? ''
-  const from = params.get('from') ?? ''
+  const secret = params.get('i')
+  if (secret !== null) return <JoinByInvite key={secret} secret={secret} />
+  // Links from before invites could expire hold the group key itself.
+  return <JoinGroup groupId={params.get('g') ?? ''} groupKey={params.get('k') ?? ''} from={params.get('from') ?? ''} />
+}
+
+/** Opens an invite link's secret into the group it leads to, if the link still works. */
+function JoinByInvite({ secret }: { secret: string }) {
+  const [ticket, setTicket] = useState<InviteTicket>()
+  const [problem, setProblem] = useState<{ title: string; text: string }>()
+  useEffect(() => {
+    if (!isGroupKey(secret)) {
+      setProblem({ title: 'This link isn’t complete', text: 'Ask for the invite link again, and open the whole link.' })
+      return
+    }
+    let live = true
+    openInvite(secret).then(
+      (t) => live && setTicket(t),
+      (err: Error) => {
+        if (!live) return
+        if (err instanceof InviteClosed) setProblem({ title: 'This invite doesn’t work any more', text: `${err.message} Ask for a new one.` })
+        else setProblem({ title: 'Couldn’t open the invite', text: err.message })
+      },
+    )
+    return () => {
+      live = false
+    }
+  }, [secret])
+
+  if (ticket) return <JoinGroup groupId={ticket.g} groupKey={ticket.k} from={ticket.from} />
+  return (
+    <main className="screen">
+      <div className="join-brand">
+        <Logo size={32} />
+        <span>Footless</span>
+      </div>
+      {problem ? (
+        <section className="empty">
+          <h2>{problem.title}</h2>
+          <p>{problem.text}</p>
+          <a className="button primary" href="#/">Open Footless</a>
+        </section>
+      ) : (
+        <p className="muted" role="status">Opening the invite…</p>
+      )}
+    </main>
+  )
+}
+
+function JoinGroup({ groupId, groupKey: key, from }: { groupId: string; groupKey: string; from: string }) {
   const valid = /^[0-9a-f-]{36}$/.test(groupId) && isGroupKey(key)
 
   const [loaded, setLoaded] = useState<Loaded>()

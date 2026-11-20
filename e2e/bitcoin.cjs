@@ -93,6 +93,7 @@ let walletLies = false;
   await ana.fill('input[aria-label="Person 2"]', 'Bob');
   await ana.click('text=Create group'); await ana.waitForTimeout(300);
   await ana.click('header a:has-text("Invite")'); await ana.waitForTimeout(800);
+  await ana.click('button:has-text(\"Create invite link\")'); await ana.waitForSelector('button:has-text(\"Copy link\")');
   await ana.click('button:has-text("Copy link")');
   const link = await ana.evaluate(() => navigator.clipboard.readText());
   await ana.click('a[aria-label="Back"]');

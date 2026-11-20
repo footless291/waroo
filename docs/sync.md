@@ -35,7 +35,7 @@ Every phone checks every event when it rebuilds the group (`packages/ledger/src/
 
 ## What it doesn't protect against (yet)
 
-- **Anyone with the invite link can join.** The link is the key. Expiring and one-time links are in the backlog.
+- **Invite links work only as long as they're meant to.** A link holds a fresh secret, not the group key. The key waits on the relay, encrypted with that secret, and is handed out only before the link expires (up to a month), once for a one-person link, and never after the inviter turns it off. Someone who did get in keeps the key, though: removing them would need a new group key (below). Links sent before November 21, 2026 held the key itself; they still work and can't be turned off.
 - **Removing someone** would need a new group key. Not built yet.
 - **A lost phone** loses that phone's key. Moving needs the old phone in hand, so after a loss the person can't write as themselves again (they could join as someone new). The group's data is safe on everyone else's phone. Recovery vouched for by the rest of the group is a possible next step.
 - **Metadata.** The relay sees when blobs arrive, roughly how big they are, and the IP addresses connecting to a room. It can't read anything else.
@@ -56,6 +56,8 @@ A WebSocket at `/relay/rooms/<room id>`, JSON messages:
 | Phone | `{ "t": "push", ..., "notify": true }` | As above, and wake the others' phones (the sender decides: payments, joins, new expenses) |
 | Phone | `{ "t": "subscribe" \| "unsubscribe", "endpoint" }` | Wake this phone for this room while it isn't connected |
 | Phone | `{ "t": "hello", ..., "ephemeral": true }` | A one-off room (moving phones): wiped an hour after it opens. Only honoured on an empty room |
+
+Invites live at `/relay/invites/<id>`, where the id is a hash of the link's secret: `PUT` stores one (encrypted ticket, expiry, uses, hash of a turn-off token), `GET` says whether it still works without using it, `POST …/open` hands out the ticket and counts a use, and `DELETE` with the token turns it off. After it ends, only its state is kept, for 30 days.
 
 `GET /relay/rooms/<room id>/items?since=<seq>` returns one page of the same items over plain HTTP, for the service worker.
 

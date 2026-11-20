@@ -32,6 +32,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await old.fill('input.amount-input', '6000');
   await old.click('button:has-text("Add expense")'); await old.waitForTimeout(300);
   await old.click('header a:has-text("Invite")'); await old.waitForTimeout(800);
+  await old.click('button:has-text(\"Create invite link\")'); await old.waitForSelector('button:has-text(\"Copy link\")');
   await old.click('button:has-text("Copy link")');
   const invite = await old.evaluate(() => navigator.clipboard.readText());
   const bob = await mk('bob');

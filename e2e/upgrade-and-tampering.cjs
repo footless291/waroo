@@ -47,6 +47,7 @@ const b64u = b => Buffer.from(b).toString('base64url');
   await ana.reload(); await ana.waitForTimeout(500);
   check(await waitText(ana, '.sync-line', 'Only on this phone'), 'old-style group still opens');
   await ana.click('header a:has-text("Invite")'); await ana.waitForTimeout(1000);
+  await ana.click('button:has-text(\"Create invite link\")'); await ana.waitForSelector('button:has-text(\"Copy link\")');
   await ana.click('button:has-text("Copy link")');
   const link = await ana.evaluate(() => navigator.clipboard.readText());
   await ana.click('a[aria-label="Back"]');
@@ -59,8 +60,11 @@ const b64u = b => Buffer.from(b).toString('base64url');
   check(await waitText(bob, '.hero', '1,000'), 'Bob sees the old expense: owes ¥1,000');
 
   // --- Tampering at the relay ---
-  const params = new URLSearchParams(link.split('?')[1]);
-  const gkey = params.get('k'), anaId = params.get('from');
+  // The group key and Ana's id, from her phone's storage (invite links no longer carry the key)
+  const { gkey, anaId } = await ana.evaluate(() => new Promise((resolve) => {
+    const open = indexedDB.open('footless');
+    open.onsuccess = () => { const req = open.result.transaction('groups').objectStore('groups').getAll(); req.onsuccess = () => resolve({ gkey: req.result[0].key, anaId: req.result[0].meId }); };
+  }));
   const label = new TextEncoder().encode('footless-room-v1:');
   const raw = Buffer.from(gkey, 'base64url');
   const room = b64u(await wc.subtle.digest('SHA-256', Buffer.concat([label, raw])));

@@ -41,10 +41,11 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
 
   // Ana invites
   await ana.click('header a:has-text("Invite")'); await ana.waitForTimeout(800);
+  await ana.click('button:has-text(\"Create invite link\")'); await ana.waitForSelector('button:has-text(\"Copy link\")');
   await ana.screenshot({ path: (process.env.SHOTS || '/tmp') + '/e2e-2-invite.png' });
   await ana.click('button:has-text("Copy link")');
   const link = await ana.evaluate(() => navigator.clipboard.readText());
-  check(link.startsWith(B + '#/join?') && link.includes('&k='), 'invite link carries the key after #');
+  check(link.startsWith(B + '#/join?i=') && !link.includes('k='), 'invite link carries a fresh secret after #, not the group key');
   await ana.click('button:has-text("Show QR code")'); await ana.waitForTimeout(200);
   check(await ana.isVisible('svg.qr'), 'QR code shows');
   await ana.screenshot({ path: (process.env.SHOTS || '/tmp') + '/e2e-3-qr.png' });

@@ -531,8 +531,20 @@ input[type='checkbox'] {
 .check {
   cursor: pointer;
 }
-.split-input span {
+.split-input > span:first-child {
   flex: 1;
+}
+.percent-input {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.percent-input input {
+  width: 5.5em;
+}
+.percent-input span {
+  color: var(--muted);
+  font-weight: 600;
 }
 .split-input input {
   width: 7.5em;
@@ -1034,4 +1046,25 @@ input[type='checkbox'] {
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.2em;
   text-align: center;
+}
+
+/* Invite links */
+.invite-link {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.invite-link-terms {
+  margin: 0;
+  font-weight: 600;
+}
+.invite-link .link {
+  align-self: center;
+  min-height: var(--target);
+}
+.invite-row {
+  gap: var(--space-3);
+}
+.settings-card fieldset.field {
+  margin: 0 0 var(--space-4);
 }

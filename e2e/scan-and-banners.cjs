@@ -50,6 +50,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await ana.fill('input.amount-input', '4000');
   await ana.click('button:has-text("Add expense")'); await ana.waitForTimeout(300);
   await ana.click('header a:has-text("Invite")'); await ana.waitForTimeout(800);
+  await ana.click('button:has-text(\"Create invite link\")'); await ana.waitForSelector('button:has-text(\"Copy link\")');
   await ana.click('button:has-text("Show QR code")'); await ana.waitForTimeout(200);
   const svg = await ana.evaluate(() => {
     const s = document.querySelector('svg.qr').cloneNode(true);
@@ -96,6 +97,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   // Old payments fetched when joining are not announced
   const cai = await mk('cai');
   await ana.click('header a:has-text("Invite")'); await ana.waitForTimeout(500);
+  await ana.click('button:has-text(\"Create invite link\")'); await ana.waitForSelector('button:has-text(\"Copy link\")');
   await ana.click('button:has-text("Copy link")');
   const link = await ana.evaluate(() => navigator.clipboard.readText());
   await cai.goto(link);

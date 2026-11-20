@@ -13,13 +13,25 @@ import { append, newId, type GroupMeta } from '../lib/db.ts'
 import { CURRENCIES, money, today, toInput } from '../lib/format.ts'
 import { go, useGroup } from '../lib/hooks.ts'
 
-type Mode = 'equal' | 'shares' | 'exact'
+type Mode = 'equal' | 'shares' | 'percent' | 'exact'
 
 const MODES: { value: Mode; label: string }[] = [
   { value: 'equal', label: 'Equally' },
-  { value: 'shares', label: 'By shares' },
+  { value: 'shares', label: 'Shares' },
+  { value: 'percent', label: 'Percent' },
   { value: 'exact', label: 'Exact' },
 ]
+
+/** "12.5" → 1250 hundredths of a percent; null if it isn't a percentage. */
+function parsePercent(text: string): number | null {
+  const m = /^\s*(\d{1,3})(?:[.,](\d{1,2}))?\s*%?\s*$/.exec(text)
+  if (!m) return null
+  const value = Number(m[1]) * 100 + Number((m[2] ?? '').padEnd(2, '0'))
+  return value <= 10_000 ? value : null
+}
+
+/** 1250 → "12.5" */
+const percentText = (basisPoints: number) => String(basisPoints / 100)
 
 export function ExpenseScreen({ groupId, expenseId }: { groupId: string; expenseId?: string }) {
   const group = useGroup(groupId)
@@ -63,7 +75,7 @@ function ExpenseForm({
   const [date, setDate] = useState(existing?.date ?? today())
   const [payer, setPayer] = useState(existing ? Object.keys(existing.payers)[0]! : meta.meId)
   const [mode, setMode] = useState<Mode>(
-    initial?.kind === 'shares' || initial?.kind === 'exact' ? initial.kind : 'equal',
+    initial?.kind === 'shares' || initial?.kind === 'exact' || initial?.kind === 'percent' ? initial.kind : 'equal',
   )
   const [included, setIncluded] = useState<Set<string>>(
     new Set(initial?.kind === 'equal' ? initial.among : allIds),
@@ -80,6 +92,14 @@ function ExpenseForm({
         initial?.kind === 'exact' && initial.amounts[id] !== undefined
           ? toInput(initial.amounts[id]!, existing!.currency)
           : '',
+      ]),
+    ),
+  )
+  const [percents, setPercents] = useState<Record<string, string>>(() =>
+    Object.fromEntries(
+      allIds.map((id) => [
+        id,
+        initial?.kind === 'percent' && initial.basisPoints[id] ? percentText(initial.basisPoints[id]!) : '',
       ]),
     ),
   )
@@ -107,6 +127,22 @@ function ExpenseForm({
       kind: 'shares',
       weights: Object.fromEntries(allIds.map((id) => [id, Math.max(0, Math.floor(Number(weights[id]) || 0))])),
     }
+  } else if (mode === 'percent') {
+    split = {
+      kind: 'percent',
+      basisPoints: Object.fromEntries(
+        allIds.flatMap((id) => {
+          const text = percents[id]?.trim()
+          if (!text) return []
+          const bp = parsePercent(text)
+          if (bp === null) {
+            problems.push(`${state.members.get(id)!.name}: use a percentage like 25 or 12.5`)
+            return []
+          }
+          return bp > 0 ? [[id, bp]] : []
+        }),
+      ),
+    }
   } else {
     split = {
       kind: 'exact',
@@ -133,7 +169,9 @@ function ExpenseForm({
     problems.push(
       ...validateExpense(expense, new Set(allIds)).filter(
         // The "left to assign" hint below already says this, in plain money.
-        (p) => !(mode === 'exact' && p.startsWith('Exact amounts total')),
+        (p) =>
+          !(mode === 'exact' && p.startsWith('Exact amounts total')) &&
+          !(mode === 'percent' && p.startsWith('Percentages must total')),
       ),
     )
   }
@@ -150,9 +188,15 @@ function ExpenseForm({
       ? total - Object.values(split.kind === 'exact' ? split.amounts : {}).reduce((a, b) => a + b, 0)
       : 0
 
+  const percentRemaining =
+    mode === 'percent' && split.kind === 'percent'
+      ? 10_000 - Object.values(split.basisPoints).reduce((a, b) => a + b, 0)
+      : 0
+  const unassigned = exactRemaining !== 0 || percentRemaining !== 0
+
   async function save(e: FormEvent) {
     e.preventDefault()
-    if (problems.length > 0 || exactRemaining !== 0) return
+    if (problems.length > 0 || unassigned) return
     const basedOn = existing ? state.heads.get(existing.id) : undefined
     await append(meta, [{ type: 'expense.saved', expense, ...(basedOn ? { basedOn } : {}) }])
     go(`/g/${meta.id}/expenses`)
@@ -240,7 +284,18 @@ function ExpenseForm({
                 ) : (
                   <label className="split-input">
                     <span>{nameOf(m.id)}</span>
-                    {mode === 'shares' ? (
+                    {mode === 'percent' ? (
+                      <span className="percent-input">
+                        <input
+                          inputMode="decimal"
+                          value={percents[m.id] ?? ''}
+                          placeholder="0"
+                          onChange={(e) => setPercents({ ...percents, [m.id]: e.target.value })}
+                          aria-label={`Percent for ${m.name}`}
+                        />
+                        <span aria-hidden="true">%</span>
+                      </span>
+                    ) : mode === 'shares' ? (
                       <input
                         inputMode="numeric"
                         value={weights[m.id] ?? ''}
@@ -267,7 +322,11 @@ function ExpenseForm({
               ? exactRemaining > 0
                 ? `${money(exactRemaining, currency)} left to assign`
                 : `${money(-exactRemaining, currency)} too much`
-              : ''}
+              : mode === 'percent' && percentRemaining !== 0
+                ? percentRemaining > 0
+                  ? `${percentText(percentRemaining)}% left to assign`
+                  : `${percentText(-percentRemaining)}% too much`
+                : ''}
           </p>
         </fieldset>
 
@@ -281,7 +340,7 @@ function ExpenseForm({
           )}
         </div>
 
-        <button className="button primary" disabled={problems.length > 0 || exactRemaining !== 0}>
+        <button className="button primary" disabled={problems.length > 0 || unassigned}>
           {existing ? 'Save changes' : 'Add expense'}
         </button>
         {existing && (

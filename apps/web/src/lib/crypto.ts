@@ -57,6 +57,11 @@ export function roomId(groupKey: string): Promise<string> {
   return hashedId('footless-room-v1:', groupKey)
 }
 
+/** The relay's box for an invite link, from the secret in the link. */
+export function inviteId(secret: string): Promise<string> {
+  return hashedId('footless-invite-v1:', secret)
+}
+
 /** The relay room for moving to a new phone, from the secret in the QR code. */
 export function moveRoomId(secret: string): Promise<string> {
   return hashedId('footless-move-v1:', secret)

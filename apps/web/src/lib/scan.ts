@@ -63,7 +63,7 @@ export function inviteRoute(text: string): string | null {
   if (before && !/^https?:\/\/[^\s#]+$/i.test(before)) return null
   const route = trimmed.slice(match.index + 1)
   const params = new URLSearchParams(route.split('?')[1])
-  if (match[1] === 'join' && (!params.get('g') || !params.get('k'))) return null
+  if (match[1] === 'join' && !params.get('i') && (!params.get('g') || !params.get('k'))) return null
   if (match[1] === 'move-in' && !params.get('t')) return null
   return route
 }
