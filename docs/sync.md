@@ -30,6 +30,8 @@ Every phone checks every event when it rebuilds the group (`packages/ledger/src/
 - Each event's signature must match the public key recorded for its author. A change can't be forged in someone else's name, even by someone who has the invite link.
 - A person added by someone else can be claimed by one phone only: the first claim wins.
 - Only a phone adding itself can attach a key to a new person.
+- Once someone has joined from a phone, only they can change their name.
+- Leaving (`member.left`) is for the person themselves, and only at a zero balance in every currency. After that they can't write, and nothing can move their balance: no new expenses or payments with them, and no edits or deletions that change what they paid or owe. Edits that leave them untouched are fine.
 - Moving to a new phone (`member.rekeyed`) must be signed with the person's current key, and only for themselves. From then on only the new key can write for them; what the old phone wrote before stays.
 - Anything that fails to decrypt, fails its signature check, or breaks a rule is ignored and doesn't affect anything else.
 

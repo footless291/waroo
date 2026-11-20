@@ -5,17 +5,17 @@ import {
   type GroupState,
   type Transfer,
 } from '@footless/ledger'
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useState } from 'react'
 import { Avatar } from '../components/Avatar.tsx'
 import { NotificationsNudge } from '../components/NotificationsCard.tsx'
 import { Header } from '../components/Header.tsx'
 import { PlusIcon } from '../components/icons.tsx'
 import { SyncLine } from '../components/SyncLine.tsx'
-import { append, newId, type GroupMeta } from '../lib/db.ts'
+import type { GroupMeta } from '../lib/db.ts'
 import { formatDate, money } from '../lib/format.ts'
 import { useGroup } from '../lib/hooks.ts'
 
-type Tab = 'balances' | 'expenses' | 'people'
+export type Tab = 'balances' | 'expenses' | 'payments'
 
 export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Tab; joined?: boolean }) {
   const group = useGroup(groupId)
@@ -37,8 +37,9 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
   const { meta, state } = group
   const base = `/g/${groupId}`
   const name = state.name ?? meta.name
-  const notJoined = [...state.members.values()].filter((m) => !m.key && m.id !== meta.meId)
-  const alone = [...state.members.values()].every((m) => m.id === meta.meId || !m.key)
+  const current = [...state.members.values()].filter((m) => !m.left)
+  const notJoined = current.filter((m) => !m.key && m.id !== meta.meId)
+  const alone = current.every((m) => m.id === meta.meId || !m.key)
   return (
     <main className="screen">
       <Header
@@ -65,7 +66,7 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
         </section>
       )}
       <nav className="tabs" aria-label="Group sections">
-        {(['balances', 'expenses', 'people'] as const).map((t) => (
+        {(['balances', 'expenses', 'payments'] as const).map((t) => (
           <a
             key={t}
             href={`#${base}${t === 'balances' ? '' : `/${t}`}`}
@@ -84,13 +85,18 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
       {!alone && tab === 'balances' && <NotificationsNudge />}
       {tab === 'balances' && <Balances meta={meta} state={state} />}
       {tab === 'expenses' && <Expenses meta={meta} state={state} />}
-      {tab === 'people' && <People meta={meta} state={state} />}
+      {tab === 'payments' && <Payments meta={meta} state={state} />}
       {toast && (
         <div className="toast" role="status">
           You joined {name} as {state.members.get(meta.meId)?.name}
         </div>
       )}
-      {tab !== 'people' && (
+      {tab === 'payments' ? (
+        <a className="fab" href={`#${base}/pay`}>
+          <PlusIcon />
+          Add payment
+        </a>
+      ) : (
         <a className="fab" href={`#${base}/add`}>
           <PlusIcon />
           Add expense
@@ -124,10 +130,13 @@ function Balances({ meta, state }: { meta: GroupMeta; state: GroupState }) {
   const transfers = suggestTransfers(balances)
   if (balances.size === 0) {
     return (
-      <section className="empty">
-        <h2>{state.expenses.size === 0 ? 'Nothing to split yet' : 'All square'}</h2>
-        <p>{state.expenses.size === 0 ? 'Add the first expense to get started.' : 'Nobody owes anybody.'}</p>
-      </section>
+      <>
+        <section className="empty compact">
+          <h2>{state.expenses.size === 0 ? 'Nothing to split yet' : 'All square'}</h2>
+          <p>{state.expenses.size === 0 ? 'Add the first expense to get started.' : 'Nobody owes anybody.'}</p>
+        </section>
+        <Everyone meta={meta} state={state} />
+      </>
     )
   }
 
@@ -180,29 +189,14 @@ function Balances({ meta, state }: { meta: GroupMeta; state: GroupState }) {
       </section>
 
       {currencies.map((currency) => (
-        <section key={currency} className="section">
-          <h2 className="section-title">{currencies.length > 1 ? `Everyone, in ${currency}` : 'Everyone'}</h2>
-          <ul className="people">
-            {[...state.members.keys()].map((person) => {
-              const amount = balances.get(currency)?.get(person) ?? 0
-              const me = person === meta.meId
-              return (
-                <li key={person}>
-                  <Avatar state={state} id={person} />
-                  <span className="name">{nameOf(state, person, meta.meId)}</span>
-                  {amount === 0 ? (
-                    <span className="muted">all square</span>
-                  ) : (
-                    <span className={`amount ${amount > 0 ? 'owed' : 'owes'}`}>
-                      {amount > 0 ? (me ? 'get back ' : 'gets back ') : me ? 'owe ' : 'owes '}
-                      {money(Math.abs(amount), currency)}
-                    </span>
-                  )}
-                </li>
-              )
-            })}
-          </ul>
-        </section>
+        <Everyone
+          key={currency}
+          meta={meta}
+          state={state}
+          currency={currency}
+          amounts={balances.get(currency)}
+          title={currencies.length > 1 ? `Everyone, in ${currency}` : 'Everyone'}
+        />
       ))}
 
       {others.length > 0 && (
@@ -231,8 +225,56 @@ function Balances({ meta, state }: { meta: GroupMeta; state: GroupState }) {
   )
 }
 
+/** The people in the group and where each stands. Your own row leads to your name and leaving. */
+function Everyone({
+  meta,
+  state,
+  currency,
+  amounts,
+  title = 'Everyone',
+}: {
+  meta: GroupMeta
+  state: GroupState
+  currency?: string
+  amounts?: Map<string, number>
+  title?: string
+}) {
+  return (
+    <section className="section">
+      <h2 className="section-title">{title}</h2>
+      <ul className="people">
+        {[...state.members.values()]
+          .filter((m) => !m.left)
+          .map(({ id: person }) => {
+            const amount = amounts?.get(person) ?? 0
+            const me = person === meta.meId
+            return (
+              <li key={person}>
+                <Avatar state={state} id={person} />
+                <span className="name">{nameOf(state, person, meta.meId)}</span>
+                {amount === 0 || !currency ? (
+                  <span className="muted">all square</span>
+                ) : (
+                  <span className={`amount ${amount > 0 ? 'owed' : 'owes'}`}>
+                    {amount > 0 ? (me ? 'get back ' : 'gets back ') : me ? 'owe ' : 'owes '}
+                    {money(Math.abs(amount), currency)}
+                  </span>
+                )}
+                {me && (
+                  <a className="button small outline" href={`#/g/${meta.id}/me`} aria-label="Change your name, or leave the group">
+                    Edit
+                  </a>
+                )}
+              </li>
+            )
+          })}
+      </ul>
+    </section>
+  )
+}
+
 function Expenses({ meta, state }: { meta: GroupMeta; state: GroupState }) {
-  if (state.expenses.size === 0 && state.settlements.size === 0) {
+  if (state.expenses.size === 0) {
     return (
       <section className="empty">
         <h2>No expenses yet</h2>
@@ -240,84 +282,59 @@ function Expenses({ meta, state }: { meta: GroupMeta; state: GroupState }) {
       </section>
     )
   }
-  const expenses = [...state.expenses.values()].sort((a, b) => b.date.localeCompare(a.date))
+  // Newest first: by date, and among the same date, the last added first.
+  const expenses = [...state.expenses.values()].reverse().sort((a, b) => b.date.localeCompare(a.date))
   return (
-    <>
-      <ul className="cards section">
-        {expenses.map((e) => {
-          const payers = Object.keys(e.payers)
-          const myShare = computeShares(e).get(meta.meId)
-          return (
-            <li key={e.id}>
-              <a className="card-row" href={`#/g/${meta.id}/e/${e.id}`}>
-                <span className="row-main">
-                  <strong>{e.title}</strong>
-                  <span className="muted">
-                    {formatDate(e.date)}, {payers.length === 1 ? nameOf(state, payers[0]!, meta.meId) : `${payers.length} people`} paid
-                    {myShare ? `, your share ${money(myShare, e.currency)}` : ''}
-                  </span>
+    <ul className="cards section">
+      {expenses.map((e) => {
+        const payers = Object.keys(e.payers)
+        const myShare = computeShares(e).get(meta.meId)
+        return (
+          <li key={e.id}>
+            <a className="card-row" href={`#/g/${meta.id}/e/${e.id}`}>
+              <span className="row-main">
+                <strong>{e.title}</strong>
+                <span className="muted">
+                  {formatDate(e.date)}, {payers.length === 1 ? nameOf(state, payers[0]!, meta.meId) : `${payers.length} people`} paid
+                  {myShare ? `, your share ${money(myShare, e.currency)}` : ''}
                 </span>
-                <span className="amount">{money(e.total, e.currency)}</span>
-              </a>
-            </li>
-          )
-        })}
-      </ul>
-      {state.settlements.size > 0 && (
-        <section className="section">
-          <h2 className="section-title">Payments</h2>
-          <ul className="cards">
-            {[...state.settlements.values()].map((s) => (
-              <li key={s.id} className="card-row">
-                <span className="row-main">
-                  <span>
-                    {nameOf(state, s.from, meta.meId)} paid {objectName(state, s.to, meta.meId)}
-                  </span>
-                  <span className="muted">
-                    {{ cash: 'Cash', bank: 'Bank transfer', other: 'Other', bitcoin: 'Bitcoin' }[s.method]}
-                    {s.bitcoin && `, ${new Intl.NumberFormat().format(s.bitcoin.sats)} sats${s.bitcoin.preimage ? ', verified' : ''}`}
-                  </span>
-                </span>
-                <span className="amount">{money(s.amount, s.currency)}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-    </>
+              </span>
+              <span className="amount">{money(e.total, e.currency)}</span>
+            </a>
+          </li>
+        )
+      })}
+    </ul>
   )
 }
 
-function People({ meta, state }: { meta: GroupMeta; state: GroupState }) {
-  const [name, setName] = useState('')
-  async function add(e: FormEvent) {
-    e.preventDefault()
-    if (!name.trim()) return
-    await append(meta, [{ type: 'member.added', member: { id: newId(), name: name.trim() } }])
-    setName('')
+function Payments({ meta, state }: { meta: GroupMeta; state: GroupState }) {
+  if (state.settlements.size === 0) {
+    return (
+      <section className="empty">
+        <h2>No payments yet</h2>
+        <p>When someone pays someone back, in bitcoin, cash or otherwise, it shows up here.</p>
+      </section>
+    )
   }
+  // Newest first.
+  const payments = [...state.settlements.values()].reverse()
   return (
-    <>
-      <ul className="people">
-        {[...state.members.values()].map((m) => (
-          <li key={m.id}>
-            <Avatar state={state} id={m.id} />
-            <span className="row-main">
-              <span className="name">{m.name}</span>
-              {m.id === meta.meId && <span className="muted">You, on this phone</span>}
+    <ul className="cards section">
+      {payments.map((s) => (
+        <li key={s.id} className="card-row">
+          <span className="row-main">
+            <span>
+              {nameOf(state, s.from, meta.meId)} paid {objectName(state, s.to, meta.meId)}
             </span>
-          </li>
-        ))}
-      </ul>
-      <form className="inline-form" onSubmit={add}>
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Add a person" aria-label="Name" />
-        <button className="button primary" disabled={!name.trim()}>
-          Add
-        </button>
-      </form>
-      <p className="hint pad">
-        People you add here can join from their own phone with an invite link.
-      </p>
-    </>
+            <span className="muted">
+              {{ cash: 'Cash', bank: 'Bank transfer', other: 'Other', bitcoin: 'Bitcoin' }[s.method]}
+              {s.bitcoin && `, ${new Intl.NumberFormat().format(s.bitcoin.sats)} sats${s.bitcoin.preimage ? ', verified' : ''}`}
+            </span>
+          </span>
+          <span className="amount">{money(s.amount, s.currency)}</span>
+        </li>
+      ))}
+    </ul>
   )
 }

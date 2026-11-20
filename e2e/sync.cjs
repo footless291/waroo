@@ -98,8 +98,8 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await dee.fill('input[autocomplete="given-name"]', 'Dee');
   await dee.click('button:has-text("Join the group")');
   check(await waitText(dee, '.toast', 'as Dee'), 'Dee joins as a new person');
-  await ana.click('nav a:has-text("People")');
-  check(await waitText(ana, 'main', 'Dee'), 'Ana sees Dee in the group');
+  await ana.click('nav a:has-text("Balances")');
+  check(await waitText(ana, '.people', 'Dee'), 'Ana sees Dee in the group');
 
   // Reopening an invite on a phone already in the group goes straight to it
   await bob.goto(link); await bob.waitForTimeout(800);
@@ -109,7 +109,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await bob.click('nav a:has-text("Balances")'); await bob.waitForTimeout(300);
   await bob.click('.hero a:has-text("Settle up")');
   await bob.click('button:has-text("Mark as paid")'); await bob.waitForTimeout(300);
-  await ana.click('nav a:has-text("Expenses")');
+  await ana.click('nav a:has-text("Payments")');
   check(await waitText(ana, 'main', 'Bob paid you'), 'Ana sees Bob’s payment');
 
   // Persistence: Bob reloads and still has everything

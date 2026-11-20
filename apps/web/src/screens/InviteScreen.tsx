@@ -78,7 +78,7 @@ export function InviteScreen({ groupId }: { groupId: string }) {
   }
   const name = group?.state.name ?? group?.meta.name ?? ''
   const link = current ? inviteLinkFor(current.secret) : ''
-  const joined = group ? [...group.state.members.values()].filter((m) => m.key) : []
+  const joined = group ? [...group.state.members.values()].filter((m) => m.key && !m.left) : []
   const canShare = typeof navigator.share === 'function'
 
   async function create() {

@@ -65,7 +65,9 @@ function ExpenseForm({
   state: GroupState
   existing?: Expense
 }) {
-  const members = [...state.members.values()]
+  // People who left only appear on expenses they were already part of.
+  const involved = existing ? new Set([...Object.keys(existing.payers), ...computeShares(existing).keys()]) : new Set<string>()
+  const members = [...state.members.values()].filter((m) => !m.left || involved.has(m.id))
   const allIds = members.map((m) => m.id)
   const initial = existing?.split
 

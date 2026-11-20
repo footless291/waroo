@@ -196,3 +196,63 @@ describe('moving to a new phone', () => {
     assert.equal(replay([...claimed(), move]).members.get('bob')!.key, 'KB')
   })
 })
+
+describe('names and leaving', () => {
+  const claimed = () => [...base(), ev('bob', 5, 'KB', { type: 'member.claimed', memberId: 'bob', key: 'KB' })]
+  const pay = (clock: number, amount = 1000) =>
+    ev('bob', clock, 'KB', {
+      type: 'settlement.recorded',
+      settlement: { id: `s${clock}`, from: 'bob', to: 'ana', amount, currency: 'JPY', method: 'cash' },
+    })
+
+  it('lets people rename themselves once joined, but not others', () => {
+    const own = ev('bob', 6, 'KB', { type: 'member.renamed', memberId: 'bob', name: ' Bobby ' })
+    const other = ev('ana', 7, 'KA', { type: 'member.renamed', memberId: 'bob', name: 'Robert' })
+    const state = replay([...claimed(), own, other])
+    assert.equal(state.members.get('bob')!.name, 'Bobby')
+    assert.match(state.rejected[0]!.reason, /themselves/)
+  })
+
+  it('still lets anyone fix the name of someone who hasn’t joined yet', () => {
+    const fix = ev('ana', 5, 'KA', { type: 'member.renamed', memberId: 'bob', name: 'Bob K' })
+    assert.equal(replay([...base(), fix]).members.get('bob')!.name, 'Bob K')
+  })
+
+  it('won’t let someone leave while they owe money', () => {
+    const leave = ev('bob', 6, 'KB', { type: 'member.left', memberId: 'bob' })
+    const state = replay([...claimed(), leave])
+    assert.ok(!state.members.get('bob')!.left)
+    assert.match(state.rejected[0]!.reason, /Settle up/)
+  })
+
+  it('lets someone leave once square, and then they can’t write', () => {
+    const leave = ev('bob', 7, 'KB', { type: 'member.left', memberId: 'bob' })
+    const after = ev('bob', 8, 'KB', { type: 'member.renamed', memberId: 'bob', name: 'Ghost' })
+    const state = replay([...claimed(), pay(6), leave, after])
+    assert.equal(state.members.get('bob')!.left, true)
+    assert.equal(state.members.get('bob')!.name, 'Bob')
+    assert.match(state.rejected[0]!.reason, /left the group/)
+  })
+
+  it('can’t leave for someone else', () => {
+    const leave = ev('ana', 7, 'KA', { type: 'member.left', memberId: 'bob' })
+    assert.ok(!replay([...claimed(), pay(6), leave]).members.get('bob')!.left)
+  })
+
+  it('protects the balance of someone who left', () => {
+    const leave = ev('bob', 7, 'KB', { type: 'member.left', memberId: 'bob' })
+    const retitle = ev('ana', 8, 'KA', { type: 'expense.saved', expense: { ...lunch, title: 'Lunch at Ichiran' }, basedOn: 'ev4' })
+    const reshare = ev('ana', 9, 'KA', { type: 'expense.saved', expense: { ...lunch, split: { kind: 'equal', among: ['ana'] } } })
+    const remove = ev('ana', 10, 'KA', { type: 'expense.deleted', expenseId: 'lunch', basedOn: 'x' })
+    const fresh = ev('ana', 11, 'KA', { type: 'expense.saved', expense: { ...lunch, id: 'dinner' } })
+    const paid = ev('ana', 12, 'KA', {
+      type: 'settlement.recorded',
+      settlement: { id: 'late', from: 'ana', to: 'bob', amount: 5, currency: 'JPY', method: 'cash' },
+    })
+    const state = replay([...claimed(), pay(6), leave, retitle, reshare, remove, fresh, paid])
+    assert.equal(state.expenses.get('lunch')!.title, 'Lunch at Ichiran')
+    assert.equal(state.expenses.has('dinner'), false)
+    assert.equal(state.rejected.length, 4)
+    for (const r of state.rejected) assert.match(r.reason, /left the group/)
+  })
+})

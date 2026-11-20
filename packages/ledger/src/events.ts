@@ -17,7 +17,7 @@
 
 import { computeBalances, type Balances, type Settlement } from './balances.ts'
 import { minorDigits } from './money.ts'
-import { validateExpense, type Expense, type PersonId } from './splits.ts'
+import { computeShares, validateExpense, type Expense, type PersonId } from './splits.ts'
 
 function isKnownCurrency(code: string): boolean {
   try {
@@ -39,6 +39,11 @@ export interface Member {
   key?: string
   /** Where this member receives bitcoin, e.g. "bob@walletofsatoshi.com". */
   lightningAddress?: string
+  /**
+   * True once they've left the group. They stay in the log, so past
+   * expenses still show their name, but can't write or be added to anything.
+   */
+  left?: boolean
 }
 
 /** A Lightning address looks like an email address: name@domain.tld. */
@@ -86,6 +91,8 @@ export type LedgerEvent = EventBase &
      * From here on, only the new key can write for them.
      */
     | { type: 'member.rekeyed'; memberId: PersonId; key: string }
+    /** A member leaves. Only they can, and only when they owe and are owed nothing. */
+    | { type: 'member.left'; memberId: PersonId }
     /** Sets the group's name and/or main currency. */
     | { type: 'group.updated'; name?: string; currency?: string }
     /**
@@ -206,6 +213,9 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
     } else if (!state.members.has(e.author)) {
       reject(e, 'Author is not a member of this group')
       continue
+    } else if (state.members.get(e.author)!.left) {
+      reject(e, 'Author has left the group')
+      continue
     } else if (state.signed) {
       const key = state.members.get(e.author)!.key
       if (e.type === 'member.claimed') {
@@ -281,7 +291,18 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
       case 'member.renamed': {
         const member = state.members.get(e.memberId)
         if (!member) reject(e, 'No such member')
-        else member.name = e.name
+        else if (member.key !== undefined && e.memberId !== e.author) {
+          reject(e, 'Only people themselves can change their name once they’ve joined')
+        } else if (typeof e.name !== 'string' || !e.name.trim()) reject(e, 'A person needs a name')
+        else member.name = e.name.trim()
+        break
+      }
+
+      case 'member.left': {
+        const member = state.members.get(e.memberId)
+        if (!member || e.memberId !== e.author) reject(e, 'Only people themselves can leave')
+        else if (owesOrIsOwed(state, e.memberId)) reject(e, 'Settle up before leaving')
+        else member.left = true
         break
       }
 
@@ -293,6 +314,11 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
           break
         }
         const head = state.heads.get(expense.id)
+        const leaver = changesSomeoneWhoLeft(state, state.expenses.get(expense.id), expense)
+        if (leaver) {
+          reject(e, `${leaver} has left the group, so what they paid or owe can’t change`)
+          break
+        }
         if (state.deleted.has(expense.id)) {
           state.conflicts.push({ expenseId: expense.id, kept: head!, overwritten: e.id })
           break
@@ -312,6 +338,11 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
           break
         }
         if (state.deleted.has(e.expenseId)) break // deleted twice: harmless
+        const leaver = changesSomeoneWhoLeft(state, state.expenses.get(e.expenseId), undefined)
+        if (leaver) {
+          reject(e, `${leaver} has left the group, so what they paid or owe can’t change`)
+          break
+        }
         if (e.basedOn !== head) {
           state.conflicts.push({ expenseId: e.expenseId, kept: e.id, overwritten: head })
         }
@@ -329,17 +360,54 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
         } else if (!Number.isSafeInteger(s.amount) || s.amount <= 0) {
           reject(e, 'Settlement amount must be a positive whole number of minor units')
         } else if (s.from === s.to) reject(e, 'Cannot settle with yourself')
+        else if (state.members.get(s.from)!.left || state.members.get(s.to)!.left) {
+          reject(e, 'Someone in this payment has left the group')
+        }
         else if (!isKnownCurrency(s.currency)) reject(e, `Unknown currency code: ${s.currency}`)
         else state.settlements.set(s.id, s)
         break
       }
 
-      case 'settlement.voided':
-        if (!state.settlements.delete(e.settlementId)) reject(e, 'No such settlement')
+      case 'settlement.voided': {
+        const s = state.settlements.get(e.settlementId)
+        if (!s) reject(e, 'No such settlement')
+        else if (state.members.get(s.from)?.left || state.members.get(s.to)?.left) {
+          reject(e, 'Someone in this payment has left the group')
+        } else state.settlements.delete(e.settlementId)
         break
+      }
     }
   }
   return state
+}
+
+/** True if the person is owed or owes anything, in any currency. */
+function owesOrIsOwed(state: GroupState, person: PersonId): boolean {
+  for (const byPerson of groupBalances(state).values()) if (byPerson.get(person)) return true
+  return false
+}
+
+/** What one expense does to each person's balance: paid minus share. */
+function effect(expense: Expense | undefined): Map<PersonId, number> {
+  const out = new Map<PersonId, number>()
+  if (!expense) return out
+  for (const [p, paid] of Object.entries(expense.payers)) out.set(p, (out.get(p) ?? 0) + paid)
+  for (const [p, share] of computeShares(expense)) out.set(p, (out.get(p) ?? 0) - share)
+  return out
+}
+
+/**
+ * The name of someone who has left and whose balance this change would
+ * move, or undefined. Edits that leave them untouched (a new title, shares
+ * moved between others) are fine.
+ */
+function changesSomeoneWhoLeft(state: GroupState, before: Expense | undefined, after: Expense | undefined) {
+  const was = effect(before)
+  const now = effect(after)
+  for (const member of state.members.values()) {
+    if (member.left && (was.get(member.id) ?? 0) !== (now.get(member.id) ?? 0)) return member.name
+  }
+  return undefined
 }
 
 /** Balances for a replayed group. */

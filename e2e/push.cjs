@@ -93,9 +93,6 @@ const b64 = (s) => Buffer.from(s, 'base64url');
   await ana.waitForTimeout(800);
 
   // News wakes him; an edit doesn't
-  await ana.click('nav a:has-text("People")');
-  await ana.waitForTimeout(300);
-  await ana.click('a.fab').catch(() => {});
   await ana.goto(B + '#/'); await ana.click('a.card-row'); await ana.waitForTimeout(500);
   await ana.click('a.fab');
   await ana.fill('input[placeholder="Izakaya dinner"]', 'Taxi');

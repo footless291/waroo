@@ -11,7 +11,7 @@ function useSyncStatus(groupId: string): SyncStatus {
 
 /** "Ana and you", "Ana, Bob and you". */
 function whoIsHere(state: GroupState, meId: string): string {
-  const others = [...state.members.values()].filter((m) => m.key && m.id !== meId).map((m) => m.name)
+  const others = [...state.members.values()].filter((m) => m.key && !m.left && m.id !== meId).map((m) => m.name)
   if (others.length === 0) return 'only you so far'
   return `${others.join(', ')} and you are here`
 }

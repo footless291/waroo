@@ -6,6 +6,7 @@ import { GroupScreen } from './screens/GroupScreen.tsx'
 import { HomeScreen } from './screens/HomeScreen.tsx'
 import { InviteScreen } from './screens/InviteScreen.tsx'
 import { JoinScreen } from './screens/JoinScreen.tsx'
+import { MemberScreen } from './screens/MemberScreen.tsx'
 import { MoveInScreen } from './screens/MoveInScreen.tsx'
 import { MoveScreen } from './screens/MoveScreen.tsx'
 import { NewGroupScreen } from './screens/NewGroupScreen.tsx'
@@ -32,7 +33,9 @@ function Router() {
     if (parts[2] === 'e' && parts[3]) return <ExpenseScreen groupId={groupId} expenseId={parts[3]} />
     if (parts[2] === 'settle') return <SettleScreen groupId={groupId} params={params} />
     if (parts[2] === 'invite') return <InviteScreen groupId={groupId} />
-    const tab = parts[2] === 'expenses' || parts[2] === 'people' ? parts[2] : 'balances'
+    if (parts[2] === 'pay') return <SettleScreen groupId={groupId} params={params} />
+    if (parts[2] === 'me') return <MemberScreen groupId={groupId} />
+    const tab = parts[2] === 'expenses' || parts[2] === 'payments' ? parts[2] : 'balances'
     return <GroupScreen key={groupId} groupId={groupId} tab={tab} joined={params.get('joined') === '1'} />
   }
   return <HomeScreen />

@@ -7,7 +7,7 @@
  */
 import { computeShares, formatAmount, type GroupState, type LedgerEvent, type Settlement } from '@footless/ledger'
 
-export type NewsKind = 'paid-you' | 'you-paid' | 'others-paid' | 'joined' | 'expense'
+export type NewsKind = 'paid-you' | 'you-paid' | 'others-paid' | 'joined' | 'left' | 'expense'
 
 export interface News {
   id: string
@@ -28,6 +28,7 @@ export function isNotable(event: LedgerEvent): boolean {
   switch (event.type) {
     case 'settlement.recorded':
     case 'member.claimed':
+    case 'member.left':
       return true
     case 'member.added':
       return event.member.id === event.author && event.member.key !== undefined
@@ -81,6 +82,10 @@ export function describeEvent(
   if (isNotable(event) && (event.type === 'member.added' || event.type === 'member.claimed')) {
     const who = event.type === 'member.added' ? event.member.id : event.memberId
     return { id: event.id, kind: 'joined', title: `${name(who)} joined ${groupName}`, detail: 'They can see the group and add expenses now' }
+  }
+
+  if (event.type === 'member.left') {
+    return { id: event.id, kind: 'left', title: `${name(event.memberId)} left ${groupName}`, detail: 'They were all square' }
   }
 
   if (event.type === 'expense.saved' && !event.basedOn) {

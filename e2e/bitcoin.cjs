@@ -161,12 +161,13 @@ let walletLies = false;
   check(await waitText(ana, 'main', 'All square'), 'Ana is all square');
   await bob.goto(B + '#/');
   await bob.click('a.card-row'); await bob.waitForTimeout(400);
-  await bob.click('nav a:has-text("Expenses")');
+  await bob.click('nav a:has-text("Payments")');
   check(await waitText(bob, 'main', 'Bitcoin, 10,000 sats, verified'), 'Bob sees the verified bitcoin payment');
   await shot(bob, '4-bob-sees');
 
   // Paying from another wallet app: the provider confirms, the app notices
-  await bob.click('a.fab');
+  await bob.click('nav a:has-text("Expenses")');
+  await bob.click('a.fab:has-text("Add expense")');
   await bob.fill('input[placeholder="Izakaya dinner"]', 'Taxi');
   await bob.fill('input.amount-input', '1000');
   await bob.click('button:has-text("Add expense")'); await bob.waitForTimeout(300);

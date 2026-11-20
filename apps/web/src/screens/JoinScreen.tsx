@@ -98,7 +98,7 @@ function JoinGroup({ groupId, groupKey: key, from }: { groupId: string; groupKey
           return
         }
         setLoaded({ state, received, cursor })
-        const firstFree = [...state.members.values()].find((m) => !m.key)
+        const firstFree = [...state.members.values()].find((m) => !m.key && !m.left)
         setPicked(firstFree?.id ?? NEW)
       } catch (e) {
         if (live) setProblem(`${(e as Error).message}. Check your connection and try again.`)
@@ -177,7 +177,7 @@ function JoinGroup({ groupId, groupKey: key, from }: { groupId: string; groupKey
           <fieldset className="field">
             <legend className="join-legend">Which one are you?</legend>
             <div className="choices">
-              {[...state.members.values()].map((m) => (
+              {[...state.members.values()].filter((m) => !m.left).map((m) => (
                 <label key={m.id} className={`choice${m.key ? ' taken' : ''}`}>
                   <input
                     type="radio"

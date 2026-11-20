@@ -11,7 +11,7 @@ interface Banner extends News {
 const SHOW_FOR_MS = 7000
 
 /** In the app, banners cover payments that involve you and people joining. */
-const BANNER_KINDS = new Set(['paid-you', 'you-paid', 'joined'])
+const BANNER_KINDS = new Set(['paid-you', 'you-paid', 'joined', 'left'])
 
 /**
  * Banners over any screen. The live region stays mounted so screen readers
@@ -57,7 +57,7 @@ export function Banners() {
             }}
           >
             <span className="banner-mark" aria-hidden="true">
-              {b.kind === 'paid-you' ? '↓' : b.kind === 'joined' ? '+' : '↑'}
+              {b.kind === 'paid-you' ? '↓' : b.kind === 'joined' ? '+' : b.kind === 'left' ? '−' : '↑'}
             </span>
             <span className="banner-text">
               <strong>{b.title}</strong>
