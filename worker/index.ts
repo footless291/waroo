@@ -7,6 +7,7 @@
  * it only stores and forwards. Anyone can run their own copy.
  */
 import { DurableObject } from 'cloudflare:workers'
+import { agree, type Quote } from './price.ts'
 
 export interface Env {
   ASSETS: Fetcher
@@ -43,52 +44,74 @@ export default {
 } satisfies ExportedHandler<Env>
 
 /**
- * The price of one bitcoin in a currency, from two independent sources.
+ * The price of one bitcoin in a currency, from three independent sources.
  * Fetched here rather than by phones so the price sites never see who's
- * paying. Cached for a minute. Refuses if the sources disagree by more than
- * 3%, rather than let anyone pay at a wrong price.
+ * paying. Cached for a minute. Answers only when at least two sources agree
+ * within 2%; one source alone is never trusted. Every source's answer is
+ * included and logged, so a bad feed is easy to spot.
  */
 async function rate(url: URL): Promise<Response> {
   const currency = (url.searchParams.get('currency') ?? '').toUpperCase()
   if (!/^[A-Z]{3}$/.test(currency)) return Response.json({ error: 'Bad currency' }, { status: 400 })
 
   const cache = caches.default
-  const cacheKey = new Request(`${url.origin}/relay/rate?currency=${currency}`, { method: 'GET' })
+  const cacheKey = new Request(`${url.origin}/relay/rate?v=2&currency=${currency}`, { method: 'GET' })
   const hit = await cache.match(cacheKey)
   if (hit) return hit
 
-  const get = async (name: string, href: string, pick: (j: any) => unknown) => {
+  const failures: Record<string, string> = {}
+  const get = async (name: string, href: string, pick: (j: any) => unknown): Promise<Quote | null> => {
     try {
-      const res = await fetch(href, { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(6000) })
-      if (!res.ok) return null
+      const res = await fetch(href, {
+        headers: { Accept: 'application/json', 'User-Agent': 'Footless/1 (+https://github.com/footless291/footless)' },
+        signal: AbortSignal.timeout(6000),
+      })
+      if (!res.ok) {
+        failures[name] = `HTTP ${res.status}`
+        return null
+      }
       const value = Number(pick(await res.json()))
-      return Number.isFinite(value) && value > 0 ? { name, price: value } : null
-    } catch {
-      return null
+      if (Number.isFinite(value) && value > 0) return { name, price: value }
+      failures[name] = 'no price in response'
+    } catch (err) {
+      failures[name] = String(err).slice(0, 100)
     }
+    return null
   }
   const lower = currency.toLowerCase()
   const quotes = (
     await Promise.all([
       get('CoinGecko', `https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=${lower}`, (j) => j?.bitcoin?.[lower]),
-      get('Coinbase', `https://api.coinbase.com/v2/prices/BTC-${currency}/spot`, (j) => j?.data?.amount),
+      // Coinbase echoes the pair back; check it's the one asked for.
+      get('Coinbase', `https://api.coinbase.com/v2/prices/BTC-${currency}/spot`, (j) =>
+        j?.data?.base === 'BTC' && j?.data?.currency === currency ? j.data.amount : undefined,
+      ),
+      // Kraken lists one pair per currency it supports, under its own name.
+      get('Kraken', `https://api.kraken.com/0/public/Ticker?pair=XBT${currency}`, (j) => {
+        const pairs = Object.values(j?.result ?? {}) as { c?: [string, string] }[]
+        return pairs.length === 1 ? pairs[0]?.c?.[0] : undefined
+      }),
     ])
-  ).filter((q): q is { name: string; price: number } => q !== null)
+  ).filter((q): q is Quote => q !== null)
 
-  if (quotes.length === 0) {
-    return Response.json({ error: 'No price available right now' }, { status: 503 })
+  const result = agree(quotes)
+  console.log(JSON.stringify({ rate: currency, quotes, failures, result: result.ok ? result.price : result.reason }))
+  if (!result.ok) {
+    return Response.json(
+      {
+        error: result.reason === 'too-few' ? 'Not enough price sources available right now' : 'Price sources disagree',
+        quotes,
+        failures,
+      },
+      { status: result.reason === 'too-few' ? 503 : 502 },
+    )
   }
-  const prices = quotes.map((q) => q.price)
-  const spread = (Math.max(...prices) - Math.min(...prices)) / Math.min(...prices)
-  if (spread > 0.03) {
-    return Response.json({ error: 'Price sources disagree', quotes }, { status: 502 })
-  }
-  const mean = prices.reduce((a, b) => a + b, 0) / prices.length
   const body = {
     currency,
     // A decimal string, so the app converts with exact integer arithmetic.
-    price: mean.toFixed(2),
-    source: quotes.map((q) => q.name).join('+'),
+    price: result.price.toFixed(2),
+    source: result.agreeing.map((q) => q.name).join('+'),
+    quotes,
     at: new Date().toISOString(),
   }
   const response = Response.json(body, { headers: { 'Cache-Control': 'public, max-age=60' } })

@@ -169,6 +169,7 @@ export function BitcoinPay(props: {
               <dt>Price</dt>
               <dd>
                 {pricePerBitcoin(phase.quote.price, currency)} per bitcoin
+                <span className="quote-source">from {phase.quote.source.split('+').join(', ')}</span>
               </dd>
             </div>
           </dl>

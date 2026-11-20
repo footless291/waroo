@@ -830,3 +830,11 @@ input[type='checkbox'] {
 .header-action {
   display: flex;
 }
+
+.quote-source {
+  display: block;
+  color: var(--hero-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: right;
+}
