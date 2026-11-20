@@ -58,7 +58,7 @@ export function ScanScreen() {
             }
             if (text !== lastWrong) {
               lastWrong = text
-              setNotice('That code isn’t a Footless invite. Scan the code on the Invite screen of the group.')
+              setNotice('That code isn’t from Footless. Scan the code on a group’s Invite screen.')
             }
           }
         }
@@ -98,8 +98,8 @@ export function ScanScreen() {
 
   return (
     <main className="screen">
-      <Header title="Scan an invite" back="/" />
-      <p className="lead">Point the camera at the QR code on a friend’s Invite screen.</p>
+      <Header title="Scan a code" back="/" />
+      <p className="lead">Point the camera at a friend’s invite code, or at your other phone’s code when you’re moving.</p>
 
       <div className={`scanner${camera === 'on' ? ' live' : ''}`}>
         <video ref={video} playsInline muted aria-hidden="true" />

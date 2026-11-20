@@ -17,5 +17,11 @@
     "bindings": [{ "name": "ROOMS", "class_name": "RelayRoom" }]
   },
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["RelayRoom"] }],
-  "observability": { "enabled": true }
+  "observability": { "enabled": true },
+  // Push notifications. The private half is a secret: VAPID_PRIVATE_JWK
+  // (make a pair with `node scripts/vapid.cjs`). Local dev uses .dev.vars.
+  "vars": {
+    "VAPID_PUBLIC_KEY": "BOfT-b4-qTJe5pExDG6K-_4fmKLpIwgpBASJwRzT0PypytmazN66MNZX25YkVIx3oMVMfJ_Zr3PkOy6Lsnc8szo",
+    "VAPID_SUBJECT": "https://github.com/footless291/footless"
+  }
 }

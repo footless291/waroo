@@ -8,8 +8,9 @@
  */
 import { DurableObject } from 'cloudflare:workers'
 import { agree, type Quote } from './price.ts'
+import { isPushEndpoint, sendPush, type PushEnv } from './push.ts'
 
-export interface Env {
+export interface Env extends PushEnv {
   ASSETS: Fetcher
   ROOMS: DurableObjectNamespace<RelayRoom>
 }
@@ -22,17 +23,30 @@ const MAX_ITEM_BYTES = 64 * 1024
 const MAX_ITEMS_PER_PUSH = 200
 const MAX_ROOM_BYTES = 25 * 1024 * 1024
 const PAGE = 500
+const MAX_SUBSCRIPTIONS = 50
+/** Rooms used once, to move to a new phone, are wiped this long after they open. */
+const EPHEMERAL_MS = 60 * 60 * 1000
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url)
     if (url.pathname === '/relay/health') return Response.json({ ok: true })
     if (url.pathname === '/relay/rate') return rate(url)
+    if (url.pathname === '/relay/push-key') {
+      return env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_JWK
+        ? Response.json({ key: env.VAPID_PUBLIC_KEY })
+        : Response.json({ error: 'Notifications aren’t set up on this relay' }, { status: 501 })
+    }
 
-    const match = /^\/relay\/rooms\/([^/]+)$/.exec(url.pathname)
+    const match = /^\/relay\/rooms\/([^/]+)(\/items)?$/.exec(url.pathname)
     if (match) {
       const room = match[1]!
       if (!ROOM_ID.test(room)) return new Response('Bad room id', { status: 400 })
+      // Plain HTTP read, for the service worker catching up after a push.
+      if (match[2]) {
+        if (request.method !== 'GET') return new Response('Method not allowed', { status: 405 })
+        return env.ROOMS.getByName(room).fetch(request)
+      }
       if (request.headers.get('Upgrade') !== 'websocket') {
         return new Response('Expected a WebSocket', { status: 426 })
       }
@@ -180,10 +194,16 @@ function priceSources(currency: string): Source[] {
 }
 
 type ClientMessage =
-  | { t: 'hello'; since: number }
-  | { t: 'push'; items: { id: string; data: string }[] }
+  /** `ephemeral`: this room is for one hand-over and should be wiped soon. Only honoured on an empty room. */
+  | { t: 'hello'; since: number; ephemeral?: boolean }
+  /** `notify`: the sender says this is worth a notification (a payment, a join, a new expense). */
+  | { t: 'push'; items: { id: string; data: string }[]; notify?: boolean }
+  /** This connection's phone wants to be woken for this room while it isn't connected. */
+  | { t: 'subscribe'; endpoint: string }
+  | { t: 'unsubscribe'; endpoint: string }
 
 type Row = { seq: number; id: string; data: string }
+type Attachment = { endpoint?: string }
 
 export class RelayRoom extends DurableObject<Env> {
   private sql: SqlStorage
@@ -191,15 +211,33 @@ export class RelayRoom extends DurableObject<Env> {
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env)
     this.sql = ctx.storage.sql
+    this.setup()
+  }
+
+  private setup() {
     this.sql.exec(`CREATE TABLE IF NOT EXISTS items (
       seq INTEGER PRIMARY KEY AUTOINCREMENT,
       id TEXT NOT NULL UNIQUE,
       data TEXT NOT NULL,
       at INTEGER NOT NULL
     )`)
+    // Push subscriptions: only the push service's URL for a phone, nothing
+    // about who it is. Kept per room so a wake-up names no other groups.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS subs (
+      endpoint TEXT PRIMARY KEY,
+      at INTEGER NOT NULL
+    )`)
   }
 
-  override async fetch(): Promise<Response> {
+  override async fetch(request: Request): Promise<Response> {
+    if (request.headers.get('Upgrade') !== 'websocket') {
+      const since = Number(new URL(request.url).searchParams.get('since') ?? 0)
+      const rows = this.page(Number.isSafeInteger(since) && since >= 0 ? since : 0)
+      return Response.json(
+        { items: rows, upTo: rows.at(-1)?.seq ?? since, done: rows.length < PAGE },
+        { headers: { 'Cache-Control': 'no-store' } },
+      )
+    }
     const [client, server] = Object.values(new WebSocketPair()) as [WebSocket, WebSocket]
     this.ctx.acceptWebSocket(server)
     return new Response(null, { status: 101, webSocket: client })
@@ -215,12 +253,13 @@ export class RelayRoom extends DurableObject<Env> {
 
     if (msg.t === 'hello') {
       const since = Number.isSafeInteger(msg.since) && msg.since >= 0 ? msg.since : 0
+      if (msg.ephemeral === true && this.isEmpty() && (await this.ctx.storage.getAlarm()) === null) {
+        await this.ctx.storage.setAlarm(Date.now() + EPHEMERAL_MS)
+      }
       // Send the backlog in pages so a big room doesn't make one huge frame.
       let cursor = since
       for (;;) {
-        const rows = this.sql
-          .exec<Row>('SELECT seq, id, data FROM items WHERE seq > ? ORDER BY seq LIMIT ?', cursor, PAGE)
-          .toArray()
+        const rows = this.page(cursor)
         const last = rows.at(-1)
         if (last) cursor = last.seq
         const done = rows.length < PAGE
@@ -259,7 +298,27 @@ export class RelayRoom extends DurableObject<Env> {
       if (added.length > 0) {
         const frame = JSON.stringify({ t: 'items', items: added, live: true })
         for (const other of this.ctx.getWebSockets()) if (other !== ws) other.send(frame)
+        if (msg.notify === true) await this.wake()
       }
+      return
+    }
+
+    if (msg.t === 'subscribe' || msg.t === 'unsubscribe') {
+      if (!isPushEndpoint(msg.endpoint, this.env)) return this.fail(ws, 'Not a push service')
+      if (msg.t === 'unsubscribe') {
+        this.sql.exec('DELETE FROM subs WHERE endpoint = ?', msg.endpoint)
+        ws.serializeAttachment({})
+        return
+      }
+      const count = this.sql.exec<{ n: number }>('SELECT COUNT(*) AS n FROM subs').one().n
+      const known = this.sql.exec('SELECT 1 FROM subs WHERE endpoint = ?', msg.endpoint).toArray().length > 0
+      if (!known && count >= MAX_SUBSCRIPTIONS) return this.fail(ws, 'Too many phones')
+      this.sql.exec(
+        'INSERT INTO subs (endpoint, at) VALUES (?, ?) ON CONFLICT(endpoint) DO UPDATE SET at = excluded.at',
+        msg.endpoint,
+        Date.now(),
+      )
+      ws.serializeAttachment({ endpoint: msg.endpoint } satisfies Attachment)
       return
     }
 
@@ -268,6 +327,43 @@ export class RelayRoom extends DurableObject<Env> {
 
   override async webSocketClose(ws: WebSocket, code: number, reason: string): Promise<void> {
     ws.close(code >= 1000 && code < 5000 && ![1004, 1005, 1006, 1015].includes(code) ? code : 1000, reason)
+  }
+
+  /**
+   * Wakes the phones subscribed to this room that aren't connected right now.
+   * Connected ones already got the items live and show their own banner.
+   */
+  private async wake() {
+    const live = new Set(
+      this.ctx
+        .getWebSockets()
+        .map((s) => (s.deserializeAttachment() as Attachment | null)?.endpoint)
+        .filter(Boolean),
+    )
+    const subs = this.sql
+      .exec<{ endpoint: string }>('SELECT endpoint FROM subs')
+      .toArray()
+      .filter((s) => !live.has(s.endpoint))
+    const results = await Promise.all(subs.map(async (s) => [s.endpoint, await sendPush(s.endpoint, this.env)] as const))
+    for (const [endpoint, result] of results) {
+      if (result === 'gone') this.sql.exec('DELETE FROM subs WHERE endpoint = ?', endpoint)
+    }
+  }
+
+  override async alarm(): Promise<void> {
+    for (const s of this.ctx.getWebSockets()) s.close(1000, 'Room closed')
+    await this.ctx.storage.deleteAll()
+    this.setup()
+  }
+
+  private page(since: number): Row[] {
+    return this.sql
+      .exec<Row>('SELECT seq, id, data FROM items WHERE seq > ? ORDER BY seq LIMIT ?', since, PAGE)
+      .toArray()
+  }
+
+  private isEmpty(): boolean {
+    return this.sql.exec('SELECT 1 FROM items LIMIT 1').toArray().length === 0
   }
 
   private fail(ws: WebSocket, message: string) {

@@ -7,6 +7,7 @@ import {
 } from '@footless/ledger'
 import { useEffect, useState, type FormEvent } from 'react'
 import { Avatar } from '../components/Avatar.tsx'
+import { NotificationsNudge } from '../components/NotificationsCard.tsx'
 import { Header } from '../components/Header.tsx'
 import { PlusIcon } from '../components/icons.tsx'
 import { SyncLine } from '../components/SyncLine.tsx'
@@ -80,6 +81,7 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
           by two people at once. The latest edit was kept.
         </p>
       )}
+      {!alone && tab === 'balances' && <NotificationsNudge />}
       {tab === 'balances' && <Balances meta={meta} state={state} />}
       {tab === 'expenses' && <Expenses meta={meta} state={state} />}
       {tab === 'people' && <People meta={meta} state={state} />}

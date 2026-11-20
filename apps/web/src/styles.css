@@ -942,7 +942,7 @@ input[type='checkbox'] {
   font-size: 1.2rem;
   font-weight: 700;
 }
-.banner.in .banner-mark {
+.banner.paid-you .banner-mark {
   background: #7fe0b8;
   color: #0f2a20;
 }
@@ -987,4 +987,51 @@ input[type='checkbox'] {
     opacity: 0;
     transform: translateY(-16px) scale(0.97);
   }
+}
+
+/* A one-time suggestion inside a group */
+.nudge {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-4);
+  padding: 14px var(--space-4);
+  border-radius: var(--radius-card);
+  background: var(--card);
+}
+.nudge p {
+  flex: 1 1 14rem;
+  margin: 0;
+  font-weight: 500;
+}
+.nudge-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* Moving to a new phone */
+.steps {
+  margin: 0;
+  padding-left: 1.3em;
+  line-height: 1.6;
+}
+.move-qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+}
+.move-qr .lead {
+  text-align: left;
+}
+.move-code {
+  margin: var(--space-2) 0 var(--space-4);
+  font-size: 3.4rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.2em;
+  text-align: center;
 }

@@ -53,9 +53,49 @@ function aesKey(groupKey: string): Promise<CryptoKey> {
 }
 
 /** The relay room for a group: a hash of its key, safe to show the relay. */
-export async function roomId(groupKey: string): Promise<string> {
-  const label = enc.encode('footless-room-v1:')
-  const key = fromB64url(groupKey)
+export function roomId(groupKey: string): Promise<string> {
+  return hashedId('footless-room-v1:', groupKey)
+}
+
+/** The relay room for moving to a new phone, from the secret in the QR code. */
+export function moveRoomId(secret: string): Promise<string> {
+  return hashedId('footless-move-v1:', secret)
+}
+
+/**
+ * A short code both phones show while moving, so the person can check the
+ * new phone is theirs and not someone who glimpsed the QR code.
+ */
+export async function moveCode(secret: string, newPhoneKey: string): Promise<string> {
+  const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode(`footless-move-code:${secret}:${newPhoneKey}`)))
+  const n = ((digest[0]! << 24) | (digest[1]! << 16) | (digest[2]! << 8) | digest[3]!) >>> 0
+  return String(n % 10000).padStart(4, '0')
+}
+
+/** Encrypts a JSON message with a 32-byte key (a group key or a move secret). */
+export async function encryptJson(keyText: string, value: unknown): Promise<string> {
+  const iv = crypto.getRandomValues(new Uint8Array(12))
+  const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, await aesKey(keyText), enc.encode(JSON.stringify(value)))
+  const out = new Uint8Array(12 + ciphertext.byteLength)
+  out.set(iv)
+  out.set(new Uint8Array(ciphertext), 12)
+  return toB64url(out)
+}
+
+/** The other half of encryptJson. Null for anything that doesn't decrypt. */
+export async function decryptJson<T>(keyText: string, data: string): Promise<T | null> {
+  try {
+    const bytes = fromB64url(data)
+    const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: bytes.slice(0, 12) }, await aesKey(keyText), bytes.slice(12))
+    return JSON.parse(dec.decode(plain)) as T
+  } catch {
+    return null
+  }
+}
+
+async function hashedId(prefix: string, secret: string): Promise<string> {
+  const label = enc.encode(prefix)
+  const key = fromB64url(secret)
   const input = new Uint8Array(label.length + key.length)
   input.set(label)
   input.set(key, label.length)

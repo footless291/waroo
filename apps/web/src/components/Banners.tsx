@@ -1,53 +1,21 @@
-import { replay, type LedgerEvent, type Settlement } from '@footless/ledger'
+import { replay, type LedgerEvent } from '@footless/ledger'
 import { useEffect, useRef, useState } from 'react'
-import { getEvents, getGroup, onNewEvents, type EventOrigin } from '../lib/db.ts'
-import { money } from '../lib/format.ts'
-import { go, locale } from '../lib/hooks.ts'
+import { getEvents, getGroup, onNewEvents } from '../lib/db.ts'
+import { go } from '../lib/hooks.ts'
+import { describeEvent, type News } from '../lib/news.ts'
 
-interface Banner {
-  id: string
+interface Banner extends News {
   groupId: string
-  tone: 'in' | 'out'
-  title: string
-  detail: string
 }
 
 const SHOW_FOR_MS = 7000
 
-const sats = (n: number) => `${new Intl.NumberFormat(locale()).format(n)} sats`
+/** In the app, banners cover payments that involve you and people joining. */
+const BANNER_KINDS = new Set(['paid-you', 'you-paid', 'joined'])
 
 /**
- * Decides whether a new payment is news for this person, and how to say it.
- * Payments between two other people stay quiet; they're in the group's list.
- */
-async function describe(groupId: string, settlement: Settlement, origin: EventOrigin): Promise<Banner | null> {
-  const group = await getGroup(groupId)
-  if (!group) return null
-  const state = replay(await getEvents(groupId))
-  const me = group.meId
-  const name = (id: string) => state.members.get(id)?.name ?? 'Someone'
-  const amount = money(settlement.amount, settlement.currency)
-  const groupName = state.name ?? group.name
-  const proof = settlement.bitcoin ? `${sats(settlement.bitcoin.sats)}${settlement.bitcoin.preimage ? ', verified' : ''}` : ''
-  const base = { id: settlement.id, groupId }
-
-  if (origin === 'remote' && settlement.to === me) {
-    return settlement.bitcoin
-      ? { ...base, tone: 'in', title: `${name(settlement.from)} paid you ${amount}`, detail: `${proof}, in ${groupName}` }
-      : { ...base, tone: 'in', title: `${name(settlement.from)} marked ${amount} as paid to you`, detail: `In ${groupName}` }
-  }
-  if (origin === 'remote' && settlement.from === me) {
-    return { ...base, tone: 'out', title: `${name(settlement.to)} marked your ${amount} as paid`, detail: `In ${groupName}` }
-  }
-  if (origin === 'local' && settlement.from === me && settlement.bitcoin) {
-    return { ...base, tone: 'out', title: `Payment sent: ${amount} to ${name(settlement.to)}`, detail: `${proof}, in ${groupName}` }
-  }
-  return null
-}
-
-/**
- * Banners for payments sent and received, shown over any screen. The live
- * region stays mounted so screen readers hear each new one.
+ * Banners over any screen. The live region stays mounted so screen readers
+ * hear each new one.
  */
 export function Banners() {
   const [banners, setBanners] = useState<Banner[]>([])
@@ -62,13 +30,16 @@ export function Banners() {
   useEffect(
     () =>
       onNewEvents(async (groupId, events: LedgerEvent[], origin) => {
+        const group = await getGroup(groupId)
+        if (!group) return
+        const state = replay(await getEvents(groupId))
         for (const event of events) {
-          if (event.type !== 'settlement.recorded') continue
-          const banner = await describe(groupId, event.settlement, origin)
-          if (!banner) continue
+          const news = describeEvent(event, state, group.meId, state.name ?? group.name, origin === 'local')
+          if (!news || !BANNER_KINDS.has(news.kind)) continue
+          const banner = { ...news, groupId }
           setBanners((list) => (list.some((b) => b.id === banner.id) ? list : [...list, banner].slice(-3)))
           timers.current.set(banner.id, setTimeout(() => dismiss(banner.id), SHOW_FOR_MS))
-          if (banner.tone === 'in') navigator.vibrate?.([30, 60, 30])
+          if (banner.kind === 'paid-you') navigator.vibrate?.([30, 60, 30])
         }
       }),
     [],
@@ -77,7 +48,7 @@ export function Banners() {
   return (
     <div className="banners" aria-live="polite">
       {banners.map((b) => (
-        <div key={b.id} className={`banner ${b.tone}`}>
+        <div key={b.id} className={`banner ${b.kind}`}>
           <button
             className="banner-body"
             onClick={() => {
@@ -86,7 +57,7 @@ export function Banners() {
             }}
           >
             <span className="banner-mark" aria-hidden="true">
-              {b.tone === 'in' ? '↓' : '↑'}
+              {b.kind === 'paid-you' ? '↓' : b.kind === 'joined' ? '+' : '↑'}
             </span>
             <span className="banner-text">
               <strong>{b.title}</strong>

@@ -30,13 +30,14 @@ Every phone checks every event when it rebuilds the group (`packages/ledger/src/
 - Each event's signature must match the public key recorded for its author. A change can't be forged in someone else's name, even by someone who has the invite link.
 - A person added by someone else can be claimed by one phone only: the first claim wins.
 - Only a phone adding itself can attach a key to a new person.
+- Moving to a new phone (`member.rekeyed`) must be signed with the person's current key, and only for themselves. From then on only the new key can write for them; what the old phone wrote before stays.
 - Anything that fails to decrypt, fails its signature check, or breaks a rule is ignored and doesn't affect anything else.
 
 ## What it doesn't protect against (yet)
 
 - **Anyone with the invite link can join.** The link is the key. Expiring and one-time links are in the backlog.
 - **Removing someone** would need a new group key. Not built yet.
-- **A lost phone** loses that phone's key; the person can't write as themselves again until moving to a new phone is built (in the backlog). The group's data is safe on everyone else's phone.
+- **A lost phone** loses that phone's key. Moving needs the old phone in hand, so after a loss the person can't write as themselves again (they could join as someone new). The group's data is safe on everyone else's phone. Recovery vouched for by the rest of the group is a possible next step.
 - **Metadata.** The relay sees when blobs arrive, roughly how big they are, and the IP addresses connecting to a room. It can't read anything else.
 - **Deleting everything.** A malicious relay could refuse to store or forward changes. It can't fake or alter them, and every phone keeps its own full copy.
 
@@ -52,9 +53,27 @@ A WebSocket at `/relay/rooms/<room id>`, JSON messages:
 | Phone | `{ "t": "push", "items": [{ "id", "data" }] }` | Store these (up to 200, 64 KB each) |
 | Relay | `{ "t": "ack", "ids": [...] }` | Stored (duplicates are ignored) |
 | Relay | `{ "t": "error", "message" }` | Something was refused |
+| Phone | `{ "t": "push", ..., "notify": true }` | As above, and wake the others' phones (the sender decides: payments, joins, new expenses) |
+| Phone | `{ "t": "subscribe" \| "unsubscribe", "endpoint" }` | Wake this phone for this room while it isn't connected |
+| Phone | `{ "t": "hello", ..., "ephemeral": true }` | A one-off room (moving phones): wiped an hour after it opens. Only honoured on an empty room |
 
-Anyone can run their own relay: it's one small Worker with no secrets.
+`GET /relay/rooms/<room id>/items?since=<seq>` returns one page of the same items over plain HTTP, for the service worker.
+
+Anyone can run their own relay: it's one small Worker. Notifications need a VAPID key pair (`node scripts/vapid.cjs`); without one, everything else works.
+
+## Notifications
+
+The relay can't read a group, so it can't say what happened. A push carries nothing at all: it only wakes the phone. The service worker (`apps/web/src/sw.ts`) then fetches the room's new items over HTTP, decrypts and verifies them with the keys on the phone, saves them, and writes the notification text itself (`apps/web/src/lib/news.ts`). Apple, Google and Mozilla's push services learn only that a wake-up happened.
+
+- Phones that are connected to the room aren't woken: they get the change live and show an in-app banner instead.
+- The relay keeps, per room, only push-service URLs. It never learns who they belong to. Dead subscriptions are dropped when the push service says so.
+- Only real push services are accepted as endpoints, so the relay can't be aimed at other sites.
+- On iPhone and iPad, notifications work only for Footless added to the Home Screen.
+
+## Moving to a new phone
+
+Signing keys can't be copied, so moving doesn't copy them. The old phone shows a QR code holding a fresh secret. The new phone scans it, makes its own key, and says hello through a one-off relay room named by, and encrypted with, that secret. Both phones show a 4-digit code made from the secret and the new key; the person confirms on the old phone that they match. Then the old phone writes `member.rekeyed` in each group, waits until the relay has them, and sends the group keys and the Lightning address across. The new phone loads each group, checks the hand-over is there, and stores it with its own key. The old phone then removes the groups. If a second phone answers the same code, the move stops. A connected wallet doesn't move: it's reconnected on the new phone.
 
 ## Testing
 
-`pnpm relay` runs the app and relay locally on port 8787. `pnpm e2e` then drives several browser profiles as different phones: inviting, joining, live updates, offline changes, upgrading groups made before sharing existed, and garbage or forged data at the relay.
+`pnpm relay` runs the app and relay locally on port 8787. `pnpm e2e` then drives several browser profiles as different phones: inviting, joining, live updates, offline changes, upgrading groups made before sharing existed, garbage or forged data at the relay, scanning invites, banners, notifications (a fake push service checks the relay's signatures, and Chromium's devtools protocol wakes the service worker), and moving to a new phone.

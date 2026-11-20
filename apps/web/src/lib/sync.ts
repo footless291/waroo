@@ -10,6 +10,7 @@ import type { LedgerEvent } from '@footless/ledger'
 import { roomId, seal, unseal } from './crypto.ts'
 import {
   getGroup,
+  getSetting,
   listGroups,
   markSent,
   pendingEvents,
@@ -18,6 +19,7 @@ import {
   subscribe,
   type GroupMeta,
 } from './db.ts'
+import { isNotable } from './news.ts'
 
 export type SyncStatus =
   | 'local' // not shared: lives only on this phone
@@ -39,6 +41,17 @@ export function relayUrl(room: string): string {
     (import.meta.env.VITE_RELAY_URL as string | undefined) ??
     location.origin.replace(/^http/, 'ws')
   return `${base}/relay/rooms/${room}`
+}
+
+/** The relay over plain HTTP, for reads that don't need a live connection. */
+export function relayHttpUrl(path: string): string {
+  const base = (import.meta.env.VITE_RELAY_URL as string | undefined)?.replace(/^ws/, 'http') ?? location.origin
+  return `${base}/relay/${path}`
+}
+
+/** This phone's push subscription, if notifications are on. Kept in settings. */
+export async function pushEndpoint(): Promise<string | undefined> {
+  return (await getSetting('pushEndpoint')) as string | undefined
 }
 
 /** Decrypts and verifies relay items, dropping anything that doesn't check out. */
@@ -84,6 +97,11 @@ class GroupSync {
     if (this.ws?.readyState === WebSocket.OPEN && this.caughtUp) void this.flush()
   }
 
+  /** Notifications were turned on or off on this phone. */
+  push(message: { t: 'subscribe' | 'unsubscribe'; endpoint: string }) {
+    if (this.ws?.readyState === WebSocket.OPEN) this.ws.send(JSON.stringify(message))
+  }
+
   /** The phone lost its connection: say so now rather than when the socket notices. */
   offline() {
     this.set('offline')
@@ -117,9 +135,13 @@ class GroupSync {
 
     const ws = new WebSocket(relayUrl(await roomId(group.key)))
     this.ws = ws
-    ws.onopen = () => {
+    ws.onopen = async () => {
       this.retry = 0
       ws.send(JSON.stringify({ t: 'hello', since: group.cursor ?? 0 }))
+      // Telling the room on every connect also marks this connection as
+      // this phone, so the relay doesn't wake it while it's connected.
+      const endpoint = await pushEndpoint()
+      if (endpoint && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ t: 'subscribe', endpoint }))
     }
     ws.onmessage = (e) => void this.receive(JSON.parse(e.data as string) as RelayMessage)
     ws.onclose = () => {
@@ -171,6 +193,7 @@ class GroupSync {
     }
     this.set('syncing')
     const batch = pending.slice(0, 100)
+    const notify = batch.some(({ groupId: _g, pending: _p, sig: _s, ...event }) => isNotable(event as LedgerEvent))
     const items = await Promise.all(
       batch.map(async ({ groupId: _g, pending: _p, sig, ...event }) => ({
         id: event.id,
@@ -178,7 +201,7 @@ class GroupSync {
       })),
     )
     for (const i of items) this.inFlight.add(i.id)
-    ws.send(JSON.stringify({ t: 'push', items }))
+    ws.send(JSON.stringify({ t: 'push', items, ...(notify ? { notify: true } : {}) }))
   }
 }
 
@@ -210,6 +233,18 @@ class SyncHub {
     this.groups.set(groupId, sync)
     void sync.start()
     return sync
+  }
+
+  /** Tells every connected group about a change to this phone's notifications. */
+  push(message: { t: 'subscribe' | 'unsubscribe'; endpoint: string }) {
+    this.groups.forEach((g) => g.push(message))
+  }
+
+  /** Stops and forgets a group's sync, after it leaves this phone. */
+  drop(groupId: string) {
+    this.groups.get(groupId)?.stop()
+    this.groups.delete(groupId)
+    this.emit()
   }
 
   status(groupId: string): SyncStatus {

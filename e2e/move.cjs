@@ -1,0 +1,124 @@
+// Moving to a new phone: the code check, someone else racing to scan the code,
+// and the groups working on the new phone (and no longer on the old one).
+const { chromium } = require('playwright');
+const B = process.env.FOOTLESS_URL || 'http://127.0.0.1:8787/';
+const SHOTS = process.env.SHOTS || '/tmp';
+let failed = 0;
+const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++; };
+(async () => {
+  const browser = await chromium.launch();
+  const mk = async (name) => {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
+    await ctx.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: B.slice(0, -1) });
+    const page = await ctx.newPage();
+    page.errors = [];
+    page.on('pageerror', (e) => page.errors.push(String(e)));
+    page.on('console', (m) => { if (m.type() === 'error') page.errors.push(m.text()); });
+    page.name = name;
+    return page;
+  };
+  const text = (p, sel) => p.textContent(sel).catch(() => '');
+  const waitText = async (p, sel, needle, ms = 10000) => { try { await p.waitForFunction(([s, n]) => (document.querySelector(s)?.textContent || '').includes(n), [sel, needle], { timeout: ms }); return true; } catch { return false; } };
+  // Ana's old phone: a shared group with Bob, a group only on this phone, and her Lightning address
+  const old = await mk('old');
+  await old.goto(B);
+  await old.click('a.button:has-text("Start a group")');
+  await old.fill('input[placeholder="Okinawa trip"]', 'Okinawa trip');
+  await old.fill('input[placeholder="Ana"]', 'Ana');
+  await old.fill('input[aria-label="Person 2"]', 'Bob');
+  await old.click('text=Create group'); await old.waitForTimeout(400);
+  await old.click('a.fab');
+  await old.fill('input[placeholder="Izakaya dinner"]', 'Dinner');
+  await old.fill('input.amount-input', '6000');
+  await old.click('button:has-text("Add expense")'); await old.waitForTimeout(300);
+  await old.click('header a:has-text("Invite")'); await old.waitForTimeout(800);
+  await old.click('button:has-text("Copy link")');
+  const invite = await old.evaluate(() => navigator.clipboard.readText());
+  const bob = await mk('bob');
+  await bob.goto(invite);
+  await waitText(bob, 'main', 'Which one are you');
+  await bob.click('label.choice:has-text("Bob")');
+  await bob.click('button:has-text("Join as Bob")');
+  check(await waitText(bob, '.hero', 'You owe Ana'), 'Bob joined and owes Ana');
+  await old.goto(B + '#/new');
+  await old.fill('input[placeholder="Okinawa trip"]', 'Solo notes');
+  await old.fill('input[placeholder="Ana"]', 'Ana');
+  await old.click('text=Create group'); await old.waitForTimeout(400);
+  await old.goto(B + '#/you');
+  await old.fill('input[placeholder="you@walletofsatoshi.com"]', 'ana@pay.example.com');
+  await old.click('form.settings-card button:has-text("Save")'); await old.waitForTimeout(500);
+
+  // Someone glimpses the code and scans it too: the move stops, nothing leaks
+  await old.click('a:has-text("Move to a new phone")');
+  check(await old.waitForSelector('h1:has-text("Move to a new phone")', { timeout: 4000 }).then(() => true, () => false), 'move screen opens from You');
+  await old.click('button:has-text("Show the code")');
+  await old.waitForSelector('.move-qr svg.qr');
+  // The link the QR code holds (the scanner itself is covered by scan-and-banners.cjs)
+  const secret1 = await old.evaluate(() => document.querySelector('[data-move-link]')?.dataset.moveLink);
+  check(!!secret1, 'the code holds a move link');
+  const snoop = await mk('snoop');
+  const newer = await mk('new');
+  await newer.goto(B + '#/scan');
+  await newer.fill('.paste-form input', secret1);
+  await newer.click('button:has-text("Open invite")');
+  check(await waitText(newer, '.move-code', ''), 'the new phone shows a check code');
+  await snoop.goto(secret1);
+  check(await waitText(old, 'main', 'Another phone also scanned the code'), 'a second phone scanning stops the move');
+  check(await waitText(newer, 'main', 'stopped on the other phone'), 'and the new phone is told');
+  check(await waitText(snoop, 'main', 'stopped on the other phone') || await waitText(snoop, 'main', 'Not moved'), 'the snoop gets nothing');
+  await old.goto(B); await old.waitForTimeout(600);
+  check((await old.$$('.cards a.card-row')).length === 2, 'the old phone still has both groups');
+
+  // Saying no on the old phone
+  await old.goto(B + '#/move');
+  await old.click('button:has-text("Show the code")');
+  await old.waitForSelector('.move-qr svg.qr');
+  const secret2 = await old.evaluate(() => document.querySelector('[data-move-link]').dataset.moveLink);
+  await newer.goto(secret2);
+  check(await waitText(old, 'main', 'Does the new phone show these numbers'), 'old phone asks to compare');
+  await old.click('button:has-text("No, stop")');
+  check(await waitText(newer, 'main', 'stopped on the other phone'), '“No” stops the new phone too');
+
+  // The real move
+  await old.click('button:has-text("Start again")');
+  await old.click('button:has-text("Show the code")');
+  await old.waitForSelector('.move-qr svg.qr');
+  await old.screenshot({ path: SHOTS + '/move-1-qr.png' });
+  const secret3 = await old.evaluate(() => document.querySelector('[data-move-link]').dataset.moveLink);
+  await newer.goto(B); await newer.waitForTimeout(300);
+  await newer.goto(secret3);
+  check(await waitText(old, 'main', 'Does the new phone show these numbers'), 'old phone asks to compare');
+  const codeOld = (await text(old, '.move-code')).trim();
+  const codeNew = (await text(newer, '.move-code')).trim();
+  check(/^\d{4}$/.test(codeOld) && codeOld === codeNew, `both phones show the same code (${codeOld} / ${codeNew})`);
+  await old.screenshot({ path: SHOTS + '/move-2-confirm.png' });
+  await newer.screenshot({ path: SHOTS + '/move-3-new-code.png' });
+  await old.click('button:has-text("Yes, move my groups")');
+  check(await waitText(newer, 'main', 'Your 2 groups are on this phone now', 20000), 'the new phone has both groups');
+  check(await waitText(old, 'main', 'Your 2 groups are on the new phone now', 10000), 'the old phone says they moved');
+  await newer.screenshot({ path: SHOTS + '/move-4-done.png' });
+
+  await old.goto(B); await old.waitForTimeout(600);
+  check(await old.isVisible('text=Split anything with anyone'), 'the old phone has no groups left');
+
+  await newer.click('a:has-text("Open my groups")'); await newer.waitForTimeout(600);
+  const homeText = await text(newer, 'main');
+  check(homeText.includes('Okinawa trip') && homeText.includes('Solo notes'), 'both groups are listed on the new phone');
+  await newer.click('a.card-row:has-text("Okinawa trip")');
+  check(await waitText(newer, '.hero', 'You get back'), 'balances came along');
+  check(await waitText(newer, '.sync-line', 'Up to date'), 'the new phone syncs');
+  await newer.click('a.fab');
+  await newer.fill('input[placeholder="Izakaya dinner"]', 'Ferry');
+  await newer.fill('input.amount-input', '2000');
+  await newer.click('button:has-text("Add expense")'); await newer.waitForTimeout(500);
+  await bob.click('nav a:has-text("Expenses")');
+  check(await waitText(bob, 'main', 'Ferry'), 'Bob sees what Ana adds from her new phone');
+  check(await waitText(bob, '.cards', 'Ana'), 'still as Ana');
+  await newer.goto(B + '#/you'); await newer.waitForTimeout(500);
+  check((await newer.inputValue('input[placeholder="you@walletofsatoshi.com"]')) === 'ana@pay.example.com', 'her Lightning address came along');
+
+  for (const p of [old, newer, bob]) check(p.errors.length === 0, `${p.name}: no console errors ${p.errors.join(' | ').slice(0, 300)}`);
+  console.log(failed ? `${failed} FAILED` : 'ALL PASSED');
+  await browser.close();
+  process.exitCode = failed ? 1 : 0;
+})().catch((e) => { console.error(e); process.exit(1); });

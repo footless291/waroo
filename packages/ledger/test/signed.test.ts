@@ -155,3 +155,44 @@ describe('Lightning addresses', () => {
     }
   })
 })
+
+describe('moving to a new phone', () => {
+  const claimed = () => [...base(), ev('bob', 5, 'KB', { type: 'member.claimed', memberId: 'bob', key: 'KB' })]
+  const rename = (signer: string, clock: number) =>
+    ev('bob', clock, signer, { type: 'member.renamed', memberId: 'bob', name: `Bob ${clock}` })
+
+  it('hands a member over to the new phone’s key', () => {
+    const move = ev('bob', 6, 'KB', { type: 'member.rekeyed', memberId: 'bob', key: 'KB2' })
+    const state = replay([...claimed(), move, rename('KB2', 7)])
+    assert.equal(state.members.get('bob')!.key, 'KB2')
+    assert.equal(state.members.get('bob')!.name, 'Bob 7')
+    assert.deepEqual(state.rejected, [])
+  })
+
+  it('stops the old phone writing afterwards, but keeps what it wrote before', () => {
+    const before = rename('KB', 6)
+    const move = ev('bob', 7, 'KB', { type: 'member.rekeyed', memberId: 'bob', key: 'KB2' })
+    const after = rename('KB', 8)
+    const state = replay([...claimed(), before, move, after])
+    assert.equal(state.members.get('bob')!.name, 'Bob 6')
+    assert.equal(state.rejected.length, 1)
+    assert.match(state.rejected[0]!.reason, /wrong key/)
+  })
+
+  it('can only be done with the member’s current key', () => {
+    const hijack = ev('bob', 6, 'KX', { type: 'member.rekeyed', memberId: 'bob', key: 'KX' })
+    assert.equal(replay([...claimed(), hijack]).members.get('bob')!.key, 'KB')
+  })
+
+  it('can’t move someone else', () => {
+    const move = ev('ana', 6, 'KA', { type: 'member.rekeyed', memberId: 'bob', key: 'KA2' })
+    const state = replay([...claimed(), move])
+    assert.equal(state.members.get('bob')!.key, 'KB')
+    assert.match(state.rejected[0]!.reason, /themselves/)
+  })
+
+  it('can’t take over another member’s key', () => {
+    const move = ev('bob', 6, 'KB', { type: 'member.rekeyed', memberId: 'bob', key: 'KA' })
+    assert.equal(replay([...claimed(), move]).members.get('bob')!.key, 'KB')
+  })
+})

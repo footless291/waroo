@@ -1,6 +1,7 @@
 import { isLightningAddress } from '@footless/ledger'
 import { useEffect, useState, type FormEvent } from 'react'
 import { Header } from '../components/Header.tsx'
+import { NotificationsCard } from '../components/NotificationsCard.tsx'
 import { myLightningAddress, setMyLightningAddress } from '../lib/db.ts'
 import { connectNwc, connectWebln, connectedWallet, disconnectWallet, hasWebln, type WalletInfo } from '../lib/wallet.ts'
 
@@ -148,6 +149,19 @@ export function YouScreen() {
           <p className="hint" aria-live="polite">
             {walletNote}
           </p>
+        </section>
+
+        <NotificationsCard />
+
+        <section className="settings-card">
+          <h2>Moving to a new phone</h2>
+          <p>
+            Move your groups to another phone, so you can keep adding expenses and settling up there. Have both phones
+            with you.
+          </p>
+          <a className="button outline" href="#/move">
+            Move to a new phone
+          </a>
         </section>
       </div>
     </main>

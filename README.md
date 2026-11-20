@@ -2,7 +2,7 @@
 
 Split bills any way you like, track who owes whom, and settle up in bitcoin, all shown in your own currency. No one ever holds your money, and the server can't read your groups.
 
-Status: early development. You can create groups, invite friends with a link, and everyone adds expenses from their own phone, with changes syncing live and end-to-end encrypted. Splits can be equal, by shares or exact. Debts can be settled in bitcoin straight from your wallet to theirs, verified automatically, or marked as paid in cash or by bank transfer.
+Status: early development. You can create groups, invite friends with a link, and everyone adds expenses from their own phone, with changes syncing live and end-to-end encrypted. Splits can be equal, by shares or exact. Debts can be settled in bitcoin straight from your wallet to theirs, verified automatically, or marked as paid in cash or by bank transfer. Notifications tell you when someone pays you, joins or adds an expense, and you can move everything to a new phone.
 
 ## Principles
 

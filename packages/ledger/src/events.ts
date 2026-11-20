@@ -80,6 +80,12 @@ export type LedgerEvent = EventBase &
     | { type: 'member.updated'; memberId: PersonId; lightningAddress?: string }
     /** A phone takes the place of a member who hasn't joined on a phone yet. */
     | { type: 'member.claimed'; memberId: PersonId; key: string }
+    /**
+     * A member moves to a new phone: their current key hands over to the new
+     * phone's key. Signed with the old key, so only the old phone can do it.
+     * From here on, only the new key can write for them.
+     */
+    | { type: 'member.rekeyed'; memberId: PersonId; key: string }
     /** Sets the group's name and/or main currency. */
     | { type: 'group.updated'; name?: string; currency?: string }
     /**
@@ -221,6 +227,9 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
     } else if (e.type === 'member.claimed') {
       reject(e, 'Only shared groups can be joined')
       continue
+    } else if (e.type === 'member.rekeyed') {
+      reject(e, 'Only shared groups have keys to move')
+      continue
     }
 
     switch (e.type) {
@@ -240,6 +249,15 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
       case 'member.claimed':
         state.members.get(e.memberId)!.key = e.key
         break
+
+      case 'member.rekeyed': {
+        const member = state.members.get(e.memberId)
+        if (!member || e.memberId !== e.author) reject(e, 'Only people themselves can move to a new phone')
+        else if (typeof e.key !== 'string' || !e.key || e.key === member.key) reject(e, 'Needs a new key')
+        else if ([...state.members.values()].some((m) => m.key === e.key)) reject(e, 'That key belongs to someone else')
+        else member.key = e.key
+        break
+      }
 
       case 'member.updated': {
         const member = state.members.get(e.memberId)

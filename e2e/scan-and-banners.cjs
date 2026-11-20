@@ -71,8 +71,8 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   // Bob scans from the installed app
   const bob = await mk('bob', { svg });
   await bob.goto(B);
-  await bob.click('a[aria-label="Scan an invite"]');
-  check(await bob.isVisible('h1:has-text("Scan an invite")'), 'scan screen opens');
+  await bob.click('a[aria-label="Scan a code"]');
+  check(await bob.waitForSelector('h1:has-text("Scan a code")', { timeout: 4000 }).then(() => true, () => false), 'scan screen opens');
   check(await waitText(bob, 'main', 'Ana invited you to', 10000), 'scanning the QR code opens the invite');
   check((await text(bob, 'main')).includes('Ramen night'), 'it is Ana’s group');
   const tracksLive = await bob.evaluate(() => [...document.querySelectorAll('video')].length);
@@ -89,9 +89,9 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   check(await waitText(ana, '.banners', 'Bob marked ¥2,000 as paid to you'), 'Ana gets a payment banner');
   await ana.screenshot({ path: SHOTS + '/scan-2-banner.png' });
   check(!(await text(bob, '.banners')).includes('Payment sent'), 'no sent banner for a manual record');
-  await ana.click('.banner-body');
+  await ana.click('.banner:has-text("as paid to you") .banner-body');
   check(await waitText(ana, 'main', 'All square'), 'tapping the banner opens the group');
-  check(!(await ana.isVisible('.banner')), 'and the banner goes away');
+  check(!(await ana.isVisible('.banner:has-text("as paid to you")')), 'and the banner goes away');
 
   // Old payments fetched when joining are not announced
   const cai = await mk('cai');

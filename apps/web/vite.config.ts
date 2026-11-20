@@ -7,6 +7,10 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'prompt',
+      // Our own service worker (src/sw.ts), for push notifications.
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.ts',
       includeAssets: ['icon.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'Footless',
@@ -23,11 +27,12 @@ export default defineConfig({
           { src: 'icon-512-maskable.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
-      workbox: {
+      injectManifest: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         // iOS reads launch images itself when the app is installed.
         globIgnores: ['splash/**'],
       },
+      devOptions: { enabled: false, type: 'module' },
     }),
   ],
 })

@@ -1,11 +1,13 @@
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import { Banners } from './components/Banners.tsx'
-import { useRoute } from './lib/hooks.ts'
+import { go, useRoute } from './lib/hooks.ts'
 import { ExpenseScreen } from './screens/ExpenseScreen.tsx'
 import { GroupScreen } from './screens/GroupScreen.tsx'
 import { HomeScreen } from './screens/HomeScreen.tsx'
 import { InviteScreen } from './screens/InviteScreen.tsx'
 import { JoinScreen } from './screens/JoinScreen.tsx'
+import { MoveInScreen } from './screens/MoveInScreen.tsx'
+import { MoveScreen } from './screens/MoveScreen.tsx'
 import { NewGroupScreen } from './screens/NewGroupScreen.tsx'
 import { ScanScreen } from './screens/ScanScreen.tsx'
 import { SettleScreen } from './screens/SettleScreen.tsx'
@@ -22,6 +24,8 @@ function Router() {
   if (parts[0] === 'join') return <JoinScreen params={params} />
   if (parts[0] === 'you') return <YouScreen />
   if (parts[0] === 'scan') return <ScanScreen />
+  if (parts[0] === 'move') return <MoveScreen />
+  if (parts[0] === 'move-in') return <MoveInScreen params={params} />
   if (parts[0] === 'g' && parts[1]) {
     const groupId = parts[1]
     if (parts[2] === 'add') return <ExpenseScreen groupId={groupId} />
@@ -49,6 +53,12 @@ function UpdatePrompt() {
     </div>
   )
 }
+
+// Tapping a notification while the app is open: the service worker asks us to go there.
+navigator.serviceWorker?.addEventListener('message', (event) => {
+  const data = event.data as { type?: string; route?: string } | null
+  if (data?.type === 'open' && typeof data.route === 'string' && data.route.startsWith('/')) go(data.route)
+})
 
 export function App() {
   return (
