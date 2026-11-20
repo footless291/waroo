@@ -14,6 +14,13 @@ type Loaded = {
 
 const NEW = 'new'
 
+/** True on a phone when this page is open in the browser, not the installed app. */
+function inBrowserTab() {
+  const standalone =
+    matchMedia('(display-mode: standalone)').matches || (navigator as { standalone?: boolean }).standalone === true
+  return !standalone && matchMedia('(pointer: coarse)').matches
+}
+
 export function JoinScreen({ params }: { params: URLSearchParams }) {
   const groupId = params.get('g') ?? ''
   const key = params.get('k') ?? ''
@@ -157,6 +164,12 @@ export function JoinScreen({ params }: { params: URLSearchParams }) {
             {picked === NEW ? 'Join the group' : `Join as ${state.members.get(picked ?? '')?.name ?? ''}`}
           </button>
           <p className="muted">You’ll see the group’s expenses once you join. No account or sign-up needed.</p>
+          {inBrowserTab() && (
+            <p className="notice">
+              Have Footless on your Home Screen? Join from there instead: open it, tap the scan button and scan the
+              invite code. Groups joined here stay in this browser.
+            </p>
+          )}
         </form>
       )}
     </main>

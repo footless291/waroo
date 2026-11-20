@@ -34,6 +34,7 @@ pnpm relay       # app + sync relay at http://127.0.0.1:8787 (serves the last bu
 pnpm test        # unit tests
 pnpm typecheck
 pnpm e2e         # multi-phone browser tests; needs `pnpm relay` running
+pnpm splash      # remake the iOS launch images after changing the logo
 ```
 
 The ledger's tests also run with nothing installed: `cd packages/ledger && node --test "test/**/*.test.ts"`.

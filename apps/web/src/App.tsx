@@ -1,4 +1,5 @@
 import { useRegisterSW } from 'virtual:pwa-register/react'
+import { Banners } from './components/Banners.tsx'
 import { useRoute } from './lib/hooks.ts'
 import { ExpenseScreen } from './screens/ExpenseScreen.tsx'
 import { GroupScreen } from './screens/GroupScreen.tsx'
@@ -6,6 +7,7 @@ import { HomeScreen } from './screens/HomeScreen.tsx'
 import { InviteScreen } from './screens/InviteScreen.tsx'
 import { JoinScreen } from './screens/JoinScreen.tsx'
 import { NewGroupScreen } from './screens/NewGroupScreen.tsx'
+import { ScanScreen } from './screens/ScanScreen.tsx'
 import { SettleScreen } from './screens/SettleScreen.tsx'
 import { YouScreen } from './screens/YouScreen.tsx'
 
@@ -19,6 +21,7 @@ function Router() {
   if (parts[0] === 'new') return <NewGroupScreen />
   if (parts[0] === 'join') return <JoinScreen params={params} />
   if (parts[0] === 'you') return <YouScreen />
+  if (parts[0] === 'scan') return <ScanScreen />
   if (parts[0] === 'g' && parts[1]) {
     const groupId = parts[1]
     if (parts[2] === 'add') return <ExpenseScreen groupId={groupId} />
@@ -51,6 +54,7 @@ export function App() {
   return (
     <>
       <Router />
+      <Banners />
       <UpdatePrompt />
     </>
   )

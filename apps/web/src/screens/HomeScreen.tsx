@@ -48,12 +48,20 @@ export function HomeScreen() {
       <Header
         title="Footless"
         action={
+          <>
+          <a className="icon-button" href="#/scan" aria-label="Scan an invite">
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2" />
+              <path d="M8 12h8" />
+            </svg>
+          </a>
           <a className="icon-button" href="#/you" aria-label="You: payment settings">
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="8" r="4" />
               <path d="M4 21a8 8 0 0 1 16 0" />
             </svg>
           </a>
+          </>
         }
       />
       {groups && groups.length === 0 && (
@@ -62,9 +70,14 @@ export function HomeScreen() {
           <p>
             Start a group for a trip, a flat or a dinner, then invite the others from their own phones.
           </p>
-          <a className="button primary" href="#/new">
-            Start a group
-          </a>
+          <div className="empty-actions">
+            <a className="button primary" href="#/new">
+              Start a group
+            </a>
+            <a className="button outline" href="#/scan">
+              Join with a QR code
+            </a>
+          </div>
         </section>
       )}
       {groups && groups.length > 0 && (

@@ -74,6 +74,23 @@ export function subscribe(listener: (groupId?: string) => void) {
 }
 export const notify = (groupId?: string) => listeners.forEach((l) => l(groupId))
 
+/**
+ * New events as they're saved: 'local' for this phone's own writes, 'remote'
+ * for ones arriving from the relay. History fetched when joining isn't news,
+ * so it isn't announced.
+ */
+export type EventOrigin = 'local' | 'remote'
+const eventListeners = new Set<(groupId: string, events: LedgerEvent[], origin: EventOrigin) => void>()
+export function onNewEvents(listener: (groupId: string, events: LedgerEvent[], origin: EventOrigin) => void) {
+  eventListeners.add(listener)
+  return () => {
+    eventListeners.delete(listener)
+  }
+}
+const announce = (groupId: string, events: LedgerEvent[], origin: EventOrigin) => {
+  if (events.length) eventListeners.forEach((l) => l(groupId, events, origin))
+}
+
 export const newId = () => crypto.randomUUID()
 
 export async function getSetting(key: string): Promise<unknown> {
@@ -156,6 +173,7 @@ export async function append(group: GroupMeta, drafts: Draft[]): Promise<LedgerE
   const tx = database.transaction('events', 'readwrite')
   await Promise.all([...stored.map((e) => tx.store.add(e)), tx.done])
   notify(group.id)
+  announce(group.id, stored.map(strip), 'local')
   return stored.map(strip)
 }
 
@@ -175,18 +193,20 @@ async function stamp(group: GroupMeta, event: LedgerEvent): Promise<StoredEvent>
 export async function saveReceived(
   groupId: string,
   received: { event: LedgerEvent; signature: string }[],
+  { quiet = false }: { quiet?: boolean } = {},
 ): Promise<number> {
   if (received.length === 0) return 0
   const tx = (await db()).transaction('events', 'readwrite')
-  let added = 0
+  const added: LedgerEvent[] = []
   for (const { event, signature } of received) {
     if (await tx.store.get(event.id)) continue
     await tx.store.add({ ...event, groupId, sig: signature })
-    added++
+    added.push(event)
   }
   await tx.done
-  if (added > 0) notify(groupId)
-  return added
+  if (added.length > 0) notify(groupId)
+  if (!quiet) announce(groupId, added, 'remote')
+  return added.length
 }
 
 export async function pendingEvents(groupId: string): Promise<StoredEvent[]> {
@@ -284,7 +304,7 @@ export async function saveJoinedGroup(
   received: { event: LedgerEvent; signature: string }[],
 ): Promise<void> {
   await (await db()).put('groups', group)
-  await saveReceived(group.id, received)
+  await saveReceived(group.id, received, { quiet: true })
 }
 
 export async function deleteGroupLocally(groupId: string) {

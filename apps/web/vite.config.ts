@@ -15,7 +15,7 @@ export default defineConfig({
         lang: 'en',
         start_url: '/',
         display: 'standalone',
-        background_color: '#fff5ee',
+        background_color: '#fff5ee', // Android's own splash
         theme_color: '#fff5ee',
         icons: [
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
@@ -25,6 +25,8 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // iOS reads launch images itself when the app is installed.
+        globIgnores: ['splash/**'],
       },
     }),
   ],
