@@ -271,7 +271,10 @@ function Expenses({ meta, state }: { meta: GroupMeta; state: GroupState }) {
                   <span>
                     {nameOf(state, s.from, meta.meId)} paid {objectName(state, s.to, meta.meId)}
                   </span>
-                  <span className="muted">{{ cash: 'Cash', bank: 'Bank transfer', other: 'Other', bitcoin: 'Bitcoin' }[s.method]}</span>
+                  <span className="muted">
+                    {{ cash: 'Cash', bank: 'Bank transfer', other: 'Other', bitcoin: 'Bitcoin' }[s.method]}
+                    {s.bitcoin && `, ${new Intl.NumberFormat().format(s.bitcoin.sats)} sats${s.bitcoin.preimage ? ', verified' : ''}`}
+                  </span>
                 </span>
                 <span className="amount">{money(s.amount, s.currency)}</span>
               </li>

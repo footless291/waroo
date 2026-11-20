@@ -120,3 +120,38 @@ describe('canonical signing bytes', () => {
     assert.ok(!withSigner.includes('signer'))
   })
 })
+
+describe('Lightning addresses', () => {
+  const claimBob = () => ev('bob', 5, 'KB', { type: 'member.claimed', memberId: 'bob', key: 'KB' })
+
+  it('lets a member set and clear their own address', () => {
+    const set = ev('bob', 6, 'KB', { type: 'member.updated', memberId: 'bob', lightningAddress: 'Bob@Example.com' })
+    let state = replay([...base(), claimBob(), set])
+    assert.equal(state.members.get('bob')!.lightningAddress, 'bob@example.com')
+    const clear = ev('bob', 7, 'KB', { type: 'member.updated', memberId: 'bob', lightningAddress: '' })
+    state = replay([...base(), claimBob(), set, clear])
+    assert.equal(state.members.get('bob')!.lightningAddress, undefined)
+  })
+
+  it('stops anyone setting someone else’s address', () => {
+    const hijack = ev('ana', 6, 'KA', { type: 'member.updated', memberId: 'bob', lightningAddress: 'ana@example.com' })
+    const state = replay([...base(), claimBob(), hijack])
+    assert.equal(state.members.get('bob')!.lightningAddress, undefined)
+    assert.match(state.rejected[0]!.reason, /themselves/)
+  })
+
+  it('stops an address being slipped in when adding someone', () => {
+    const sneaky = ev('ana', 5, 'KA', {
+      type: 'member.added',
+      member: { id: 'cai', name: 'Cai', lightningAddress: 'ana@example.com' },
+    })
+    assert.match(replay([...base(), sneaky]).rejected[0]!.reason, /themselves/)
+  })
+
+  it('rejects things that aren’t addresses', () => {
+    for (const bad of ['bob', 'bob@', '@example.com', 'bob@localhost', 'bob@exa mple.com', 'lnurl1dp68gurn8ghj7']) {
+      const e = ev('ana', 5, 'KA', { type: 'member.updated', memberId: 'ana', lightningAddress: bad })
+      assert.equal(replay([...base(), e]).members.get('ana')!.lightningAddress, undefined, bad)
+    }
+  })
+})

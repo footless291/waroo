@@ -2,7 +2,7 @@ import { replay, type GroupState, type LedgerEvent } from '@footless/ledger'
 import { useEffect, useState, type FormEvent } from 'react'
 import { Logo } from '../components/icons.tsx'
 import { isGroupKey, newSigningKeys } from '../lib/crypto.ts'
-import { append, getGroup, newId, saveJoinedGroup, type GroupMeta } from '../lib/db.ts'
+import { append, getGroup, newId, publishProfile, saveJoinedGroup, type GroupMeta } from '../lib/db.ts'
 import { go } from '../lib/hooks.ts'
 import { fetchGroup, syncHub } from '../lib/sync.ts'
 
@@ -95,6 +95,7 @@ export function JoinScreen({ params }: { params: URLSearchParams }) {
         ? { type: 'member.added', member: { id: meId, name: newName.trim(), key: publicKey } }
         : { type: 'member.claimed', memberId: meId, key: publicKey },
     ])
+    await publishProfile(groupId)
     await syncHub.ensure(groupId)
     go(`/g/${groupId}?joined=1`)
   }

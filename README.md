@@ -2,7 +2,7 @@
 
 Split bills any way you like, track who owes whom, and settle up in bitcoin, all shown in your own currency. No one ever holds your money, and the server can't read your groups.
 
-Status: early development. You can create groups, invite friends with a link, and everyone adds expenses from their own phone, with changes syncing live and end-to-end encrypted. Splits can be equal, by shares or exact; balances, suggested payments and "mark as paid" work. Bitcoin payments come next.
+Status: early development. You can create groups, invite friends with a link, and everyone adds expenses from their own phone, with changes syncing live and end-to-end encrypted. Splits can be equal, by shares or exact. Debts can be settled in bitcoin straight from your wallet to theirs, verified automatically, or marked as paid in cash or by bank transfer.
 
 ## Principles
 
@@ -18,8 +18,8 @@ Status: early development. You can create groups, invite friends with a link, an
 | --- | --- |
 | `packages/ledger` | Pure TypeScript ledger with no runtime dependencies: money handling, split methods, balances, settlements, suggested transfers, and the event-log replay. |
 | `apps/web` | The PWA: Vite + React, stores each group's event log in IndexedDB, installable and works offline. |
-| `worker` | The Cloudflare Worker: serves the app and runs the sync relay (one Durable Object per group). |
-| `docs` | [How sync works](docs/sync.md), [design system](docs/design.md). |
+| `worker` | The Cloudflare Worker: serves the app, runs the sync relay (one Durable Object per group) and the bitcoin price endpoint. |
+| `docs` | [How sync works](docs/sync.md), [paying in bitcoin](docs/payments.md), [design system](docs/design.md). |
 | `e2e` | Browser tests that act as several phones at once. |
 
 ## Development

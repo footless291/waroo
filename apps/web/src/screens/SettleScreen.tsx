@@ -1,5 +1,6 @@
 import { parseAmount, type SettlementMethod } from '@footless/ledger'
 import { useState, type FormEvent } from 'react'
+import { BitcoinPay } from '../components/BitcoinPay.tsx'
 import { Header } from '../components/Header.tsx'
 import { Segmented } from '../components/Segmented.tsx'
 import { append, newId } from '../lib/db.ts'
@@ -20,6 +21,7 @@ export function SettleScreen({ groupId, params }: { groupId: string; params: URL
   const suggested = Number(params.get('amount') ?? 0)
   const [amountText, setAmountText] = useState(suggested ? toInput(suggested, currency) : '')
   const [method, setMethod] = useState<SettlementMethod>('cash')
+  const [paidInBitcoin, setPaidInBitcoin] = useState(false)
 
   if (!group) return <main className="screen" />
   const { meta, state } = group
@@ -54,6 +56,7 @@ export function SettleScreen({ groupId, params }: { groupId: string; params: URL
         <label className="field">
           <span>Amount ({currency})</span>
           <input
+            readOnly={paidInBitcoin}
             className="amount-input"
             value={amountText}
             onChange={(e) => setAmountText(e.target.value)}
@@ -66,26 +69,29 @@ export function SettleScreen({ groupId, params }: { groupId: string; params: URL
             : ''}
         </p>
 
-        <section className="bitcoin">
-          <h2>Pay with bitcoin</h2>
-          <p>
-            Coming next: {from === meta.meId ? 'you pay' : `${fromName} pays`}{' '}
-            {amount > 0 ? money(amount, currency) : 'the amount'} from{' '}
-            {from === meta.meId ? 'your' : 'their'} own Lightning wallet straight to{' '}
-            {to === meta.meId ? 'yours' : `${toName}’s`}, and the payment is verified automatically.
-          </p>
-          <button type="button" className="button" disabled>
-            Connect a wallet
-          </button>
-        </section>
+        {from === meta.meId && (
+          <BitcoinPay
+            meta={meta}
+            state={state}
+            to={to}
+            amount={problem ? 0 : amount}
+            currency={currency}
+            onPaid={() => go(`/g/${meta.id}`)}
+            onRecorded={() => setPaidInBitcoin(true)}
+          />
+        )}
 
-        <fieldset className="field">
-          <legend>Or mark it as paid another way</legend>
-          <Segmented label="Payment method" options={METHODS} value={method} onChange={setMethod} />
-        </fieldset>
-        <button className="button primary" disabled={!!problem}>
-          Mark as paid
-        </button>
+        {!paidInBitcoin && (
+          <>
+            <fieldset className="field">
+              <legend>{from === meta.meId ? 'Or mark it as paid another way' : 'Mark it as paid'}</legend>
+              <Segmented label="Payment method" options={METHODS} value={method} onChange={setMethod} />
+            </fieldset>
+            <button className="button primary" disabled={!!problem}>
+              Mark as paid
+            </button>
+          </>
+        )}
       </form>
     </main>
   )

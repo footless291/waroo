@@ -44,18 +44,21 @@ export type StoredEvent = LedgerEvent & {
 interface FootlessDB extends DBSchema {
   groups: { key: string; value: GroupMeta }
   events: { key: string; value: StoredEvent; indexes: { byGroup: string } }
+  /** Things that stay on this phone: the wallet connection, your profile. */
+  settings: { key: string; value: unknown }
 }
 
 let dbPromise: Promise<IDBPDatabase<FootlessDB>> | undefined
 
 function db() {
-  dbPromise ??= openDB<FootlessDB>('footless', 2, {
+  dbPromise ??= openDB<FootlessDB>('footless', 3, {
     upgrade(database, oldVersion) {
       if (oldVersion < 1) {
         database.createObjectStore('groups', { keyPath: 'id' })
         database.createObjectStore('events', { keyPath: 'id' }).createIndex('byGroup', 'groupId')
       }
-      // Version 2 only adds optional fields; existing records stay valid.
+      // Version 2 only added optional fields; existing records stay valid.
+      if (oldVersion < 3) database.createObjectStore('settings')
     },
   })
   return dbPromise
@@ -72,6 +75,43 @@ export function subscribe(listener: (groupId?: string) => void) {
 export const notify = (groupId?: string) => listeners.forEach((l) => l(groupId))
 
 export const newId = () => crypto.randomUUID()
+
+export async function getSetting(key: string): Promise<unknown> {
+  return (await db()).get('settings', key)
+}
+
+export async function setSetting(key: string, value: unknown): Promise<void> {
+  const database = await db()
+  if (value === undefined) await database.delete('settings', key)
+  else await database.put('settings', value, key)
+  notify()
+}
+
+/** This person's Lightning address, as they set it on this phone. */
+export async function myLightningAddress(): Promise<string> {
+  return ((await getSetting('lightningAddress')) as string | undefined) ?? ''
+}
+
+/**
+ * Saves this person's Lightning address and tells every group they're in, so
+ * the others can pay them. Only groups where it differs get an update.
+ */
+export async function setMyLightningAddress(address: string): Promise<void> {
+  const clean = address.trim().toLowerCase()
+  await setSetting('lightningAddress', clean || undefined)
+  await publishProfile()
+}
+
+/** Brings every group up to date with this phone's profile. */
+export async function publishProfile(onlyGroupId?: string): Promise<void> {
+  const address = await myLightningAddress()
+  for (const group of await listGroups()) {
+    if (onlyGroupId && group.id !== onlyGroupId) continue
+    const me = replay(await getEvents(group.id)).members.get(group.meId)
+    if (!me || (me.lightningAddress ?? '') === address) continue
+    await append(group, [{ type: 'member.updated', memberId: group.meId, lightningAddress: address }])
+  }
+}
 
 export async function listGroups(): Promise<GroupMeta[]> {
   const groups = await (await db()).getAll('groups')
@@ -192,6 +232,7 @@ export async function createGroup(input: {
       (name): Draft => ({ type: 'member.added', member: { id: newId(), name } }),
     ),
   ])
+  await publishProfile(group.id)
   return group
 }
 

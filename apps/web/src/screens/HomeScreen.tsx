@@ -45,7 +45,17 @@ export function HomeScreen() {
   const groups = useGroups()
   return (
     <main className="screen">
-      <Header title="Footless" />
+      <Header
+        title="Footless"
+        action={
+          <a className="icon-button" href="#/you" aria-label="You: payment settings">
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 21a8 8 0 0 1 16 0" />
+            </svg>
+          </a>
+        }
+      />
       {groups && groups.length === 0 && (
         <section className="empty">
           <h2>Split anything with anyone</h2>

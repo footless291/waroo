@@ -578,10 +578,62 @@ input[type='checkbox'] {
   margin: 0;
   color: var(--hero-muted);
 }
-.bitcoin .button {
+.bitcoin .button:not(.primary) {
   background: transparent;
   border: 1.5px solid var(--hero-muted);
   color: var(--hero-text);
+}
+.bitcoin a:not(.button) {
+  color: var(--hero-number);
+}
+.bitcoin .muted {
+  color: var(--hero-muted);
+}
+.quote {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+}
+.quote div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.quote dt {
+  color: var(--hero-muted);
+}
+.quote dd {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.quote div:nth-child(2) dd {
+  color: var(--hero-number);
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+.qr-link {
+  align-self: center;
+  display: block;
+  padding: 10px;
+  border-radius: 16px;
+  background: #ffffff;
+  line-height: 0;
+}
+.bitcoin .qr {
+  width: min(260px, 70vw);
+}
+.bitcoin-done {
+  color: var(--hero-text) !important;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+.bitcoin-error {
+  padding: 12px 14px;
+  border-radius: var(--radius-field);
+  background: rgb(255 138 128 / 16%);
+  color: var(--hero-text) !important;
 }
 
 .toast {
@@ -750,4 +802,31 @@ input[type='checkbox'] {
 }
 .choice-text strong {
   font-weight: 600;
+}
+
+/* You screen */
+.settings-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: 20px;
+  border-radius: var(--radius-card);
+  background: var(--card);
+}
+.settings-card h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+.settings-card > p {
+  margin: 0;
+  color: var(--muted);
+}
+.field-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.header-action {
+  display: flex;
 }

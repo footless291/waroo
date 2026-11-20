@@ -37,6 +37,13 @@ export interface Member {
    * their place.
    */
   key?: string
+  /** Where this member receives bitcoin, e.g. "bob@walletofsatoshi.com". */
+  lightningAddress?: string
+}
+
+/** A Lightning address looks like an email address: name@domain.tld. */
+export function isLightningAddress(text: string): boolean {
+  return /^[a-z0-9._+-]{1,64}@(?=.{4,253}$)([a-z0-9-]{1,63}\.)+[a-z]{2,63}$/i.test(text)
 }
 
 interface EventBase {
@@ -66,6 +73,11 @@ export type LedgerEvent = EventBase &
      */
     | { type: 'member.added'; member: Member }
     | { type: 'member.renamed'; memberId: PersonId; name: string }
+    /**
+     * A member updates their own details. Only they can: how someone gets
+     * paid is never set by anyone else. An empty address removes it.
+     */
+    | { type: 'member.updated'; memberId: PersonId; lightningAddress?: string }
     /** A phone takes the place of a member who hasn't joined on a phone yet. */
     | { type: 'member.claimed'; memberId: PersonId; key: string }
     /** Sets the group's name and/or main currency. */
@@ -217,6 +229,10 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
         else if (founding && e.member.id !== e.author) reject(e, 'The founder must add themselves')
         else if (!founding && !selfJoin && e.member.key !== undefined) {
           reject(e, 'Only the person themselves can add their key')
+        } else if (!founding && !selfJoin && e.member.lightningAddress !== undefined) {
+          reject(e, 'Only people themselves can set how they get paid')
+        } else if (e.member.lightningAddress !== undefined && !isLightningAddress(e.member.lightningAddress)) {
+          reject(e, 'Not a Lightning address')
         } else if (!e.member.name.trim()) reject(e, 'A person needs a name')
         else state.members.set(e.member.id, { ...e.member })
         break
@@ -224,6 +240,16 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
       case 'member.claimed':
         state.members.get(e.memberId)!.key = e.key
         break
+
+      case 'member.updated': {
+        const member = state.members.get(e.memberId)
+        if (!member) reject(e, 'No such member')
+        else if (e.memberId !== e.author) reject(e, 'Only people themselves can change how they get paid')
+        else if (e.lightningAddress === undefined || e.lightningAddress === '') delete member.lightningAddress
+        else if (!isLightningAddress(e.lightningAddress)) reject(e, 'Not a Lightning address')
+        else member.lightningAddress = e.lightningAddress.toLowerCase()
+        break
+      }
 
       case 'group.updated':
         if (e.currency !== undefined && !isKnownCurrency(e.currency)) {

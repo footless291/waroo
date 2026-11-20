@@ -1,6 +1,6 @@
-import { encode } from 'uqr'
 import { useEffect, useState } from 'react'
 import { Header } from '../components/Header.tsx'
+import { QrCode } from '../components/QrCode.tsx'
 import { makeShareable, type GroupMeta } from '../lib/db.ts'
 import { go, useGroup } from '../lib/hooks.ts'
 import { syncHub } from '../lib/sync.ts'
@@ -9,18 +9,6 @@ import { syncHub } from '../lib/sync.ts'
 export function inviteLink(group: GroupMeta): string {
   const params = new URLSearchParams({ g: group.id, k: group.key!, from: group.meId })
   return `${location.origin}/#/join?${params}`
-}
-
-function QrCode({ text }: { text: string }) {
-  const { data, size } = encode(text, { border: 2 })
-  const cells: string[] = []
-  data.forEach((row, y) => row.forEach((dark, x) => dark && cells.push(`M${x} ${y}h1v1h-1z`)))
-  return (
-    <svg className="qr" viewBox={`0 0 ${size} ${size}`} role="img" aria-label="QR code for the invite link">
-      <rect width={size} height={size} fill="#ffffff" />
-      <path d={cells.join('')} fill="#16121f" shapeRendering="crispEdges" />
-    </svg>
-  )
 }
 
 export function InviteScreen({ groupId }: { groupId: string }) {
@@ -86,7 +74,7 @@ export function InviteScreen({ groupId }: { groupId: string }) {
         </p>
         {showQr && link && (
           <div className="qr-box">
-            <QrCode text={link} />
+            <QrCode text={link} label="QR code for the invite link" />
             <p className="muted">Scan with the other phone’s camera.</p>
           </div>
         )}
