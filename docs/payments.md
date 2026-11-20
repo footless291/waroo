@@ -10,7 +10,7 @@ Debts in Footless are in ordinary money (yen, dollars). Bitcoin is just how a de
 
 ## What happens when you pay
 
-1. **Price.** The phone asks Footless's Worker for the bitcoin price (`/relay/rate`). The Worker asks two independent sources (CoinGecko and Coinbase), and refuses if they disagree by more than 3%. Going through the Worker means the price sites never see who's paying.
+1. **Price.** The phone asks Footless's Worker for the bitcoin price (`/relay/rate`). The Worker asks exchanges with a real market in that currency (for yen: Kraken, bitFlyer, bitbank and Coincheck), plus a cross-check for any currency: bitcoin's US-dollar price from several exchanges times the ECB exchange rate. It answers only when at least two sources agree within 2%, using the middle one, and never trusts a single source. Each source's answer is included in the response and logged. Going through the Worker means the price sites never see who's paying.
 2. **Amount.** `fiatToSats` converts with exact integer arithmetic and rounds up, so the receiver is never short.
 3. **Invoice.** The phone asks the receiver's Lightning address provider (LNURL-pay) for an invoice for exactly that many sats. It talks to the provider directly.
 4. **Checks before paying.** The invoice must be for exactly the amount asked, match the provider's description (its description hash), have a valid payment hash, and not be about to expire. Anything else is refused and nothing is paid.
@@ -24,7 +24,7 @@ If the wallet reports an error, or reports success with a proof that doesn't che
 ## Limits and known gaps
 
 - **Lightning addresses that don't allow web apps.** Some providers don't send the headers browsers need, so the phone can't fetch an invoice. The app says so plainly. A server-side fallback was deliberately left out: it would put Footless in the middle of payments and could be abused as an open proxy.
-- **Price sources.** If both are down, paying in bitcoin is paused until they're back.
+- **Price sources.** If fewer than two sources agree, paying in bitcoin pauses with a message rather than risk a wrong price. On Nov 20, 2026, Coinbase's BTC-JPY "spot" price read ¥35.6M against a real ¥9.85M (Coinbase has no real yen market), and CoinGecko refuses requests from Cloudflare's servers; both were dropped for that reason. Currencies other than USD, EUR, GBP, JPY, CAD, AUD and CHF currently rely on the dollar cross-check alone, so they pause until a second source is added.
 - **Tax records.** Every bitcoin settlement already carries what a tax record needs (date, amount in yen, sats, rate, source). An export screen is still to come.
 
 ## Testing
