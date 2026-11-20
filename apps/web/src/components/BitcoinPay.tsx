@@ -19,6 +19,14 @@ type Phase =
 
 const satsText = (n: number) => `${new Intl.NumberFormat(locale()).format(n)} sats`
 
+/** "from Kraken, bitFlyer and 2 more" */
+const sourcesText = (source: string) => {
+  const names = source.split('+')
+  return names.length <= 3
+    ? `from ${names.join(', ')}`
+    : `from ${names.slice(0, 2).join(', ')} and ${names.length - 2} more`
+}
+
 const pricePerBitcoin = (price: string, currency: string) =>
   new Intl.NumberFormat(locale(), { style: 'currency', currency, maximumFractionDigits: 0 }).format(Number(price))
 
@@ -169,7 +177,7 @@ export function BitcoinPay(props: {
               <dt>Price</dt>
               <dd>
                 {pricePerBitcoin(phase.quote.price, currency)} per bitcoin
-                <span className="quote-source">from {phase.quote.source.split('+').join(', ')}</span>
+                <span className="quote-source">{sourcesText(phase.quote.source)}</span>
               </dd>
             </div>
           </dl>

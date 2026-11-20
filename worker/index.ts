@@ -44,7 +44,9 @@ export default {
 } satisfies ExportedHandler<Env>
 
 /**
- * The price of one bitcoin in a currency, from three independent sources.
+ * The price of one bitcoin in a currency, from several independent sources:
+ * exchanges with a real market in that currency, plus a cross-check through
+ * the US dollar.
  * Fetched here rather than by phones so the price sites never see who's
  * paying. Cached for a minute. Answers only when at least two sources agree
  * within 2%; one source alone is never trusted. Every source's answer is
@@ -55,7 +57,7 @@ async function rate(url: URL): Promise<Response> {
   if (!/^[A-Z]{3}$/.test(currency)) return Response.json({ error: 'Bad currency' }, { status: 400 })
 
   const cache = caches.default
-  const cacheKey = new Request(`${url.origin}/relay/rate?v=2&currency=${currency}`, { method: 'GET' })
+  const cacheKey = new Request(`${url.origin}/relay/rate?v=3&currency=${currency}`, { method: 'GET' })
   const hit = await cache.match(cacheKey)
   if (hit) return hit
 
@@ -78,21 +80,26 @@ async function rate(url: URL): Promise<Response> {
     }
     return null
   }
-  const lower = currency.toLowerCase()
-  const quotes = (
-    await Promise.all([
-      get('CoinGecko', `https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=${lower}`, (j) => j?.bitcoin?.[lower]),
-      // Coinbase echoes the pair back; check it's the one asked for.
-      get('Coinbase', `https://api.coinbase.com/v2/prices/BTC-${currency}/spot`, (j) =>
-        j?.data?.base === 'BTC' && j?.data?.currency === currency ? j.data.amount : undefined,
+  const quotes = (await Promise.all(priceSources(currency).map((src) => get(src.name, src.url, src.pick)))).filter(
+    (q): q is Quote => q !== null,
+  )
+
+  // A cross-check that works for any currency: bitcoin in US dollars from
+  // several exchanges, times the official dollar exchange rate.
+  if (currency !== 'USD') {
+    const [usd, fx] = await Promise.all([
+      Promise.all(USD_SOURCES.map((src) => get(src.name, src.url, src.pick))),
+      get('ECB rate', `https://api.frankfurter.app/latest?from=USD&to=${currency}`, (j) =>
+        j?.base === 'USD' ? j?.rates?.[currency] : undefined,
       ),
-      // Kraken lists one pair per currency it supports, under its own name.
-      get('Kraken', `https://api.kraken.com/0/public/Ticker?pair=XBT${currency}`, (j) => {
-        const pairs = Object.values(j?.result ?? {}) as { c?: [string, string] }[]
-        return pairs.length === 1 ? pairs[0]?.c?.[0] : undefined
-      }),
     ])
-  ).filter((q): q is Quote => q !== null)
+    const usdAgreed = agree(usd.filter((q): q is Quote => q !== null))
+    if (usdAgreed.ok && fx) {
+      quotes.push({ name: 'USD cross-check', price: usdAgreed.price * fx.price })
+    } else if (!usdAgreed.ok) {
+      failures['USD cross-check'] = usdAgreed.reason
+    }
+  }
 
   const result = agree(quotes)
   console.log(JSON.stringify({ rate: currency, quotes, failures, result: result.ok ? result.price : result.reason }))
@@ -117,6 +124,59 @@ async function rate(url: URL): Promise<Response> {
   const response = Response.json(body, { headers: { 'Cache-Control': 'public, max-age=60' } })
   await cache.put(cacheKey, response.clone())
   return response
+}
+
+type Source = { name: string; url: string; pick: (j: any) => unknown }
+
+/** Bitcoin in US dollars, for the cross-check. */
+const USD_SOURCES: Source[] = [
+  { name: 'Kraken USD', url: 'https://api.kraken.com/0/public/Ticker?pair=XBTUSD', pick: kraken },
+  {
+    name: 'Coinbase USD',
+    url: 'https://api.coinbase.com/v2/prices/BTC-USD/spot',
+    pick: (j) => (j?.data?.base === 'BTC' && j?.data?.currency === 'USD' ? j.data.amount : undefined),
+  },
+  { name: 'Bitstamp USD', url: 'https://www.bitstamp.net/api/v2/ticker/btcusd/', pick: (j) => j?.last },
+]
+
+function kraken(j: any): unknown {
+  const pairs = Object.values(j?.result ?? {}) as { c?: [string, string] }[]
+  return pairs.length === 1 ? pairs[0]?.c?.[0] : undefined
+}
+
+/**
+ * Exchanges that really trade bitcoin against this currency. Only real
+ * markets: a "spot price" an exchange derives for a currency it doesn't
+ * trade (Coinbase's BTC-JPY, for one) can be badly wrong.
+ */
+function priceSources(currency: string): Source[] {
+  const sources: Source[] = []
+  if (['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF'].includes(currency)) {
+    sources.push({ name: 'Kraken', url: `https://api.kraken.com/0/public/Ticker?pair=XBT${currency}`, pick: kraken })
+  }
+  if (currency === 'JPY') {
+    sources.push(
+      {
+        name: 'bitFlyer',
+        url: 'https://api.bitflyer.com/v1/ticker?product_code=BTC_JPY',
+        pick: (j) => (j?.product_code === 'BTC_JPY' ? j.ltp : undefined),
+      },
+      { name: 'bitbank', url: 'https://public.bitbank.cc/btc_jpy/ticker', pick: (j) => (j?.success === 1 ? j?.data?.last : undefined) },
+      { name: 'Coincheck', url: 'https://coincheck.com/api/ticker?pair=btc_jpy', pick: (j) => j?.last },
+    )
+  }
+  if (['USD', 'EUR', 'GBP'].includes(currency)) {
+    const pair = `btc${currency.toLowerCase()}`
+    sources.push({ name: 'Bitstamp', url: `https://www.bitstamp.net/api/v2/ticker/${pair}/`, pick: (j) => j?.last })
+  }
+  if (currency === 'USD') {
+    sources.push({
+      name: 'Coinbase',
+      url: 'https://api.coinbase.com/v2/prices/BTC-USD/spot',
+      pick: (j) => (j?.data?.base === 'BTC' && j?.data?.currency === 'USD' ? j.data.amount : undefined),
+    })
+  }
+  return sources
 }
 
 type ClientMessage =
