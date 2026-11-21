@@ -38,7 +38,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await page.click('.setup button:has-text("Save")');
   check(await waitText('.setup', 'Friends can pay you at anna@coinos.io'), 'a real username is saved as the address');
   check(await waitText('.setup', 'Copy NWC'), 'step 3 lists the taps for a connection');
-  check((await page.getAttribute('.setup a:has-text("Open Coinos Settings")', 'href')) === 'https://coinos.io/settings', 'and opens Coinos Settings directly');
+  check((await page.getAttribute('.setup a:has-text("Open Coinos Nostr settings")', 'href')) === 'https://coinos.io/settings/nostr', 'and opens Coinos’s Nostr settings directly');
 
   await page.evaluate(() => navigator.clipboard.writeText('not a connection'));
   await page.click('.setup button:has-text("Paste")');

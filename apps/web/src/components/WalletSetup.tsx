@@ -7,7 +7,7 @@ import { connectNwc, type WalletInfo } from '../lib/wallet.ts'
 const COINOS = {
   name: 'Coinos',
   signup: 'https://coinos.io/register',
-  settings: 'https://coinos.io/settings',
+  nostrSettings: 'https://coinos.io/settings/nostr',
   domain: 'coinos.io',
 }
 
@@ -146,18 +146,15 @@ export function WalletSetup({
               </p>
               <ol className="substeps">
                 <li>
-                  Open {COINOS.name} Settings and tap <strong>Nostr</strong>.
-                </li>
-                <li>
-                  Tap <strong>New connection</strong>, name it Footless, and set a budget if you like.
+                  Open {COINOS.name}’s Nostr settings, then tap <strong>New connection</strong>, name it Footless, and set a budget if you like.
                 </li>
                 <li>
                   Tap <strong>Submit</strong>, then <strong>Copy NWC</strong>.
                 </li>
                 <li>Come back here and tap Paste.</li>
               </ol>
-              <a className="button outline small" href={COINOS.settings} target="_blank" rel="noopener noreferrer">
-                Open {COINOS.name} Settings
+              <a className="button outline small" href={COINOS.nostrSettings} target="_blank" rel="noopener noreferrer">
+                Open {COINOS.name} Nostr settings
               </a>
               <form className="field-stack" onSubmit={connect}>
                 <label className="field">
