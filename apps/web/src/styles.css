@@ -1128,3 +1128,11 @@ input[type='checkbox'] {
 .setup-steps .button.small {
   margin-bottom: var(--space-3);
 }
+.substeps {
+  margin: 0 0 var(--space-3);
+  padding-left: 1.2em;
+  line-height: 1.55;
+}
+.substeps li + li {
+  margin-top: 4px;
+}

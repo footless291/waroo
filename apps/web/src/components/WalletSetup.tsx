@@ -4,7 +4,12 @@ import { setMyLightningAddress } from '../lib/db.ts'
 import { connectNwc, type WalletInfo } from '../lib/wallet.ts'
 
 /** The wallet we suggest to people who don't have one: free, username and password, no email. */
-const COINOS = { name: 'Coinos', signup: 'https://coinos.io/register', site: 'https://coinos.io', domain: 'coinos.io' }
+const COINOS = {
+  name: 'Coinos',
+  signup: 'https://coinos.io/register',
+  settings: 'https://coinos.io/settings',
+  domain: 'coinos.io',
+}
 
 /** "anna" or "anna@coinos.io" → "anna@coinos.io"; null if it can't be a Coinos username. */
 function coinosAddress(text: string): string | null {
@@ -137,11 +142,22 @@ export function WalletSetup({
             <>
               <p>
                 Without this, paying opens {COINOS.name} so you can approve it there, which works fine. To pay without
-                switching apps: in {COINOS.name}, open your account settings, find <strong>Nostr Wallet Connect</strong>,
-                copy the connection (it starts with nostr+walletconnect://) and paste it here.
+                switching apps, make a connection for Footless in {COINOS.name}:
               </p>
-              <a className="button outline small" href={COINOS.site} target="_blank" rel="noopener noreferrer">
-                Open {COINOS.name}
+              <ol className="substeps">
+                <li>
+                  Open {COINOS.name} Settings and tap <strong>Nostr</strong>.
+                </li>
+                <li>
+                  Tap <strong>New connection</strong>, name it Footless, and set a budget if you like.
+                </li>
+                <li>
+                  Tap <strong>Submit</strong>, then <strong>Copy NWC</strong>.
+                </li>
+                <li>Come back here and tap Paste.</li>
+              </ol>
+              <a className="button outline small" href={COINOS.settings} target="_blank" rel="noopener noreferrer">
+                Open {COINOS.name} Settings
               </a>
               <form className="field-stack" onSubmit={connect}>
                 <label className="field">
