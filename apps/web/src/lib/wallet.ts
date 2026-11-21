@@ -82,11 +82,39 @@ export async function payWithWallet(wallet: WalletInfo, invoice: string): Promis
     await window.webln.enable()
     return (await window.webln.sendPayment(invoice)).preimage
   }
-  const { NWCClient } = await import('@getalby/sdk/nwc')
-  const client = new NWCClient({ nostrWalletConnectUrl: wallet.url })
+  const nwc = await import('@getalby/sdk/nwc')
+  const client = new nwc.NWCClient({ nostrWalletConnectUrl: wallet.url })
   try {
     return (await client.payInvoice({ invoice })).preimage
+  } catch (err) {
+    throw new Error(explainNwcError(err, nwc, wallet.name), { cause: err })
   } finally {
     client.close()
   }
+}
+
+/**
+ * Says which step of a wallet payment failed, in plain words, with the
+ * technical reason after it so a failure can be diagnosed from a screenshot.
+ */
+function explainNwcError(err: unknown, nwc: typeof import('@getalby/sdk/nwc'), name: string): string {
+  const detail = err instanceof Error ? err.message : String(err)
+  const code = (err as { code?: string })?.code
+  const tech = ` (${[code, detail].filter(Boolean).join(': ')})`
+  if (err instanceof nwc.Nip47PublishTimeoutError || err instanceof nwc.Nip47PublishError || err instanceof nwc.Nip47NetworkError) {
+    return `Footless couldn’t reach ${name}’s connection server, so the request wasn’t sent${tech}`
+  }
+  if (err instanceof nwc.Nip47ReplyTimeoutError) {
+    return `${name} got the request but didn’t answer within a minute${tech}`
+  }
+  if (err instanceof nwc.Nip47UnsupportedEncryptionError || err instanceof nwc.Nip47ResponseDecodingError) {
+    return `${name} answered in a way Footless couldn’t read${tech}`
+  }
+  if (err instanceof nwc.Nip47WalletError) {
+    if (code === 'INSUFFICIENT_BALANCE') return `${name} doesn’t have enough in it for this payment`
+    if (code === 'QUOTA_EXCEEDED') return `This would go over the spending limit you set for Footless in ${name}`
+    if (code === 'RESTRICTED' || code === 'UNAUTHORIZED') return `${name} didn’t allow Footless to pay${tech}`
+    return `${name} said: ${detail}${code ? ` (${code})` : ''}`
+  }
+  return `The payment through ${name} failed${tech}`
 }

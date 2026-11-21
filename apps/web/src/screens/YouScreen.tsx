@@ -2,6 +2,7 @@ import { isLightningAddress } from '@footless/ledger'
 import { useEffect, useState, type FormEvent } from 'react'
 import { Header } from '../components/Header.tsx'
 import { NotificationsCard } from '../components/NotificationsCard.tsx'
+import { WalletSetup } from '../components/WalletSetup.tsx'
 import { myLightningAddress, setMyLightningAddress } from '../lib/db.ts'
 import { connectNwc, connectWebln, connectedWallet, disconnectWallet, hasWebln, type WalletInfo } from '../lib/wallet.ts'
 
@@ -13,13 +14,16 @@ export function YouScreen() {
   const [nwc, setNwc] = useState('')
   const [walletNote, setWalletNote] = useState('')
   const [busy, setBusy] = useState(false)
+  // People with nothing set up get the guided Coinos setup; it stays while they work through it.
+  const [guide, setGuide] = useState<boolean>()
 
   useEffect(() => {
-    void myLightningAddress().then((a) => {
+    void Promise.all([myLightningAddress(), connectedWallet()]).then(([a, w]) => {
       setAddress(a)
       setSavedAddress(a)
+      setWallet(w ?? null)
+      setGuide(!a && !w)
     })
-    void connectedWallet().then((w) => setWallet(w ?? null))
   }, [])
 
   const trimmed = address.trim()
@@ -64,6 +68,20 @@ export function YouScreen() {
     <main className="screen">
       <Header title="You" back="/" />
       <div className="form">
+        {guide && (
+          <WalletSetup
+            address={savedAddress ?? ''}
+            wallet={wallet}
+            onAddress={(a) => {
+              setAddress(a)
+              setSavedAddress(a)
+            }}
+            onWallet={setWallet}
+            onOwnWallet={() => setGuide(false)}
+          />
+        )}
+        {guide === false && (
+        <>
         <form className="settings-card" onSubmit={saveAddress}>
           <h2>Get paid in bitcoin</h2>
           <p>
@@ -150,6 +168,9 @@ export function YouScreen() {
             {walletNote}
           </p>
         </section>
+
+        </>
+        )}
 
         <NotificationsCard />
 

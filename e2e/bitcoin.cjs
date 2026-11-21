@@ -115,6 +115,8 @@ let walletLies = false;
 
   // Bob adds his Lightning address on the You screen
   await bob.goto(B + '#/you');
+  check(await bob.waitForSelector('.setup:has-text("Set up bitcoin")', { timeout: 4000 }).then(() => true, () => false), 'someone with no wallet gets the guided setup');
+  await bob.click('button:has-text("I already have a wallet")');
   await bob.fill('input[placeholder="you@walletofsatoshi.com"]', 'not an address');
   check(await waitText(bob, 'main', 'doesn’t look like a Lightning address'), 'You screen rejects a bad address');
   await bob.fill('input[placeholder="you@walletofsatoshi.com"]', 'Bob@pay.example.com');
@@ -125,6 +127,7 @@ let walletLies = false;
 
   // Ana connects her browser wallet
   await ana.goto(B + '#/you');
+  await ana.click('button:has-text("I already have a wallet")');
   await ana.click('button:has-text("Use my browser wallet")');
   check(await waitText(ana, 'main', 'Connected to Test Wallet'), 'Ana connects her wallet');
   await ana.goBack(); await ana.waitForTimeout(500);
@@ -175,7 +178,7 @@ let walletLies = false;
   await ana.click('.hero a:has-text("Settle up")');
   await ana.click('.bitcoin button:has-text("with bitcoin")');
   await waitText(ana, '.quote', 'sats');
-  await ana.click('.bitcoin button:has-text("Use another wallet app")');
+  await ana.click('.bitcoin a:has-text("Open another wallet app")');
   check(await ana.isVisible('.bitcoin svg.qr'), 'shows a QR code for another wallet app');
   check(await waitText(ana, '.bitcoin', 'Waiting for the payment'), 'waits for the payment');
   await shot(ana, '5-external');

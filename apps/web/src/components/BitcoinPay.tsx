@@ -110,7 +110,7 @@ export function BitcoinPay(props: {
       // The wallet may or may not have sent it; never let someone pay twice blindly.
       setPhase({
         at: 'error',
-        message: `Your wallet said: ${(err as Error).message || 'the payment didn’t go through'}.`,
+        message: `${(err as Error).message || 'The payment didn’t go through'}.`,
         checkWallet: true,
       })
       return
@@ -183,11 +183,12 @@ export function BitcoinPay(props: {
           </dl>
           {phase.at === 'external' ? (
             <>
-              <a className="qr-link" href={`lightning:${phase.quote.invoice.invoice}`} aria-label="Open in your wallet app">
-                <QrCode text={`lightning:${phase.quote.invoice.invoice.toUpperCase()}`} label="QR code to pay with a wallet app" />
-              </a>
               <a className="button primary" href={`lightning:${phase.quote.invoice.invoice}`}>
                 Open in wallet app
+              </a>
+              <p className="muted">Or scan it with a wallet on another phone:</p>
+              <a className="qr-link" href={`lightning:${phase.quote.invoice.invoice}`} aria-label="Open in your wallet app">
+                <QrCode text={`lightning:${phase.quote.invoice.invoice.toUpperCase()}`} label="QR code to pay with a wallet app" />
               </a>
               <button
                 type="button"
@@ -207,24 +208,33 @@ export function BitcoinPay(props: {
                 </>
               )}
             </>
-          ) : wallet ? (
-            <>
-              <button
-                type="button"
-                className="button primary"
-                disabled={phase.at === 'paying'}
-                onClick={() => void pay(phase.quote)}
-              >
-                {phase.at === 'paying' ? 'Paying…' : `Pay with ${wallet.name}`}
-              </button>
-              <button type="button" className="button outline" onClick={() => setPhase({ at: 'external', quote: phase.quote })}>
-                Use another wallet app
-              </button>
-            </>
           ) : (
-            <button type="button" className="button primary" onClick={() => setPhase({ at: 'external', quote: phase.quote })}>
-              Pay with a wallet app
-            </button>
+            <>
+              {wallet && (
+                <button
+                  type="button"
+                  className="button primary"
+                  disabled={phase.at === 'paying'}
+                  onClick={() => void pay(phase.quote)}
+                >
+                  {phase.at === 'paying' ? 'Paying…' : `Pay with ${wallet.name}`}
+                </button>
+              )}
+              {/* Hands the invoice to whatever wallet app is installed, and waits for it here. */}
+              <a
+                className={`button ${wallet ? 'outline' : 'primary'}`}
+                href={`lightning:${phase.quote.invoice.invoice}`}
+                aria-disabled={phase.at === 'paying'}
+                onClick={() => setPhase({ at: 'external', quote: phase.quote })}
+              >
+                {wallet ? 'Open another wallet app' : 'Open in wallet app'}
+              </a>
+              {!wallet && (
+                <button type="button" className="link" onClick={() => setPhase({ at: 'external', quote: phase.quote })}>
+                  Paying from another phone? Show a QR code
+                </button>
+              )}
+            </>
           )}
         </>
       ) : (
@@ -249,7 +259,7 @@ export function BitcoinPay(props: {
           </button>
           {wallet === null && (
             <p className="muted">
-              Tip: <a href="#/you">connect your wallet</a> to pay in one tap.
+              Tip: <a href="#/you">set up one-tap payments</a>, so you don’t have to switch apps.
             </p>
           )}
         </>

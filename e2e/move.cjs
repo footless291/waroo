@@ -46,6 +46,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await old.fill('input[placeholder="Ana"]', 'Ana');
   await old.click('text=Create group'); await old.waitForTimeout(400);
   await old.goto(B + '#/you');
+  await old.click('button:has-text("I already have a wallet")');
   await old.fill('input[placeholder="you@walletofsatoshi.com"]', 'ana@pay.example.com');
   await old.click('form.settings-card button:has-text("Save")'); await old.waitForTimeout(500);
 

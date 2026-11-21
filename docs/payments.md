@@ -30,3 +30,14 @@ If the wallet reports an error, or reports success with a proof that doesn't che
 ## Testing
 
 `e2e/bitcoin.cjs` runs the whole flow against a simulated Lightning world: a fake provider issuing real signed invoices and a fake wallet. It covers setting an address, connecting a wallet, a provider asking for the wrong amount, a wallet with a bad proof, a successful payment seen on both phones, and paying from another app with automatic confirmation. No real money is involved.
+
+
+## Wallets for people who don't have one
+
+The You screen walks someone with no wallet through Coinos (free, username and password, no email): make an account, type the username (Footless checks `username@coinos.io` exists and saves it as the Lightning address), then optionally paste a Nostr Wallet Connect connection for one-tap payments. Coinos was chosen because it gives both a Lightning address and NWC, needs no email, and worked reliably on both ends in testing. It's custodial: Coinos holds the money; Footless still never does.
+
+Paying doesn't need NWC. Without it, "Open in wallet app" hands the invoice to whichever wallet is installed (Wallet of Satoshi, Phoenix, anything) and Footless waits for the payment, confirming it automatically where the recipient's provider supports LUD-21.
+
+When a connected wallet fails, the error says which step failed (couldn't reach the wallet's relay, no reply within a minute, a reply that couldn't be read, or the wallet's own refusal) with the technical code, so failures can be diagnosed from a screenshot.
+
+Possible upgrade: Rizful's onboarding flow returns both an NWC connection and a Lightning address from a one-time code, called from the browser (see github.com/MegalithicBTC/rizful-integration-demo). It needs an email address.
