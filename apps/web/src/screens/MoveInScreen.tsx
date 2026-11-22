@@ -34,7 +34,8 @@ export function MoveInScreen({ params }: { params: URLSearchParams }) {
             } else if (msg.type === 'groups' && !finished) {
               setPhase({ at: 'receiving' })
               try {
-                const moved = await receiveGroups(msg.groups, keys, publicKey, msg.lightningAddress)
+                const addresses = msg.lightningAddresses ?? (msg.lightningAddress ? [msg.lightningAddress] : [])
+                const moved = await receiveGroups(msg.groups, keys, publicKey, addresses)
                 await channel?.send({ from: 'new', type: 'done', moved })
                 finished = true
                 channel?.close()

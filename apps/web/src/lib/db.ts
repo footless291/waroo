@@ -3,7 +3,7 @@
  * IndexedDB. Sync reads and writes these same events; nothing here talks to
  * the network.
  */
-import { replay, type CurrencyCode, type LedgerEvent, type PersonId } from '@footless/ledger'
+import { receiveAddresses, replay, type CurrencyCode, type LedgerEvent, type PersonId } from '@footless/ledger'
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb'
 import { newGroupKey, newSigningKeys, sign } from './crypto.ts'
 
@@ -104,29 +104,28 @@ export async function setSetting(key: string, value: unknown): Promise<void> {
   notify()
 }
 
-/** This person's Lightning address, as they set it on this phone. */
-export async function myLightningAddress(): Promise<string> {
-  return ((await getSetting('lightningAddress')) as string | undefined) ?? ''
-}
-
 /**
- * Saves this person's Lightning address and tells every group they're in, so
- * the others can pay them. Only groups where it differs get an update.
+ * Where this person receives bitcoin, in order, as set on this phone. Kept
+ * with the rest of their wallets (lib/wallets.ts); phones from before lists
+ * existed kept a single address.
  */
-export async function setMyLightningAddress(address: string): Promise<void> {
-  const clean = address.trim().toLowerCase()
-  await setSetting('lightningAddress', clean || undefined)
-  await publishProfile()
+export async function myLightningAddresses(): Promise<string[]> {
+  const list = (await getSetting('receiveWallets')) as { address: string }[] | undefined
+  if (list) return list.map((w) => w.address)
+  const old = (await getSetting('lightningAddress')) as string | undefined
+  return old ? [old] : []
 }
 
-/** Brings every group up to date with this phone's profile. */
+/** Brings every group up to date with this phone's addresses. Only groups where they differ get an update. */
 export async function publishProfile(onlyGroupId?: string): Promise<void> {
-  const address = await myLightningAddress()
+  const addresses = await myLightningAddresses()
   for (const group of await listGroups()) {
     if (onlyGroupId && group.id !== onlyGroupId) continue
     const me = replay(await getEvents(group.id)).members.get(group.meId)
-    if (!me || (me.lightningAddress ?? '') === address) continue
-    await append(group, [{ type: 'member.updated', memberId: group.meId, lightningAddress: address }])
+    if (!me || me.left || receiveAddresses(me).join(' ') === addresses.join(' ')) continue
+    await append(group, [
+      { type: 'member.updated', memberId: group.meId, lightningAddress: addresses[0] ?? '', lightningAddresses: addresses },
+    ])
   }
 }
 

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
-import { canonicalJson, replay, signingBytes, type Expense, type LedgerEvent } from '../src/index.ts'
+import { canonicalJson, receiveAddresses, replay, signingBytes, type Expense, type LedgerEvent } from '../src/index.ts'
 
 let n = 0
 const ev = (author: string, clock: number, signer: string | undefined, body: Record<string, unknown>) =>
@@ -254,5 +254,27 @@ describe('names and leaving', () => {
     assert.equal(state.expenses.has('dinner'), false)
     assert.equal(state.rejected.length, 4)
     for (const r of state.rejected) assert.match(r.reason, /left the group/)
+  })
+})
+
+describe('several Lightning addresses', () => {
+  const claimed = () => [...base(), ev('bob', 5, 'KB', { type: 'member.claimed', memberId: 'bob', key: 'KB' })]
+  it('keeps an ordered list, and the first is the main address', () => {
+    const update = ev('bob', 6, 'KB', { type: 'member.updated', memberId: 'bob', lightningAddress: 'Bob@coinos.io', lightningAddresses: ['Bob@coinos.io', 'bob@rizful.com', 'bob@coinos.io'] })
+    const bob = replay([...claimed(), update]).members.get('bob')!
+    assert.deepEqual(receiveAddresses(bob), ['bob@coinos.io', 'bob@rizful.com'])
+    assert.equal(bob.lightningAddress, 'bob@coinos.io')
+  })
+  it('still reads a single address from older phones', () => {
+    const update = ev('bob', 6, 'KB', { type: 'member.updated', memberId: 'bob', lightningAddress: 'bob@wos.com' })
+    assert.deepEqual(receiveAddresses(replay([...claimed(), update]).members.get('bob')), ['bob@wos.com'])
+  })
+  it('rejects a list with anything that isn’t an address, and clears with an empty list', () => {
+    const set = ev('bob', 6, 'KB', { type: 'member.updated', memberId: 'bob', lightningAddresses: ['bob@coinos.io'] })
+    const bad = ev('bob', 7, 'KB', { type: 'member.updated', memberId: 'bob', lightningAddresses: ['bob@coinos.io', 'nope'] })
+    const state = replay([...claimed(), set, bad])
+    assert.deepEqual(receiveAddresses(state.members.get('bob')), ['bob@coinos.io'])
+    const clear = ev('bob', 8, 'KB', { type: 'member.updated', memberId: 'bob', lightningAddresses: [] })
+    assert.deepEqual(receiveAddresses(replay([...claimed(), set, clear]).members.get('bob')), [])
   })
 })

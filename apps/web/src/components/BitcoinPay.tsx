@@ -1,18 +1,22 @@
-import { fiatToSats, type GroupState } from '@footless/ledger'
+import { fiatToSats, receiveAddresses, type GroupState } from '@footless/ledger'
 import { useEffect, useState } from 'react'
 import { append, newId, type GroupMeta } from '../lib/db.ts'
 import { money } from '../lib/format.ts'
 import { locale } from '../lib/hooks.ts'
 import { btcPrice, checkPaid, getInvoice, payParams, provesPayment, type CheckedInvoice } from '../lib/lightning.ts'
-import { connectedWallet, payWithWallet, type WalletInfo } from '../lib/wallet.ts'
+import { payWithWallet, WalletPayError } from '../lib/wallet.ts'
+import { sendLabel, sendWallets, type SendWallet } from '../lib/wallets.ts'
 import { QrCode } from './QrCode.tsx'
 
 type Quote = { invoice: CheckedInvoice; price: string; source: string }
 type Phase =
   | { at: 'idle' }
   | { at: 'quoting' }
-  | { at: 'ready'; quote: Quote }
-  | { at: 'paying'; quote: Quote }
+  /** `next`: which of your wallets to offer first (after a failure, the one after it). */
+  | { at: 'ready'; quote: Quote; next: number }
+  | { at: 'paying'; quote: Quote; index: number }
+  /** A wallet couldn't pay. Nothing more happens until the person decides. */
+  | { at: 'failed'; quote: Quote; index: number; reason: string; certain: boolean }
   | { at: 'external'; quote: Quote }
   | { at: 'paid'; sats: number }
   | { at: 'error'; message: string; checkWallet?: boolean }
@@ -49,12 +53,13 @@ export function BitcoinPay(props: {
   const { meta, state, to, amount, currency, onPaid, onRecorded } = props
   const toMember = state.members.get(to)
   const toName = toMember?.name ?? 'them'
-  const address = toMember?.lightningAddress
-  const [wallet, setWallet] = useState<WalletInfo | null>()
+  const addresses = receiveAddresses(toMember)
+  const address = addresses[0]
+  const [wallets, setWallets] = useState<SendWallet[]>()
   const [phase, setPhase] = useState<Phase>({ at: 'idle' })
 
   useEffect(() => {
-    void connectedWallet().then((w) => setWallet(w ?? null))
+    void sendWallets().then(setWallets)
   }, [])
 
   // A new amount means a new quote.
@@ -86,32 +91,57 @@ export function BitcoinPay(props: {
     onRecorded()
   }
 
-  async function quote() {
-    if (!address) return
+  /**
+   * Gets an invoice from the first of their addresses that gives one. Asking
+   * moves no money, so trying the next address needs no confirmation.
+   */
+  async function quote(next = 0) {
+    if (addresses.length === 0) return
     setPhase({ at: 'quoting' })
+    let rate: Awaited<ReturnType<typeof btcPrice>>
     try {
-      const [rate, params] = await Promise.all([btcPrice(currency), payParams(address)])
-      const sats = fiatToSats(amount, currency, rate.price)
-      const invoice = await getInvoice(params, sats, `Footless: ${state.name ?? meta.name}`)
-      setPhase({ at: 'ready', quote: { invoice, price: rate.price, source: rate.source } })
+      rate = await btcPrice(currency)
     } catch (err) {
       setPhase({ at: 'error', message: (err as Error).message })
+      return
     }
+    const sats = fiatToSats(amount, currency, rate.price)
+    const problems: string[] = []
+    for (const addr of addresses) {
+      try {
+        const invoice = await getInvoice(await payParams(addr), sats, `Footless: ${state.name ?? meta.name}`)
+        setPhase({ at: 'ready', quote: { invoice, price: rate.price, source: rate.source }, next })
+        return
+      } catch (err) {
+        problems.push(`${addr}: ${(err as Error).message}`)
+      }
+    }
+    setPhase({
+      at: 'error',
+      message:
+        addresses.length === 1
+          ? (problems[0]!.split(': ').slice(1).join(': '))
+          : `None of ${toName}’s addresses could take a payment right now. ${problems.join(' ')}`,
+    })
   }
 
-  async function pay(q: Quote) {
+  /** Pays with the wallet at `index` in your send list. Only ever one wallet per tap. */
+  async function pay(q: Quote, index: number) {
+    const wallet = wallets?.[index]
     if (!wallet) return
-    if (q.invoice.expiresAt * 1000 < Date.now() + 15_000) return quote()
-    setPhase({ at: 'paying', quote: q })
+    // An invoice about to expire gets replaced first; the person then taps again.
+    if (q.invoice.expiresAt * 1000 < Date.now() + 15_000) return quote(index)
+    setPhase({ at: 'paying', quote: q, index })
     let preimage: string
     try {
       preimage = await payWithWallet(wallet, q.invoice.invoice)
     } catch (err) {
-      // The wallet may or may not have sent it; never let someone pay twice blindly.
       setPhase({
-        at: 'error',
-        message: `${(err as Error).message || 'The payment didn’t go through'}.`,
-        checkWallet: true,
+        at: 'failed',
+        quote: q,
+        index,
+        reason: (err as Error).message || 'the payment didn’t go through',
+        certain: err instanceof WalletPayError && err.certain,
       })
       return
     }
@@ -162,7 +192,7 @@ export function BitcoinPay(props: {
             Done
           </button>
         </>
-      ) : phase.at === 'ready' || phase.at === 'paying' || phase.at === 'external' ? (
+      ) : phase.at === 'ready' || phase.at === 'paying' || phase.at === 'external' || phase.at === 'failed' ? (
         <>
           <dl className="quote">
             <div>
@@ -209,32 +239,12 @@ export function BitcoinPay(props: {
               )}
             </>
           ) : (
-            <>
-              {wallet && (
-                <button
-                  type="button"
-                  className="button primary"
-                  disabled={phase.at === 'paying'}
-                  onClick={() => void pay(phase.quote)}
-                >
-                  {phase.at === 'paying' ? 'Paying…' : `Pay with ${wallet.name}`}
-                </button>
-              )}
-              {/* Hands the invoice to whatever wallet app is installed, and waits for it here. */}
-              <a
-                className={`button ${wallet ? 'outline' : 'primary'}`}
-                href={`lightning:${phase.quote.invoice.invoice}`}
-                aria-disabled={phase.at === 'paying'}
-                onClick={() => setPhase({ at: 'external', quote: phase.quote })}
-              >
-                {wallet ? 'Open another wallet app' : 'Open in wallet app'}
-              </a>
-              {!wallet && (
-                <button type="button" className="link" onClick={() => setPhase({ at: 'external', quote: phase.quote })}>
-                  Paying from another phone? Show a QR code
-                </button>
-              )}
-            </>
+            <WalletChoices
+              phase={phase}
+              wallets={wallets ?? []}
+              onPay={(index) => void pay(phase.quote, index)}
+              onExternal={() => setPhase({ at: 'external', quote: phase.quote })}
+            />
           )}
         </>
       ) : (
@@ -257,7 +267,7 @@ export function BitcoinPay(props: {
           >
             {phase.at === 'quoting' ? 'Getting the price…' : `Pay ${amount > 0 ? money(amount, currency) : ''} with bitcoin`}
           </button>
-          {wallet === null && (
+          {wallets?.length === 0 && (
             <p className="muted">
               Tip: <a href="#/you">set up one-tap payments</a>, so you don’t have to switch apps.
             </p>
@@ -265,5 +275,75 @@ export function BitcoinPay(props: {
         </>
       )}
     </section>
+  )
+}
+
+/**
+ * Which wallet to pay with. Your first wallet is offered; if one fails, the
+ * reason is shown and the next is offered, never tried without a tap. When a
+ * wallet may still have paid, the person is told to check it first.
+ */
+function WalletChoices({
+  phase,
+  wallets,
+  onPay,
+  onExternal,
+}: {
+  phase: Extract<Phase, { at: 'ready' | 'paying' | 'failed' }>
+  wallets: SendWallet[]
+  onPay: (index: number) => void
+  onExternal: () => void
+}) {
+  const invoice = phase.quote.invoice.invoice
+  const nextIndex = phase.at === 'ready' ? phase.next : phase.at === 'failed' ? phase.index + 1 : phase.index
+  const next = wallets[nextIndex]
+  const failed = phase.at === 'failed' ? wallets[phase.index] : undefined
+  return (
+    <>
+      {phase.at === 'failed' && failed && (
+        <div className="bitcoin-error" role="alert">
+          <p>
+            <strong>{sendLabel(failed)} couldn’t pay:</strong> {phase.reason}.
+          </p>
+          {phase.certain ? (
+            <p>Nothing was paid.</p>
+          ) : (
+            <p>
+              It may still have paid. Check {sendLabel(failed)} before trying again, so you don’t pay twice.
+            </p>
+          )}
+        </div>
+      )}
+      {next && (
+        <button
+          type="button"
+          className="button primary"
+          disabled={phase.at === 'paying'}
+          onClick={() => onPay(nextIndex)}
+        >
+          {phase.at === 'paying'
+            ? `Paying with ${sendLabel(next)}…`
+            : phase.at === 'failed'
+              ? phase.certain
+                ? `Try ${sendLabel(next)}`
+                : `It didn’t pay. Try ${sendLabel(next)}`
+              : `Pay with ${sendLabel(next)}`}
+        </button>
+      )}
+      {/* Hands the invoice to whatever wallet app is installed, and waits for it here. */}
+      <a
+        className={`button ${next ? 'outline' : 'primary'}`}
+        href={`lightning:${invoice}`}
+        aria-disabled={phase.at === 'paying'}
+        onClick={onExternal}
+      >
+        {wallets.length > 0 ? 'Open another wallet app' : 'Open in wallet app'}
+      </a>
+      {wallets.length === 0 && (
+        <button type="button" className="link" onClick={onExternal}>
+          Paying from another phone? Show a QR code
+        </button>
+      )}
+    </>
   )
 }

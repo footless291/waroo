@@ -27,6 +27,7 @@ export { suggestTransfers, type Transfer } from './simplify.ts'
 export {
   emptyState,
   isLightningAddress,
+  receiveAddresses,
   groupBalances,
   orderEvents,
   replay,

@@ -20,14 +20,14 @@ import {
   getGroup,
   listGroups,
   makeShareable,
-  myLightningAddress,
+  myLightningAddresses,
   newId,
   pendingEvents,
   saveJoinedGroup,
-  setSetting,
   type GroupMeta,
 } from './db.ts'
 import { fetchGroup, relayUrl, syncHub } from './sync.ts'
+import { addReceive } from './wallets.ts'
 
 export interface MovedGroup {
   id: string
@@ -40,7 +40,8 @@ export interface MovedGroup {
 
 export type MoveMessage =
   | { from: 'new'; type: 'hello'; key: string }
-  | { from: 'old'; type: 'groups'; groups: MovedGroup[]; lightningAddress: string }
+  /** `lightningAddresses` is the ordered list; older phones sent only `lightningAddress`. */
+  | { from: 'old'; type: 'groups'; groups: MovedGroup[]; lightningAddress: string; lightningAddresses?: string[] }
   | { from: 'new'; type: 'done'; moved: string[] }
   | { from: 'old' | 'new'; type: 'cancel' }
 
@@ -142,8 +143,8 @@ export async function handOver(groups: GroupMeta[], newKey: string): Promise<Mov
   }))
 }
 
-export async function lightningAddressToMove(): Promise<string> {
-  return myLightningAddress()
+export async function lightningAddressesToMove(): Promise<string[]> {
+  return myLightningAddresses()
 }
 
 /** After the new phone has them: this phone can't write to them any more, so they go. */
@@ -165,7 +166,7 @@ export async function receiveGroups(
   groups: MovedGroup[],
   keys: CryptoKeyPair,
   publicKey: string,
-  lightningAddress: string,
+  lightningAddresses: string[],
 ): Promise<string[]> {
   const moved: string[] = []
   for (const g of groups) {
@@ -187,6 +188,6 @@ export async function receiveGroups(
     await syncHub.ensure(g.id)
     moved.push(g.id)
   }
-  if (lightningAddress) await setSetting('lightningAddress', lightningAddress)
+  if (lightningAddresses.length) await addReceive(...lightningAddresses)
   return moved
 }

@@ -7,9 +7,8 @@
  *   app, ideally with a spending budget. Stored only on this phone.
  * - WebLN: a browser wallet extension such as Alby.
  */
-import { getSetting, setSetting } from './db.ts'
 
-export type WalletInfo = { kind: 'nwc'; url: string; name: string } | { kind: 'webln'; name: string }
+import type { SendWallet } from './wallets.ts'
 
 declare global {
   interface Window {
@@ -23,16 +22,11 @@ declare global {
 
 export const hasWebln = () => typeof window.webln?.sendPayment === 'function'
 
-export async function connectedWallet(): Promise<WalletInfo | undefined> {
-  return (await getSetting('wallet')) as WalletInfo | undefined
-}
-
-export async function disconnectWallet(): Promise<void> {
-  await setSetting('wallet', undefined)
-}
-
-/** Connects with an NWC string after checking the wallet answers. */
-export async function connectNwc(url: string): Promise<WalletInfo> {
+/**
+ * Checks an NWC connection string by asking the wallet for its name. Returns
+ * the cleaned-up string and the name; stores nothing.
+ */
+export async function checkNwc(url: string): Promise<{ url: string; name: string }> {
   const trimmed = url.trim()
   if (!/^nostr\+walletconnect:\/\//i.test(trimmed)) {
     throw new Error('That isn’t a wallet connection. It should start with nostr+walletconnect://')
@@ -56,12 +50,11 @@ export async function connectNwc(url: string): Promise<WalletInfo> {
     throw new Error('Your wallet didn’t answer. Check it’s online and the connection allows payments.')
   }
   client.close()
-  const wallet: WalletInfo = { kind: 'nwc', url: trimmed, name }
-  await setSetting('wallet', wallet)
-  return wallet
+  return { url: trimmed, name }
 }
 
-export async function connectWebln(): Promise<WalletInfo> {
+/** Asks the browser wallet extension for permission and its name. */
+export async function checkWebln(): Promise<{ name: string }> {
   if (!window.webln) throw new Error('No browser wallet found.')
   await window.webln.enable()
   let name = 'Browser wallet'
@@ -70,24 +63,43 @@ export async function connectWebln(): Promise<WalletInfo> {
   } catch {
     // Some wallets don't share their name.
   }
-  const wallet: WalletInfo = { kind: 'webln', name }
-  await setSetting('wallet', wallet)
-  return wallet
+  return { name }
 }
 
-/** Asks the connected wallet to pay. Returns the preimage the wallet reports. */
-export async function payWithWallet(wallet: WalletInfo, invoice: string): Promise<string> {
+/**
+ * A payment that didn't work. `certain` says whether it definitely wasn't
+ * paid: only then is it safe to offer the next wallet straight away.
+ */
+export class WalletPayError extends Error {
+  readonly certain: boolean
+  constructor(message: string, certain: boolean, cause?: unknown) {
+    super(message, { cause })
+    this.certain = certain
+  }
+}
+
+/** Asks a wallet to pay. Returns the preimage the wallet reports; throws WalletPayError. */
+export async function payWithWallet(wallet: SendWallet, invoice: string): Promise<string> {
   if (wallet.kind === 'webln') {
-    if (!window.webln) throw new Error('Your browser wallet isn’t available right now.')
-    await window.webln.enable()
-    return (await window.webln.sendPayment(invoice)).preimage
+    if (!window.webln) throw new WalletPayError('the browser wallet isn’t available right now', true)
+    try {
+      await window.webln.enable()
+    } catch (err) {
+      throw new WalletPayError('the browser wallet didn’t allow Footless to pay', true, err)
+    }
+    try {
+      return (await window.webln.sendPayment(invoice)).preimage
+    } catch (err) {
+      throw new WalletPayError(`it reported a problem (${(err as Error)?.message ?? err})`, false, err)
+    }
   }
   const nwc = await import('@getalby/sdk/nwc')
   const client = new nwc.NWCClient({ nostrWalletConnectUrl: wallet.url })
   try {
     return (await client.payInvoice({ invoice })).preimage
   } catch (err) {
-    throw new Error(explainNwcError(err, nwc, wallet.name), { cause: err })
+    const { message, certain } = explainNwcError(err, nwc)
+    throw new WalletPayError(message, certain, err)
   } finally {
     client.close()
   }
@@ -96,25 +108,33 @@ export async function payWithWallet(wallet: WalletInfo, invoice: string): Promis
 /**
  * Says which step of a wallet payment failed, in plain words, with the
  * technical reason after it so a failure can be diagnosed from a screenshot.
+ * `certain` is true only when the payment can't have gone out.
  */
-function explainNwcError(err: unknown, nwc: typeof import('@getalby/sdk/nwc'), name: string): string {
+function explainNwcError(err: unknown, nwc: typeof import('@getalby/sdk/nwc')): { message: string; certain: boolean } {
   const detail = err instanceof Error ? err.message : String(err)
   const code = (err as { code?: string })?.code
   const tech = ` (${[code, detail].filter(Boolean).join(': ')})`
   if (err instanceof nwc.Nip47PublishTimeoutError || err instanceof nwc.Nip47PublishError || err instanceof nwc.Nip47NetworkError) {
-    return `Footless couldn’t reach ${name}’s connection server, so the request wasn’t sent${tech}`
+    return { message: `Footless couldn’t reach it, so the request wasn’t sent${tech}`, certain: true }
   }
   if (err instanceof nwc.Nip47ReplyTimeoutError) {
-    return `${name} got the request but didn’t answer within a minute${tech}`
+    return { message: `it got the request but didn’t answer within a minute${tech}`, certain: false }
   }
-  if (err instanceof nwc.Nip47UnsupportedEncryptionError || err instanceof nwc.Nip47ResponseDecodingError) {
-    return `${name} answered in a way Footless couldn’t read${tech}`
+  if (err instanceof nwc.Nip47UnsupportedEncryptionError) {
+    return { message: `it uses a kind of encryption Footless doesn’t support${tech}`, certain: true }
+  }
+  if (err instanceof nwc.Nip47ResponseDecodingError) {
+    return { message: `it answered in a way Footless couldn’t read${tech}`, certain: false }
   }
   if (err instanceof nwc.Nip47WalletError) {
-    if (code === 'INSUFFICIENT_BALANCE') return `${name} doesn’t have enough in it for this payment`
-    if (code === 'QUOTA_EXCEEDED') return `This would go over the spending limit you set for Footless in ${name}`
-    if (code === 'RESTRICTED' || code === 'UNAUTHORIZED') return `${name} didn’t allow Footless to pay${tech}`
-    return `${name} said: ${detail}${code ? ` (${code})` : ''}`
+    if (code === 'INSUFFICIENT_BALANCE') return { message: 'it doesn’t have enough in it', certain: true }
+    if (code === 'QUOTA_EXCEEDED') return { message: 'this would go over the spending limit you set for Footless', certain: true }
+    if (code === 'RESTRICTED' || code === 'UNAUTHORIZED' || code === 'NOT_IMPLEMENTED') {
+      return { message: `it didn’t allow Footless to pay${tech}`, certain: true }
+    }
+    if (code === 'RATE_LIMITED') return { message: `it’s getting too many requests right now${tech}`, certain: true }
+    if (code === 'PAYMENT_FAILED') return { message: `the payment failed${tech}`, certain: true }
+    return { message: `it said: ${detail}${code ? ` (${code})` : ''}`, certain: false }
   }
-  return `The payment through ${name} failed${tech}`
+  return { message: `the payment failed${tech}`, certain: false }
 }

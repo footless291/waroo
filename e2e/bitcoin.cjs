@@ -51,6 +51,8 @@ async function provider(route) {
 }
 const payHash = (pr) => bolt11.decode(pr).tags.find((t) => t.tagName === 'payment_hash').data;
 let walletLies = false;
+let failEnable = 0; // the next N times, the browser wallet refuses permission (nothing paid)
+let failSend = 0; // the next N payments, the wallet errors without saying whether it paid
 
 (async () => {
   const browser = await chromium.launch();
@@ -58,9 +60,15 @@ let walletLies = false;
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
     await ctx.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: B.slice(0, -1) });
     await ctx.route('https://pay.example.com/**', provider);
+    // An address whose provider is down
+    await ctx.route('https://broken.example.com/**', (route) => route.fulfill({ status: 500, headers: cors, body: '{}' }));
     await ctx.route('**/relay/rate?*', (route) => route.fulfill({ headers: cors, body: JSON.stringify({ currency: 'JPY', price: '15000000.00', source: 'Test', at: new Date().toISOString() }) }));
     if (webln) {
+      await ctx.exposeBinding('__testWalletEnable', () => {
+        if (failEnable > 0) { failEnable--; throw new Error('denied'); }
+      });
       await ctx.exposeBinding('__testWalletPay', (_src, pr) => {
+        if (failSend > 0) { failSend--; throw new Error('connection lost'); }
         const inv = invoices.get(payHash(pr));
         if (!inv) throw new Error('unknown invoice');
         inv.paid = true;
@@ -68,7 +76,7 @@ let walletLies = false;
       });
       await ctx.addInitScript(() => {
         window.webln = {
-          enable: async () => {},
+          enable: async () => window.__testWalletEnable(),
           getInfo: async () => ({ node: { alias: 'Test Wallet' } }),
           sendPayment: async (pr) => ({ preimage: await window.__testWalletPay(pr) }),
         };
@@ -115,21 +123,24 @@ let walletLies = false;
 
   // Bob adds his Lightning address on the You screen
   await bob.goto(B + '#/you');
-  check(await bob.waitForSelector('.setup:has-text("Set up bitcoin")', { timeout: 4000 }).then(() => true, () => false), 'someone with no wallet gets the guided setup');
-  await bob.click('button:has-text("I already have a wallet")');
+  check(await waitText(bob, '.wallet', 'No addresses yet'), 'someone with no wallet starts on Receive, with none yet');
+  check(await waitText(bob, '.wallet-options', 'Coinos') && await waitText(bob, '.wallet-options', 'Rizful'), 'Coinos and Rizful are always offered');
+  await bob.click('.wallet-option:has-text("A different wallet") button:has-text("Add")');
   await bob.fill('input[placeholder="you@walletofsatoshi.com"]', 'not an address');
-  check(await waitText(bob, 'main', 'doesn’t look like a Lightning address'), 'You screen rejects a bad address');
+  await bob.click('.wallet-guide button:has-text("Add")');
+  check(await waitText(bob, '.wallet-guide', 'doesn’t look like a Lightning address'), 'You screen rejects a bad address');
   await bob.fill('input[placeholder="you@walletofsatoshi.com"]', 'Bob@pay.example.com');
-  await bob.click('form.settings-card button:has-text("Save")');
-  check(await waitText(bob, 'main', 'Saved'), 'Bob saves his address');
+  await bob.click('.wallet-guide button:has-text("Add")');
+  check(await waitText(bob, '.ranked', 'bob@pay.example.com'), 'Bob adds his address');
   await shot(bob, '1-you');
   check(await waitText(ana, '.bitcoin', 'Pay ¥1,500 with bitcoin'), 'Ana now sees she can pay Bob in bitcoin');
 
   // Ana connects her browser wallet
   await ana.goto(B + '#/you');
-  await ana.click('button:has-text("I already have a wallet")');
+  await ana.click('.wallet .segmented label:has-text("Send")');
+  await ana.click('.wallet-option:has-text("A different wallet") button:has-text("Add")');
   await ana.click('button:has-text("Use my browser wallet")');
-  check(await waitText(ana, 'main', 'Connected to Test Wallet'), 'Ana connects her wallet');
+  check(await waitText(ana, '.ranked', 'Test Wallet'), 'Ana connects her wallet');
   await ana.goBack(); await ana.waitForTimeout(500);
 
   // A provider that asks for the wrong amount is refused, and nothing is paid
@@ -186,6 +197,72 @@ let walletLies = false;
   pending[1].paid = true; // someone paid it from their phone's wallet app
   check(await waitText(ana, '.bitcoin', 'Paid ¥500 to Bob', 10000), 'the app notices the payment by itself');
 
+  // Bob adds a second address and puts it first; its provider is down, so Ana's
+  // phone quietly uses the next one (asking for an invoice moves no money)
+  await bob.goto(B + '#/you');
+  await bob.click('.wallet .segmented label:has-text("Receive")');
+  await bob.click('.wallet-option:has-text("A different wallet") button:has-text("Add")');
+  await bob.fill('input[placeholder="you@walletofsatoshi.com"]', 'bob@broken.example.com');
+  await bob.click('.wallet-guide button:has-text("Add")');
+  check(await waitText(bob, '.wallet-guide', 'didn’t answer'), 'an address that doesn’t answer isn’t added');
+  await bob.route('https://broken.example.com/**', (route) => route.fulfill({ headers: cors, body: JSON.stringify({ tag: 'payRequest', callback: 'https://broken.example.com/cb', minSendable: 1000, maxSendable: 1e11, metadata }) }));
+  await bob.click('.wallet-guide button:has-text("Add")');
+  check(await waitText(bob, '.ranked', 'bob@broken.example.com'), 'Bob adds a second address, at the bottom');
+  await bob.click('button[aria-label="Move bob@broken.example.com up"]');
+  const order = await bob.$$eval('.ranked .address', (els) => els.map((e) => e.textContent));
+  check(order[0] === 'bob@broken.example.com', 'up moves it to first');
+  await shot(bob, '6-ranked');
+  await bob.goto(B + '#/'); await bob.click('a.card-row');
+  await bob.click('nav a:has-text("Expenses")');
+  await bob.click('a.fab:has-text("Add expense")');
+  await bob.fill('input[placeholder="Izakaya dinner"]', 'Ramen');
+  await bob.fill('input.amount-input', '600');
+  await bob.click('button:has-text("Add expense")'); await bob.waitForTimeout(800);
+
+  // Ana has two wallets; the first refuses, and she's asked before the second is tried
+  await ana.evaluate(() => new Promise((resolve) => {
+    const open = indexedDB.open('footless');
+    open.onsuccess = () => {
+      const tx = open.result.transaction('settings', 'readwrite');
+      tx.objectStore('settings').put([
+        { id: 'a', provider: 'other', name: 'Wallet A', kind: 'webln' },
+        { id: 'b', provider: 'other', name: 'Wallet B', kind: 'webln' },
+      ], 'sendWallets');
+      tx.oncomplete = resolve;
+    };
+  }));
+  await ana.goto(B + '#/'); await ana.click('a.card-row'); await ana.waitForTimeout(500);
+  await ana.click('.hero a:has-text("Settle up")');
+  await ana.click('.bitcoin button:has-text("with bitcoin")');
+  check(await waitText(ana, '.quote', 'sats'), 'the first address is down, so Ana’s phone gets an invoice from the second');
+  failEnable = 1;
+  await ana.click('.bitcoin button:has-text("Pay with Wallet A")');
+  check(await waitText(ana, '.bitcoin-error', 'Wallet A couldn’t pay'), 'Ana is told the first wallet failed');
+  check(await waitText(ana, '.bitcoin-error', 'Nothing was paid'), 'and that nothing was paid');
+  check([...invoices.values()].at(-1).paid === false, 'the next wallet wasn’t tried by itself');
+  await shot(ana, '7-fallback');
+  await ana.click('.bitcoin button:has-text("Try Wallet B")');
+  check(await waitText(ana, '.bitcoin', 'Paid ¥300 to Bob'), 'one tap, and Wallet B pays');
+
+  // A wallet that might have paid: Ana is told to check it first
+  await bob.click('a.fab:has-text("Add expense")');
+  await bob.fill('input[placeholder="Izakaya dinner"]', 'Coffee');
+  await bob.fill('input.amount-input', '800');
+  await bob.click('button:has-text("Add expense")'); await bob.waitForTimeout(800);
+  await ana.click('.bitcoin button:has-text("Done")'); await ana.waitForTimeout(800);
+  await ana.click('.hero a:has-text("Settle up")');
+  await ana.click('.bitcoin button:has-text("with bitcoin")');
+  await waitText(ana, '.quote', 'sats');
+  failSend = 1;
+  await ana.click('.bitcoin button:has-text("Pay with Wallet A")');
+  check(await waitText(ana, '.bitcoin-error', 'may still have paid'), 'an unclear failure says it may still have paid');
+  check(await waitText(ana, '.bitcoin', 'It didn’t pay. Try Wallet B'), 'and trying the next wallet takes a deliberate tap');
+  await shot(ana, '8-unclear');
+  await ana.click('.bitcoin button:has-text("It didn’t pay. Try Wallet B")');
+  check(await waitText(ana, '.bitcoin', 'Paid ¥400 to Bob'), 'Wallet B pays');
+
+  // The broken provider's 500s are part of the test, not errors.
+  for (const p of [ana, bob]) p.errors = p.errors.filter((e) => !e.includes('status of 500'));
   for (const p of [ana, bob]) check(p.errors.length === 0, `${p.name}: no console errors ${p.errors.join(' | ').slice(0, 300)}`);
   console.log(failed ? `${failed} FAILED` : 'ALL PASSED');
   await browser.close();

@@ -37,13 +37,26 @@ export interface Member {
    * their place.
    */
   key?: string
-  /** Where this member receives bitcoin, e.g. "bob@walletofsatoshi.com". */
+  /** Where this member receives bitcoin, e.g. "bob@walletofsatoshi.com". The first of `lightningAddresses`. */
   lightningAddress?: string
+  /**
+   * Every address they receive at, in the order to try them: if the first
+   * can't take a payment, payers try the next.
+   */
+  lightningAddresses?: string[]
   /**
    * True once they've left the group. They stay in the log, so past
    * expenses still show their name, but can't write or be added to anything.
    */
   left?: boolean
+}
+
+const MAX_ADDRESSES = 5
+
+/** Where to pay someone, in order. Members from before lists existed have one address at most. */
+export function receiveAddresses(member: Member | undefined): string[] {
+  if (!member) return []
+  return member.lightningAddresses ?? (member.lightningAddress ? [member.lightningAddress] : [])
 }
 
 /** A Lightning address looks like an email address: name@domain.tld. */
@@ -82,7 +95,7 @@ export type LedgerEvent = EventBase &
      * A member updates their own details. Only they can: how someone gets
      * paid is never set by anyone else. An empty address removes it.
      */
-    | { type: 'member.updated'; memberId: PersonId; lightningAddress?: string }
+    | { type: 'member.updated'; memberId: PersonId; lightningAddress?: string; lightningAddresses?: string[] }
     /** A phone takes the place of a member who hasn't joined on a phone yet. */
     | { type: 'member.claimed'; memberId: PersonId; key: string }
     /**
@@ -273,9 +286,26 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
         const member = state.members.get(e.memberId)
         if (!member) reject(e, 'No such member')
         else if (e.memberId !== e.author) reject(e, 'Only people themselves can change how they get paid')
-        else if (e.lightningAddress === undefined || e.lightningAddress === '') delete member.lightningAddress
-        else if (!isLightningAddress(e.lightningAddress)) reject(e, 'Not a Lightning address')
-        else member.lightningAddress = e.lightningAddress.toLowerCase()
+        else {
+          // Newer phones send the whole ordered list; older ones a single address.
+          const list = Array.isArray(e.lightningAddresses)
+            ? e.lightningAddresses
+            : e.lightningAddress
+              ? [e.lightningAddress]
+              : []
+          if (list.length > MAX_ADDRESSES) reject(e, `At most ${MAX_ADDRESSES} Lightning addresses`)
+          else if (!list.every((a) => typeof a === 'string' && isLightningAddress(a))) reject(e, 'Not a Lightning address')
+          else {
+            const clean = [...new Set(list.map((a) => a.toLowerCase()))]
+            if (clean.length === 0) {
+              delete member.lightningAddress
+              delete member.lightningAddresses
+            } else {
+              member.lightningAddresses = clean
+              member.lightningAddress = clean[0]!
+            }
+          }
+        }
         break
       }
 

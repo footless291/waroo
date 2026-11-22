@@ -46,9 +46,11 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await old.fill('input[placeholder="Ana"]', 'Ana');
   await old.click('text=Create group'); await old.waitForTimeout(400);
   await old.goto(B + '#/you');
-  await old.click('button:has-text("I already have a wallet")');
+  await old.route('https://pay.example.com/**', (route) => route.fulfill({ headers: { 'access-control-allow-origin': '*', 'content-type': 'application/json' }, body: JSON.stringify({ tag: 'payRequest', callback: 'https://pay.example.com/cb', minSendable: 1000, maxSendable: 1e11, metadata: '[]' }) }));
+  await old.click('.wallet-option:has-text("A different wallet") button:has-text("Add")');
   await old.fill('input[placeholder="you@walletofsatoshi.com"]', 'ana@pay.example.com');
-  await old.click('form.settings-card button:has-text("Save")'); await old.waitForTimeout(500);
+  await old.click('.wallet-guide button:has-text("Add")');
+  await waitText(old, '.ranked', 'ana@pay.example.com');
 
   // Someone glimpses the code and scans it too: the move stops, nothing leaks
   await old.click('a:has-text("Move to a new phone")');
@@ -117,7 +119,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   check(await waitText(bob, 'main', 'Ferry'), 'Bob sees what Ana adds from her new phone');
   check(await waitText(bob, '.cards', 'Ana'), 'still as Ana');
   await newer.goto(B + '#/you'); await newer.waitForTimeout(500);
-  check((await newer.inputValue('input[placeholder="you@walletofsatoshi.com"]')) === 'ana@pay.example.com', 'her Lightning address came along');
+  check(await waitText(newer, '.ranked', 'ana@pay.example.com'), 'her Lightning address came along');
 
   for (const p of [old, newer, bob]) check(p.errors.length === 0, `${p.name}: no console errors ${p.errors.join(' | ').slice(0, 300)}`);
   console.log(failed ? `${failed} FAILED` : 'ALL PASSED');

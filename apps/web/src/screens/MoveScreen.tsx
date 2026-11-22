@@ -7,7 +7,7 @@ import {
   forgetMoved,
   groupsToMove,
   handOver,
-  lightningAddressToMove,
+  lightningAddressesToMove,
   moveLink,
   MoveChannel,
   newMoveSecret,
@@ -86,7 +86,14 @@ export function MoveScreen() {
     setPhase({ at: 'moving' })
     try {
       const moved = await handOver(groups.current, phase.key)
-      await channel.current?.send({ from: 'old', type: 'groups', groups: moved, lightningAddress: await lightningAddressToMove() })
+      const addresses = await lightningAddressesToMove()
+      await channel.current?.send({
+        from: 'old',
+        type: 'groups',
+        groups: moved,
+        lightningAddress: addresses[0] ?? '',
+        lightningAddresses: addresses,
+      })
     } catch (err) {
       stop((err as Error).message)
     }
