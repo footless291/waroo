@@ -57,8 +57,9 @@
   -webkit-text-size-adjust: 100%;
 }
 
+/* Dark: Night market. Follows the phone unless chosen on the You screen. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     /* Colour: Night market */
     --paper: #16121f;
     --card: #221c2e;
@@ -78,6 +79,32 @@
     --focus: #ffb38a;
     --shadow: none;
   }
+}
+:root[data-theme='dark'] {
+    /* Colour: Night market */
+    --paper: #16121f;
+    --card: #221c2e;
+    --hero: #221c2e;
+    --hero-text: #f5f0fa;
+    --hero-muted: #b3a9c2;
+    --hero-number: #ffb38a;
+    --text: #f5f0fa;
+    --muted: #b3a9c2;
+    --line: #2f2740;
+    --field-border: #857a93; /* 4.1:1 on card */
+    --strong: #f5f0fa;
+    --on-strong: #16121f;
+    --owed: #7fe0b8;
+    --owes: #ff9c8a;
+    --danger: #ff8a80;
+    --focus: #ffb38a;
+    --shadow: none;
+  }
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
 }
 
 * {
@@ -675,7 +702,7 @@ input[type='checkbox'] {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  margin: -6px 0 var(--space-4);
+  margin: 0 0 var(--space-4);
   color: var(--muted);
   font-size: 0.9rem;
 }
@@ -1137,7 +1164,7 @@ input[type='checkbox'] {
   margin-top: 4px;
 }
 
-/* Wallet section */
+/* Wallet section: one list per side */
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -1153,25 +1180,20 @@ input[type='checkbox'] {
   color: var(--muted);
   font-size: 0.95rem;
 }
-.ranked {
+.wallet-list {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  margin: 0 0 var(--space-4);
+  margin: 0;
   padding: 0;
   list-style: none;
 }
-.ranked-row {
-  display: grid;
-  grid-template-columns: auto auto 1fr;
-  grid-template-areas:
-    'handle number main'
-    '. . actions';
-  align-items: center;
-  column-gap: var(--space-2);
-  padding: 10px 10px 6px 4px;
+.wallet-card {
   border-radius: var(--radius-field);
   background: var(--paper);
+}
+.ranked-row {
+  padding: 6px 4px 6px 2px;
   touch-action: pan-y;
 }
 .ranked-row.dragging {
@@ -1184,11 +1206,16 @@ input[type='checkbox'] {
     transition: transform 150ms ease;
   }
 }
+.ranked-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 .drag-handle {
-  grid-area: handle;
+  flex: none;
   display: grid;
   place-items: center;
-  width: 32px;
+  width: 28px;
   height: var(--target);
   border: 0;
   background: none;
@@ -1197,75 +1224,95 @@ input[type='checkbox'] {
   touch-action: none;
 }
 .ranked-number {
-  grid-area: number;
+  flex: none;
   display: grid;
   place-items: center;
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: var(--strong);
   color: var(--on-strong);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 700;
 }
 .ranked-main {
-  grid-area: main;
+  flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 3px;
   min-width: 0;
+  padding-left: 4px;
 }
 .ranked-main .address {
   overflow-wrap: anywhere;
 }
-.ranked-actions {
-  grid-area: actions;
+.wallet-status {
   display: flex;
-  justify-content: flex-end;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 2px;
+  gap: 6px;
+  font-size: 0.85rem;
 }
-.icon-button.small {
-  width: var(--target);
-  height: var(--target);
-  border: 0;
-  background: var(--card);
-  cursor: pointer;
-}
-.icon-button.small:disabled {
-  opacity: 0.3;
-}
-.ranked .remove {
-  min-height: var(--target);
-  padding: 0 8px;
-  color: var(--danger);
-}
-.wallet-empty {
-  margin: 0 0 var(--space-4);
-}
-.wallet-add-title {
-  margin: var(--space-4) 0 var(--space-2);
-  font-size: 1.05rem;
-}
-.wallet-options {
+.ranked-arrows {
+  flex: none;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  margin: 0;
-  padding: 0;
-  list-style: none;
 }
-.wallet-option {
+.ranked-arrows button,
+.remove-x {
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+}
+.ranked-arrows button {
+  width: 36px;
+  height: 26px;
+  border-radius: 8px;
+}
+.ranked-arrows button:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+.remove-x {
+  flex: none;
+  width: 40px;
+  height: var(--target);
+  border-radius: 50%;
+  color: var(--muted);
+}
+.confirm-remove {
+  margin: 4px 8px 8px 34px;
+}
+.confirm-remove p {
+  margin: 0 0 var(--space-2);
+  font-size: 0.95rem;
+}
+.confirm-remove .button-row {
+  justify-content: flex-end;
+}
+.button.danger-fill {
+  background: var(--danger);
+  color: var(--paper);
+}
+.setup-card {
   padding: 12px 14px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-field);
+  border: 1px dashed var(--field-border);
+  background: transparent;
 }
-.wallet-option.open {
-  border-color: var(--field-border);
+.setup-card.open {
+  border-style: solid;
 }
-.wallet-option-head {
+.wallet-card-head {
   display: flex;
   align-items: center;
   gap: var(--space-3);
+}
+.setup-card > .chip {
+  display: inline-block;
+  margin-top: 8px;
 }
 .wallet-guide {
   margin-top: var(--space-3);
@@ -1275,10 +1322,11 @@ input[type='checkbox'] {
 }
 .chip {
   flex: none;
-  padding: 6px 12px;
+  padding: 3px 10px;
   border-radius: var(--pill);
   background: var(--line);
-  font-size: 0.85rem;
+  color: var(--muted);
+  font-size: 0.8rem;
   font-weight: 600;
 }
 .chip.on {

@@ -28,10 +28,10 @@ const BLURB: Record<Option, string> = {
 }
 
 /**
- * Your wallets, in the order Footless uses them. Send: who Footless asks to
- * pay, first to last. Receive: where friends pay you, first to last. Coinos
- * and Rizful are always offered, with whether they're connected; any other
- * wallet can be added too.
+ * Your wallets as one list per side, in the order Footless uses them.
+ * Connected wallets are ranked cards. Coinos and Rizful always appear, so
+ * people see whether they're connected and can set them up; adding any other
+ * wallet is the last card.
  */
 export function WalletSection() {
   const [tab, setTab] = useState<Tab>('send')
@@ -53,9 +53,44 @@ export function WalletSection() {
   }, [])
 
   if (!receive || !send) return <section className="settings-card wallet" />
-  const list = tab === 'send' ? send : receive
-  const connected = (p: Option) =>
-    p !== 'other' && (tab === 'send' ? send.some((w) => w.provider === p) : receive.some((w) => w.provider === p))
+  const connected = (p: Option) => (tab === 'send' ? send : receive).some((w) => w.provider === p)
+
+  // Coinos and Rizful when they aren't connected on this side, then "a different wallet".
+  const setupCards = (['coinos', 'rizful', 'other'] as const)
+    // An open guide stays until closed, even once connected: Coinos has a step after the address.
+    .filter((option) => option === 'other' || !connected(option) || open === option)
+    .map((option) => {
+      const expanded = open === option
+      const name = option === 'other' ? 'Add a different wallet' : PROVIDERS[option].name
+      return (
+        <li key={option} className={`wallet-card setup-card${expanded ? ' open' : ''}`}>
+          <div className="wallet-card-head">
+            <span className="row-main">
+              <strong>{name}</strong>
+              <span className="muted">{BLURB[option]}</span>
+            </span>
+            <button
+              type="button"
+              className="button small outline"
+              aria-expanded={expanded}
+              onClick={() => setOpen(expanded ? undefined : option)}
+            >
+              {expanded ? 'Close' : option === 'other' ? 'Add' : 'Set up'}
+            </button>
+          </div>
+          {option !== 'other' && !expanded && !connected(option) && <span className="chip">Not connected</span>}
+          {expanded && (
+            <div className="wallet-guide">
+              {option === 'coinos' && <CoinosGuide receive={receive} send={send} onChange={() => void load()} />}
+              {option === 'rizful' && <RizfulGuide receive={receive} send={send} onChange={() => void load()} />}
+              {option === 'other' && <OtherWallet tab={tab} onChange={() => void load()} />}
+            </div>
+          )}
+        </li>
+      )
+    })
+
+  const status = <span className="chip on">Connected</span>
 
   return (
     <section className="settings-card wallet" aria-labelledby="wallet-title">
@@ -75,22 +110,20 @@ export function WalletSection() {
           : 'Friends pay you at these addresses, in order. If the first can’t take a payment, the next one is used.'}
       </p>
 
-      {list.length === 0 ? (
-        <p className="muted wallet-empty">
-          {tab === 'send'
-            ? 'No wallets connected for paying yet. You can still pay by opening your wallet app.'
-            : 'No addresses yet, so friends can’t pay you in bitcoin.'}
-        </p>
-      ) : tab === 'send' ? (
+      {tab === 'send' ? (
         <RankedList
           items={send}
           label={sendLabel}
           render={(w) => (
             <>
               <strong>{sendLabel(w)}</strong>
-              <span className="muted">{w.kind === 'nwc' ? 'Pays in one tap' : 'Browser wallet'}</span>
+              <span className="wallet-status">
+                {status}
+                <span className="muted">{w.kind === 'nwc' ? 'Pays in one tap' : 'Browser wallet'}</span>
+              </span>
             </>
           )}
+          removeQuestion={(w) => `Stop paying with ${sendLabel(w)}? You can connect it again any time.`}
           onChange={async (next) => {
             setSend(next)
             await saveSendWallets(next)
@@ -100,6 +133,7 @@ export function WalletSection() {
             setSend(next)
             await saveSendWallets(next)
           }}
+          after={setupCards}
         />
       ) : (
         <RankedList
@@ -108,9 +142,13 @@ export function WalletSection() {
           render={(w) => (
             <>
               <strong className="address">{w.address}</strong>
-              {w.provider !== 'other' && <span className="muted">{PROVIDERS[w.provider].name}</span>}
+              <span className="wallet-status">
+                {status}
+                {w.provider !== 'other' && <span className="muted">{PROVIDERS[w.provider].name}</span>}
+              </span>
             </>
           )}
+          removeQuestion={(w) => `Stop getting paid at ${w.address}? Your groups will stop using it.`}
           onChange={async (next) => {
             setReceive(next)
             await saveReceiveWallets(next)
@@ -120,46 +158,9 @@ export function WalletSection() {
             setReceive(next)
             await saveReceiveWallets(next)
           }}
+          after={setupCards}
         />
       )}
-
-      <h3 className="wallet-add-title">Add a wallet</h3>
-      <ul className="wallet-options">
-        {(['coinos', 'rizful', 'other'] as const).map((option) => {
-          const isOn = connected(option)
-          const expanded = open === option
-          const name = option === 'other' ? 'A different wallet' : PROVIDERS[option].name
-          return (
-            <li key={option} className={`wallet-option${expanded ? ' open' : ''}`}>
-              <div className="wallet-option-head">
-                <span className="row-main">
-                  <strong>{name}</strong>
-                  <span className="muted">{BLURB[option]}</span>
-                </span>
-                {isOn && !expanded ? (
-                  <span className="chip on">Connected</span>
-                ) : (
-                  <button
-                    type="button"
-                    className="button small outline"
-                    aria-expanded={expanded}
-                    onClick={() => setOpen(expanded ? undefined : option)}
-                  >
-                    {expanded ? 'Close' : option === 'other' ? 'Add' : 'Set up'}
-                  </button>
-                )}
-              </div>
-              {expanded && (
-                <div className="wallet-guide">
-                  {option === 'coinos' && <CoinosGuide receive={receive} send={send} onChange={() => void load()} />}
-                  {option === 'rizful' && <RizfulGuide receive={receive} send={send} onChange={() => void load()} />}
-                  {option === 'other' && <OtherWallet tab={tab} onChange={() => void load()} />}
-                </div>
-              )}
-            </li>
-          )
-        })}
-      </ul>
     </section>
   )
 }

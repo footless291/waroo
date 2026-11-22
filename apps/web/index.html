@@ -42,11 +42,23 @@
         transition: opacity 220ms ease;
       }
       @media (prefers-color-scheme: dark) { .standalone #splash { background: #16121f; } }
+      html[data-theme='light'].standalone #splash { background: #fff5ee; }
+      html[data-theme='dark'].standalone #splash { background: #16121f; }
       #splash.gone { opacity: 0; pointer-events: none; }
     </style>
     <script>
       if (matchMedia('(display-mode: standalone)').matches || navigator.standalone)
         document.documentElement.classList.add('standalone')
+      // Light or dark chosen in the app (lib/theme.ts), before the first paint.
+      try {
+        var theme = localStorage.getItem('footless-theme')
+        if (theme === 'light' || theme === 'dark') {
+          document.documentElement.setAttribute('data-theme', theme)
+          document.querySelectorAll('meta[name="theme-color"]').forEach(function (m) {
+            m.content = theme === 'dark' ? '#16121f' : '#fff5ee'
+          })
+        }
+      } catch (e) {}
     </script>
   </head>
   <body>

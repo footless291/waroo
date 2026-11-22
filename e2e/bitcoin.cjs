@@ -123,24 +123,24 @@ let failSend = 0; // the next N payments, the wallet errors without saying wheth
 
   // Bob adds his Lightning address on the You screen
   await bob.goto(B + '#/you');
-  check(await waitText(bob, '.wallet', 'No addresses yet'), 'someone with no wallet starts on Receive, with none yet');
-  check(await waitText(bob, '.wallet-options', 'Coinos') && await waitText(bob, '.wallet-options', 'Rizful'), 'Coinos and Rizful are always offered');
-  await bob.click('.wallet-option:has-text("A different wallet") button:has-text("Add")');
+  check(await waitText(bob, '.wallet', 'Friends pay you at these addresses'), 'someone with no wallet starts on Receive');
+  check(await waitText(bob, '.wallet-list', 'Coinos') && await waitText(bob, '.wallet-list', 'Rizful'), 'Coinos and Rizful are always offered');
+  await bob.click('.setup-card:has-text("Add a different wallet") button:has-text("Add")');
   await bob.fill('input[placeholder="you@walletofsatoshi.com"]', 'not an address');
   await bob.click('.wallet-guide button:has-text("Add")');
   check(await waitText(bob, '.wallet-guide', 'doesn’t look like a Lightning address'), 'You screen rejects a bad address');
   await bob.fill('input[placeholder="you@walletofsatoshi.com"]', 'Bob@pay.example.com');
   await bob.click('.wallet-guide button:has-text("Add")');
-  check(await waitText(bob, '.ranked', 'bob@pay.example.com'), 'Bob adds his address');
+  check(await waitText(bob, '.wallet-list', 'bob@pay.example.com'), 'Bob adds his address');
   await shot(bob, '1-you');
   check(await waitText(ana, '.bitcoin', 'Pay ¥1,500 with bitcoin'), 'Ana now sees she can pay Bob in bitcoin');
 
   // Ana connects her browser wallet
   await ana.goto(B + '#/you');
   await ana.click('.wallet .segmented label:has-text("Send")');
-  await ana.click('.wallet-option:has-text("A different wallet") button:has-text("Add")');
+  await ana.click('.setup-card:has-text("Add a different wallet") button:has-text("Add")');
   await ana.click('button:has-text("Use my browser wallet")');
-  check(await waitText(ana, '.ranked', 'Test Wallet'), 'Ana connects her wallet');
+  check(await waitText(ana, '.wallet-list', 'Test Wallet'), 'Ana connects her wallet');
   await ana.goBack(); await ana.waitForTimeout(500);
 
   // A provider that asks for the wrong amount is refused, and nothing is paid
@@ -201,15 +201,15 @@ let failSend = 0; // the next N payments, the wallet errors without saying wheth
   // phone quietly uses the next one (asking for an invoice moves no money)
   await bob.goto(B + '#/you');
   await bob.click('.wallet .segmented label:has-text("Receive")');
-  await bob.click('.wallet-option:has-text("A different wallet") button:has-text("Add")');
+  await bob.click('.setup-card:has-text("Add a different wallet") button:has-text("Add")');
   await bob.fill('input[placeholder="you@walletofsatoshi.com"]', 'bob@broken.example.com');
   await bob.click('.wallet-guide button:has-text("Add")');
   check(await waitText(bob, '.wallet-guide', 'didn’t answer'), 'an address that doesn’t answer isn’t added');
   await bob.route('https://broken.example.com/**', (route) => route.fulfill({ headers: cors, body: JSON.stringify({ tag: 'payRequest', callback: 'https://broken.example.com/cb', minSendable: 1000, maxSendable: 1e11, metadata }) }));
   await bob.click('.wallet-guide button:has-text("Add")');
-  check(await waitText(bob, '.ranked', 'bob@broken.example.com'), 'Bob adds a second address, at the bottom');
+  check(await waitText(bob, '.wallet-list', 'bob@broken.example.com'), 'Bob adds a second address, at the bottom');
   await bob.click('button[aria-label="Move bob@broken.example.com up"]');
-  const order = await bob.$$eval('.ranked .address', (els) => els.map((e) => e.textContent));
+  const order = await bob.$$eval('.wallet-list .address', (els) => els.map((e) => e.textContent));
   check(order[0] === 'bob@broken.example.com', 'up moves it to first');
   await shot(bob, '6-ranked');
   await bob.goto(B + '#/'); await bob.click('a.card-row');

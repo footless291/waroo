@@ -29,67 +29,86 @@ const lnurl = (name, domain) => JSON.stringify({ tag: 'payRequest', callback: `h
   const paste = async (text) => { await page.evaluate((t) => navigator.clipboard.writeText(t), text); await page.click('.wallet-guide .paste-row button:has-text("Paste")'); };
 
   await page.goto(B + '#/you');
-  check(await waitText('.wallet', 'No addresses yet'), 'new: Wallet starts on Receive, empty');
-  check(await waitText('.wallet-options', 'Coinos') && await waitText('.wallet-options', 'Rizful') && await waitText('.wallet-options', 'A different wallet'), 'Coinos, Rizful and a different wallet are offered');
+  check(await waitText('.wallet', 'Friends pay you at these addresses'), 'new: Wallet starts on Receive');
+  check((await page.$$('.ranked-row')).length === 0, 'with nothing connected');
+  check((await page.locator('.setup-card', { hasText: 'Coinos' }).textContent()).includes('Not connected') && (await page.locator('.setup-card', { hasText: 'Rizful' }).textContent()).includes('Not connected'), 'Coinos and Rizful show as not connected');
+  check((await page.locator('.wallet-list > li').last().textContent()).includes('Add a different wallet'), 'and adding a different wallet is the last card');
   await page.screenshot({ path: SHOTS + '/wallet-1-empty.png' });
 
   // Coinos
-  await page.click('.wallet-option:has-text("Coinos") button:has-text("Set up")');
+  await page.click('.setup-card:has-text("Coinos") button:has-text("Set up")');
   check((await page.getAttribute('.wallet-guide a:has-text("Open Coinos")', 'href')) === 'https://coinos.io/register', 'Coinos step 1 opens sign-up');
   await page.fill('.wallet-guide input >> nth=0', 'Bob');
   await page.click('.wallet-guide button:has-text("Save")');
   check(await waitText('#coinos-address', 'Couldn’t find bob@coinos.io'), 'an unknown username is caught');
   await page.fill('.wallet-guide input >> nth=0', 'anna');
   await page.click('.wallet-guide button:has-text("Save")');
-  check(await waitText('.ranked', 'anna@coinos.io'), 'the Coinos address joins the Receive list');
+  check(await waitText('.wallet-list', 'anna@coinos.io'), 'the Coinos address joins the Receive list');
   check((await page.getAttribute('.wallet-guide a:has-text("Open Coinos Nostr settings")', 'href')) === 'https://coinos.io/settings/nostr', 'step 3 opens Coinos’s Nostr settings');
   await paste('not a connection');
   check(await page.waitForFunction(() => document.querySelector('.wallet-guide input[type=password]')?.value === 'not a connection', null, { timeout: 3000 }).then(() => true, () => false), 'Paste fills in what was copied');
   await page.click('.wallet-guide button:has-text("Connect")');
   check(await waitText('.wallet-guide', 'isn’t a wallet connection'), 'a wrong connection is explained');
-  await page.click('.wallet-option:has-text("Coinos") button:has-text("Close")');
-  check((await page.locator('.wallet-option', { hasText: 'Coinos' }).textContent()).includes('Connected'), 'Coinos shows as connected on Receive');
+  await page.click('.setup-card:has-text("Coinos") button:has-text("Close")');
+  check((await page.locator('.ranked-row', { hasText: 'anna@coinos.io' }).textContent()).includes('Connected'), 'Coinos shows as connected on its card');
+  check((await page.locator('.setup-card', { hasText: 'Coinos' }).count()) === 0, 'and isn’t offered for setup on Receive any more');
 
   // Rizful: one code sets up both
-  await page.click('.wallet-option:has-text("Rizful") button:has-text("Set up")');
+  await page.click('.setup-card:has-text("Rizful") button:has-text("Set up")');
   check((await page.getAttribute('.wallet-guide a:has-text("Get a code in Rizful")', 'href')) === 'https://rizful.com/nostr_onboarding_auth_token/get_token', 'Rizful step 2 opens the code page');
   await paste('BAD');
   await page.click('.wallet-guide button:has-text("Connect")');
   check(await waitText('.wallet-guide', 'That code didn’t work'), 'a bad code is explained');
   await paste('GOOD-CODE');
   await page.click('.wallet-guide button:has-text("Connect")');
-  check(await waitText('.ranked', 'anna@rizful.com'), 'the Rizful address joins Receive, after Coinos');
+  check(await waitText('.wallet-list', 'anna@rizful.com'), 'the Rizful address joins Receive, after Coinos');
   check(/^[0-9a-f]{64}$/.test(exchanged?.nostr_public_key || ''), 'the code is exchanged with a fresh public key');
   await page.screenshot({ path: SHOTS + '/wallet-2-receive.png' });
   await page.click('.wallet .segmented label:has-text("Send")');
-  check(await waitText('.ranked', 'Rizful'), 'and Rizful joins Send too');
-  check((await page.locator('.wallet-option', { hasText: 'Rizful' }).textContent()).includes('Connected'), 'Rizful shows as connected on Send');
-  check(!(await page.locator('.wallet-option', { hasText: 'Coinos' }).textContent()).includes('Connected'), 'Coinos isn’t connected for sending yet');
+  check(await waitText('.wallet-list', 'Rizful'), 'and Rizful joins Send too');
+  check((await page.locator('.ranked-row', { hasText: 'Rizful' }).textContent()).includes('Connected'), 'Rizful shows as connected on Send');
+  check((await page.locator('.setup-card', { hasText: 'Coinos' }).textContent()).includes('Not connected'), 'Coinos shows as not connected for sending');
+  check((await page.locator('.wallet-list > li').last().textContent()).includes('Add a different wallet'), 'adding a different wallet is the last card');
   await page.screenshot({ path: SHOTS + '/wallet-3-send.png' });
 
   // Order and removal on Receive, and it sticks
   await page.click('.wallet .segmented label:has-text("Receive")');
   await page.click('button[aria-label="Move anna@rizful.com up"]');
-  let order = await page.$$eval('.ranked .address', (els) => els.map((e) => e.textContent));
+  let order = await page.$$eval('.wallet-list .address', (els) => els.map((e) => e.textContent));
   check(order.join() === 'anna@rizful.com,anna@coinos.io', 'up/down reorders');
   // Drag the second back to the top by its handle
-  const handle = await page.$$('.ranked .drag-handle');
+  const handle = await page.$$('.wallet-list .drag-handle');
   const box = await handle[1].boundingBox();
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await page.mouse.down();
   await page.mouse.move(box.x + box.width / 2, box.y - 60, { steps: 8 });
   await page.mouse.up();
   await page.waitForTimeout(300);
-  order = await page.$$eval('.ranked .address', (els) => els.map((e) => e.textContent));
+  order = await page.$$eval('.wallet-list .address', (els) => els.map((e) => e.textContent));
   check(order.join() === 'anna@coinos.io,anna@rizful.com', `dragging reorders (${order})`);
   await page.click('button[aria-label="Remove anna@rizful.com"]');
-  await page.click('button[aria-label="Tap again to remove anna@rizful.com"]');
+  check(await waitText('.confirm-remove', 'Stop getting paid at anna@rizful.com?'), 'the X asks first');
+  await page.screenshot({ path: SHOTS + '/wallet-4-confirm.png' });
+  await page.click('.confirm-remove button:has-text("Keep it")');
+  check((await page.$$('.confirm-remove')).length === 0, '“Keep it” keeps it');
+  await page.click('button[aria-label="Remove anna@rizful.com"]');
+  await page.click('.confirm-remove button:has-text("Remove")');
   await page.waitForTimeout(300);
   await page.reload();
   await page.click('.wallet .segmented label:has-text("Receive")');
-  await page.waitForSelector('.ranked .address');
-  order = await page.$$eval('.ranked .address', (els) => els.map((e) => e.textContent));
+  await page.waitForSelector('.wallet-list .address');
+  order = await page.$$eval('.wallet-list .address', (els) => els.map((e) => e.textContent));
   check(order.join() === 'anna@coinos.io', 'removing takes two taps, and the list is kept');
+
+  // Appearance
+  await page.click('.settings-card:has-text("Appearance") label:has-text("Dark")');
+  check((await page.getAttribute('html', 'data-theme')) === 'dark', 'Dark applies straight away');
+  await page.screenshot({ path: SHOTS + '/wallet-5-dark.png', fullPage: true });
+  await page.reload();
+  check((await page.getAttribute('html', 'data-theme')) === 'dark', 'and is remembered');
+  check((await page.getAttribute('meta[name="theme-color"] >> nth=0', 'content')) === '#16121f', 'the browser bar follows');
+  await page.click('.settings-card:has-text("Appearance") label:has-text("System")');
+  check((await page.getAttribute('html', 'data-theme')) === null, 'System goes back to following the phone');
 
   check(errors.length === 0, `no page errors ${errors.join(' | ')}`);
   console.log(failed ? `${failed} FAILED` : 'ALL PASSED');

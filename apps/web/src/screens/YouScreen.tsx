@@ -1,3 +1,4 @@
+import { AppearanceCard } from '../components/AppearanceCard.tsx'
 import { Header } from '../components/Header.tsx'
 import { NotificationsCard } from '../components/NotificationsCard.tsx'
 import { WalletSection } from '../components/WalletSection.tsx'
@@ -10,6 +11,8 @@ export function YouScreen() {
         <WalletSection />
 
         <NotificationsCard />
+
+        <AppearanceCard />
 
         <section className="settings-card">
           <h2>Moving to a new phone</h2>
