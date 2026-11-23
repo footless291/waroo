@@ -63,6 +63,21 @@ const b64u = (b) => Buffer.from(b).toString('base64url');
   await ana.fill('input[aria-label="Person 3"]', 'Cai');
   await ana.click('text=Create group'); await ana.waitForTimeout(400);
 
+  // The date sits beside who paid, within the screen
+  await ana.click('a.fab');
+  const dateBox = await ana.locator('input[type=date]').boundingBox();
+  check(dateBox && dateBox.x + dateBox.width <= 390, `the date field fits on screen (right edge ${Math.round(dateBox.x + dateBox.width)})`);
+  // Shares, with − and +
+  await ana.click('.segmented label:has-text("Shares")');
+  await ana.fill('input.amount-input', '3000');
+  await ana.click('button[aria-label="One share more for Bob"]');
+  await ana.click('button[aria-label="One share fewer for Cai"]');
+  check((await ana.inputValue('input[aria-label="Shares for Bob"]')) === '2' && (await ana.inputValue('input[aria-label="Shares for Cai"]')) === '0', '+ and − change the shares');
+  const shared = await ana.textContent('.split-list');
+  check(shared.includes('¥1,000') && shared.includes('¥2,000'), 'and the split follows: Ana 1 share, Bob 2');
+  check(await ana.isDisabled('button[aria-label="One share fewer for Cai"]'), 'can’t go below zero');
+  await ana.goBack(); await ana.waitForTimeout(300);
+
   // Percentages
   await ana.click('a.fab');
   await ana.fill('input[placeholder="Izakaya dinner"]', 'Villa');

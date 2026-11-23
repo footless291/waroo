@@ -84,7 +84,7 @@ function PasteField({
 }
 
 /** Coinos: account, username (that's the address), then optionally a connection to pay. */
-export function CoinosGuide({ receive, send, onChange }: GuideProps) {
+export function CoinosGuide({ receive, send, onChange, onDone }: GuideProps & { onDone?: () => void }) {
   const address = receive.find((w) => w.provider === 'coinos')?.address
   const paying = send.some((w) => w.provider === 'coinos')
   const [username, setUsername] = useState('')
@@ -121,6 +121,8 @@ export function CoinosGuide({ receive, send, onChange }: GuideProps) {
       setNwc('')
       setConnectNote('')
       onChange()
+      // Everything's set up: the guide has done its job.
+      onDone?.()
     } catch (err) {
       setConnectNote((err as Error).message)
     } finally {
@@ -186,7 +188,7 @@ export function CoinosGuide({ receive, send, onChange }: GuideProps) {
               <li>Come back here and tap Paste.</li>
             </ol>
             <a className="button outline small" href={COINOS.nostrSettings} target="_blank" rel="noopener noreferrer">
-              Open Coinos Nostr settings
+              Open Coinos settings
             </a>
             <form className="field-stack" onSubmit={connect}>
               <PasteField label="Wallet connection" value={nwc} onChange={setNwc} placeholder="nostr+walletconnect://…" secret />

@@ -1224,16 +1224,42 @@ input[type='checkbox'] {
   touch-action: none;
 }
 .ranked-number {
+  position: relative;
   flex: none;
   display: grid;
   place-items: center;
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: var(--strong);
-  color: var(--on-strong);
+  background: var(--owed);
+  color: var(--paper);
   font-size: 0.8rem;
   font-weight: 700;
+  /* A faint ring, so it reads as "live" even without motion. */
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--owed) 18%, transparent);
+}
+/* Connected: a slow, soft ripple from the number. */
+@media (prefers-reduced-motion: no-preference) {
+  .ranked-number::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid var(--owed);
+    opacity: 0;
+    animation: connected-ripple 2.8s ease-out infinite;
+  }
+}
+@keyframes connected-ripple {
+  0% {
+    transform: scale(1);
+    opacity: 0.45;
+  }
+  70%,
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
 }
 .ranked-main {
   flex: 1;
@@ -1244,7 +1270,7 @@ input[type='checkbox'] {
   padding-left: 4px;
 }
 .ranked-main .address {
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 .wallet-status {
   display: flex;
@@ -1535,4 +1561,44 @@ body:has(.tabs-shell) {
   height: auto;
   overflow: visible;
   padding: 0 2px 4px;
+}
+
+/* Shares: − and + around the number */
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.stepper input {
+  width: 3.2em;
+  padding: 0 6px;
+  text-align: center;
+}
+.stepper button {
+  display: grid;
+  place-items: center;
+  width: var(--target);
+  height: var(--target);
+  border: 0;
+  border-radius: 50%;
+  background: var(--line);
+  color: var(--text);
+  font: inherit;
+  font-size: 1.3rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.stepper button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+/* Date fields: share the row instead of taking their full natural width */
+input[type='date'] {
+  min-width: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+}
+input[type='date']::-webkit-date-and-time-value {
+  text-align: left;
 }

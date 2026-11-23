@@ -257,7 +257,7 @@ function ExpenseForm({
               ))}
             </select>
           </label>
-          <label className="field">
+          <label className="field grow">
             <span>Date</span>
             <input type="date" value={date} onChange={(e) => e.target.value && setDate(e.target.value)} />
           </label>
@@ -298,12 +298,31 @@ function ExpenseForm({
                         <span aria-hidden="true">%</span>
                       </span>
                     ) : mode === 'shares' ? (
-                      <input
-                        inputMode="numeric"
-                        value={weights[m.id] ?? ''}
-                        onChange={(e) => setWeights({ ...weights, [m.id]: e.target.value.replace(/\D/g, '') })}
-                        aria-label={`Shares for ${m.name}`}
-                      />
+                      <span className="stepper">
+                        <button
+                          type="button"
+                          aria-label={`One share fewer for ${m.name}`}
+                          disabled={(Number(weights[m.id]) || 0) <= 0}
+                          onClick={() =>
+                            setWeights({ ...weights, [m.id]: String(Math.max(0, (Number(weights[m.id]) || 0) - 1)) })
+                          }
+                        >
+                          −
+                        </button>
+                        <input
+                          inputMode="numeric"
+                          value={weights[m.id] ?? ''}
+                          onChange={(e) => setWeights({ ...weights, [m.id]: e.target.value.replace(/\D/g, '') })}
+                          aria-label={`Shares for ${m.name}`}
+                        />
+                        <button
+                          type="button"
+                          aria-label={`One share more for ${m.name}`}
+                          onClick={() => setWeights({ ...weights, [m.id]: String((Number(weights[m.id]) || 0) + 1) })}
+                        >
+                          +
+                        </button>
+                      </span>
                     ) : (
                       <input
                         inputMode="decimal"

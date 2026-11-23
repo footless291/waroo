@@ -31,7 +31,10 @@ const lnurl = (name, domain) => JSON.stringify({ tag: 'payRequest', callback: `h
   await page.goto(B + '#/settings?open=wallet');
   check(await waitText('.wallet', 'Friends pay you at these addresses'), 'new: Wallet starts on Receive');
   check((await page.$$('.pager.inline .pager-page:not([inert]) .ranked-row')).length === 0, 'with nothing connected');
-  check((await page.locator('.pager.inline .pager-page:not([inert]) .setup-card', { hasText: 'Coinos' }).textContent()).includes('Not connected') && (await page.locator('.pager.inline .pager-page:not([inert]) .setup-card', { hasText: 'Rizful' }).textContent()).includes('Not connected'), 'Coinos and Rizful show as not connected');
+  check((await page.locator('.pager.inline .pager-page:not([inert]) .setup-card', { hasText: 'Coinos' }).count()) === 1 && (await page.locator('.pager.inline .pager-page:not([inert]) .setup-card', { hasText: 'Rizful' }).count()) === 1, 'Coinos and Rizful are offered to set up');
+  check(!(await page.textContent('.pager.inline .pager-page:not([inert]) .wallet-list')).includes('Not connected'), 'without a “Not connected” pill');
+  const tabs = await page.$$eval('.wallet .segmented label', (els) => els.map((e) => e.textContent.trim()));
+  check(tabs.join() === 'Receive,Send', 'Receive comes first');
   check((await page.locator('.pager.inline .pager-page:not([inert]) .wallet-list > li').last().textContent()).includes('Add a different wallet'), 'and adding a different wallet is the last card');
   await page.screenshot({ path: SHOTS + '/wallet-1-empty.png' });
 
@@ -44,7 +47,7 @@ const lnurl = (name, domain) => JSON.stringify({ tag: 'payRequest', callback: `h
   await page.fill('.pager.inline .pager-page:not([inert]) .wallet-guide input >> nth=0', 'anna');
   await page.click('.pager.inline .pager-page:not([inert]) .wallet-guide button:has-text("Save")');
   check(await waitText('.pager.inline .pager-page:not([inert]) .wallet-list', 'anna@coinos.io'), 'the Coinos address joins the Receive list');
-  check((await page.getAttribute('.pager.inline .pager-page:not([inert]) .wallet-guide a:has-text("Open Coinos Nostr settings")', 'href')) === 'https://coinos.io/settings/nostr', 'step 3 opens Coinos’s Nostr settings');
+  check((await page.getAttribute('.pager.inline .pager-page:not([inert]) .wallet-guide a:has-text("Open Coinos settings")', 'href')) === 'https://coinos.io/settings/nostr', 'step 3 opens Coinos’s Nostr settings');
   await paste('not a connection');
   check(await page.waitForFunction(() => document.querySelector('.pager.inline .pager-page:not([inert]) .wallet-guide input[type=password]')?.value === 'not a connection', null, { timeout: 3000 }).then(() => true, () => false), 'Paste fills in what was copied');
   await page.click('.pager.inline .pager-page:not([inert]) .wallet-guide button:has-text("Connect")');
@@ -67,16 +70,16 @@ const lnurl = (name, domain) => JSON.stringify({ tag: 'payRequest', callback: `h
   await page.click('.wallet .segmented label:has-text("Send")');
   check(await waitText('.pager.inline .pager-page:not([inert]) .wallet-list', 'Rizful'), 'and Rizful joins Send too');
   check((await page.locator('.pager.inline .pager-page:not([inert]) .ranked-row', { hasText: 'Rizful' }).textContent()).includes('Connected'), 'Rizful shows as connected on Send');
-  check((await page.locator('.pager.inline .pager-page:not([inert]) .setup-card', { hasText: 'Coinos' }).textContent()).includes('Not connected'), 'Coinos shows as not connected for sending');
+  check((await page.locator('.pager.inline .pager-page:not([inert]) .setup-card', { hasText: 'Coinos' }).count()) === 1, 'Coinos is offered for sending');
   check((await page.locator('.pager.inline .pager-page:not([inert]) .wallet-list > li').last().textContent()).includes('Add a different wallet'), 'adding a different wallet is the last card');
   await page.screenshot({ path: SHOTS + '/wallet-3-send.png' });
 
   // Swiping inside Wallet moves between Send and Receive
-  await page.evaluate(() => { const s = document.querySelector('.pager.inline'); s.scrollBy({ left: s.clientWidth, behavior: 'instant' }); });
-  check(await page.waitForFunction(() => document.querySelector('.wallet .segmented input[value="receive"]')?.checked, null, { timeout: 3000 }).then(() => true, () => false), 'swiping left inside Wallet shows Receive');
-  check((await page.evaluate(() => location.hash)).startsWith('#/settings'), 'and stays on Settings');
   await page.evaluate(() => { const s = document.querySelector('.pager.inline'); s.scrollBy({ left: -s.clientWidth, behavior: 'instant' }); });
-  check(await page.waitForFunction(() => document.querySelector('.wallet .segmented input[value="send"]')?.checked, null, { timeout: 3000 }).then(() => true, () => false), 'and swiping right goes back to Send');
+  check(await page.waitForFunction(() => document.querySelector('.wallet .segmented input[value="receive"]')?.checked, null, { timeout: 3000 }).then(() => true, () => false), 'swiping right inside Wallet shows Receive');
+  check((await page.evaluate(() => location.hash)).startsWith('#/settings'), 'and stays on Settings');
+  await page.evaluate(() => { const s = document.querySelector('.pager.inline'); s.scrollBy({ left: s.clientWidth, behavior: 'instant' }); });
+  check(await page.waitForFunction(() => document.querySelector('.wallet .segmented input[value="send"]')?.checked, null, { timeout: 3000 }).then(() => true, () => false), 'and swiping left goes back to Send');
 
   // Order and removal on Receive, and it sticks
   await page.click('.wallet .segmented label:has-text("Receive")');
@@ -109,6 +112,7 @@ const lnurl = (name, domain) => JSON.stringify({ tag: 'payRequest', callback: `h
 
   // Appearance
   await page.click('button.collapsible-toggle:has-text("Appearance")');
+  await page.evaluate(() => document.querySelector('.appearance').scrollIntoView({ block: 'center' }));
   await page.click('.settings-card:has-text("Appearance") label:has-text("Dark")');
   check((await page.getAttribute('html', 'data-theme')) === 'dark', 'Dark applies straight away');
   await page.screenshot({ path: SHOTS + '/wallet-5-dark.png', fullPage: true });
@@ -116,6 +120,7 @@ const lnurl = (name, domain) => JSON.stringify({ tag: 'payRequest', callback: `h
   check((await page.getAttribute('html', 'data-theme')) === 'dark', 'and is remembered');
   check((await page.getAttribute('meta[name="theme-color"] >> nth=0', 'content')) === '#16121f', 'the browser bar follows');
   await page.click('button.collapsible-toggle:has-text("Appearance")');
+  await page.evaluate(() => document.querySelector('.appearance').scrollIntoView({ block: 'center' }));
   await page.click('.settings-card:has-text("Appearance") label:has-text("System")');
   check((await page.getAttribute('html', 'data-theme')) === null, 'System goes back to following the phone');
 

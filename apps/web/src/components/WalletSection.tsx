@@ -18,8 +18,8 @@ type Tab = 'send' | 'receive'
 type Option = 'coinos' | 'rizful' | 'other'
 
 const TABS: { value: Tab; label: string }[] = [
-  { value: 'send', label: 'Send' },
   { value: 'receive', label: 'Receive' },
+  { value: 'send', label: 'Send' },
 ]
 
 const BLURB: Record<Option, string> = {
@@ -83,10 +83,16 @@ export function WalletSection() {
               {expanded ? 'Close' : option === 'other' ? 'Add' : 'Set up'}
             </button>
           </div>
-          {option !== 'other' && !expanded && !connected(option) && <span className="chip">Not connected</span>}
           {expanded && (
             <div className="wallet-guide">
-              {option === 'coinos' && <CoinosGuide receive={receive} send={send} onChange={() => void load()} />}
+              {option === 'coinos' && (
+                <CoinosGuide
+                  receive={receive}
+                  send={send}
+                  onChange={() => void load()}
+                  onDone={() => setOpen(undefined)}
+                />
+              )}
               {option === 'rizful' && <RizfulGuide receive={receive} send={send} onChange={() => void load()} />}
               {option === 'other' && <OtherWallet tab={side} onChange={() => void load()} />}
             </div>
@@ -96,7 +102,8 @@ export function WalletSection() {
     })
   }
 
-  const status = <span className="chip on">Connected</span>
+  // Connected shows as the green, gently pulsing number; this is for screen readers.
+  const status = <span className="visually-hidden">Connected.</span>
 
   return (
     <div className="wallet">
@@ -108,6 +115,44 @@ export function WalletSection() {
         current={tab}
         onChange={(path) => setTab(path as Tab)}
         pages={[
+          {
+            path: 'receive',
+            content: (
+              <>
+                <p className="wallet-explain">
+                  Friends pay you at these addresses, in order. If the first can’t take a payment, the next one is used.
+                </p>
+                <RankedList
+                  items={receive}
+                  label={(w) => w.address}
+                  render={(w) => (
+                    <>
+                      <strong className="address">
+                        {/* On narrow screens, break after the @ rather than mid-word. */}
+                        {w.address.split('@')[0]}@<wbr />
+                        {w.address.split('@').slice(1).join('@')}
+                      </strong>
+                      <span className="wallet-status">
+                        {status}
+                        {w.provider !== 'other' && <span className="muted">{PROVIDERS[w.provider].name}</span>}
+                      </span>
+                    </>
+                  )}
+                  removeQuestion={(w) => `Stop getting paid at ${w.address}? Your groups will stop using it.`}
+                  onChange={async (next) => {
+                    setReceive(next)
+                    await saveReceiveWallets(next)
+                  }}
+                  onRemove={async (w) => {
+                    const next = receive.filter((x) => x.id !== w.id)
+                    setReceive(next)
+                    await saveReceiveWallets(next)
+                  }}
+                  after={setupCards('receive')}
+                />
+              </>
+            ),
+          },
           {
             path: 'send',
             content: (
@@ -139,40 +184,6 @@ export function WalletSection() {
                     await saveSendWallets(next)
                   }}
                   after={setupCards('send')}
-                />
-              </>
-            ),
-          },
-          {
-            path: 'receive',
-            content: (
-              <>
-                <p className="wallet-explain">
-                  Friends pay you at these addresses, in order. If the first can’t take a payment, the next one is used.
-                </p>
-                <RankedList
-                  items={receive}
-                  label={(w) => w.address}
-                  render={(w) => (
-                    <>
-                      <strong className="address">{w.address}</strong>
-                      <span className="wallet-status">
-                        {status}
-                        {w.provider !== 'other' && <span className="muted">{PROVIDERS[w.provider].name}</span>}
-                      </span>
-                    </>
-                  )}
-                  removeQuestion={(w) => `Stop getting paid at ${w.address}? Your groups will stop using it.`}
-                  onChange={async (next) => {
-                    setReceive(next)
-                    await saveReceiveWallets(next)
-                  }}
-                  onRemove={async (w) => {
-                    const next = receive.filter((x) => x.id !== w.id)
-                    setReceive(next)
-                    await saveReceiveWallets(next)
-                  }}
-                  after={setupCards('receive')}
                 />
               </>
             ),
