@@ -28,7 +28,7 @@ import {
   type GroupMeta,
 } from './db.ts'
 import { fetchGroup, relayUrl, syncHub } from './sync.ts'
-import { addReceive } from './wallets.ts'
+import { addReceive, addSend, saveSendWallets, sendWallets, type NewSendWallet } from './wallets.ts'
 
 export interface MovedGroup {
   id: string
@@ -42,7 +42,15 @@ export interface MovedGroup {
 export type MoveMessage =
   | { from: 'new'; type: 'hello'; key: string }
   /** `lightningAddresses` is the ordered list; older phones sent only `lightningAddress`. */
-  | { from: 'old'; type: 'groups'; groups: MovedGroup[]; lightningAddress: string; lightningAddresses?: string[] }
+  | {
+      from: 'old'
+      type: 'groups'
+      groups: MovedGroup[]
+      lightningAddress: string
+      lightningAddresses?: string[]
+      /** Wallet connections, in order. Only on a move: they're secrets, so never sent when someone else vouches. */
+      sendWallets?: NewSendWallet[]
+    }
   | { from: 'new'; type: 'done'; moved: string[] }
   | { from: 'old' | 'new'; type: 'cancel' }
 
@@ -148,6 +156,21 @@ export async function lightningAddressesToMove(): Promise<string[]> {
   return myLightningAddresses()
 }
 
+/**
+ * Wallet connections that can move: Nostr Wallet Connect, which is just a
+ * secret. A browser wallet belongs to this browser, so it stays.
+ */
+export async function sendWalletsToMove(): Promise<NewSendWallet[]> {
+  return (await sendWallets())
+    .filter((w) => w.kind === 'nwc')
+    .map(({ id: _id, ...w }) => w as NewSendWallet)
+}
+
+/** After a move, this phone shouldn't be able to spend any more: its connections go too. */
+export async function forgetMovedWallets(): Promise<void> {
+  await saveSendWallets((await sendWallets()).filter((w) => w.kind !== 'nwc'))
+}
+
 /** After the new phone has them: this phone can't write to them any more, so they go. */
 export async function forgetMoved(groupIds: string[]): Promise<void> {
   for (const id of groupIds) {
@@ -168,6 +191,7 @@ export async function receiveGroups(
   keys: CryptoKeyPair,
   publicKey: string,
   lightningAddresses: string[],
+  wallets: NewSendWallet[] = [],
 ): Promise<string[]> {
   const moved: string[] = []
   for (const g of groups) {
@@ -192,5 +216,6 @@ export async function receiveGroups(
     moved.push(g.id)
   }
   if (lightningAddresses.length) await addReceive(...lightningAddresses)
+  for (const wallet of wallets) await addSend(wallet)
   return moved
 }

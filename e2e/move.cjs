@@ -51,6 +51,16 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await old.fill('input[placeholder="you@walletofsatoshi.com"]', 'ana@pay.example.com');
   await old.click('.pager.inline .pager-page:not([inert]) .wallet-guide button:has-text("Add")');
   await waitText(old, '.pager.inline .pager-page:not([inert]) .wallet-list', 'ana@pay.example.com');
+  // Two wallet connections, and a browser wallet that can't move
+  const settings = (p, fn) => p.evaluate((fn) => new Promise((resolve) => {
+    const open = indexedDB.open('footless');
+    open.onsuccess = () => { const tx = open.result.transaction('settings', 'readwrite'); const st = tx.objectStore('settings'); new Function('st', 'resolve', fn)(st, resolve); };
+  }), fn);
+  await settings(old, `st.put([
+    { id: 'w1', provider: 'other', name: 'Alby Hub', kind: 'nwc', url: 'nostr+walletconnect://aa?relay=wss://relay.example&secret=11' },
+    { id: 'w2', provider: 'coinos', name: 'Coinos', kind: 'nwc', url: 'nostr+walletconnect://bb?relay=wss://relay.coinos.io&secret=22' },
+    { id: 'w3', provider: 'other', name: 'Browser wallet', kind: 'webln' },
+  ], 'sendWallets'); resolve()`);
 
   // Someone glimpses the code and scans it too: the move stops, nothing leaks
   await old.goto(B + '#/settings?open=move');
@@ -99,12 +109,13 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await old.screenshot({ path: SHOTS + '/move-2-confirm.png' });
   await newer.screenshot({ path: SHOTS + '/move-3-new-code.png' });
   await old.click('button:has-text("Yes, move my groups")');
-  check(await waitText(newer, 'main', 'Your 2 groups are on this phone now', 20000), 'the new phone has both groups');
-  check(await waitText(old, 'main', 'Your 2 groups are on the new phone now', 10000), 'the old phone says they moved');
+  check(await waitText(newer, 'main', 'Your 2 groups are on this phone now', 20000) && await waitText(newer, 'main', 'connections came too'), 'the new phone has both groups and the wallets');
+  check(await waitText(old, 'main', 'Your 2 groups and wallets are on the new phone now', 10000), 'the old phone says they moved');
   await newer.screenshot({ path: SHOTS + '/move-4-done.png' });
 
   await old.goto(B); await old.waitForTimeout(600);
-  check(await old.isVisible('text=Split anything with anyone'), 'the old phone has no groups left');
+  await old.screenshot({ path: SHOTS + '/move-5-old.png' });
+  check(await old.waitForSelector('text=Split anything with anyone', { timeout: 6000 }).then(() => true, () => false), 'the old phone has no groups left');
 
   await newer.click('a:has-text("Open my groups")'); await newer.waitForTimeout(600);
   const homeText = await text(newer, 'main');
@@ -121,6 +132,12 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   check(await waitText(bob, '.cards', 'Ana'), 'still as Ana');
   await newer.goto(B + '#/settings?open=wallet'); await newer.waitForTimeout(500);
   check(await waitText(newer, '.pager.inline .pager-page:not([inert]) .wallet-list', 'ana@pay.example.com'), 'her Lightning address came along');
+  const readSend = (p) => settings(p, `const r = st.get('sendWallets'); r.onsuccess = () => resolve((r.result || []).map((w) => w.name).join(','))`);
+  check((await readSend(newer)) === 'Alby Hub,Coinos', `her wallet connections came along, in order (${await readSend(newer)})`);
+  await newer.click('.wallet .segmented label:has-text("Send")').catch(() => newer.click('label:has-text("Send")'));
+  check(await waitText(newer, '.pager.inline .pager-page:not([inert]) .wallet-list', 'Alby Hub'), 'and show in Send');
+  const left = await readSend(old);
+  check(left === 'Browser wallet', `the old phone keeps only the browser wallet (${left})`);
 
   for (const p of [old, newer, bob]) check(p.errors.length === 0, `${p.name}: no console errors ${p.errors.join(' | ').slice(0, 300)}`);
   console.log(failed ? `${failed} FAILED` : 'ALL PASSED');

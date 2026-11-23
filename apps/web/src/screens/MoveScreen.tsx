@@ -7,7 +7,9 @@ import {
   forgetMoved,
   groupsToMove,
   handOver,
+  forgetMovedWallets,
   lightningAddressesToMove,
+  sendWalletsToMove,
   moveLink,
   MoveChannel,
   newMoveSecret,
@@ -50,6 +52,7 @@ export function MoveScreen() {
       setPhase({ at: 'confirm', secret, key: msg.key, code: await moveCode(secret, msg.key) })
     } else if (msg.type === 'done' && now.at === 'moving') {
       await forgetMoved(groups.current.map((g) => g.id))
+      await forgetMovedWallets()
       channel.current?.close()
       channel.current = undefined
       setPhase({ at: 'done', count: groups.current.length })
@@ -62,7 +65,9 @@ export function MoveScreen() {
     setPhase({ at: 'starting' })
     try {
       groups.current = await groupsToMove()
-      if (groups.current.length === 0) return stop('There are no groups on this phone to move.')
+      if (groups.current.length === 0 && (await sendWalletsToMove()).length === 0 && (await lightningAddressesToMove()).length === 0) {
+        return stop('There’s nothing on this phone to move yet: no groups and no wallets.')
+      }
       const secret = newMoveSecret()
       const ch = new MoveChannel(
         secret,
@@ -93,6 +98,7 @@ export function MoveScreen() {
         groups: moved,
         lightningAddress: addresses[0] ?? '',
         lightningAddresses: addresses,
+        sendWallets: await sendWalletsToMove(),
       })
     } catch (err) {
       stop((err as Error).message)
@@ -109,14 +115,15 @@ export function MoveScreen() {
       <Header title="Move to a new phone" back="/settings" />
       {phase.at === 'intro' && (
         <section className="form">
-          <p className="lead">Your groups move to the new phone, and leave this one.</p>
+          <p className="lead">Your groups and wallets move to the new phone, and leave this one.</p>
           <ul className="steps">
             <li>Open Footless on the new phone, from its Home Screen.</li>
             <li>Tap the scan button and scan the code this phone will show.</li>
             <li>Check both phones show the same 4 numbers.</li>
           </ul>
           <p className="muted">
-            Your Lightning address comes along. A connected wallet doesn’t: connect it again on the new phone.
+            Your Lightning addresses and wallet connections come along, in the same order. A wallet that’s built into
+            this browser stays behind.
           </p>
           <button className="button primary" onClick={start}>
             Show the code
@@ -157,8 +164,8 @@ export function MoveScreen() {
         <section className="empty">
           <h2>Moved</h2>
           <p>
-            {phase.count === 1 ? 'Your group is' : `Your ${phase.count} groups are`} on the new phone now, and gone from
-            this one.
+            {phase.count === 0 ? 'Your wallets are' : phase.count === 1 ? 'Your group and wallets are' : `Your ${phase.count} groups and wallets are`}{' '}
+            on the new phone now, and gone from this one.
           </p>
           <a className="button primary" href="#/">
             Done

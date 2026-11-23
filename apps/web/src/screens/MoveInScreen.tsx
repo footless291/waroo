@@ -7,7 +7,7 @@ type Phase =
   | { at: 'connecting' }
   | { at: 'code'; code: string }
   | { at: 'receiving' }
-  | { at: 'done'; count: number }
+  | { at: 'done'; count: number; wallets: number }
   | { at: 'stopped'; message: string }
 
 /** The new phone: makes its own key, shows the check code, receives the groups. */
@@ -39,11 +39,12 @@ export function MoveInScreen({ params }: { params: URLSearchParams }) {
               setPhase({ at: 'receiving' })
               try {
                 const addresses = msg.lightningAddresses ?? (msg.lightningAddress ? [msg.lightningAddress] : [])
-                const moved = await receiveGroups(msg.groups, keys, publicKey, addresses)
+                const wallets = recovering ? [] : (msg.sendWallets ?? [])
+                const moved = await receiveGroups(msg.groups, keys, publicKey, addresses, wallets)
                 await channel?.send({ from: 'new', type: 'done', moved })
                 finished = true
                 channel?.close()
-                setPhase({ at: 'done', count: msg.groups.length })
+                setPhase({ at: 'done', count: msg.groups.length, wallets: wallets.length })
               } catch (err) {
                 setPhase({ at: 'stopped', message: (err as Error).message })
               }
@@ -102,8 +103,16 @@ export function MoveInScreen({ params }: { params: URLSearchParams }) {
         <section className="empty">
           <h2>All here</h2>
           <p>
-            {phase.count === 1 ? 'Your group is' : `Your ${phase.count} groups are`} on this phone now. If you paid with a
-            connected wallet before, connect it again in Settings.
+            {phase.count === 0
+              ? 'Nothing to move but your wallets.'
+              : phase.count === 1
+                ? 'Your group is on this phone now.'
+                : `Your ${phase.count} groups are on this phone now.`}{' '}
+            {recovering
+              ? 'Your wallet connection was on the lost phone: connect your wallet again in Settings, and in your wallet’s own app, turn off the connection the lost phone used.'
+              : phase.wallets > 0
+                ? `Your wallet ${phase.wallets === 1 ? 'connection came' : 'connections came'} too, in the same order.`
+                : 'If you paid from a wallet in this browser before, connect it again in Settings.'}
           </p>
           <a className="button primary" href="#/">
             Open my groups
