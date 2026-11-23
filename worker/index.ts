@@ -211,9 +211,18 @@ type ClientMessage =
   /** This connection's phone wants to be woken for this room while it isn't connected. */
   | { t: 'subscribe'; endpoint: string }
   | { t: 'unsubscribe'; endpoint: string }
+  | { t: 'away' }
+  | { t: 'here' }
 
 type Row = { seq: number; id: string; data: string }
-type Attachment = { endpoint?: string }
+/**
+ * A connection that subscribed for pushes. `at` is when it last said it's
+ * here; `away` is set while the app is in the background.
+ */
+type Attachment = { endpoint?: string; at?: number; away?: boolean }
+
+/** An open app pings every 20 seconds; a connection silent for longer is a phone that was put away. */
+const LIVE_MS = 50_000
 
 export class RelayRoom extends DurableObject<Env> {
   private sql: SqlStorage
@@ -221,6 +230,8 @@ export class RelayRoom extends DurableObject<Env> {
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env)
     this.sql = ctx.storage.sql
+    // Answered without waking the room; the time is kept, to tell open apps from put-away phones.
+    ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair('ping', 'pong'))
     this.setup()
   }
 
@@ -328,7 +339,13 @@ export class RelayRoom extends DurableObject<Env> {
         msg.endpoint,
         Date.now(),
       )
-      ws.serializeAttachment({ endpoint: msg.endpoint } satisfies Attachment)
+      ws.serializeAttachment({ endpoint: msg.endpoint, at: Date.now() } satisfies Attachment)
+      return
+    }
+
+    if (msg.t === 'away' || msg.t === 'here') {
+      const was = (ws.deserializeAttachment() as Attachment | null) ?? {}
+      if (was.endpoint) ws.serializeAttachment({ ...was, at: Date.now(), away: msg.t === 'away' } satisfies Attachment)
       return
     }
 
@@ -340,15 +357,22 @@ export class RelayRoom extends DurableObject<Env> {
   }
 
   /**
-   * Wakes the phones subscribed to this room that aren't connected right now.
-   * Connected ones already got the items live and show their own banner.
+   * Wakes the phones subscribed to this room that don't have the app open.
+   * Open ones already got the items live and show their own banner. A
+   * connection can outlive the app being open (a phone put away keeps its
+   * socket for a while), so it only counts while it's pinging and not away.
    */
   private async wake() {
+    const now = Date.now()
     const live = new Set(
       this.ctx
         .getWebSockets()
-        .map((s) => (s.deserializeAttachment() as Attachment | null)?.endpoint)
-        .filter(Boolean),
+        .flatMap((s) => {
+          const a = (s.deserializeAttachment() as Attachment | null) ?? {}
+          const pinged = this.ctx.getWebSocketAutoResponseTimestamp(s)?.getTime() ?? 0
+          const heard = Math.max(a.at ?? 0, pinged)
+          return a.endpoint && !a.away && now - heard < LIVE_MS ? [a.endpoint] : []
+        }),
     )
     const subs = this.sql
       .exec<{ endpoint: string }>('SELECT endpoint FROM subs')

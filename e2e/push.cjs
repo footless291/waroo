@@ -87,6 +87,27 @@ const b64 = (s) => Buffer.from(s, 'base64url');
   await ana.waitForTimeout(1500);
   check(wakes.length === 0, 'no wake-up for a phone that is connected');
 
+  // Bob puts the app away without closing it: the socket stays open, but he's woken
+  const setVisible = (p, visible) => p.evaluate((v) => {
+    Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => (v ? 'visible' : 'hidden') });
+    document.dispatchEvent(new Event('visibilitychange'));
+  }, visible);
+  await setVisible(bob, false); await bob.waitForTimeout(500);
+  await ana.click('a.fab');
+  await ana.fill('input[placeholder="Izakaya dinner"]', 'Snacks');
+  await ana.fill('input.amount-input', '600');
+  await ana.click('button:has-text("Add expense")');
+  check(await waitFor(() => wakes.length === 1), `a phone with the app in the background is woken, even while connected (${wakes.length} ${ana.url()} ${await bob.evaluate(() => document.visibilityState)})`);
+  await setVisible(bob, true); await bob.waitForTimeout(500);
+  await ana.click('a.fab');
+  await ana.fill('input[placeholder="Izakaya dinner"]', 'Water');
+  await ana.fill('input.amount-input', '200');
+  await ana.click('button:has-text("Add expense")');
+  await ana.waitForTimeout(1500);
+  check(wakes.length === 1, 'and not once the app is open again');
+  check(await waitText(bob, '.banners', 'Ana added Water'), 'the open app shows a banner for the new expense instead');
+  wakes.length = 0;
+
   // Bob closes the app
   const bobCtx = bob.ctx;
   await bob.close();

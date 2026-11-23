@@ -69,7 +69,7 @@ Anyone can run their own relay: it's one small Worker. Notifications need a VAPI
 
 The relay can't read a group, so it can't say what happened. A push carries nothing at all: it only wakes the phone. The service worker (`apps/web/src/sw.ts`) then fetches the room's new items over HTTP, decrypts and verifies them with the keys on the phone, saves them, and writes the notification text itself (`apps/web/src/lib/news.ts`). Apple, Google and Mozilla's push services learn only that a wake-up happened.
 
-- Phones that are connected to the room aren't woken: they get the change live and show an in-app banner instead.
+- Phones with the app open aren't woken: they get the change live and show an in-app banner instead. "Open" means the app is on screen: it pings the room every 20 seconds and says `away`/`here` as it goes to the background and back. A phone put away can keep its connection for minutes, so a connection that's away, or hasn't pinged for 50 seconds, is woken like any other.
 - The relay keeps, per room, only push-service URLs. It never learns who they belong to. Dead subscriptions are dropped when the push service says so.
 - Only real push services are accepted as endpoints, so the relay can't be aimed at other sites.
 - On iPhone and iPad, notifications work only for Footless added to the Home Screen.

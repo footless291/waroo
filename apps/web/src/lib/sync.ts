@@ -97,10 +97,20 @@ class GroupSync {
     await this.connect()
   }
 
+  private pinger?: ReturnType<typeof setInterval>
+
   stop() {
     this.stopped = true
     clearTimeout(this.timer)
+    clearInterval(this.pinger)
     this.ws?.close()
+  }
+
+  /** The app went to the background, or came back: the room wakes away phones with a push. */
+  visibility(visible: boolean) {
+    if (this.ws?.readyState !== WebSocket.OPEN) return
+    this.ws.send(JSON.stringify({ t: visible ? 'here' : 'away' }))
+    if (visible) this.ws.send('ping')
   }
 
   /** Something was written here: send it now if we can. */
@@ -155,8 +165,17 @@ class GroupSync {
       const endpoint = await pushEndpoint()
       if (endpoint && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ t: 'subscribe', endpoint }))
     }
-    ws.onmessage = (e) => void this.receive(JSON.parse(e.data as string) as RelayMessage)
+    ws.onmessage = (e) => {
+      if (e.data === 'pong') return
+      void this.receive(JSON.parse(e.data as string) as RelayMessage)
+    }
+    // While the app is open, tell the room so it doesn't send this phone a push too.
+    clearInterval(this.pinger)
+    this.pinger = setInterval(() => {
+      if (ws.readyState === WebSocket.OPEN && appVisible) ws.send('ping')
+    }, 20_000)
     ws.onclose = () => {
+      clearInterval(this.pinger)
       if (this.ws !== ws || this.stopped) return
       this.set(navigator.onLine ? 'unreachable' : 'offline')
       const delay = Math.min(30_000, 1000 * 2 ** this.retry++)
@@ -258,7 +277,9 @@ class OldRoomWatch {
       const endpoint = await pushEndpoint()
       if (endpoint && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ t: 'unsubscribe', endpoint }))
     }
-    ws.onmessage = (e) => void this.receive(JSON.parse(e.data as string) as RelayMessage)
+    ws.onmessage = (e) => {
+      if (e.data !== 'pong') void this.receive(JSON.parse(e.data as string) as RelayMessage)
+    }
     ws.onclose = () => {
       if (this.ws !== ws || this.stopped) return
       this.timer = setTimeout(() => void this.start(), Math.min(60_000, 2000 * 2 ** this.retry++))
@@ -297,6 +318,9 @@ class OldRoomWatch {
   }
 }
 
+/** Whether the app is on screen. Open apps ping their rooms so they aren't sent pushes. */
+let appVisible = true
+
 /** How long a group keeps reading a room it moved away from. */
 const WATCH_OLD_ROOMS_MS = 60 * 24 * 60 * 60 * 1000
 
@@ -316,6 +340,13 @@ class SyncHub {
     addEventListener('online', () => this.groups.forEach((g) => g.online()))
     addEventListener('offline', () => this.groups.forEach((g) => g.offline()))
     void listGroups().then((all) => all.filter((g) => g.shared).forEach((g) => void this.ensure(g.id)))
+  }
+
+  /** The app went to the background or came back (main.tsx listens; this file also runs in the service worker). */
+  setVisible(visible: boolean) {
+    if (appVisible === visible) return
+    appVisible = visible
+    this.groups.forEach((g) => g.visibility(visible))
   }
 
   /** Starts syncing a group if it's shared and not already syncing. */

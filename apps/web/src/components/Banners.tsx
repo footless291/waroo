@@ -10,8 +10,8 @@ interface Banner extends News {
 
 const SHOW_FOR_MS = 7000
 
-/** In the app, banners cover payments that involve you and people joining. */
-const BANNER_KINDS = new Set(['paid-you', 'you-paid', 'joined', 'left'])
+/** In the app, banners cover new expenses, payments that involve you, and people coming and going. */
+const BANNER_KINDS = new Set(['paid-you', 'you-paid', 'joined', 'left', 'expense'])
 
 /**
  * Banners over any screen. The live region stays mounted so screen readers
@@ -53,11 +53,22 @@ export function Banners() {
             className="banner-body"
             onClick={() => {
               dismiss(b.id)
-              go(`/g/${b.groupId}`)
+              go(b.kind === 'expense' ? `/g/${b.groupId}/expenses` : `/g/${b.groupId}`)
             }}
           >
             <span className="banner-mark" aria-hidden="true">
-              {b.kind === 'paid-you' ? '↓' : b.kind === 'joined' ? '+' : b.kind === 'left' ? '−' : '↑'}
+              {b.kind === 'expense' ? (
+                <svg viewBox="0 0 24 24" width="18" height="18">
+                  <path
+                    d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              ) : b.kind === 'paid-you' ? '↓' : b.kind === 'joined' ? '+' : b.kind === 'left' ? '−' : '↑'}
             </span>
             <span className="banner-text">
               <strong>{b.title}</strong>
