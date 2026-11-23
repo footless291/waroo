@@ -84,7 +84,7 @@ const lnurl = (name, domain) => JSON.stringify({ tag: 'payRequest', callback: `h
   // Order and removal on Receive, and it sticks
   await page.click('.wallet .segmented label:has-text("Receive")');
   await page.click('button[aria-label="Move anna@rizful.com up"]');
-  let order = await page.$$eval('.pager.inline .pager-page:not([inert]) .wallet-list .address', (els) => els.map((e) => e.textContent));
+  let order = await page.$$eval('.pager.inline .pager-page:not([inert]) .wallet-list .address', (els) => els.map((e) => e.dataset.address));
   check(order.join() === 'anna@rizful.com,anna@coinos.io', 'up/down reorders');
   // Drag the second back to the top by its handle
   const handle = await page.$$('.pager.inline .pager-page:not([inert]) .wallet-list .drag-handle');
@@ -94,7 +94,7 @@ const lnurl = (name, domain) => JSON.stringify({ tag: 'payRequest', callback: `h
   await page.mouse.move(box.x + box.width / 2, box.y - 60, { steps: 8 });
   await page.mouse.up();
   await page.waitForTimeout(300);
-  order = await page.$$eval('.pager.inline .pager-page:not([inert]) .wallet-list .address', (els) => els.map((e) => e.textContent));
+  order = await page.$$eval('.pager.inline .pager-page:not([inert]) .wallet-list .address', (els) => els.map((e) => e.dataset.address));
   check(order.join() === 'anna@coinos.io,anna@rizful.com', `dragging reorders (${order})`);
   await page.click('button[aria-label="Remove anna@rizful.com"]');
   check(await waitText('.confirm-remove', 'Stop getting paid at anna@rizful.com?'), 'the X asks first');
@@ -107,7 +107,7 @@ const lnurl = (name, domain) => JSON.stringify({ tag: 'payRequest', callback: `h
   await page.reload();
   await page.click('.wallet .segmented label:has-text("Receive")');
   await page.waitForSelector('.pager.inline .pager-page:not([inert]) .wallet-list .address');
-  order = await page.$$eval('.pager.inline .pager-page:not([inert]) .wallet-list .address', (els) => els.map((e) => e.textContent));
+  order = await page.$$eval('.pager.inline .pager-page:not([inert]) .wallet-list .address', (els) => els.map((e) => e.dataset.address));
   check(order.join() === 'anna@coinos.io', 'removing takes two taps, and the list is kept');
 
   // Appearance

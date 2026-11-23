@@ -35,7 +35,7 @@ const BLURB: Record<Option, string> = {
  * wallet is the last card.
  */
 export function WalletSection() {
-  const [tab, setTab] = useState<Tab>('send')
+  const [tab, setTab] = useState<Tab>('receive')
   const [receive, setReceive] = useState<ReceiveWallet[]>()
   const [send, setSend] = useState<SendWallet[]>()
   // Each side remembers its own open guide, since both sides are on screen while swiping.
@@ -48,10 +48,7 @@ export function WalletSection() {
     return { r, s }
   }
   useEffect(() => {
-    void load().then(({ s }) => {
-      // Nothing to pay with yet: start on Receive, which is what friends need first.
-      if (s.length === 0) setTab('receive')
-    })
+    void load()
   }, [])
 
   if (!receive || !send) return <div className="wallet" />
@@ -127,14 +124,13 @@ export function WalletSection() {
                   label={(w) => w.address}
                   render={(w) => (
                     <>
-                      <strong className="address">
-                        {/* On narrow screens, break after the @ rather than mid-word. */}
-                        {w.address.split('@')[0]}@<wbr />
-                        {w.address.split('@').slice(1).join('@')}
+                      {/* Username on top, @provider underneath, so long addresses fit. */}
+                      <strong className="address" data-address={w.address}>
+                        {w.address.split('@')[0]}
                       </strong>
                       <span className="wallet-status">
+                        <span className="muted domain">@{w.address.split('@').slice(1).join('@')}</span>
                         {status}
-                        {w.provider !== 'other' && <span className="muted">{PROVIDERS[w.provider].name}</span>}
                       </span>
                     </>
                   )}

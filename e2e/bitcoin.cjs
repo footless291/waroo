@@ -209,7 +209,7 @@ let failSend = 0; // the next N payments, the wallet errors without saying wheth
   await bob.click('.pager.inline .pager-page:not([inert]) .wallet-guide button:has-text("Add")');
   check(await waitText(bob, '.pager.inline .pager-page:not([inert]) .wallet-list', 'bob@broken.example.com'), 'Bob adds a second address, at the bottom');
   await bob.click('button[aria-label="Move bob@broken.example.com up"]');
-  const order = await bob.$$eval('.pager.inline .pager-page:not([inert]) .wallet-list .address', (els) => els.map((e) => e.textContent));
+  const order = await bob.$$eval('.pager.inline .pager-page:not([inert]) .wallet-list .address', (els) => els.map((e) => e.dataset.address));
   check(order[0] === 'bob@broken.example.com', 'up moves it to first');
   await shot(bob, '6-ranked');
   await bob.goto(B + '#/'); await bob.click('a.card-row');

@@ -566,8 +566,9 @@ input[type='checkbox'] {
   align-items: center;
   gap: 6px;
 }
-.percent-input input {
-  width: 5.5em;
+.split-input .percent-input input {
+  width: 4.2em;
+  padding: 0 10px;
 }
 .percent-input span {
   color: var(--muted);
@@ -1569,7 +1570,7 @@ body:has(.tabs-shell) {
   align-items: center;
   gap: 4px;
 }
-.stepper input {
+.split-input .stepper input {
   width: 3.2em;
   padding: 0 6px;
   text-align: center;
@@ -1601,4 +1602,15 @@ input[type='date'] {
 }
 input[type='date']::-webkit-date-and-time-value {
   text-align: left;
+  white-space: nowrap;
+}
+/* One line, like the select beside it. */
+input[type='date'] {
+  white-space: nowrap;
+  padding: 0 12px;
+  overflow: hidden;
+}
+
+.ranked-main .domain {
+  overflow-wrap: anywhere;
 }
