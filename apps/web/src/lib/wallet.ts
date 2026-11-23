@@ -106,6 +106,42 @@ export async function payWithWallet(wallet: SendWallet, invoice: string): Promis
 }
 
 /**
+ * Asks a wallet to pay a BOLT12 offer, through NWC's `pay` method (BIP-321
+ * payment instructions). The wallet fetches the invoice from the offer
+ * itself. Only some wallets support it; the rest say so, and nothing is paid.
+ */
+export async function payOfferWithWallet(
+  wallet: SendWallet,
+  offer: string,
+  sats: number,
+): Promise<{ preimage?: string; paymentHash?: string }> {
+  if (wallet.kind === 'webln') throw new WalletPayError('it can’t pay BOLT12 offers', true)
+  const nwc = await import('@getalby/sdk/nwc')
+  const client = new nwc.NWCClient({ nostrWalletConnectUrl: wallet.url })
+  type PayResult = { state?: string; preimage?: string; payment_hash?: string; failure_reason?: string }
+  // `pay` isn't in this library's list of methods yet, so the request goes through its general path.
+  const execute = (client as unknown as {
+    executeNip47Request(method: string, params: unknown, ok: (r: PayResult) => boolean): Promise<PayResult>
+  }).executeNip47Request.bind(client)
+  let result: PayResult
+  try {
+    result = await execute('pay', { payment: `bitcoin:?lno=${offer}`, amount: sats * 1000 }, (r) => !!r)
+  } catch (err) {
+    const code = (err as { code?: string })?.code
+    if (code === 'NOT_IMPLEMENTED' || code === 'UNSUPPORTED_PAYMENT_INSTRUCTION' || code === 'UNSUPPORTED_NETWORK') {
+      throw new WalletPayError('it can’t pay BOLT12 offers yet', true, err)
+    }
+    const { message, certain } = explainNwcError(err, nwc)
+    throw new WalletPayError(message, certain, err)
+  } finally {
+    client.close()
+  }
+  if (result.state === 'failed') throw new WalletPayError(`the payment failed (${result.failure_reason ?? 'no reason given'})`, true)
+  if (result.state === 'pending') throw new WalletPayError('it’s still sending the payment', false)
+  return { preimage: result.preimage, paymentHash: result.payment_hash }
+}
+
+/**
  * Says which step of a wallet payment failed, in plain words, with the
  * technical reason after it so a failure can be diagnosed from a screenshot.
  * `certain` is true only when the payment can't have gone out.

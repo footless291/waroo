@@ -45,6 +45,12 @@ export interface Member {
    */
   lightningAddresses?: string[]
   /**
+   * Everywhere they receive, in order: Lightning addresses and BOLT12
+   * offers mixed. Set by newer phones; older ones only know
+   * `lightningAddresses`. See `receiveTargets`.
+   */
+  receive?: string[]
+  /**
    * True once they've left the group. They stay in the log, so past
    * expenses still show their name, but can't write or be added to anything.
    */
@@ -67,6 +73,27 @@ const MAX_ADDRESSES = 5
 export function receiveAddresses(member: Member | undefined): string[] {
   if (!member) return []
   return member.lightningAddresses ?? (member.lightningAddress ? [member.lightningAddress] : [])
+}
+
+/**
+ * Where to pay this member, in order: Lightning addresses and BOLT12 offers.
+ * Falls back to the addresses alone, from phones that predate offers.
+ */
+export function receiveTargets(member: Member | undefined): string[] {
+  if (!member) return []
+  return member.receive ?? receiveAddresses(member)
+}
+
+/**
+ * A BOLT12 offer: "lno1" and bech32 characters, no checksum. Offers can be
+ * split with "+" and whitespace for display; `cleanOffer` joins them.
+ */
+export function isOffer(text: string): boolean {
+  return /^lno1[02-9ac-hj-np-z]{20,2000}$/.test(text)
+}
+
+export function cleanOffer(text: string): string {
+  return text.trim().toLowerCase().replace(/^(bitcoin:\?lno=|lightning:)/, '').replace(/\+\s*/g, '')
 }
 
 /** A Lightning address looks like an email address: name@domain.tld. */
@@ -110,6 +137,8 @@ export type LedgerEvent = EventBase &
         memberId: PersonId
         lightningAddress?: string
         lightningAddresses?: string[]
+        /** The full ordered list, offers included. Sent alongside `lightningAddresses` (addresses only) for older phones. */
+        receive?: string[]
         boxKey?: string
       }
     /**
@@ -365,6 +394,7 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
       case 'member.updated': {
         const member = state.members.get(e.memberId)
         const hasAddresses = 'lightningAddress' in e || 'lightningAddresses' in e
+        const hasReceive = Array.isArray(e.receive)
         // Newer phones send the whole ordered list; older ones a single address.
         const list = Array.isArray(e.lightningAddresses)
           ? e.lightningAddresses
@@ -378,6 +408,12 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
         } else if (hasAddresses && list.length > MAX_ADDRESSES) reject(e, `At most ${MAX_ADDRESSES} Lightning addresses`)
         else if (hasAddresses && !list.every((a) => typeof a === 'string' && isLightningAddress(a))) {
           reject(e, 'Not a Lightning address')
+        } else if (hasReceive && e.receive!.length > MAX_ADDRESSES) reject(e, `At most ${MAX_ADDRESSES} places to receive`)
+        else if (
+          hasReceive &&
+          !e.receive!.every((a) => typeof a === 'string' && (isLightningAddress(a) || isOffer(a)))
+        ) {
+          reject(e, 'Not a Lightning address or BOLT12 offer')
         } else {
           if (e.boxKey !== undefined) member.boxKey = e.boxKey
           if (hasAddresses) {
@@ -389,6 +425,13 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
               member.lightningAddresses = clean
               member.lightningAddress = clean[0]!
             }
+            // An older phone sent addresses alone: its list is the whole truth now.
+            if (!hasReceive) delete member.receive
+          }
+          if (hasReceive) {
+            const clean = [...new Set(e.receive!.map((a) => a.toLowerCase()))]
+            if (clean.length === 0) delete member.receive
+            else member.receive = clean
           }
         }
         break

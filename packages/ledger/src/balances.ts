@@ -12,8 +12,10 @@ export interface BitcoinProof {
   btcPrice: string
   /** Where the price came from, e.g. "coingecko+kraken". */
   rateSource: string
-  /** Lightning payment hash, hex. */
+  /** Lightning payment hash, hex. Empty when the payer's wallet didn't say (some BOLT12 payments). */
   paymentHash: string
+  /** Paid to a BOLT12 offer, rather than an invoice from a Lightning address. */
+  offer?: boolean
   /** Preimage, hex, once known. sha256(preimage) must equal paymentHash. */
   preimage?: string
   /** ISO timestamp the payment completed. */

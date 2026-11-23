@@ -28,7 +28,7 @@ import {
   type GroupMeta,
 } from './db.ts'
 import { fetchGroup, relayUrl, syncHub } from './sync.ts'
-import { addReceive, addSend, saveSendWallets, sendWallets, type NewSendWallet } from './wallets.ts'
+import { addReceiveNamed, addSend, receiveWallets, saveSendWallets, sendWallets, type NewSendWallet } from './wallets.ts'
 
 export interface MovedGroup {
   id: string
@@ -48,6 +48,8 @@ export type MoveMessage =
       groups: MovedGroup[]
       lightningAddress: string
       lightningAddresses?: string[]
+      /** Everywhere they receive, offers included, with ₿names. Newer phones only. */
+      receiveWallets?: { address: string; name?: string }[]
       /** Wallet connections, in order. Only on a move: they're secrets, so never sent when someone else vouches. */
       sendWallets?: NewSendWallet[]
     }
@@ -156,6 +158,10 @@ export async function lightningAddressesToMove(): Promise<string[]> {
   return myLightningAddresses()
 }
 
+export async function receiveWalletsToMove(): Promise<{ address: string; name?: string }[]> {
+  return (await receiveWallets()).map(({ address, name }) => ({ address, ...(name ? { name } : {}) }))
+}
+
 /**
  * Wallet connections that can move: Nostr Wallet Connect, which is just a
  * secret. A browser wallet belongs to this browser, so it stays.
@@ -192,6 +198,7 @@ export async function receiveGroups(
   publicKey: string,
   lightningAddresses: string[],
   wallets: NewSendWallet[] = [],
+  receive?: { address: string; name?: string }[],
 ): Promise<string[]> {
   const moved: string[] = []
   for (const g of groups) {
@@ -215,7 +222,12 @@ export async function receiveGroups(
     await publishProfile(g.id)
     moved.push(g.id)
   }
-  if (lightningAddresses.length) await addReceive(...lightningAddresses)
+  if (receive?.length) {
+    await addReceiveNamed(
+      receive.map((r) => r.address),
+      Object.fromEntries(receive.flatMap((r) => (r.name ? [[r.address, r.name]] : []))),
+    )
+  } else if (lightningAddresses.length) await addReceiveNamed(lightningAddresses)
   for (const wallet of wallets) await addSend(wallet)
   return moved
 }

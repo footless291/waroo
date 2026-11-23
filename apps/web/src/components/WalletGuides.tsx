@@ -1,9 +1,10 @@
-import { isLightningAddress } from '@footless/ledger'
+import { cleanOffer, isLightningAddress, isOffer } from '@footless/ledger'
 import { useState, type FormEvent } from 'react'
+import { looksLikeName, resolveOffer } from '../lib/bip353.ts'
 import { payParams } from '../lib/lightning.ts'
 import { exchangeRizfulCode, RIZFUL } from '../lib/rizful.ts'
 import { checkNwc, checkWebln, hasWebln } from '../lib/wallet.ts'
-import { addReceive, addSend, type ReceiveWallet, type SendWallet } from '../lib/wallets.ts'
+import { addReceive, addReceiveNamed, addSend, type ReceiveWallet, type SendWallet } from '../lib/wallets.ts'
 
 /**
  * Step-by-step setup for wallets we know, made as short as each allows, and
@@ -275,23 +276,60 @@ export function OtherWallet({ tab, onChange }: { tab: 'send' | 'receive'; onChan
   const [note, setNote] = useState('')
   const [busy, setBusy] = useState(false)
 
+  /**
+   * Takes a Lightning address, a BOLT12 offer (lno1…), or a ₿name that
+   * points to an offer. A plain address that isn't a Lightning address may
+   * still be a ₿name without the ₿, so that's tried too.
+   */
   async function saveAddress(e: FormEvent) {
     e.preventDefault()
-    const clean = address.trim().toLowerCase()
+    const offer = cleanOffer(address)
+    if (isOffer(offer)) {
+      await addReceiveNamed([offer])
+      setAddress('')
+      setNote('Added your BOLT12 offer.')
+      onChange()
+      return
+    }
+    const clean = address.trim().toLowerCase().replace(/^₿/, '')
     if (!isLightningAddress(clean)) {
-      setNote('That doesn’t look like a Lightning address. It looks like an email: name@provider.com')
+      setNote('That doesn’t look like a Lightning address (name@provider.com) or a BOLT12 offer (lno1…).')
       return
     }
     setBusy(true)
     setNote('Checking…')
+    const named = async () => {
+      const found = await resolveOffer(clean)
+      await addReceiveNamed([found.offer], { [found.offer]: found.name })
+      setAddress('')
+      setNote(`Added ${found.name}, a BOLT12 offer.`)
+      onChange()
+    }
     try {
-      await payParams(clean)
+      if (looksLikeName(address)) {
+        await named()
+        return
+      }
+      try {
+        await payParams(clean)
+      } catch (err) {
+        try {
+          await named()
+          return
+        } catch {
+          throw err
+        }
+      }
       await addReceive(clean)
       setAddress('')
       setNote(`Added ${clean}.`)
       onChange()
     } catch (err) {
-      setNote(`${clean} didn’t answer: ${(err as Error).message}`)
+      setNote(
+        looksLikeName(address)
+          ? `${address.trim()} didn’t work: ${(err as Error).message}`
+          : `${clean} didn’t answer: ${(err as Error).message}`,
+      )
     } finally {
       setBusy(false)
     }
@@ -330,9 +368,12 @@ export function OtherWallet({ tab, onChange }: { tab: 'send' | 'receive'; onChan
 
   return tab === 'receive' ? (
     <form className="field-stack" onSubmit={saveAddress}>
-      <p>Any wallet with a Lightning address works, like Wallet of Satoshi or Phoenix.</p>
+      <p>
+        Any wallet with a Lightning address works, like Wallet of Satoshi. Or paste a BOLT12 offer (lno1…) or a ₿name
+        that has one, like Phoenix gives you.
+      </p>
       <label className="field">
-        <span>Lightning address</span>
+        <span>Lightning address or BOLT12 offer</span>
         <input
           value={address}
           onChange={(e) => {

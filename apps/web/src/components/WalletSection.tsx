@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import {
+  isOfferWallet,
+  receiveLabel,
   receiveWallets,
   saveReceiveWallets,
   saveSendWallets,
@@ -117,24 +119,38 @@ export function WalletSection() {
             content: (
               <>
                 <p className="wallet-explain">
-                  Friends pay you at these addresses, in order. If the first can’t take a payment, the next one is used.
+                  Friends pay you at these, in order. If the first can’t take a payment, the next one is used.
                 </p>
                 <RankedList
                   items={receive}
-                  label={(w) => w.address}
-                  render={(w) => (
-                    <>
-                      {/* Username on top, @provider underneath, so long addresses fit. */}
-                      <strong className="address" data-address={w.address}>
-                        {w.address.split('@')[0]}
-                      </strong>
-                      <span className="wallet-status">
-                        <span className="muted domain">@{w.address.split('@').slice(1).join('@')}</span>
-                        {status}
-                      </span>
-                    </>
-                  )}
-                  removeQuestion={(w) => `Stop getting paid at ${w.address}? Your groups will stop using it.`}
+                  label={(w) => receiveLabel(w)}
+                  render={(w) =>
+                    isOfferWallet(w) ? (
+                      <>
+                        <strong className="address" data-address={w.address}>
+                          {w.name ? w.name.split('@')[0] : 'BOLT12 offer'}
+                        </strong>
+                        <span className="wallet-status">
+                          <span className="muted domain">
+                            {w.name ? `@${w.name.split('@').slice(1).join('@')} · BOLT12` : `${w.address.slice(0, 12)}…${w.address.slice(-6)}`}
+                          </span>
+                          {status}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        {/* Username on top, @provider underneath, so long addresses fit. */}
+                        <strong className="address" data-address={w.address}>
+                          {w.address.split('@')[0]}
+                        </strong>
+                        <span className="wallet-status">
+                          <span className="muted domain">@{w.address.split('@').slice(1).join('@')}</span>
+                          {status}
+                        </span>
+                      </>
+                    )
+                  }
+                  removeQuestion={(w) => `Stop getting paid at ${receiveLabel(w)}? Your groups will stop using it.`}
                   onChange={async (next) => {
                     setReceive(next)
                     await saveReceiveWallets(next)

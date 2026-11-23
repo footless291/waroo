@@ -9,6 +9,7 @@ import {
   handOver,
   forgetMovedWallets,
   lightningAddressesToMove,
+  receiveWalletsToMove,
   sendWalletsToMove,
   moveLink,
   MoveChannel,
@@ -65,7 +66,7 @@ export function MoveScreen() {
     setPhase({ at: 'starting' })
     try {
       groups.current = await groupsToMove()
-      if (groups.current.length === 0 && (await sendWalletsToMove()).length === 0 && (await lightningAddressesToMove()).length === 0) {
+      if (groups.current.length === 0 && (await sendWalletsToMove()).length === 0 && (await receiveWalletsToMove()).length === 0) {
         return stop('There’s nothing on this phone to move yet: no groups and no wallets.')
       }
       const secret = newMoveSecret()
@@ -99,6 +100,7 @@ export function MoveScreen() {
         lightningAddress: addresses[0] ?? '',
         lightningAddresses: addresses,
         sendWallets: await sendWalletsToMove(),
+        receiveWallets: await receiveWalletsToMove(),
       })
     } catch (err) {
       stop((err as Error).message)

@@ -10,15 +10,21 @@
  * places. `provider` lets the You screen show whether a wallet we have a
  * guide for is connected.
  */
+import { isOffer } from '@footless/ledger'
 import { getSetting, publishProfile, setSetting } from './db.ts'
 
 export type Provider = 'coinos' | 'rizful' | 'other'
 
+/** Somewhere to receive: a Lightning address, or a BOLT12 offer (`lno1…`). */
 export interface ReceiveWallet {
   id: string
   provider: Provider
   address: string
+  /** For an offer: the ₿name it came from, if it came from one. */
+  name?: string
 }
+
+export const isOfferWallet = (w: ReceiveWallet) => isOffer(w.address)
 
 export type SendWallet = { id: string; provider: Provider; name: string } & (
   | { kind: 'nwc'; url: string }
@@ -34,6 +40,7 @@ export const PROVIDERS: Record<Exclude<Provider, 'other'>, { name: string; domai
 }
 
 export function providerOf(address: string): Provider {
+  if (isOffer(address)) return 'other'
   const domain = address.split('@')[1]?.toLowerCase()
   if (domain === PROVIDERS.coinos.domain) return 'coinos'
   if (domain === PROVIDERS.rizful.domain) return 'rizful'
@@ -74,14 +81,30 @@ export async function saveSendWallets(list: SendWallet[]): Promise<void> {
   await setSetting('wallet', undefined)
 }
 
-/** Adds addresses at the bottom of the receive list, in order, skipping any already there. One update to the groups. */
+/**
+ * Adds addresses or offers at the bottom of the receive list, in order,
+ * skipping any already there. One update to the groups. `names` labels
+ * offers that came from a ₿name.
+ */
 export async function addReceive(...addresses: string[]): Promise<void> {
+  return addReceiveNamed(addresses)
+}
+
+export async function addReceiveNamed(addresses: string[], names: Record<string, string> = {}): Promise<void> {
   const list = await receiveWallets()
   for (const address of addresses) {
     const clean = address.trim().toLowerCase()
-    if (!list.some((w) => w.address === clean)) list.push({ id: newId(), provider: providerOf(clean), address: clean })
+    if (!list.some((w) => w.address === clean)) {
+      list.push({ id: newId(), provider: providerOf(clean), address: clean, ...(names[clean] ? { name: names[clean] } : {}) })
+    }
   }
   await saveReceiveWallets(list)
+}
+
+/** How a receive wallet is shown: an offer by its ₿name, or as a shortened offer. */
+export function receiveLabel(w: ReceiveWallet): string {
+  if (!isOffer(w.address)) return w.address
+  return w.name ?? `${w.address.slice(0, 10)}…${w.address.slice(-6)}`
 }
 
 /** Adds a wallet at the bottom of the send list, unless the same connection is already there. */

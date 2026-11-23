@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
-import { canonicalJson, receiveAddresses, replay, signingBytes, type Expense, type LedgerEvent } from '../src/index.ts'
+import { canonicalJson, cleanOffer, isOffer, receiveAddresses, receiveTargets, replay, signingBytes, type Expense, type LedgerEvent } from '../src/index.ts'
 
 let n = 0
 const ev = (author: string, clock: number, signer: string | undefined, body: Record<string, unknown>) =>
@@ -364,5 +364,35 @@ describe('recovering a lost phone', () => {
     const bob = replay([...joined(), removed, back]).members.get('bob')!
     assert.equal(bob.key, 'KB2')
     assert.equal(bob.removedBy, undefined)
+  })
+})
+
+describe('BOLT12 offers', () => {
+  const OFFER = 'lno1' + 'qgsqvgnwgcg35z6ee2h3yczraddm72xrfua9uve2rlrm9deu7xyfzr'
+  const joined = () => [...base(), ev('bob', 5, 'KB', { type: 'member.claimed', memberId: 'bob', key: 'KB' })]
+
+  it('keeps offers and addresses in one order', () => {
+    const update = ev('bob', 6, 'KB', {
+      type: 'member.updated', memberId: 'bob', lightningAddresses: ['bob@coinos.io'], receive: [OFFER, 'bob@coinos.io'],
+    })
+    const bob = replay([...joined(), update]).members.get('bob')!
+    assert.deepEqual(receiveTargets(bob), [OFFER, 'bob@coinos.io'])
+    assert.deepEqual(receiveAddresses(bob), ['bob@coinos.io'])
+  })
+
+  it('refuses things that are neither', () => {
+    const bad = ev('bob', 6, 'KB', { type: 'member.updated', memberId: 'bob', receive: ['lnbc1nope'] })
+    assert.match(replay([...joined(), bad]).rejected[0]!.reason, /BOLT12/)
+  })
+
+  it('lets an older phone’s address list replace the whole order', () => {
+    const newer = ev('bob', 6, 'KB', { type: 'member.updated', memberId: 'bob', lightningAddresses: [], receive: [OFFER] })
+    const older = ev('bob', 7, 'KB', { type: 'member.updated', memberId: 'bob', lightningAddresses: ['bob@coinos.io'] })
+    assert.deepEqual(receiveTargets(replay([...joined(), newer, older]).members.get('bob')), ['bob@coinos.io'])
+  })
+
+  it('cleans pasted offers', () => {
+    assert.equal(cleanOffer(`bitcoin:?lno=LNO1QGSQ+\n  VGNWG`), 'lno1qgsqvgnwg')
+    assert.ok(isOffer(OFFER))
   })
 })

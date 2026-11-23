@@ -62,6 +62,8 @@ let failSend = 0; // the next N payments, the wallet errors without saying wheth
     await ctx.route('https://pay.example.com/**', provider);
     // An address whose provider is down
     await ctx.route('https://broken.example.com/**', (route) => route.fulfill({ status: 500, headers: cors, body: '{}' }));
+    // No ₿names here (an address that fails is also tried as one)
+    await ctx.route('https://cloudflare-dns.com/**', (route) => route.fulfill({ headers: cors, body: JSON.stringify({ Status: 3 }) }));
     await ctx.route('**/relay/rate?*', (route) => route.fulfill({ headers: cors, body: JSON.stringify({ currency: 'JPY', price: '15000000.00', source: 'Test', at: new Date().toISOString() }) }));
     if (webln) {
       await ctx.exposeBinding('__testWalletEnable', () => {
@@ -123,7 +125,7 @@ let failSend = 0; // the next N payments, the wallet errors without saying wheth
 
   // Bob adds his Lightning address on the You screen
   await bob.goto(B + '#/settings?open=wallet');
-  check(await waitText(bob, '.wallet', 'Friends pay you at these addresses'), 'someone with no wallet starts on Receive');
+  check(await waitText(bob, '.wallet', 'Friends pay you at these'), 'someone with no wallet starts on Receive');
   check(await waitText(bob, '.pager.inline .pager-page:not([inert]) .wallet-list', 'Coinos') && await waitText(bob, '.pager.inline .pager-page:not([inert]) .wallet-list', 'Rizful'), 'Coinos and Rizful are always offered');
   await bob.click('.pager.inline .pager-page:not([inert]) .setup-card:has-text("Add a different wallet") button:has-text("Add")');
   await bob.fill('input[placeholder="you@walletofsatoshi.com"]', 'not an address');

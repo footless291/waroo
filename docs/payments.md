@@ -47,3 +47,15 @@ Coinos and Rizful are always offered, with whether they're connected on the side
 Both are custodial: the wallet holds the money; Footless still never does.
 
 Paying doesn't need a connected wallet. "Open in wallet app" hands the invoice to whichever wallet is installed (Wallet of Satoshi, Phoenix, anything) and Footless waits for the payment, confirming it automatically where the recipient's provider supports LUD-21.
+
+## BOLT12 offers
+
+Someone can receive at a BOLT12 offer as well as (or instead of) a Lightning address. Phoenix, Coinos, Zeus and others give out offers; Phoenix also publishes one under a name like `₿you@phoenixwallet.me` (BIP-353).
+
+- **Adding one.** "Add a different wallet" on Receive takes a Lightning address, an offer (`lno1…`, or a `bitcoin:?lno=` link), or a ₿name. A ₿name is looked up once, on that person's phone, through DNS-over-HTTPS (Cloudflare's resolver), and accepted only if the answer is DNSSEC-validated; the offer itself is what's saved and shared. A plain address that has no LNURL behind it is also tried as a ₿name. (BIP-353 asks wallets to validate DNSSEC themselves; here the person is looking up their own name and sees the result, so the resolver's word is accepted.)
+- **Sharing it.** `member.updated` gains `receive`: the whole ordered list, addresses and offers mixed. `lightningAddresses` still carries the addresses alone, so older phones keep working; an update from an older phone (addresses only) replaces the list.
+- **Paying one.** An offer can't be turned into an invoice from a web page (that takes onion messages, i.e. a Lightning node), so the payer's wallet does it. With a Nostr Wallet Connect wallet, Footless uses NWC's `pay` method (BIP-321 payment instructions): `{ payment: "bitcoin:?lno=…", amount: msats }`. Wallets without it answer `NOT_IMPLEMENTED`, which is shown as "it can't pay BOLT12 offers yet. Nothing was paid", and the next wallet is offered. If the wallet returns a preimage and payment hash, they must match, and the payment is "verified"; if it returns neither, it's recorded without the proof. Browser wallets (WebLN) can't pay offers.
+- **From another app.** The offer is shown as a QR code and a `bitcoin:?lno=` link, with the exact sats to type in (an offer can be for any amount). Footless can't see that payment, so the payer marks it paid.
+- **Falling back.** When the receiver also has a Lightning address after the offer, "Pay their Lightning address instead" switches to it.
+
+`e2e/bolt12.cjs` covers this with a simulated NWC wallet and relay (one wallet that supports `pay`, one that doesn't) and simulated DNS.

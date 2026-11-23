@@ -1,14 +1,22 @@
-import { fiatToSats, receiveAddresses, type GroupState } from '@footless/ledger'
+import { fiatToSats, isOffer, receiveTargets, type GroupState } from '@footless/ledger'
 import { useEffect, useState } from 'react'
 import { append, newId, type GroupMeta } from '../lib/db.ts'
 import { money } from '../lib/format.ts'
 import { locale } from '../lib/hooks.ts'
 import { btcPrice, checkPaid, getInvoice, payParams, provesPayment, type CheckedInvoice } from '../lib/lightning.ts'
-import { payWithWallet, WalletPayError } from '../lib/wallet.ts'
+import { payOfferWithWallet, payWithWallet, WalletPayError } from '../lib/wallet.ts'
 import { sendLabel, sendWallets, type SendWallet } from '../lib/wallets.ts'
 import { QrCode } from './QrCode.tsx'
 
-type Quote = { invoice: CheckedInvoice; price: string; source: string }
+/**
+ * What's about to be paid: an invoice from a Lightning address, or a BOLT12
+ * offer (the wallet fetches its invoice). `target` is its place in the
+ * person's list, so "try the next one" knows where to go on.
+ */
+type Quote = { sats: number; price: string; source: string; target: number } & (
+  | { invoice: CheckedInvoice; offer?: undefined }
+  | { offer: string; invoice?: undefined }
+)
 type Phase =
   | { at: 'idle' }
   | { at: 'quoting' }
@@ -53,8 +61,8 @@ export function BitcoinPay(props: {
   const { meta, state, to, amount, currency, onPaid, onRecorded } = props
   const toMember = state.members.get(to)
   const toName = toMember?.name ?? 'them'
-  const addresses = receiveAddresses(toMember)
-  const address = addresses[0]
+  const targets = receiveTargets(toMember)
+  const address = targets[0]
   const [wallets, setWallets] = useState<SendWallet[]>()
   const [phase, setPhase] = useState<Phase>({ at: 'idle' })
 
@@ -65,7 +73,7 @@ export function BitcoinPay(props: {
   // A new amount means a new quote.
   useEffect(() => setPhase((p) => (p.at === 'ready' || p.at === 'error' ? { at: 'idle' } : p)), [amount])
 
-  async function record(quote: Quote, preimage?: string) {
+  async function record(quote: Quote, preimage?: string, paymentHash?: string) {
     await append(meta, [
       {
         type: 'settlement.recorded',
@@ -77,26 +85,28 @@ export function BitcoinPay(props: {
           currency,
           method: 'bitcoin',
           bitcoin: {
-            sats: quote.invoice.sats,
+            sats: quote.sats,
             btcPrice: quote.price,
             rateSource: quote.source,
-            paymentHash: quote.invoice.paymentHash,
+            paymentHash: (quote.invoice?.paymentHash ?? paymentHash ?? '').toLowerCase(),
+            ...(quote.offer ? { offer: true } : {}),
             ...(preimage ? { preimage: preimage.toLowerCase() } : {}),
             settledAt: new Date().toISOString(),
           },
         },
       },
     ])
-    setPhase({ at: 'paid', sats: quote.invoice.sats })
+    setPhase({ at: 'paid', sats: quote.sats })
     onRecorded()
   }
 
   /**
-   * Gets an invoice from the first of their addresses that gives one. Asking
-   * moves no money, so trying the next address needs no confirmation.
+   * Gets an invoice from the first of their addresses that gives one, from
+   * `from` on. An offer needs nothing fetched: the wallet does that. Asking
+   * moves no money, so trying the next one needs no confirmation.
    */
-  async function quote(next = 0) {
-    if (addresses.length === 0) return
+  async function quote(next = 0, from = 0) {
+    if (targets.length <= from) return
     setPhase({ at: 'quoting' })
     let rate: Awaited<ReturnType<typeof btcPrice>>
     try {
@@ -107,10 +117,16 @@ export function BitcoinPay(props: {
     }
     const sats = fiatToSats(amount, currency, rate.price)
     const problems: string[] = []
-    for (const addr of addresses) {
+    const tried = targets.slice(from)
+    for (const [i, addr] of tried.entries()) {
+      const target = from + i
+      if (isOffer(addr)) {
+        setPhase({ at: 'ready', quote: { offer: addr, sats, price: rate.price, source: rate.source, target }, next })
+        return
+      }
       try {
         const invoice = await getInvoice(await payParams(addr), sats, `Footless: ${state.name ?? meta.name}`)
-        setPhase({ at: 'ready', quote: { invoice, price: rate.price, source: rate.source }, next })
+        setPhase({ at: 'ready', quote: { invoice, sats: invoice.sats, price: rate.price, source: rate.source, target }, next })
         return
       } catch (err) {
         problems.push(`${addr}: ${(err as Error).message}`)
@@ -119,7 +135,7 @@ export function BitcoinPay(props: {
     setPhase({
       at: 'error',
       message:
-        addresses.length === 1
+        tried.length === 1
           ? (problems[0]!.split(': ').slice(1).join(': '))
           : `None of ${toName}’s addresses could take a payment right now. ${problems.join(' ')}`,
     })
@@ -130,11 +146,18 @@ export function BitcoinPay(props: {
     const wallet = wallets?.[index]
     if (!wallet) return
     // An invoice about to expire gets replaced first; the person then taps again.
-    if (q.invoice.expiresAt * 1000 < Date.now() + 15_000) return quote(index)
+    if (q.invoice && q.invoice.expiresAt * 1000 < Date.now() + 15_000) return quote(index, q.target)
     setPhase({ at: 'paying', quote: q, index })
-    let preimage: string
+    let preimage: string | undefined
+    let paymentHash = q.invoice?.paymentHash
     try {
-      preimage = await payWithWallet(wallet, q.invoice.invoice)
+      if (q.offer) {
+        const paid = await payOfferWithWallet(wallet, q.offer, q.sats)
+        preimage = paid.preimage
+        paymentHash = paid.paymentHash
+      } else {
+        preimage = await payWithWallet(wallet, q.invoice!.invoice)
+      }
     } catch (err) {
       setPhase({
         at: 'failed',
@@ -145,7 +168,8 @@ export function BitcoinPay(props: {
       })
       return
     }
-    if (!(await provesPayment(q.invoice.paymentHash, preimage))) {
+    // An offer's wallet may not report the proof; when it does, it has to check out.
+    if ((preimage || !q.offer) && !(paymentHash && preimage && (await provesPayment(paymentHash, preimage)))) {
       setPhase({
         at: 'error',
         message: 'Your wallet reported the payment, but its proof didn’t check out.',
@@ -153,16 +177,19 @@ export function BitcoinPay(props: {
       })
       return
     }
-    await record(q, preimage)
+    await record(q, preimage, paymentHash)
   }
+
+  /** The next place they receive after this quote's, if there is one: e.g. an address after an offer. */
+  const nextTarget = (q: Quote) => (q.target + 1 < targets.length ? q.target + 1 : undefined)
 
   // Paying from another app: ask the provider every few seconds whether it's paid.
   useEffect(() => {
-    if (phase.at !== 'external' || !phase.quote.invoice.verify) return
+    if (phase.at !== 'external' || !phase.quote.invoice?.verify) return
     const q = phase.quote
     let live = true
     const tick = async () => {
-      const preimage = await checkPaid(q.invoice)
+      const preimage = await checkPaid(q.invoice!)
       if (!live) return
       if (preimage) await record(q, preimage)
       else timer = setTimeout(tick, 3000)
@@ -182,7 +209,7 @@ export function BitcoinPay(props: {
       <h2 id="bitcoin-title">Pay with bitcoin</h2>
 
       {!address ? (
-        <p>{toName} hasn’t added a Lightning address yet, so they can’t receive bitcoin. They can add one under You.</p>
+        <p>{toName} hasn’t added a Lightning address yet, so they can’t receive bitcoin. They can add one in Settings.</p>
       ) : phase.at === 'paid' ? (
         <>
           <p className="bitcoin-done" role="status">
@@ -201,7 +228,7 @@ export function BitcoinPay(props: {
             </div>
             <div>
               <dt>In bitcoin</dt>
-              <dd>{satsText(phase.quote.invoice.sats)}</dd>
+              <dd>{satsText(phase.quote.sats)}</dd>
             </div>
             <div>
               <dt>Price</dt>
@@ -211,23 +238,30 @@ export function BitcoinPay(props: {
               </dd>
             </div>
           </dl>
-          {phase.at === 'external' ? (
+          {phase.at === 'external' && phase.quote.offer ? (
+            <OfferExternal
+              offer={phase.quote.offer}
+              sats={phase.quote.sats}
+              toName={toName}
+              onPaid={() => void record(phase.quote)}
+            />
+          ) : phase.at === 'external' ? (
             <>
-              <a className="button primary" href={`lightning:${phase.quote.invoice.invoice}`}>
+              <a className="button primary" href={`lightning:${phase.quote.invoice!.invoice}`}>
                 Open in wallet app
               </a>
               <p className="muted">Or scan it with a wallet on another phone:</p>
-              <a className="qr-link" href={`lightning:${phase.quote.invoice.invoice}`} aria-label="Open in your wallet app">
-                <QrCode text={`lightning:${phase.quote.invoice.invoice.toUpperCase()}`} label="QR code to pay with a wallet app" />
+              <a className="qr-link" href={`lightning:${phase.quote.invoice!.invoice}`} aria-label="Open in your wallet app">
+                <QrCode text={`lightning:${phase.quote.invoice!.invoice.toUpperCase()}`} label="QR code to pay with a wallet app" />
               </a>
               <button
                 type="button"
                 className="button outline"
-                onClick={() => void navigator.clipboard.writeText(phase.quote.invoice.invoice)}
+                onClick={() => void navigator.clipboard.writeText(phase.quote.invoice!.invoice)}
               >
                 Copy invoice
               </button>
-              {phase.quote.invoice.verify ? (
+              {phase.quote.invoice!.verify ? (
                 <p role="status">Waiting for the payment… This updates by itself once it goes through.</p>
               ) : (
                 <>
@@ -244,6 +278,11 @@ export function BitcoinPay(props: {
               wallets={wallets ?? []}
               onPay={(index) => void pay(phase.quote, index)}
               onExternal={() => setPhase({ at: 'external', quote: phase.quote })}
+              onNextTarget={
+                phase.quote.offer && nextTarget(phase.quote) !== undefined && phase.at !== 'paying'
+                  ? () => void quote(0, nextTarget(phase.quote)!)
+                  : undefined
+              }
             />
           )}
         </>
@@ -288,13 +327,16 @@ function WalletChoices({
   wallets,
   onPay,
   onExternal,
+  onNextTarget,
 }: {
   phase: Extract<Phase, { at: 'ready' | 'paying' | 'failed' }>
   wallets: SendWallet[]
   onPay: (index: number) => void
   onExternal: () => void
+  /** Paying an offer: switch to where they receive next (an address), for wallets that can't pay offers. */
+  onNextTarget?: () => void
 }) {
-  const invoice = phase.quote.invoice.invoice
+  const link = phase.quote.offer ? `bitcoin:?lno=${phase.quote.offer}` : `lightning:${phase.quote.invoice!.invoice}`
   const nextIndex = phase.at === 'ready' ? phase.next : phase.at === 'failed' ? phase.index + 1 : phase.index
   const next = wallets[nextIndex]
   const failed = phase.at === 'failed' ? wallets[phase.index] : undefined
@@ -333,7 +375,7 @@ function WalletChoices({
       {/* Hands the invoice to whatever wallet app is installed, and waits for it here. */}
       <a
         className={`button ${next ? 'outline' : 'primary'}`}
-        href={`lightning:${invoice}`}
+        href={link}
         aria-disabled={phase.at === 'paying'}
         onClick={onExternal}
       >
@@ -344,6 +386,54 @@ function WalletChoices({
           Paying from another phone? Show a QR code
         </button>
       )}
+      {phase.quote.offer && (
+        <p className="muted">
+          This is a BOLT12 offer. Your wallet needs to support BOLT12 to pay it.
+          {onNextTarget && (
+            <>
+              {' '}
+              <button type="button" className="link" onClick={onNextTarget}>
+                Pay their Lightning address instead
+              </button>
+            </>
+          )}
+        </p>
+      )}
+    </>
+  )
+}
+
+/**
+ * Paying an offer from another app. The amount has to be typed there (an
+ * offer can be for any amount), and Footless can't see the payment, so the
+ * person marks it paid.
+ */
+function OfferExternal({ offer, sats, toName, onPaid }: { offer: string; sats: number; toName: string; onPaid: () => void }) {
+  const link = `bitcoin:?lno=${offer}`
+  const [copied, setCopied] = useState(false)
+  return (
+    <>
+      <p className="lead">
+        Pay exactly <strong>{satsText(sats)}</strong>. You’ll type the amount in your wallet.
+      </p>
+      <a className="button primary" href={link}>
+        Open in wallet app
+      </a>
+      <p className="muted">Or scan it with a wallet on another phone:</p>
+      <a className="qr-link" href={link} aria-label="Open in your wallet app">
+        <QrCode text={offer} label={`QR code of ${toName}’s BOLT12 offer`} />
+      </a>
+      <button
+        type="button"
+        className="button outline"
+        onClick={() => void navigator.clipboard.writeText(offer).then(() => setCopied(true))}
+      >
+        {copied ? 'Offer copied' : 'Copy offer'}
+      </button>
+      <p>Footless can’t see payments to an offer. Once you’ve paid, mark it here.</p>
+      <button type="button" className="button outline" onClick={onPaid}>
+        I’ve paid it
+      </button>
     </>
   )
 }

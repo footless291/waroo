@@ -29,7 +29,7 @@ const lnurl = (name, domain) => JSON.stringify({ tag: 'payRequest', callback: `h
   const paste = async (text) => { await page.evaluate((t) => navigator.clipboard.writeText(t), text); await page.click('.pager.inline .pager-page:not([inert]) .wallet-guide .paste-row button:has-text("Paste")'); };
 
   await page.goto(B + '#/settings?open=wallet');
-  check(await waitText('.wallet', 'Friends pay you at these addresses'), 'new: Wallet starts on Receive');
+  check(await waitText('.wallet', 'Friends pay you at these'), 'new: Wallet starts on Receive');
   check((await page.$$('.pager.inline .pager-page:not([inert]) .ranked-row')).length === 0, 'with nothing connected');
   check((await page.locator('.pager.inline .pager-page:not([inert]) .setup-card', { hasText: 'Coinos' }).count()) === 1 && (await page.locator('.pager.inline .pager-page:not([inert]) .setup-card', { hasText: 'Rizful' }).count()) === 1, 'Coinos and Rizful are offered to set up');
   check(!(await page.textContent('.pager.inline .pager-page:not([inert]) .wallet-list')).includes('Not connected'), 'without a “Not connected” pill');

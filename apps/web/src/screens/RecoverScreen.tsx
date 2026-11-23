@@ -1,4 +1,4 @@
-import { receiveAddresses } from '@footless/ledger'
+import { receiveAddresses, receiveTargets } from '@footless/ledger'
 import { useEffect, useRef, useState } from 'react'
 import { Header } from '../components/Header.tsx'
 import { QrCode } from '../components/QrCode.tsx'
@@ -97,12 +97,14 @@ export function RecoverScreen({ groupId, memberId }: { groupId: string; memberId
     try {
       const moved = await recoverMember(groupId, memberId, phase.key)
       const addresses = person ? receiveAddresses(person) : []
+      const targets = person ? receiveTargets(person) : []
       await channel.current?.send({
         from: 'old',
         type: 'groups',
         groups: [moved],
         lightningAddress: addresses[0] ?? '',
         lightningAddresses: addresses,
+        receiveWallets: targets.map((address) => ({ address })),
       })
     } catch (err) {
       stop((err as Error).message)

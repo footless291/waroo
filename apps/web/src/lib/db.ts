@@ -3,7 +3,7 @@
  * IndexedDB. Sync reads and writes these same events; nothing here talks to
  * the network.
  */
-import { receiveAddresses, replay, type CurrencyCode, type LedgerEvent, type PersonId } from '@footless/ledger'
+import { isOffer, receiveAddresses, receiveTargets, replay, type CurrencyCode, type LedgerEvent, type PersonId } from '@footless/ledger'
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb'
 import { newBoxKeys, newGroupKey, newSigningKeys, sign } from './crypto.ts'
 
@@ -118,11 +118,17 @@ export async function setSetting(key: string, value: unknown): Promise<void> {
  * with the rest of their wallets (lib/wallets.ts); phones from before lists
  * existed kept a single address.
  */
-export async function myLightningAddresses(): Promise<string[]> {
+/** Everywhere this phone's person receives, in order: Lightning addresses and BOLT12 offers. */
+export async function myReceiveTargets(): Promise<string[]> {
   const list = (await getSetting('receiveWallets')) as { address: string }[] | undefined
   if (list) return list.map((w) => w.address)
   const old = (await getSetting('lightningAddress')) as string | undefined
   return old ? [old] : []
+}
+
+/** Just the Lightning addresses, for phones that don't know offers yet. */
+export async function myLightningAddresses(): Promise<string[]> {
+  return (await myReceiveTargets()).filter((t) => !isOffer(t))
 }
 
 /**
@@ -130,7 +136,8 @@ export async function myLightningAddresses(): Promise<string[]> {
  * its box key (made here the first time). Only what differs is sent.
  */
 export async function publishProfile(onlyGroupId?: string): Promise<void> {
-  const addresses = await myLightningAddresses()
+  const targets = await myReceiveTargets()
+  const addresses = targets.filter((t) => !isOffer(t))
   for (let group of await listGroups()) {
     if (onlyGroupId && group.id !== onlyGroupId) continue
     if (group.signing && !group.box) {
@@ -143,9 +150,10 @@ export async function publishProfile(onlyGroupId?: string): Promise<void> {
     // Removed or gone: nothing this phone writes would count.
     if (!me || me.left || (state.signed && me.key === undefined)) continue
     const draft: Extract<Draft, { type: 'member.updated' }> = { type: 'member.updated', memberId: group.meId }
-    if (receiveAddresses(me).join(' ') !== addresses.join(' ')) {
+    if (receiveTargets(me).join(' ') !== targets.join(' ') || receiveAddresses(me).join(' ') !== addresses.join(' ')) {
       draft.lightningAddress = addresses[0] ?? ''
       draft.lightningAddresses = addresses
+      draft.receive = targets
     }
     if (state.signed && group.boxPublic && me.boxKey !== group.boxPublic) draft.boxKey = group.boxPublic
     if (Object.keys(draft).length > 2) await append(group, [draft])
