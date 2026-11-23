@@ -37,8 +37,8 @@ Every phone checks every event when it rebuilds the group (`packages/ledger/src/
 
 ## What it doesn't protect against (yet)
 
-- **Invite links work only as long as they're meant to.** A link holds a fresh secret, not the group key. The key waits on the relay, encrypted with that secret, and is handed out only before the link expires (up to a month), once for a one-person link, and never after the inviter turns it off. Someone who did get in keeps the key, though: removing them would need a new group key (below). Links sent before November 21, 2026 held the key itself; they still work and can't be turned off.
-- **Removing someone** would need a new group key. Not built yet.
+- **Invite links work only as long as they're meant to.** A link holds a fresh secret, not the group key. The key waits on the relay, encrypted with that secret, and is handed out only before the link expires (up to a month), once for a one-person link, and never after the inviter turns it off. Someone who got in keeps the key until they're removed (below). Links from before November 21, 2026, which held the key itself, are no longer accepted.
+- **A removed phone can still read what came before.** Removal (below) cuts it off from everything new, but it keeps its own copy of the group up to that point.
 - **A lost phone** loses that phone's key. Moving needs the old phone in hand, so after a loss the person can't write as themselves again (they could join as someone new). The group's data is safe on everyone else's phone. Recovery vouched for by the rest of the group is a possible next step.
 - **Metadata.** The relay sees when blobs arrive, roughly how big they are, and the IP addresses connecting to a room. It can't read anything else.
 - **Deleting everything.** A malicious relay could refuse to store or forward changes. It can't fake or alter them, and every phone keeps its own full copy.
@@ -73,6 +73,16 @@ The relay can't read a group, so it can't say what happened. A push carries noth
 - The relay keeps, per room, only push-service URLs. It never learns who they belong to. Dead subscriptions are dropped when the push service says so.
 - Only real push services are accepted as endpoints, so the relay can't be aimed at other sites.
 - On iPhone and iPad, notifications work only for Footless added to the Home Screen.
+
+## Removing someone
+
+Anyone in a shared group can remove another person's phone. Their expenses, payments and balance stay; the real person can rejoin with a new invite, claiming the same name.
+
+- `member.removed` clears the person's signing key, so nothing they sign afterwards counts, and records who removed them. If they never owed, were owed or took part, they're also marked as left.
+- Every phone has a **box key** per group (ECDH P-256), published with `member.updated.boxKey`. The phone doing the removal makes a new group key, locks a copy to each remaining member's box key (ECDH → HKDF-SHA-256, salt `footless-rekey-v1`, info = member id → AES-GCM), and writes `group.rekeyed {from, ephemeral, wrapped}` in the **old** room. Then it moves: new key, new room, history copied across (the relay drops duplicates).
+- Other phones see the hand-off in the old room, open their copy, and move too. The removed phone can't open one, so the new room is closed to it. Invites the moving phone made are turned off, and opening an invite whose room has a hand-off says it's out of date.
+- Phones keep reading rooms they moved away from for 60 days. A phone that hadn't published a box key yet (not opened since this feature) publishes one there when it next opens, and any phone that's moved hands it the current key there.
+- If two people remove someone at once, each phone follows the chain from the oldest room it knows, taking the last hand-off (in the ledger's agreed order) from each room that includes it, so all phones settle on the same key.
 
 ## Moving to a new phone
 

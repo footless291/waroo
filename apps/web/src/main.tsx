@@ -1,11 +1,15 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { App } from './App.tsx'
+import { publishProfile } from './lib/db.ts'
 import { syncHub } from './lib/sync.ts'
+import './lib/rekey.ts'
 import '@fontsource-variable/outfit'
 import './styles.css'
 
 syncHub.start()
+// Publishes this phone's box key in groups made before keys could change.
+void publishProfile().catch((err) => console.warn('profile', err))
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -185,3 +185,73 @@ export async function unseal(
     return null
   }
 }
+
+// ---- Handing a new group key to the members who stay ----
+
+const ECDH = { name: 'ECDH', namedCurve: 'P-256' } as const
+
+/**
+ * This phone's box keys for a group (ECDH P-256): others lock new group keys
+ * to the public half. The private half can't be exported.
+ */
+export async function newBoxKeys(): Promise<{ keys: CryptoKeyPair; publicKey: string }> {
+  const keys = await crypto.subtle.generateKey(ECDH, false, ['deriveBits'])
+  const publicKey = toB64url(await crypto.subtle.exportKey('raw', keys.publicKey))
+  return { keys, publicKey }
+}
+
+/** An AES key both sides can make: from ECDH between one private and one public key, for one member. */
+async function sharedKey(privateKey: CryptoKey, publicKey: string, memberId: string): Promise<CryptoKey> {
+  const pub = await crypto.subtle.importKey('raw', fromB64url(publicKey), ECDH, false, [])
+  const bits = await crypto.subtle.deriveBits({ name: 'ECDH', public: pub }, privateKey, 256)
+  const material = await crypto.subtle.importKey('raw', bits, 'HKDF', false, ['deriveKey'])
+  return crypto.subtle.deriveKey(
+    { name: 'HKDF', hash: 'SHA-256', salt: enc.encode('footless-rekey-v1'), info: enc.encode(memberId) },
+    material,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt'],
+  )
+}
+
+/** Locks a group key to each member's box key, with a one-off key of our own. */
+export async function wrapGroupKey(
+  groupKey: string,
+  recipients: { memberId: string; boxKey: string }[],
+): Promise<{ ephemeral: string; wrapped: Record<string, string> }> {
+  const eph = await crypto.subtle.generateKey(ECDH, true, ['deriveBits'])
+  const ephemeral = toB64url(await crypto.subtle.exportKey('raw', eph.publicKey))
+  const wrapped: Record<string, string> = {}
+  for (const { memberId, boxKey } of recipients) {
+    try {
+      const key = await sharedKey(eph.privateKey, boxKey, memberId)
+      const iv = crypto.getRandomValues(new Uint8Array(12))
+      const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, fromB64url(groupKey)))
+      const out = new Uint8Array(12 + ct.length)
+      out.set(iv)
+      out.set(ct, 12)
+      wrapped[memberId] = toB64url(out)
+    } catch {
+      // A malformed box key: that member gets it later, when they publish a good one.
+    }
+  }
+  return { ephemeral, wrapped }
+}
+
+/** Opens a group key locked to this phone. Null if it isn't for us or doesn't open. */
+export async function unwrapGroupKey(
+  wrapped: string,
+  ephemeral: string,
+  boxPrivate: CryptoKey,
+  memberId: string,
+): Promise<string | null> {
+  try {
+    const key = await sharedKey(boxPrivate, ephemeral, memberId)
+    const bytes = fromB64url(wrapped)
+    const raw = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: bytes.slice(0, 12) }, key, bytes.slice(12))
+    const groupKey = toB64url(raw)
+    return isGroupKey(groupKey) ? groupKey : null
+  } catch {
+    return null
+  }
+}

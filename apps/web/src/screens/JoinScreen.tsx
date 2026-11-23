@@ -1,3 +1,4 @@
+import { roomId } from '../lib/crypto.ts'
 import { replay, type GroupState, type LedgerEvent } from '@footless/ledger'
 import { useEffect, useState, type FormEvent } from 'react'
 import { Logo } from '../components/icons.tsx'
@@ -25,8 +26,16 @@ function inBrowserTab() {
 export function JoinScreen({ params }: { params: URLSearchParams }) {
   const secret = params.get('i')
   if (secret !== null) return <JoinByInvite key={secret} secret={secret} />
-  // Links from before invites could expire hold the group key itself.
-  return <JoinGroup groupId={params.get('g') ?? ''} groupKey={params.get('k') ?? ''} from={params.get('from') ?? ''} />
+  // Links from before invites could expire held the group key itself. They're no longer accepted.
+  return (
+    <main className="screen">
+      <section className="empty">
+        <h2>This invite link is out of date</h2>
+        <p>It’s from an older version of Footless. Ask for a new invite link.</p>
+        <a className="button primary" href="#/">Open Footless</a>
+      </section>
+    </main>
+  )
 }
 
 /** Opens an invite link's secret into the group it leads to, if the link still works. */
@@ -95,6 +104,12 @@ function JoinGroup({ groupId, groupKey: key, from }: { groupId: string; groupKey
         if (!live) return
         if (state.members.size === 0) {
           setProblem('This invite doesn’t lead to a group. Ask for a new link.')
+          return
+        }
+        // Someone was removed since this invite was made: the group has a new key.
+        const room = await roomId(key)
+        if (received.some((r) => r.event.type === 'group.rekeyed' && r.event.from === room)) {
+          if (live) setProblem('This invite is out of date: the group has changed since it was made. Ask for a new link.')
           return
         }
         setLoaded({ state, received, cursor })

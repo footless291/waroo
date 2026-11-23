@@ -136,13 +136,13 @@ const b64u = (b) => Buffer.from(b).toString('base64url');
   await dee.goto(many);
   check(await waitText(dee, 'main', 'was turned off'), 'a turned-off link doesn’t work');
 
-  // Links sent before this change hold the key and still work
+  // Links from before expiring invites held the key: no longer accepted
   const { gkey, gid, anaId } = await ana.evaluate(() => new Promise((resolve) => {
     const open = indexedDB.open('footless');
     open.onsuccess = () => { const req = open.result.transaction('groups').objectStore('groups').getAll(); req.onsuccess = () => resolve({ gkey: req.result[0].key, gid: req.result[0].id, anaId: req.result[0].meId }); };
   }));
   await dee.goto(`${B}#/join?${new URLSearchParams({ g: gid, k: gkey, from: anaId })}`);
-  check(await waitText(dee, 'main', 'Ana invited you to'), 'an old-style link still opens the group');
+  check(await waitText(dee, "main", "out of date"), "an old-style link is refused as out of date");
 
   for (const p of [ana, bob, cai]) check(p.errors.length === 0, `${p.name}: no console errors ${p.errors.join(' | ').slice(0, 300)}`);
   console.log(failed ? `${failed} FAILED` : 'ALL PASSED');

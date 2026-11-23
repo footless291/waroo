@@ -5,7 +5,7 @@
  */
 import { receiveAddresses, replay, type CurrencyCode, type LedgerEvent, type PersonId } from '@footless/ledger'
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb'
-import { newGroupKey, newSigningKeys, sign } from './crypto.ts'
+import { newBoxKeys, newGroupKey, newSigningKeys, sign } from './crypto.ts'
 
 export interface GroupMeta {
   id: string
@@ -24,6 +24,15 @@ export interface GroupMeta {
   shared?: boolean
   /** Last relay position this phone has received. */
   cursor?: number
+  /** This phone's box keys for the group: new group keys are locked to the public half. */
+  box?: CryptoKeyPair
+  boxPublic?: string
+  /**
+   * Keys this group used before someone was removed, oldest first. Their
+   * rooms are still watched for a while: a phone that missed the change can
+   * be handed the new key there, and concurrent changes settle on one key.
+   */
+  previousKeys?: { key: string; movedAt: string; cursor?: number }[]
 }
 
 /** An event payload before the store stamps id, author, clock and time on it. */
@@ -116,16 +125,30 @@ export async function myLightningAddresses(): Promise<string[]> {
   return old ? [old] : []
 }
 
-/** Brings every group up to date with this phone's addresses. Only groups where they differ get an update. */
+/**
+ * Brings every group up to date with this phone: its Lightning addresses, and
+ * its box key (made here the first time). Only what differs is sent.
+ */
 export async function publishProfile(onlyGroupId?: string): Promise<void> {
   const addresses = await myLightningAddresses()
-  for (const group of await listGroups()) {
+  for (let group of await listGroups()) {
     if (onlyGroupId && group.id !== onlyGroupId) continue
-    const me = replay(await getEvents(group.id)).members.get(group.meId)
-    if (!me || me.left || receiveAddresses(me).join(' ') === addresses.join(' ')) continue
-    await append(group, [
-      { type: 'member.updated', memberId: group.meId, lightningAddress: addresses[0] ?? '', lightningAddresses: addresses },
-    ])
+    if (group.signing && !group.box) {
+      const { keys, publicKey } = await newBoxKeys()
+      group = { ...group, box: keys, boxPublic: publicKey }
+      await (await db()).put('groups', group)
+    }
+    const state = replay(await getEvents(group.id))
+    const me = state.members.get(group.meId)
+    // Removed or gone: nothing this phone writes would count.
+    if (!me || me.left || (state.signed && me.key === undefined)) continue
+    const draft: Extract<Draft, { type: 'member.updated' }> = { type: 'member.updated', memberId: group.meId }
+    if (receiveAddresses(me).join(' ') !== addresses.join(' ')) {
+      draft.lightningAddress = addresses[0] ?? ''
+      draft.lightningAddresses = addresses
+    }
+    if (state.signed && group.boxPublic && me.boxKey !== group.boxPublic) draft.boxKey = group.boxPublic
+    if (Object.keys(draft).length > 2) await append(group, [draft])
   }
 }
 
@@ -316,4 +339,12 @@ export async function deleteGroupLocally(groupId: string) {
     tx.done,
   ])
   notify()
+}
+
+/** Marks every event in a group to be sent again: used when the group moves to a new room. */
+export async function markAllPending(groupId: string): Promise<void> {
+  const tx = (await db()).transaction('events', 'readwrite')
+  const events = await tx.store.index('byGroup').getAll(groupId)
+  for (const e of events) if (e.sig) await tx.store.put({ ...e, pending: 1 })
+  await tx.done
 }

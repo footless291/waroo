@@ -278,3 +278,59 @@ describe('several Lightning addresses', () => {
     assert.deepEqual(receiveAddresses(replay([...claimed(), set, clear]).members.get('bob')), [])
   })
 })
+
+describe('removing someone', () => {
+  const BOX = 'B'.repeat(87)
+  const joined = () => [
+    ...base(),
+    ev('bob', 5, 'KB', { type: 'member.claimed', memberId: 'bob', key: 'KB' }),
+    ev('cai', 6, 'KC', { type: 'member.added', member: { id: 'cai', name: 'Cai', key: 'KC' } }),
+  ]
+  const remove = (who: string, by = 'ana', signer = 'KA', clock = 7) =>
+    ev(by, clock, signer, { type: 'member.removed', memberId: who })
+
+  it('cuts a stranger off entirely when they took no part', () => {
+    const state = replay([...joined(), remove('cai')])
+    const cai = state.members.get('cai')!
+    assert.equal(cai.key, undefined)
+    assert.equal(cai.left, true)
+    assert.equal(cai.removedBy, 'ana')
+    const after = ev('cai', 8, 'KC', { type: 'group.updated', name: 'Mine now' })
+    assert.equal(replay([...joined(), remove('cai'), after]).name, 'Okinawa trip')
+  })
+
+  it('keeps someone who took part, with their balance, so they can rejoin as themselves', () => {
+    const state = replay([...joined(), remove('bob')])
+    const bob = state.members.get('bob')!
+    assert.equal(bob.key, undefined)
+    assert.ok(!bob.left)
+    const back = ev('bob', 8, 'KB2', { type: 'member.claimed', memberId: 'bob', key: 'KB2' })
+    const again = replay([...joined(), remove('bob'), back]).members.get('bob')!
+    assert.equal(again.key, 'KB2')
+    assert.equal(again.removedBy, undefined)
+  })
+
+  it('can’t remove yourself, or be done by someone who isn’t in', () => {
+    assert.match(replay([...joined(), remove('ana')]).rejected[0]!.reason, /leave/)
+    const forged = remove('bob', 'ana', 'KX')
+    assert.equal(replay([...joined(), forged]).members.get('bob')!.key, 'KB')
+  })
+
+  it('takes box keys from the person only, and keeps addresses when only the box key changes', () => {
+    const addr = ev('bob', 7, 'KB', { type: 'member.updated', memberId: 'bob', lightningAddresses: ['bob@coinos.io'] })
+    const box = ev('bob', 8, 'KB', { type: 'member.updated', memberId: 'bob', boxKey: BOX })
+    const notHis = ev('ana', 9, 'KA', { type: 'member.updated', memberId: 'bob', boxKey: 'C'.repeat(87) })
+    const bob = replay([...joined(), addr, box, notHis]).members.get('bob')!
+    assert.equal(bob.boxKey, BOX)
+    assert.equal(bob.lightningAddress, 'bob@coinos.io')
+  })
+
+  it('accepts a key hand-off from a member, and nobody else', () => {
+    const handOff = { type: 'group.rekeyed', from: 'R'.repeat(43), ephemeral: 'E'.repeat(87), wrapped: { bob: 'x' } }
+    const ok = ev('ana', 8, 'KA', handOff)
+    const outsider = ev('zed', 9, 'KZ', handOff)
+    const state = replay([...joined(), remove('cai'), ok, outsider])
+    assert.equal(state.rejected.length, 1)
+    assert.match(state.rejected[0]!.reason, /not a member/)
+  })
+})

@@ -23,6 +23,7 @@ import {
   myLightningAddresses,
   newId,
   pendingEvents,
+  publishProfile,
   saveJoinedGroup,
   type GroupMeta,
 } from './db.ts'
@@ -186,6 +187,8 @@ export async function receiveGroups(
       loaded.received,
     )
     await syncHub.ensure(g.id)
+    // This phone's own box key, so it can be handed future group keys.
+    await publishProfile(g.id)
     moved.push(g.id)
   }
   if (lightningAddresses.length) await addReceive(...lightningAddresses)

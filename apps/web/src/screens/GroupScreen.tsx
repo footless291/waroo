@@ -13,9 +13,10 @@ import { PlusIcon } from '../components/icons.tsx'
 import { SyncLine } from '../components/SyncLine.tsx'
 import { groupTabs, TabBar } from '../components/TabBar.tsx'
 import { Pager } from '../components/Pager.tsx'
-import type { GroupMeta } from '../lib/db.ts'
+import { deleteGroupLocally, type GroupMeta } from '../lib/db.ts'
 import { formatDate, money } from '../lib/format.ts'
-import { useGroup } from '../lib/hooks.ts'
+import { go, useGroup } from '../lib/hooks.ts'
+import { syncHub } from '../lib/sync.ts'
 
 export type Tab = 'balances' | 'expenses' | 'payments'
 
@@ -41,6 +42,12 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
   const tabs = groupTabs(groupId)
   const currentTab = tab === 'balances' ? base : `${base}/${tab}`
   const name = state.name ?? meta.name
+  const myself = state.members.get(meta.meId)
+  // Set when someone removed this phone: their name, or null if they're unknown.
+  const removedBy =
+    state.signed && myself?.removedBy && myself.key === undefined
+      ? (state.members.get(myself.removedBy)?.name ?? null)
+      : undefined
   const current = [...state.members.values()].filter((m) => !m.left)
   const notJoined = current.filter((m) => !m.key && m.id !== meta.meId)
   const alone = current.every((m) => m.id === meta.meId || !m.key)
@@ -103,6 +110,24 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
           }
         />
         <SyncLine groupId={groupId} state={state} meId={meta.meId} />
+        {removedBy !== undefined && (
+          <div className="removed-notice" role="status">
+            <p>
+              <strong>{removedBy ?? 'Someone'} removed you from {name}.</strong> This phone won’t get anything new from
+              the group. To come back, ask for a new invite.
+            </p>
+            <button
+              className="button small outline"
+              onClick={async () => {
+                syncHub.drop(groupId)
+                await deleteGroupLocally(groupId)
+                go('/')
+              }}
+            >
+              Remove from this phone
+            </button>
+          </div>
+        )}
       </div>
       <Pager pages={pages} current={currentTab} />
       {toast && (
@@ -110,7 +135,7 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
           You joined {name} as {state.members.get(meta.meId)?.name}
         </div>
       )}
-      {tab === 'payments' ? (
+      {removedBy !== undefined ? null : tab === 'payments' ? (
         <a className="fab" href={`#${base}/pay`}>
           <PlusIcon />
           Add payment
@@ -280,9 +305,15 @@ function Everyone({
                     {money(Math.abs(amount), currency)}
                   </span>
                 )}
-                {me && (
+                {me ? (
                   <a className="button small outline" href={`#/g/${meta.id}/me`} aria-label="Change your name, or leave the group">
                     Edit
+                  </a>
+                ) : (
+                  <a className="icon-button person-more" href={`#/g/${meta.id}/m/${person}`} aria-label={`More about ${state.members.get(person)?.name}`}>
+                    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                      <path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
                   </a>
                 )}
               </li>

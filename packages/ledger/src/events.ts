@@ -49,6 +49,14 @@ export interface Member {
    * expenses still show their name, but can't write or be added to anything.
    */
   left?: boolean
+  /**
+   * Public key their phone receives new group keys with (ECDH P-256): when
+   * someone is removed, the group's next key is locked to each remaining
+   * phone's box key.
+   */
+  boxKey?: string
+  /** Who removed their phone from the group, if someone did. Cleared when a phone joins as them again. */
+  removedBy?: PersonId
 }
 
 const MAX_ADDRESSES = 5
@@ -95,7 +103,26 @@ export type LedgerEvent = EventBase &
      * A member updates their own details. Only they can: how someone gets
      * paid is never set by anyone else. An empty address removes it.
      */
-    | { type: 'member.updated'; memberId: PersonId; lightningAddress?: string; lightningAddresses?: string[] }
+    | {
+        type: 'member.updated'
+        memberId: PersonId
+        lightningAddress?: string
+        lightningAddresses?: string[]
+        boxKey?: string
+      }
+    /**
+     * Removes someone's phone from the group: it can't write any more. Their
+     * expenses and balance stay, and they can join again as themselves with
+     * a new invite. Followed by `group.rekeyed`, so the phone can't read what
+     * comes next either.
+     */
+    | { type: 'member.removed'; memberId: PersonId }
+    /**
+     * The group moves to a new key (and so a new relay room). `from` is the
+     * room it moves from; `wrapped` holds the new key locked to each
+     * remaining member's box key, using the one-off `ephemeral` key.
+     */
+    | { type: 'group.rekeyed'; from: string; ephemeral: string; wrapped: Record<PersonId, string> }
     /** A phone takes the place of a member who hasn't joined on a phone yet. */
     | { type: 'member.claimed'; memberId: PersonId; key: string }
     /**
@@ -269,9 +296,40 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
         else state.members.set(e.member.id, { ...e.member })
         break
 
-      case 'member.claimed':
-        state.members.get(e.memberId)!.key = e.key
+      case 'member.claimed': {
+        const member = state.members.get(e.memberId)!
+        member.key = e.key
+        delete member.removedBy
         break
+      }
+
+      case 'member.removed': {
+        const member = state.members.get(e.memberId)
+        if (!state.signed) reject(e, 'Only shared groups have phones to remove')
+        else if (!member || member.left) reject(e, 'No such member')
+        else if (e.memberId === e.author) reject(e, 'To leave, leave the group instead')
+        else if (member.key === undefined) reject(e, 'They haven’t joined on a phone')
+        else {
+          delete member.key
+          delete member.boxKey
+          member.removedBy = e.author
+          // Someone who never took part (often a stranger with the link) disappears entirely.
+          if (!owesOrIsOwed(state, member.id) && !tookPart(state, member.id)) member.left = true
+        }
+        break
+      }
+
+      case 'group.rekeyed': {
+        const wrappedOk =
+          e.wrapped !== null &&
+          typeof e.wrapped === 'object' &&
+          Object.entries(e.wrapped).every(([id, w]) => state.members.has(id) && typeof w === 'string' && w.length < 512)
+        if (!state.signed) reject(e, 'Only shared groups have keys')
+        else if (typeof e.from !== 'string' || !/^[A-Za-z0-9_-]{43}$/.test(e.from)) reject(e, 'Bad room')
+        else if (typeof e.ephemeral !== 'string' || !/^[A-Za-z0-9_-]{80,100}$/.test(e.ephemeral)) reject(e, 'Bad key')
+        else if (!wrappedOk) reject(e, 'Bad key hand-off')
+        break
+      }
 
       case 'member.rekeyed': {
         const member = state.members.get(e.memberId)
@@ -284,18 +342,23 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
 
       case 'member.updated': {
         const member = state.members.get(e.memberId)
+        const hasAddresses = 'lightningAddress' in e || 'lightningAddresses' in e
+        // Newer phones send the whole ordered list; older ones a single address.
+        const list = Array.isArray(e.lightningAddresses)
+          ? e.lightningAddresses
+          : e.lightningAddress
+            ? [e.lightningAddress]
+            : []
         if (!member) reject(e, 'No such member')
         else if (e.memberId !== e.author) reject(e, 'Only people themselves can change how they get paid')
-        else {
-          // Newer phones send the whole ordered list; older ones a single address.
-          const list = Array.isArray(e.lightningAddresses)
-            ? e.lightningAddresses
-            : e.lightningAddress
-              ? [e.lightningAddress]
-              : []
-          if (list.length > MAX_ADDRESSES) reject(e, `At most ${MAX_ADDRESSES} Lightning addresses`)
-          else if (!list.every((a) => typeof a === 'string' && isLightningAddress(a))) reject(e, 'Not a Lightning address')
-          else {
+        else if (e.boxKey !== undefined && (typeof e.boxKey !== 'string' || !/^[A-Za-z0-9_-]{80,100}$/.test(e.boxKey))) {
+          reject(e, 'Bad box key')
+        } else if (hasAddresses && list.length > MAX_ADDRESSES) reject(e, `At most ${MAX_ADDRESSES} Lightning addresses`)
+        else if (hasAddresses && !list.every((a) => typeof a === 'string' && isLightningAddress(a))) {
+          reject(e, 'Not a Lightning address')
+        } else {
+          if (e.boxKey !== undefined) member.boxKey = e.boxKey
+          if (hasAddresses) {
             const clean = [...new Set(list.map((a) => a.toLowerCase()))]
             if (clean.length === 0) {
               delete member.lightningAddress
@@ -409,6 +472,13 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
     }
   }
   return state
+}
+
+/** True if the person paid for, shared in, or was part of a payment in anything still in the group. */
+function tookPart(state: GroupState, person: PersonId): boolean {
+  for (const expense of state.expenses.values()) if ((effect(expense).get(person) ?? 0) !== 0 || person in expense.payers) return true
+  for (const s of state.settlements.values()) if (s.from === person || s.to === person) return true
+  return false
 }
 
 /** True if the person is owed or owes anything, in any currency. */

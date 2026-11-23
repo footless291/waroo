@@ -52,7 +52,7 @@ export async function makeDecoder(): Promise<Decoder> {
 
 /**
  * Turns scanned or pasted text into an in-app route, or null if it isn't a
- * Footless code: an invite ("#/join?g=…&k=…") or a move from another phone
+ * Footless code: an invite ("#/join?i=…") or a move from another phone
  * ("#/move-in?t=…"). Accepts the full link or just the part after "#".
  */
 export function inviteRoute(text: string): string | null {
@@ -63,7 +63,7 @@ export function inviteRoute(text: string): string | null {
   if (before && !/^https?:\/\/[^\s#]+$/i.test(before)) return null
   const route = trimmed.slice(match.index + 1)
   const params = new URLSearchParams(route.split('?')[1])
-  if (match[1] === 'join' && !params.get('i') && (!params.get('g') || !params.get('k'))) return null
+  if (match[1] === 'join' && !params.get('i')) return null
   if (match[1] === 'move-in' && !params.get('t')) return null
   return route
 }

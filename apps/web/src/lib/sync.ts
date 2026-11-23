@@ -49,6 +49,15 @@ export function relayHttpUrl(path: string): string {
   return `${base}/relay/${path}`
 }
 
+/**
+ * Called when events arrive that may change the group's key. Set by
+ * lib/rekey.ts (kept apart to avoid an import loop).
+ */
+let keyFollower: (groupId: string) => Promise<void> = async () => {}
+export function setKeyFollower(follow: (groupId: string) => Promise<void>) {
+  keyFollower = follow
+}
+
 /** This phone's push subscription, if notifications are on. Kept in settings. */
 export async function pushEndpoint(): Promise<string | undefined> {
   return (await getSetting('pushEndpoint')) as string | undefined
@@ -72,6 +81,8 @@ class GroupSync {
   private caughtUp = false
   private inFlight = new Set<string>()
   private stopped = false
+  /** The key this connection's room belongs to; if the group moves on, this connection stops writing. */
+  private key?: string
 
   readonly groupId: string
   private onStatus: () => void
@@ -132,6 +143,7 @@ class GroupSync {
     this.set('connecting')
     this.caughtUp = false
     this.inFlight.clear()
+    this.key = group.key
 
     const ws = new WebSocket(relayUrl(await roomId(group.key)))
     this.ws = ws
@@ -161,12 +173,20 @@ class GroupSync {
 
   private async handle(msg: RelayMessage) {
     const group = await getGroup(this.groupId)
-    if (!group?.key) return
+    if (!group?.key || group.key !== this.key) return
     if (msg.t === 'items') {
       if (!msg.live && !this.caughtUp) this.set('syncing')
-      await saveReceived(this.groupId, await openItems(msg.items, group.key))
+      const opened = await openItems(msg.items, group.key)
+      await saveReceived(this.groupId, opened)
+      if (opened.some((o) => o.event.type === 'group.rekeyed' || o.event.type === 'member.updated')) {
+        await keyFollower(this.groupId)
+      }
       const top = Math.max(group.cursor ?? 0, msg.upTo ?? 0, ...msg.items.map((i) => i.seq))
-      if (top !== (group.cursor ?? 0)) await putGroup({ ...(await getGroup(this.groupId))!, cursor: top })
+      if (top !== (group.cursor ?? 0)) {
+        // Read again: it may have changed meanwhile, or left this phone.
+        const latest = await getGroup(this.groupId)
+        if (latest && latest.key === this.key) await putGroup({ ...latest, cursor: top })
+      }
       if (msg.done) {
         this.caughtUp = true
         await this.flush()
@@ -185,7 +205,8 @@ class GroupSync {
     const ws = this.ws
     if (!ws || ws.readyState !== WebSocket.OPEN) return
     const group = await getGroup(this.groupId)
-    if (!group?.key) return
+    // Moved to a new key: what's pending belongs in the new room, not this one.
+    if (!group?.key || group.key !== this.key) return
     const pending = (await pendingEvents(this.groupId)).filter((e) => !this.inFlight.has(e.id))
     if (pending.length === 0) {
       if (this.inFlight.size === 0) this.set('synced')
@@ -205,9 +226,84 @@ class GroupSync {
   }
 }
 
+/**
+ * Reads a room the group has moved away from, for a while after moving.
+ * Phones that missed the move publish their box key there and are handed
+ * the new key there; concurrent moves settle there. Saves what it reads;
+ * sends only what it's asked to (a hand-off for a late phone).
+ */
+class OldRoomWatch {
+  private ws?: WebSocket
+  private stopped = false
+  private timer?: ReturnType<typeof setTimeout>
+  private retry = 0
+  readonly groupId: string
+  readonly key: string
+
+  constructor(groupId: string, key: string) {
+    this.groupId = groupId
+    this.key = key
+  }
+
+  async start() {
+    if (this.stopped || !navigator.onLine) return
+    const group = await getGroup(this.groupId)
+    const since = group?.previousKeys?.find((p) => p.key === this.key)?.cursor ?? 0
+    const ws = new WebSocket(relayUrl(await roomId(this.key)))
+    this.ws = ws
+    ws.onopen = async () => {
+      this.retry = 0
+      ws.send(JSON.stringify({ t: 'hello', since }))
+      // Don't wake this phone for the old room any more.
+      const endpoint = await pushEndpoint()
+      if (endpoint && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ t: 'unsubscribe', endpoint }))
+    }
+    ws.onmessage = (e) => void this.receive(JSON.parse(e.data as string) as RelayMessage)
+    ws.onclose = () => {
+      if (this.ws !== ws || this.stopped) return
+      this.timer = setTimeout(() => void this.start(), Math.min(60_000, 2000 * 2 ** this.retry++))
+    }
+  }
+
+  private queue = Promise.resolve()
+  private receive(msg: RelayMessage) {
+    this.queue = this.queue.then(() => this.handle(msg)).catch((err) => console.error('old room', err))
+  }
+
+  private async handle(msg: RelayMessage) {
+    if (msg.t !== 'items') return
+    const opened = await openItems(msg.items, this.key)
+    await saveReceived(this.groupId, opened, { quiet: true })
+    const top = Math.max(msg.upTo ?? 0, ...msg.items.map((i) => i.seq))
+    const group = await getGroup(this.groupId)
+    if (group?.previousKeys) {
+      const previousKeys = group.previousKeys.map((p) => (p.key === this.key && top > (p.cursor ?? 0) ? { ...p, cursor: top } : p))
+      await putGroup({ ...group, previousKeys })
+    }
+    if (opened.length > 0) await keyFollower(this.groupId)
+  }
+
+  /** Sends one already-signed event into this old room. */
+  async send(event: LedgerEvent, signature: string) {
+    if (this.ws?.readyState !== WebSocket.OPEN) return false
+    this.ws.send(JSON.stringify({ t: 'push', items: [{ id: event.id, data: await seal(event, signature, this.key) }] }))
+    return true
+  }
+
+  stop() {
+    this.stopped = true
+    clearTimeout(this.timer)
+    this.ws?.close()
+  }
+}
+
+/** How long a group keeps reading a room it moved away from. */
+const WATCH_OLD_ROOMS_MS = 60 * 24 * 60 * 60 * 1000
+
 /** All shared groups' sync, plus a status feed for the screens. */
 class SyncHub {
   private groups = new Map<string, GroupSync>()
+  private watches = new Map<string, OldRoomWatch[]>()
   private listeners = new Set<() => void>()
   private started = false
 
@@ -232,7 +328,30 @@ class SyncHub {
     const sync = new GroupSync(groupId, () => this.emit())
     this.groups.set(groupId, sync)
     void sync.start()
+    this.watchOldRooms(group)
+    void keyFollower(groupId)
     return sync
+  }
+
+  private watchOldRooms(group: GroupMeta) {
+    for (const w of this.watches.get(group.id) ?? []) w.stop()
+    const recent = (group.previousKeys ?? []).filter((p) => Date.now() - Date.parse(p.movedAt) < WATCH_OLD_ROOMS_MS)
+    const watches = recent.map((p) => new OldRoomWatch(group.id, p.key))
+    this.watches.set(group.id, watches)
+    for (const w of watches) void w.start()
+  }
+
+  /** The group moved to a new key: reconnect to its new room and watch the old one. */
+  async restart(groupId: string) {
+    this.groups.get(groupId)?.stop()
+    this.groups.delete(groupId)
+    await this.ensure(groupId)
+  }
+
+  /** Sends a signed event into one of the group's old rooms, if it's being watched. */
+  async sendToOldRoom(groupId: string, key: string, event: LedgerEvent, signature: string): Promise<boolean> {
+    const watch = this.watches.get(groupId)?.find((w) => w.key === key)
+    return watch ? watch.send(event, signature) : false
   }
 
   /** Tells every connected group about a change to this phone's notifications. */
@@ -244,6 +363,8 @@ class SyncHub {
   drop(groupId: string) {
     this.groups.get(groupId)?.stop()
     this.groups.delete(groupId)
+    for (const w of this.watches.get(groupId) ?? []) w.stop()
+    this.watches.delete(groupId)
     this.emit()
   }
 
