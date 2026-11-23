@@ -1489,3 +1489,31 @@ body:has(.tabs-shell) {
 .shell-top + .pager .screen {
   padding-top: var(--space-2);
 }
+
+/* Settings sections: slim when closed */
+.settings .collapsible {
+  gap: 0;
+  padding: 4px 18px;
+}
+.settings .collapsible.open {
+  padding-bottom: 18px;
+}
+.settings .collapsible h2 {
+  font-size: 1.1rem;
+}
+.settings .collapsible-toggle {
+  min-height: 52px;
+}
+.settings .collapsible-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-top: var(--space-2);
+}
+.settings .collapsible-body > p {
+  margin: 0;
+  color: var(--muted);
+}
+.form.settings {
+  gap: var(--space-2);
+}
