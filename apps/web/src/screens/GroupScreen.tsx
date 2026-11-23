@@ -48,6 +48,12 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
     state.signed && myself?.removedBy && myself.key === undefined
       ? (state.members.get(myself.removedBy)?.name ?? null)
       : undefined
+  // Set when someone vouched for a new phone in this person's place: this one is cut off.
+  const replacedBy =
+    state.signed && myself?.recoveredBy && meta.publicKey && myself.key !== meta.publicKey
+      ? (state.members.get(myself.recoveredBy)?.name ?? 'Someone')
+      : undefined
+  const cutOff = removedBy !== undefined || replacedBy !== undefined
   const current = [...state.members.values()].filter((m) => !m.left)
   const notJoined = current.filter((m) => !m.key && m.id !== meta.meId)
   const alone = current.every((m) => m.id === meta.meId || !m.key)
@@ -110,12 +116,23 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
           }
         />
         <SyncLine groupId={groupId} state={state} meId={meta.meId} />
-        {removedBy !== undefined && (
+        {cutOff && (
           <div className="removed-notice" role="status">
-            <p>
-              <strong>{removedBy ?? 'Someone'} removed you from {name}.</strong> This phone won’t get anything new from
-              the group. To come back, ask for a new invite.
-            </p>
+            {replacedBy !== undefined ? (
+              <p>
+                <strong>
+                  {replacedBy} moved you to a new phone in {name}.
+                </strong>{' '}
+                This phone can’t add anything any more. If that wasn’t you, tell the group.
+              </p>
+            ) : (
+              <p>
+                <strong>
+                  {removedBy ?? 'Someone'} removed you from {name}.
+                </strong>{' '}
+                This phone won’t get anything new from the group. To come back, ask for a new invite.
+              </p>
+            )}
             <button
               className="button small outline"
               onClick={async () => {
@@ -135,7 +152,7 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
           You joined {name} as {state.members.get(meta.meId)?.name}
         </div>
       )}
-      {removedBy !== undefined ? null : tab === 'payments' ? (
+      {cutOff ? null : tab === 'payments' ? (
         <a className="fab" href={`#${base}/pay`}>
           <PlusIcon />
           Add payment

@@ -30,6 +30,7 @@ export function isNotable(event: LedgerEvent): boolean {
     case 'member.claimed':
     case 'member.left':
     case 'member.removed':
+    case 'member.recovered':
       return true
     case 'member.added':
       return event.member.id === event.author && event.member.key !== undefined
@@ -83,6 +84,14 @@ export function describeEvent(
   if (isNotable(event) && (event.type === 'member.added' || event.type === 'member.claimed')) {
     const who = event.type === 'member.added' ? event.member.id : event.memberId
     return { id: event.id, kind: 'joined', title: `${name(who)} joined ${groupName}`, detail: 'They can see the group and add expenses now' }
+  }
+
+  if (event.type === 'member.recovered') {
+    const by = name(event.author)
+    if (event.memberId === meId) {
+      return { id: event.id, kind: 'joined', title: `${by} moved you to a new phone in ${groupName}`, detail: 'If that wasn’t you, tell the group' }
+    }
+    return { id: event.id, kind: 'joined', title: `${name(event.memberId)} is back in ${groupName} on a new phone`, detail: `${by} vouched for it` }
   }
 
   if (event.type === 'member.removed') {

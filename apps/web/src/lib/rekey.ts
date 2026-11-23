@@ -19,19 +19,42 @@ import { orderEvents, replay, type LedgerEvent } from '@footless/ledger'
 import { newGroupKey, roomId, unwrapGroupKey, wrapGroupKey } from './crypto.ts'
 import { append, getGroup, getStoredEvents, markAllPending, pendingEvents, putGroup, type StoredEvent } from './db.ts'
 import { invitesFor, inviteStatus, stopInvite } from './invites.ts'
+import type { MovedGroup } from './move.ts'
 import { setKeyFollower, syncHub } from './sync.ts'
 
 type Rekeyed = Extract<LedgerEvent, { type: 'group.rekeyed' }>
 
 /** Removes someone's phone from a group and moves the group to a new key. */
 export async function removeMember(groupId: string, memberId: string): Promise<void> {
-  let group = await getGroup(groupId)
+  const group = await getGroup(groupId)
   if (!group?.shared || !group.key || !group.box || !group.boxPublic) throw new Error('This group isn’t shared, so there’s no phone to remove.')
   await append(group, [{ type: 'member.removed', memberId }])
+  await rotate(groupId, memberId)
+}
 
+/**
+ * Someone lost their phone: this phone vouches for their new one (whose
+ * signing key is `newKey`), then moves the group to a new key so the lost
+ * phone can't read on. Returns the group as the new phone should store it.
+ */
+export async function recoverMember(groupId: string, memberId: string, newKey: string): Promise<MovedGroup> {
+  const group = await getGroup(groupId)
+  if (!group?.shared || !group.key || !group.box || !group.boxPublic) throw new Error('This group isn’t shared yet.')
+  await append(group, [{ type: 'member.recovered', memberId, key: newKey }])
+  const key = await rotate(groupId, memberId)
+  const moved = (await getGroup(groupId))!
+  return { id: moved.id, name: moved.name, currency: moved.currency, meId: memberId, key, createdAt: moved.createdAt }
+}
+
+/**
+ * Makes a new group key, hands it to everyone still in the group except
+ * `leaveOut` (their copy goes some other way, or not at all), and moves.
+ */
+async function rotate(groupId: string, leaveOut: string): Promise<string> {
+  let group = (await getGroup(groupId))!
   const state = replay((await getStoredEvents(groupId)).map(strip))
   const recipients = [...state.members.values()]
-    .filter((m) => !m.left && m.key !== undefined && m.id !== memberId)
+    .filter((m) => !m.left && m.key !== undefined && m.id !== leaveOut)
     .map((m) => ({ memberId: m.id, boxKey: m.id === group!.meId ? group!.boxPublic! : m.boxKey }))
     .filter((r): r is { memberId: string; boxKey: string } => !!r.boxKey)
   const newKey = newGroupKey()
@@ -47,6 +70,7 @@ export async function removeMember(groupId: string, memberId: string): Promise<v
     await new Promise((r) => setTimeout(r, 300))
   }
   await moveToKey(groupId, newKey)
+  return newKey
 }
 
 /** Switches this phone to a group's new key and room, copying the history across. */

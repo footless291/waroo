@@ -39,7 +39,7 @@ Every phone checks every event when it rebuilds the group (`packages/ledger/src/
 
 - **Invite links work only as long as they're meant to.** A link holds a fresh secret, not the group key. The key waits on the relay, encrypted with that secret, and is handed out only before the link expires (up to a month), once for a one-person link, and never after the inviter turns it off. Someone who got in keeps the key until they're removed (below). Links from before November 21, 2026, which held the key itself, are no longer accepted.
 - **A removed phone can still read what came before.** Removal (below) cuts it off from everything new, but it keeps its own copy of the group up to that point.
-- **A lost phone** loses that phone's key. Moving needs the old phone in hand, so after a loss the person can't write as themselves again (they could join as someone new). The group's data is safe on everyone else's phone. Recovery vouched for by the rest of the group is a possible next step.
+- **Trusting whoever vouches.** Anyone in a group can vouch for someone's new phone after a loss (below). Everyone sees who vouched, and the old phone is told, but one member could misuse it to take over someone else's place. The app asks the voucher to compare a 4-digit code with the person, in person or on a call.
 - **Metadata.** The relay sees when blobs arrive, roughly how big they are, and the IP addresses connecting to a room. It can't read anything else.
 - **Deleting everything.** A malicious relay could refuse to store or forward changes. It can't fake or alter them, and every phone keeps its own full copy.
 
@@ -83,6 +83,10 @@ Anyone in a shared group can remove another person's phone. Their expenses, paym
 - Other phones see the hand-off in the old room, open their copy, and move too. The removed phone can't open one, so the new room is closed to it. Invites the moving phone made are turned off, and opening an invite whose room has a hand-off says it's out of date.
 - Phones keep reading rooms they moved away from for 60 days. A phone that hadn't published a box key yet (not opened since this feature) publishes one there when it next opens, and any phone that's moved hands it the current key there.
 - If two people remove someone at once, each phone follows the chain from the oldest room it knows, taking the last hand-off (in the ledger's agreed order) from each room that includes it, so all phones settle on the same key.
+
+## Recovering a lost phone
+
+Moving needs the old phone. When it's lost, someone else in the group stands in for it: on the person's page, "Help [name] back in" shows a code (QR, or a link to send). The new phone opens it like a move, both phones show a 4-digit code, and the voucher confirms they match. The voucher's phone then writes `member.recovered {memberId, key}` (signed by the voucher; the ledger refuses it for yourself), which replaces the person's signing key, so the lost phone can't write. Then it gives the group a new key, as for a removal, so the lost phone can't read on, and sends the group and the person's Lightning addresses to the new phone. Recovery is per group: someone in each group vouches for that group.
 
 ## Moving to a new phone
 

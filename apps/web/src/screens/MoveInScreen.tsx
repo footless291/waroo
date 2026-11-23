@@ -13,6 +13,10 @@ type Phase =
 /** The new phone: makes its own key, shows the check code, receives the groups. */
 export function MoveInScreen({ params }: { params: URLSearchParams }) {
   const secret = params.get('t') ?? ''
+  // Someone else in a group is vouching for this phone, after the old one was lost.
+  const recovering = params.get('r') === '1'
+  const title = recovering ? 'Get back into a group' : 'Move to this phone'
+  const other = recovering ? 'the phone helping you' : 'your other phone'
   const valid = isGroupKey(secret)
   const [phase, setPhase] = useState<Phase>({ at: 'connecting' })
 
@@ -65,10 +69,10 @@ export function MoveInScreen({ params }: { params: URLSearchParams }) {
   if (!valid) {
     return (
       <main className="screen">
-        <Header title="Move to this phone" back="/" />
+        <Header title={title} back="/" />
         <section className="empty">
           <h2>This code isn’t complete</h2>
-          <p>Scan the code on your other phone again.</p>
+          <p>Scan the code on {other} again.</p>
         </section>
       </main>
     )
@@ -76,22 +80,22 @@ export function MoveInScreen({ params }: { params: URLSearchParams }) {
 
   return (
     <main className="screen">
-      <Header title="Move to this phone" back="/" />
-      {phase.at === 'connecting' && <p className="muted" role="status">Connecting to your other phone…</p>}
+      <Header title={title} back="/" />
+      {phase.at === 'connecting' && <p className="muted" role="status">Connecting to {other}…</p>}
       {phase.at === 'code' && (
         <section className="form">
-          <p className="lead">Check your other phone shows the same numbers, and confirm there.</p>
+          <p className="lead">Check {other} shows the same numbers, and confirm there.</p>
           <p className="move-code" aria-label={`Code ${phase.code.split('').join(' ')}`}>
             {phase.code}
           </p>
           <p className="muted" role="status">
-            Waiting for your other phone…
+            Waiting for {other}…
           </p>
         </section>
       )}
       {phase.at === 'receiving' && (
         <p className="lead" role="status">
-          Moving your groups here. Keep both phones open…
+          {recovering ? 'Bringing your group here' : 'Moving your groups here'}. Keep both phones open…
         </p>
       )}
       {phase.at === 'done' && (
@@ -99,7 +103,7 @@ export function MoveInScreen({ params }: { params: URLSearchParams }) {
           <h2>All here</h2>
           <p>
             {phase.count === 1 ? 'Your group is' : `Your ${phase.count} groups are`} on this phone now. If you paid with a
-            connected wallet before, connect it again in You.
+            connected wallet before, connect it again in Settings.
           </p>
           <a className="button primary" href="#/">
             Open my groups

@@ -13,7 +13,7 @@
     "test": "pnpm -r test && node --test worker/*.test.ts",
     "typecheck": "pnpm -r typecheck && tsc -p worker",
     "relay": "wrangler dev --port 8787 --ip 127.0.0.1",
-    "e2e": "node e2e/sync.cjs && node e2e/upgrade-and-tampering.cjs && node e2e/bitcoin.cjs && node e2e/scan-and-banners.cjs && node e2e/push.cjs && node e2e/move.cjs && node e2e/invites.cjs && node e2e/members.cjs && node e2e/remove.cjs && node e2e/wallet-setup.cjs && node e2e/navigation.cjs",
+    "e2e": "node e2e/sync.cjs && node e2e/upgrade-and-tampering.cjs && node e2e/bitcoin.cjs && node e2e/scan-and-banners.cjs && node e2e/push.cjs && node e2e/move.cjs && node e2e/invites.cjs && node e2e/members.cjs && node e2e/remove.cjs && node e2e/recover.cjs && node e2e/wallet-setup.cjs && node e2e/navigation.cjs",
     "splash": "node scripts/splash.cjs"
   },
   "devDependencies": {

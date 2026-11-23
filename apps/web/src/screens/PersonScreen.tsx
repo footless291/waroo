@@ -27,6 +27,8 @@ export function PersonScreen({ groupId, memberId }: { groupId: string; memberId:
   const groupName = state.name ?? meta.name
   const me = state.members.get(meta.meId)
   const canRemove = state.signed && person.key !== undefined && !person.left && me?.key !== undefined
+  // Anyone who's joined on a phone (or was removed) can be vouched back in.
+  const canRecover = state.signed && !person.left && me?.key !== undefined && (person.key !== undefined || !!person.removedBy)
   const remover = person.removedBy ? state.members.get(person.removedBy)?.name : undefined
   const balances = [...groupBalances(state)].flatMap(([currency, byPerson]) => {
     const amount = byPerson.get(memberId)
@@ -74,6 +76,19 @@ export function PersonScreen({ groupId, memberId }: { groupId: string; memberId:
             </p>
           )}
         </section>
+
+        {canRecover && (
+          <section className="settings-card">
+            <h2>Lost their phone?</h2>
+            <p>
+              Vouch for {person.name}’s new phone, so they’re back in as themselves. The lost phone stops working in
+              this group.
+            </p>
+            <a className="button outline" href={`#/g/${groupId}/m/${memberId}/recover`}>
+              Help {person.name} back in
+            </a>
+          </section>
+        )}
 
         {canRemove && (
           <section className="settings-card">

@@ -57,6 +57,8 @@ export interface Member {
   boxKey?: string
   /** Who removed their phone from the group, if someone did. Cleared when a phone joins as them again. */
   removedBy?: PersonId
+  /** Who vouched for their current phone after they lost the last one, if someone did. */
+  recoveredBy?: PersonId
 }
 
 const MAX_ADDRESSES = 5
@@ -117,6 +119,11 @@ export type LedgerEvent = EventBase &
      * comes next either.
      */
     | { type: 'member.removed'; memberId: PersonId }
+    /**
+     * Someone lost their phone: another member vouches for their new one.
+     * The new phone's key replaces the old one, so the lost phone can't write.
+     */
+    | { type: 'member.recovered'; memberId: PersonId; key: string }
     /**
      * The group moves to a new key (and so a new relay room). `from` is the
      * room it moves from; `wrapped` holds the new key locked to each
@@ -277,7 +284,7 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
     } else if (e.type === 'member.claimed') {
       reject(e, 'Only shared groups can be joined')
       continue
-    } else if (e.type === 'member.rekeyed') {
+    } else if (e.type === 'member.rekeyed' || e.type === 'member.recovered') {
       reject(e, 'Only shared groups have keys to move')
       continue
     }
@@ -300,6 +307,21 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
         const member = state.members.get(e.memberId)!
         member.key = e.key
         delete member.removedBy
+        break
+      }
+
+      case 'member.recovered': {
+        const member = state.members.get(e.memberId)
+        if (!member || member.left) reject(e, 'No such member')
+        else if (e.memberId === e.author) reject(e, 'Someone else in the group has to vouch for your new phone')
+        else if (typeof e.key !== 'string' || !e.key || e.key === member.key) reject(e, 'Needs a new key')
+        else if ([...state.members.values()].some((m) => m.key === e.key)) reject(e, 'That key belongs to someone else')
+        else {
+          member.key = e.key
+          delete member.boxKey
+          delete member.removedBy
+          member.recoveredBy = e.author
+        }
         break
       }
 

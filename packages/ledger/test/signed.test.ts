@@ -334,3 +334,35 @@ describe('removing someone', () => {
     assert.match(state.rejected[0]!.reason, /not a member/)
   })
 })
+
+describe('recovering a lost phone', () => {
+  const joined = () => [...base(), ev('bob', 5, 'KB', { type: 'member.claimed', memberId: 'bob', key: 'KB' })]
+  const recover = (by = 'ana', signer = 'KA', key = 'KB2') =>
+    ev(by, 6, signer, { type: 'member.recovered', memberId: 'bob', key })
+
+  it('lets another member vouch for the new phone; the lost one can’t write', () => {
+    const fromLost = ev('bob', 7, 'KB', { type: 'member.renamed', memberId: 'bob', name: 'Thief' })
+    const fromNew = ev('bob', 8, 'KB2', { type: 'member.renamed', memberId: 'bob', name: 'Bobby' })
+    const state = replay([...joined(), recover(), fromLost, fromNew])
+    const bob = state.members.get('bob')!
+    assert.equal(bob.key, 'KB2')
+    assert.equal(bob.recoveredBy, 'ana')
+    assert.equal(bob.name, 'Bobby')
+    assert.equal(state.rejected.length, 1)
+  })
+
+  it('can’t be done for yourself, by an outsider, or onto someone else’s key', () => {
+    const self = ev('bob', 6, 'KB', { type: 'member.recovered', memberId: 'bob', key: 'KB2' })
+    assert.match(replay([...joined(), self]).rejected[0]!.reason, /Someone else/)
+    assert.equal(replay([...joined(), recover('ana', 'KX')]).members.get('bob')!.key, 'KB')
+    assert.equal(replay([...joined(), recover('ana', 'KA', 'KA')]).members.get('bob')!.key, 'KB')
+  })
+
+  it('works for someone who was removed, bringing them back', () => {
+    const removed = ev('ana', 6, 'KA', { type: 'member.removed', memberId: 'bob' })
+    const back = ev('ana', 7, 'KA', { type: 'member.recovered', memberId: 'bob', key: 'KB2' })
+    const bob = replay([...joined(), removed, back]).members.get('bob')!
+    assert.equal(bob.key, 'KB2')
+    assert.equal(bob.removedBy, undefined)
+  })
+})
