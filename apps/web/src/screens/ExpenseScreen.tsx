@@ -11,7 +11,7 @@ import { Header } from '../components/Header.tsx'
 import { DateField } from '../components/DateField.tsx'
 import { Segmented } from '../components/Segmented.tsx'
 import { append, newId, type GroupMeta } from '../lib/db.ts'
-import { CURRENCIES, money, today, toInput } from '../lib/format.ts'
+import { CURRENCIES, isRemoved, money, today, toInput } from '../lib/format.ts'
 import { go, useGroup } from '../lib/hooks.ts'
 
 type Mode = 'equal' | 'shares' | 'percent' | 'exact'
@@ -66,9 +66,9 @@ function ExpenseForm({
   state: GroupState
   existing?: Expense
 }) {
-  // People who left only appear on expenses they were already part of.
+  // People who left or were removed only appear on expenses they were already part of.
   const involved = existing ? new Set([...Object.keys(existing.payers), ...computeShares(existing).keys()]) : new Set<string>()
-  const members = [...state.members.values()].filter((m) => !m.left || involved.has(m.id))
+  const members = [...state.members.values()].filter((m) => (!m.left && !isRemoved(state, m)) || involved.has(m.id))
   const allIds = members.map((m) => m.id)
   const initial = existing?.split
 

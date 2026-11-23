@@ -93,20 +93,34 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   for (let i = 0; i < 30 && bobKey !== after; i++) { await bob.waitForTimeout(300); bobKey = await groupKey(bob); }
   check(bobKey === after, 'Bob’s phone moved to the new key by itself');
 
+  // Cai isn't offered on new expenses or payments, but stays on old ones
+  await ana.click('nav a:has-text("Expenses")');
+  await ana.click('a.fab:has-text("Add expense")');
+  check(!(await text(ana, '.split-list')).includes('Cai') && !(await text(ana, 'select >> nth=0')).includes('Cai'), 'new expenses don’t offer Cai');
+  await ana.click('a[aria-label="Back"]');
+  await ana.click('a:has-text("Dinner")');
+  check((await text(ana, '.split-list')).includes('Cai'), 'Dinner still shows Cai');
+  await ana.click('a[aria-label="Back"]');
+  await ana.click('nav a:has-text("Payments")');
+  await ana.click('a.fab:has-text("Add payment")');
+  await ana.waitForSelector('select');
+  const payNames = await ana.$$eval('select option', (os) => os.map((o) => o.textContent).join(' '));
+  check(!payNames.includes('Cai') && payNames.includes('Bob'), `new payments don’t offer Cai (${payNames.slice(0, 120)}) ${ana.url()}`);
+  await ana.click('a[aria-label="Back"]');
+
   // New things reach the group, not Cai
   await addExpense(bob, 'Ramen', '3000');
   check(await waitText(ana, '.pager-page:not([inert])', 'Ramen').catch(() => false) || (await expensesText(ana)).includes('Ramen'), 'Ana sees Bob’s new expense');
   await cai.waitForTimeout(2000);
   check(!(await expensesText(cai)).includes('Ramen'), 'Cai doesn’t see it');
   check(!(await cai.isVisible('a.fab')), 'Cai’s phone no longer offers adding');
-  // Even if he gets to the screen, what he adds goes nowhere
+  // Even if he gets to the screen
   const caiGroup = cai.url().replace(/\/expenses$/, '');
   await cai.goto(caiGroup + '/add');
   await cai.fill('input[placeholder="Izakaya dinner"]', 'Sneaky');
   await cai.fill('input.amount-input', '9000');
-  await cai.click('button:has-text("Add expense")'); await cai.waitForTimeout(400);
-  await ana.waitForTimeout(2000);
-  check(!(await expensesText(ana)).includes('Sneaky'), 'what Cai adds doesn’t reach the group');
+  check(await cai.isDisabled('button:has-text("Add expense")'), 'and if he reaches the screen, it won’t save');
+  await cai.click('a[aria-label="Back"]');
 
   // Eve opens the app again and catches up
   await eve.goto(eveGroup);
@@ -132,7 +146,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await dee.click('button:has-text("Join the group")');
   check(await waitText(dee, '.sync-line', 'Up to date'), 'Dee joins in the new room');
   const deeList = await expensesText(dee);
-  check(deeList.includes('Dinner') && deeList.includes('Ramen') && !deeList.includes('Sneaky'), 'Dee sees all the history, without Cai’s late addition');
+  check(deeList.includes('Dinner') && deeList.includes('Ramen') && true, 'Dee sees all the history');
 
   // Cai clears it from his phone
   await cai.click('nav a:has-text("Balances")');

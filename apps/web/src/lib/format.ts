@@ -37,3 +37,8 @@ export const today = () => {
   const pad = (n: number) => String(n).padStart(2, '0')
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
 }
+
+/** True for someone whose phone was removed from the group (until they rejoin). */
+export function isRemoved(state: { signed?: boolean }, member: { removedBy?: string; key?: unknown }): boolean {
+  return !!state.signed && member.removedBy !== undefined && member.key === undefined
+}

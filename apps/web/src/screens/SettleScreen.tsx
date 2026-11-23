@@ -4,7 +4,7 @@ import { BitcoinPay } from '../components/BitcoinPay.tsx'
 import { Header } from '../components/Header.tsx'
 import { Segmented } from '../components/Segmented.tsx'
 import { append, newId } from '../lib/db.ts'
-import { CURRENCIES, money, toInput } from '../lib/format.ts'
+import { CURRENCIES, isRemoved, money, toInput } from '../lib/format.ts'
 import { go, useGroup } from '../lib/hooks.ts'
 
 const METHODS: { value: SettlementMethod; label: string }[] = [
@@ -29,7 +29,8 @@ export function SettleScreen({ groupId, params }: { groupId: string; params: URL
 
   if (!group) return <main className="screen" />
   const { meta, state } = group
-  const people = [...state.members.values()].filter((m) => !m.left)
+  // People who left or were removed aren't offered.
+  const people = [...state.members.values()].filter((m) => !m.left && !isRemoved(state, m))
   const from = free ? (pickedFrom ?? meta.meId) : (params.get('from') ?? '')
   const to = free
     ? pickedTo && pickedTo !== from
