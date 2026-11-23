@@ -11,6 +11,8 @@ import { NotificationsNudge } from '../components/NotificationsCard.tsx'
 import { Header } from '../components/Header.tsx'
 import { PlusIcon } from '../components/icons.tsx'
 import { SyncLine } from '../components/SyncLine.tsx'
+import { groupTabs, TabBar } from '../components/TabBar.tsx'
+import { useSwipeTabs } from '../lib/swipe.ts'
 import type { GroupMeta } from '../lib/db.ts'
 import { formatDate, money } from '../lib/format.ts'
 import { useGroup } from '../lib/hooks.ts'
@@ -20,6 +22,7 @@ export type Tab = 'balances' | 'expenses' | 'payments'
 export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Tab; joined?: boolean }) {
   const group = useGroup(groupId)
   const [toast, setToast] = useState(joined)
+  const swipe = useSwipeTabs(groupTabs(groupId), tab === 'balances' ? `/g/${groupId}` : `/g/${groupId}/${tab}`)
   useEffect(() => {
     if (!toast) return
     const t = setTimeout(() => setToast(false), 5000)
@@ -36,12 +39,14 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
   }
   const { meta, state } = group
   const base = `/g/${groupId}`
+  const tabs = groupTabs(groupId)
+  const currentTab = tab === 'balances' ? base : `${base}/${tab}`
   const name = state.name ?? meta.name
   const current = [...state.members.values()].filter((m) => !m.left)
   const notJoined = current.filter((m) => !m.key && m.id !== meta.meId)
   const alone = current.every((m) => m.id === meta.meId || !m.key)
   return (
-    <main className="screen">
+    <main className="screen with-tabbar" {...swipe}>
       <Header
         title={name}
         back="/"
@@ -65,17 +70,6 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
           </a>
         </section>
       )}
-      <nav className="tabs" aria-label="Group sections">
-        {(['balances', 'expenses', 'payments'] as const).map((t) => (
-          <a
-            key={t}
-            href={`#${base}${t === 'balances' ? '' : `/${t}`}`}
-            aria-current={tab === t ? 'page' : undefined}
-          >
-            {t[0]!.toUpperCase() + t.slice(1)}
-          </a>
-        ))}
-      </nav>
       {state.conflicts.length > 0 && (
         <p className="notice">
           {state.conflicts.length === 1 ? 'One expense was' : `${state.conflicts.length} expenses were`} edited
@@ -102,6 +96,7 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
           Add expense
         </a>
       )}
+      <TabBar tabs={tabs} current={currentTab} label="Group sections" />
     </main>
   )
 }
@@ -295,7 +290,7 @@ function Expenses({ meta, state }: { meta: GroupMeta; state: GroupState }) {
               <span className="row-main">
                 <strong>{e.title}</strong>
                 <span className="muted">
-                  {formatDate(e.date)}, {payers.length === 1 ? nameOf(state, payers[0]!, meta.meId) : `${payers.length} people`} paid
+                  {formatDate(e.date)}, {payers.length === 1 ? objectName(state, payers[0]!, meta.meId) : `${payers.length} people`} paid
                   {myShare ? `, your share ${money(myShare, e.currency)}` : ''}
                 </span>
               </span>

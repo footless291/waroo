@@ -12,8 +12,7 @@ const OPTIONS: { value: Theme; label: string }[] = [
 export function AppearanceCard() {
   const [theme, set] = useState<Theme>(getTheme)
   return (
-    <section className="settings-card" aria-labelledby="appearance-title">
-      <h2 id="appearance-title">Appearance</h2>
+    <div className="appearance">
       <Segmented
         label="Appearance"
         options={OPTIONS}
@@ -23,6 +22,6 @@ export function AppearanceCard() {
           setTheme(t)
         }}
       />
-    </section>
+    </div>
   )
 }

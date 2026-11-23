@@ -3,7 +3,7 @@ import { useEffect, useState, useSyncExternalStore } from 'react'
 import { getEvents, getGroup, listGroups, subscribe, type GroupMeta } from './db.ts'
 
 /** Re-runs `load` on mount and after every local write. */
-function useLoad<T>(load: () => Promise<T>, deps: unknown[]): T | undefined {
+export function useLoad<T>(load: () => Promise<T>, deps: unknown[]): T | undefined {
   const [value, setValue] = useState<T>()
   const [version, setVersion] = useState(0)
   useEffect(() => subscribe(() => setVersion((v) => v + 1)), [])

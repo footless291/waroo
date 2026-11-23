@@ -106,7 +106,7 @@ export function MoveScreen() {
 
   return (
     <main className="screen">
-      <Header title="Move to a new phone" back="/you" />
+      <Header title="Move to a new phone" back="/settings" />
       {phase.at === 'intro' && (
         <section className="form">
           <p className="lead">Your groups move to the new phone, and leave this one.</p>

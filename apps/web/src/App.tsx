@@ -1,6 +1,7 @@
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import { Banners } from './components/Banners.tsx'
 import { go, useRoute } from './lib/hooks.ts'
+import { ActivityScreen } from './screens/ActivityScreen.tsx'
 import { ExpenseScreen } from './screens/ExpenseScreen.tsx'
 import { GroupScreen } from './screens/GroupScreen.tsx'
 import { HomeScreen } from './screens/HomeScreen.tsx'
@@ -10,6 +11,7 @@ import { MemberScreen } from './screens/MemberScreen.tsx'
 import { MoveInScreen } from './screens/MoveInScreen.tsx'
 import { MoveScreen } from './screens/MoveScreen.tsx'
 import { NewGroupScreen } from './screens/NewGroupScreen.tsx'
+import { PickGroupScreen } from './screens/PickGroupScreen.tsx'
 import { ScanScreen } from './screens/ScanScreen.tsx'
 import { SettleScreen } from './screens/SettleScreen.tsx'
 import { YouScreen } from './screens/YouScreen.tsx'
@@ -23,7 +25,9 @@ function Router() {
   if (parts.length === 0) return <HomeScreen />
   if (parts[0] === 'new') return <NewGroupScreen />
   if (parts[0] === 'join') return <JoinScreen params={params} />
-  if (parts[0] === 'you') return <YouScreen />
+  if (parts[0] === 'you' || parts[0] === 'settings') return <YouScreen key={query} params={params} />
+  if (parts[0] === 'activity') return <ActivityScreen />
+  if (parts[0] === 'add') return <PickGroupScreen />
   if (parts[0] === 'scan') return <ScanScreen />
   if (parts[0] === 'move') return <MoveScreen />
   if (parts[0] === 'move-in') return <MoveInScreen params={params} />

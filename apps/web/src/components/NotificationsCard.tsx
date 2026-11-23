@@ -44,8 +44,7 @@ export function NotificationsCard() {
   }
 
   return (
-    <section className="settings-card">
-      <h2>Notifications</h2>
+    <div className="notifications">
       {support === 'on' && (
         <>
           <p>This phone gets a notification {WHAT}, even when Footless is closed.</p>
@@ -75,7 +74,7 @@ export function NotificationsCard() {
       <p className="hint" aria-live="polite">
         {note}
       </p>
-    </section>
+    </div>
   )
 }
 

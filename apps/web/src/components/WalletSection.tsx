@@ -52,7 +52,7 @@ export function WalletSection() {
     })
   }, [])
 
-  if (!receive || !send) return <section className="settings-card wallet" />
+  if (!receive || !send) return <div className="wallet" />
   const connected = (p: Option) => (tab === 'send' ? send : receive).some((w) => w.provider === p)
 
   // Coinos and Rizful when they aren't connected on this side, then "a different wallet".
@@ -93,8 +93,7 @@ export function WalletSection() {
   const status = <span className="chip on">Connected</span>
 
   return (
-    <section className="settings-card wallet" aria-labelledby="wallet-title">
-      <h2 id="wallet-title">Wallet</h2>
+    <div className="wallet">
       <Segmented
         label="Wallets for sending or receiving"
         options={TABS}
@@ -161,6 +160,6 @@ export function WalletSection() {
           after={setupCards}
         />
       )}
-    </section>
+    </div>
   )
 }

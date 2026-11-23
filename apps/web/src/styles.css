@@ -1341,3 +1341,104 @@ input[type='checkbox'] {
 .paste-row .button {
   min-height: 52px;
 }
+
+/* Bottom menu */
+.screen.with-tabbar {
+  padding-bottom: calc(180px + env(safe-area-inset-bottom));
+}
+.tabbar {
+  position: fixed;
+  z-index: 10;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 12px calc(6px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+  background: var(--paper);
+}
+.tabbar a {
+  flex: 1;
+  max-width: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-height: 52px;
+  padding: 6px 4px 4px;
+  border-radius: 14px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.tabbar a[aria-current='page'] {
+  color: var(--text);
+}
+.tabbar a[aria-current='page'] .tabbar-icon {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+.tabbar-icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 30px;
+  border-radius: var(--pill);
+}
+.tabbar a:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+.with-tabbar .fab {
+  bottom: calc(86px + env(safe-area-inset-bottom));
+}
+.with-tabbar ~ .toast,
+.toast {
+  bottom: calc(158px + env(safe-area-inset-bottom));
+}
+
+/* Collapsible settings sections */
+.collapsible {
+  scroll-margin-top: calc(84px + env(safe-area-inset-top));
+}
+.collapsible h2 {
+  margin: 0;
+}
+.collapsible-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: var(--target);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+.collapsible-chevron {
+  flex: none;
+  color: var(--muted);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .collapsible-chevron {
+    transition: transform 150ms ease;
+  }
+}
+.collapsible.open .collapsible-chevron {
+  transform: rotate(180deg);
+}
+.collapsible-body {
+  margin-top: var(--space-3);
+}
+.collapsible-toggle:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+  border-radius: 8px;
+}

@@ -2,6 +2,8 @@ import { groupBalances, replay } from '@footless/ledger'
 import { useEffect, useState } from 'react'
 import { Header } from '../components/Header.tsx'
 import { PlusIcon } from '../components/icons.tsx'
+import { MAIN_TABS, TabBar } from '../components/TabBar.tsx'
+import { useSwipeTabs } from '../lib/swipe.ts'
 import { getEvents, type GroupMeta } from '../lib/db.ts'
 import { money } from '../lib/format.ts'
 import { useGroups } from '../lib/hooks.ts'
@@ -43,8 +45,9 @@ function GroupSummary({ group }: { group: GroupMeta }) {
 
 export function HomeScreen() {
   const groups = useGroups()
+  const swipe = useSwipeTabs(MAIN_TABS, '/')
   return (
-    <main className="screen">
+    <main className="screen with-tabbar" {...swipe}>
       <Header
         title="Footless"
         action={
@@ -53,12 +56,6 @@ export function HomeScreen() {
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2" />
               <path d="M8 12h8" />
-            </svg>
-          </a>
-          <a className="icon-button" href="#/you" aria-label="You: payment settings">
-            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="8" r="4" />
-              <path d="M4 21a8 8 0 0 1 16 0" />
             </svg>
           </a>
           </>
@@ -98,6 +95,7 @@ export function HomeScreen() {
           </a>
         </>
       )}
+      <TabBar tabs={MAIN_TABS} current="/" label="Main" />
     </main>
   )
 }

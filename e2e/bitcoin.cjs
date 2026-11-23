@@ -122,7 +122,7 @@ let failSend = 0; // the next N payments, the wallet errors without saying wheth
   check(await waitText(ana, '.bitcoin', 'hasn’t added a Lightning address'), 'no address: bitcoin explains why not');
 
   // Bob adds his Lightning address on the You screen
-  await bob.goto(B + '#/you');
+  await bob.goto(B + '#/settings?open=wallet');
   check(await waitText(bob, '.wallet', 'Friends pay you at these addresses'), 'someone with no wallet starts on Receive');
   check(await waitText(bob, '.wallet-list', 'Coinos') && await waitText(bob, '.wallet-list', 'Rizful'), 'Coinos and Rizful are always offered');
   await bob.click('.setup-card:has-text("Add a different wallet") button:has-text("Add")');
@@ -136,7 +136,7 @@ let failSend = 0; // the next N payments, the wallet errors without saying wheth
   check(await waitText(ana, '.bitcoin', 'Pay ¥1,500 with bitcoin'), 'Ana now sees she can pay Bob in bitcoin');
 
   // Ana connects her browser wallet
-  await ana.goto(B + '#/you');
+  await ana.goto(B + '#/settings?open=wallet');
   await ana.click('.wallet .segmented label:has-text("Send")');
   await ana.click('.setup-card:has-text("Add a different wallet") button:has-text("Add")');
   await ana.click('button:has-text("Use my browser wallet")');
@@ -199,7 +199,7 @@ let failSend = 0; // the next N payments, the wallet errors without saying wheth
 
   // Bob adds a second address and puts it first; its provider is down, so Ana's
   // phone quietly uses the next one (asking for an invoice moves no money)
-  await bob.goto(B + '#/you');
+  await bob.goto(B + '#/settings?open=wallet');
   await bob.click('.wallet .segmented label:has-text("Receive")');
   await bob.click('.setup-card:has-text("Add a different wallet") button:has-text("Add")');
   await bob.fill('input[placeholder="you@walletofsatoshi.com"]', 'bob@broken.example.com');

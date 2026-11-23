@@ -269,7 +269,7 @@ export function BitcoinPay(props: {
           </button>
           {wallets?.length === 0 && (
             <p className="muted">
-              Tip: <a href="#/you">set up one-tap payments</a>, so you don’t have to switch apps.
+              Tip: <a href="#/settings?open=wallet">set up one-tap payments</a>, so you don’t have to switch apps.
             </p>
           )}
         </>

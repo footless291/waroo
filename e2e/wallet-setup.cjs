@@ -28,7 +28,7 @@ const lnurl = (name, domain) => JSON.stringify({ tag: 'payRequest', callback: `h
   const waitText = async (sel, needle, ms = 6000) => { try { await page.waitForFunction(([s, n]) => (document.querySelector(s)?.textContent || '').includes(n), [sel, needle], { timeout: ms }); return true; } catch { return false; } };
   const paste = async (text) => { await page.evaluate((t) => navigator.clipboard.writeText(t), text); await page.click('.wallet-guide .paste-row button:has-text("Paste")'); };
 
-  await page.goto(B + '#/you');
+  await page.goto(B + '#/settings?open=wallet');
   check(await waitText('.wallet', 'Friends pay you at these addresses'), 'new: Wallet starts on Receive');
   check((await page.$$('.ranked-row')).length === 0, 'with nothing connected');
   check((await page.locator('.setup-card', { hasText: 'Coinos' }).textContent()).includes('Not connected') && (await page.locator('.setup-card', { hasText: 'Rizful' }).textContent()).includes('Not connected'), 'Coinos and Rizful show as not connected');
@@ -101,12 +101,14 @@ const lnurl = (name, domain) => JSON.stringify({ tag: 'payRequest', callback: `h
   check(order.join() === 'anna@coinos.io', 'removing takes two taps, and the list is kept');
 
   // Appearance
+  await page.click('button.collapsible-toggle:has-text("Appearance")');
   await page.click('.settings-card:has-text("Appearance") label:has-text("Dark")');
   check((await page.getAttribute('html', 'data-theme')) === 'dark', 'Dark applies straight away');
   await page.screenshot({ path: SHOTS + '/wallet-5-dark.png', fullPage: true });
   await page.reload();
   check((await page.getAttribute('html', 'data-theme')) === 'dark', 'and is remembered');
   check((await page.getAttribute('meta[name="theme-color"] >> nth=0', 'content')) === '#16121f', 'the browser bar follows');
+  await page.click('button.collapsible-toggle:has-text("Appearance")');
   await page.click('.settings-card:has-text("Appearance") label:has-text("System")');
   check((await page.getAttribute('html', 'data-theme')) === null, 'System goes back to following the phone');
 

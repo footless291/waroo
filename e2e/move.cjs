@@ -45,7 +45,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await old.fill('input[placeholder="Okinawa trip"]', 'Solo notes');
   await old.fill('input[placeholder="Ana"]', 'Ana');
   await old.click('text=Create group'); await old.waitForTimeout(400);
-  await old.goto(B + '#/you');
+  await old.goto(B + '#/settings?open=wallet');
   await old.route('https://pay.example.com/**', (route) => route.fulfill({ headers: { 'access-control-allow-origin': '*', 'content-type': 'application/json' }, body: JSON.stringify({ tag: 'payRequest', callback: 'https://pay.example.com/cb', minSendable: 1000, maxSendable: 1e11, metadata: '[]' }) }));
   await old.click('.setup-card:has-text("Add a different wallet") button:has-text("Add")');
   await old.fill('input[placeholder="you@walletofsatoshi.com"]', 'ana@pay.example.com');
@@ -53,6 +53,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await waitText(old, '.wallet-list', 'ana@pay.example.com');
 
   // Someone glimpses the code and scans it too: the move stops, nothing leaks
+  await old.goto(B + '#/settings?open=move');
   await old.click('a:has-text("Move to a new phone")');
   check(await old.waitForSelector('h1:has-text("Move to a new phone")', { timeout: 4000 }).then(() => true, () => false), 'move screen opens from You');
   await old.click('button:has-text("Show the code")');
@@ -118,7 +119,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await bob.click('nav a:has-text("Expenses")');
   check(await waitText(bob, 'main', 'Ferry'), 'Bob sees what Ana adds from her new phone');
   check(await waitText(bob, '.cards', 'Ana'), 'still as Ana');
-  await newer.goto(B + '#/you'); await newer.waitForTimeout(500);
+  await newer.goto(B + '#/settings?open=wallet'); await newer.waitForTimeout(500);
   check(await waitText(newer, '.wallet-list', 'ana@pay.example.com'), 'her Lightning address came along');
 
   for (const p of [old, newer, bob]) check(p.errors.length === 0, `${p.name}: no console errors ${p.errors.join(' | ').slice(0, 300)}`);
