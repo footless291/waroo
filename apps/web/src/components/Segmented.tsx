@@ -10,15 +10,17 @@ export function Segmented<T extends string>({
   options,
   value,
   onChange,
+  className,
 }: {
   label: string
   options: { value: T; label: string }[]
   value: T
   onChange: (value: T) => void
+  className?: string
 }) {
   const name = useId()
   return (
-    <div className="segmented" role="radiogroup" aria-label={label}>
+    <div className={className ? `segmented ${className}` : 'segmented'} role="radiogroup" aria-label={label}>
       {options.map((o) => (
         <label key={o.value}>
           <input

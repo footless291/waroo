@@ -1721,3 +1721,104 @@ select {
   margin: 0;
   font-size: 0.92rem;
 }
+
+/* Split methods: two rows of three */
+.segmented.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-radius: 26px;
+}
+
+/* Adjust: tick to share the rest, plus an amount on top */
+.split-input.adjust > span {
+  flex: 1;
+}
+.split-input.adjust input[type='checkbox'] {
+  width: 22px;
+}
+
+/* Items */
+.items {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+.item-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.item {
+  padding: var(--space-3);
+  border-radius: 16px;
+  background: var(--card);
+  border: 1px solid var(--line);
+}
+.item-top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.item-top .item-label {
+  flex: 1;
+  min-width: 0;
+}
+.item-top .item-amount {
+  width: 6.5em;
+  text-align: right;
+}
+.item-remove {
+  flex: none;
+  background: transparent;
+  color: var(--muted);
+}
+.item-remove:disabled {
+  visibility: hidden;
+}
+.item-people {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: var(--space-2);
+}
+.person-chip {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1.5px solid var(--field-border);
+  border-radius: var(--pill);
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.person-chip.on {
+  border-color: var(--strong);
+  background: var(--strong);
+  color: var(--on-strong);
+}
+.item-list.extras {
+  gap: var(--space-2);
+}
+.add-extra {
+  min-height: var(--target);
+  font-size: 0.95rem;
+}
+.split-list.totals {
+  margin-top: var(--space-3);
+  border-top: 1px solid var(--line);
+}
+.split-list.totals li {
+  min-height: 44px;
+}
+.split-list.totals .share {
+  color: var(--text);
+  font-weight: 600;
+}

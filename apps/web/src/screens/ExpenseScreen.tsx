@@ -9,19 +9,31 @@ import {
 import { useState, type FormEvent } from 'react'
 import { Header } from '../components/Header.tsx'
 import { DateField } from '../components/DateField.tsx'
+import { ItemsEditor, newExtra, newItem, type ExtraDraft, type ItemDraft } from '../components/ItemsEditor.tsx'
 import { Segmented } from '../components/Segmented.tsx'
 import { append, newId, type GroupMeta } from '../lib/db.ts'
 import { CURRENCIES, isRemoved, money, today, toInput } from '../lib/format.ts'
 import { go, useGroup } from '../lib/hooks.ts'
 
-type Mode = 'equal' | 'shares' | 'percent' | 'exact'
+type Mode = 'equal' | 'shares' | 'percent' | 'exact' | 'adjustment' | 'itemized'
 
 const MODES: { value: Mode; label: string }[] = [
   { value: 'equal', label: 'Equally' },
   { value: 'shares', label: 'Shares' },
   { value: 'percent', label: 'Percent' },
   { value: 'exact', label: 'Exact' },
+  { value: 'adjustment', label: 'Adjust' },
+  { value: 'itemized', label: 'Items' },
 ]
+
+/** The "Paid by" choice that opens a list of amounts. */
+const SEVERAL = '__several'
+
+/** What each split mode means, under the buttons. */
+const MODE_HINTS: Partial<Record<Mode, string>> = {
+  adjustment: 'Add or take off an amount for anyone, and split the rest equally among the people ticked.',
+  itemized: 'List what each person had. Shared things are split among whoever had them.',
+}
 
 /** "12.5" → 1250 hundredths of a percent; null if it isn't a percentage. */
 function parsePercent(text: string): number | null {
@@ -76,12 +88,44 @@ function ExpenseForm({
   const [currency, setCurrency] = useState(existing?.currency ?? meta.currency)
   const [amountText, setAmountText] = useState(existing ? toInput(existing.total, existing.currency) : '')
   const [date, setDate] = useState(existing?.date ?? today())
-  const [payer, setPayer] = useState(existing ? Object.keys(existing.payers)[0]! : meta.meId)
-  const [mode, setMode] = useState<Mode>(
-    initial?.kind === 'shares' || initial?.kind === 'exact' || initial?.kind === 'percent' ? initial.kind : 'equal',
+  const existingPayers = existing ? Object.keys(existing.payers) : []
+  const [payer, setPayer] = useState(
+    existingPayers.length > 1 ? SEVERAL : (existingPayers[0] ?? meta.meId),
   )
+  const [paidAmounts, setPaidAmounts] = useState<Record<string, string>>(() =>
+    Object.fromEntries(
+      allIds.map((id) => [
+        id,
+        existing && existingPayers.length > 1 && existing.payers[id] ? toInput(existing.payers[id]!, existing.currency) : '',
+      ]),
+    ),
+  )
+  const [mode, setMode] = useState<Mode>(initial?.kind ?? 'equal')
   const [included, setIncluded] = useState<Set<string>>(
-    new Set(initial?.kind === 'equal' ? initial.among : allIds),
+    new Set(initial?.kind === 'equal' || initial?.kind === 'adjustment' ? initial.among : allIds),
+  )
+  const [adjustments, setAdjustments] = useState<Record<string, string>>(() =>
+    Object.fromEntries(
+      allIds.map((id) => [
+        id,
+        initial?.kind === 'adjustment' && initial.extras[id] ? toInput(initial.extras[id]!, existing!.currency) : '',
+      ]),
+    ),
+  )
+  const [items, setItems] = useState<ItemDraft[]>(() =>
+    initial?.kind === 'itemized'
+      ? initial.items.map((i) => ({
+          key: crypto.randomUUID(),
+          label: i.label ?? '',
+          amount: toInput(i.amount, existing!.currency),
+          among: i.among,
+        }))
+      : [newItem(allIds.filter((id) => !isRemoved(state, state.members.get(id)!) && !state.members.get(id)!.left))],
+  )
+  const [extras, setExtras] = useState<ExtraDraft[]>(() =>
+    initial?.kind === 'itemized'
+      ? (initial.extras ?? []).map((x) => ({ ...newExtra(), label: x.label ?? '', amount: toInput(x.amount, existing!.currency) }))
+      : [],
   )
   const [weights, setWeights] = useState<Record<string, string>>(() =>
     Object.fromEntries(
@@ -122,9 +166,43 @@ function ExpenseForm({
       return 0
     }
   }
-  const total = parse(amountText, 'Amount')
+  // Items: the parts, and what they come to.
+  const parsedItems = items.map((item, i) => ({
+    label: item.label.trim() || undefined,
+    amount: parse(item.amount, item.label.trim() || `Item ${i + 1}`),
+    among: item.among,
+  }))
+  const parsedExtras = extras.map((x, i) => ({
+    label: x.label.trim() || undefined,
+    amount: parse(x.amount, x.label.trim() || `Extra ${i + 1}`),
+  }))
+  const itemsSum = [...parsedItems, ...parsedExtras].reduce((a, b) => a + b.amount, 0)
+  // With items, a blank amount means "whatever the items come to".
+  const total = mode === 'itemized' && !amountText.trim() ? itemsSum : parse(amountText, 'Amount')
   let split: SplitMethod
   if (mode === 'equal') split = { kind: 'equal', among: [...included] }
+  else if (mode === 'adjustment') {
+    split = {
+      kind: 'adjustment',
+      among: [...included],
+      extras: Object.fromEntries(
+        allIds.flatMap((id) => {
+          const text = adjustments[id]?.trim()
+          if (!text) return []
+          const amount = parse(text.replace(/^\+/, ''), state.members.get(id)!.name)
+          return amount ? [[id, amount]] : []
+        }),
+      ),
+    }
+  } else if (mode === 'itemized') {
+    split = {
+      kind: 'itemized',
+      items: parsedItems.map(({ label, amount, among }) => ({ ...(label ? { label } : {}), amount, among })),
+      ...(parsedExtras.length
+        ? { extras: parsedExtras.map(({ label, amount }) => ({ ...(label ? { label } : {}), amount })) }
+        : {}),
+    }
+  }
   else if (mode === 'shares') {
     split = {
       kind: 'shares',
@@ -162,21 +240,42 @@ function ExpenseForm({
     title: title.trim(),
     total,
     currency,
-    payers: { [payer]: total },
+    payers:
+      payer === SEVERAL
+        ? Object.fromEntries(
+            allIds.flatMap((id) => {
+              const text = paidAmounts[id]?.trim()
+              if (!text) return []
+              const amount = parse(text, `Paid by ${state.members.get(id)!.name}`)
+              return amount ? [[id, amount]] : []
+            }),
+          )
+        : { [payer]: total },
     split,
     date,
   }
   if (!expense.title) problems.push('Give it a name')
-  if (total === 0) problems.push('Enter an amount')
+  if (total === 0) problems.push(mode === 'itemized' ? 'Enter what each item cost' : 'Enter an amount')
   else {
     problems.push(
       ...validateExpense(expense, new Set(allIds)).filter(
         // The "left to assign" hint below already says this, in plain money.
         (p) =>
           !(mode === 'exact' && p.startsWith('Exact amounts total')) &&
-          !(mode === 'percent' && p.startsWith('Percentages must total')),
+          !(mode === 'percent' && p.startsWith('Percentages must total')) &&
+          !(mode === 'itemized' && p.startsWith('Items (')) &&
+          !(payer === SEVERAL && (p.startsWith('Payers paid') || p === 'Someone has to have paid')),
       ),
     )
+    if (mode === 'itemized') {
+      parsedItems.forEach((item, i) => {
+        if (item.among.length === 0) problems.push(`Pick who had ${item.label ?? `item ${i + 1}`}`)
+      })
+    }
+  }
+  // These come from the ledger's wording; say them in the form's.
+  for (let i = 0; i < problems.length; i++) {
+    if (problems[i] === 'A split needs at least one person') problems[i] = 'Pick at least one person to split it'
   }
 
   let shares: Map<string, number> | undefined
@@ -195,7 +294,12 @@ function ExpenseForm({
     mode === 'percent' && split.kind === 'percent'
       ? 10_000 - Object.values(split.basisPoints).reduce((a, b) => a + b, 0)
       : 0
-  const unassigned = exactRemaining !== 0 || percentRemaining !== 0
+  const itemsRemaining = mode === 'itemized' ? total - itemsSum : 0
+  const paidRemaining =
+    payer === SEVERAL ? total - Object.values(expense.payers).reduce((a, b) => a + b, 0) : 0
+  const unassigned = exactRemaining !== 0 || percentRemaining !== 0 || itemsRemaining !== 0 || paidRemaining !== 0
+  const leftOrOver = (amount: number, what: string) =>
+    amount > 0 ? `${money(amount, currency)} ${what}` : `${money(-amount, currency)} too much`
 
   async function save(e: FormEvent) {
     e.preventDefault()
@@ -235,7 +339,7 @@ function ExpenseForm({
               value={amountText}
               onChange={(e) => setAmountText(e.target.value)}
               inputMode="decimal"
-              placeholder="0"
+              placeholder={mode === 'itemized' && itemsSum !== 0 ? toInput(itemsSum, currency) : '0'}
             />
           </label>
           <label className="field">
@@ -256,18 +360,77 @@ function ExpenseForm({
                   {nameOf(m.id)}
                 </option>
               ))}
+              <option value={SEVERAL}>Several people</option>
             </select>
           </label>
           <DateField label="Date" value={date} onChange={setDate} />
         </div>
+        {payer === SEVERAL && (
+          <fieldset className="field">
+            <legend>Who paid how much</legend>
+            <ul className="split-list">
+              {members.map((m) => (
+                <li key={m.id}>
+                  <label className="split-input">
+                    <span>{nameOf(m.id)}</span>
+                    <input
+                      inputMode="decimal"
+                      value={paidAmounts[m.id] ?? ''}
+                      placeholder="0"
+                      onChange={(e) => setPaidAmounts({ ...paidAmounts, [m.id]: e.target.value })}
+                      aria-label={`Paid by ${m.name}`}
+                    />
+                  </label>
+                </li>
+              ))}
+            </ul>
+            <p className="hint" aria-live="polite">
+              {total !== 0 && paidRemaining !== 0 ? leftOrOver(paidRemaining, 'still to account for') : ''}
+            </p>
+          </fieldset>
+        )}
 
         <fieldset className="field">
           <legend>Split</legend>
-          <Segmented label="Split method" options={MODES} value={mode} onChange={setMode} />
-          <ul className="split-list">
+          <Segmented label="Split method" options={MODES} value={mode} onChange={setMode} className="grid3" />
+          {MODE_HINTS[mode] && <p className="hint pad">{MODE_HINTS[mode]}</p>}
+          {mode === 'itemized' && (
+            <ItemsEditor
+              items={items}
+              extras={extras}
+              people={members.map((m) => ({ id: m.id, name: m.id === meta.meId ? `${m.name} (you)` : m.name }))}
+              onItems={setItems}
+              onExtras={setExtras}
+            />
+          )}
+          <ul className={`split-list${mode === 'itemized' ? ' totals' : ''}`}>
             {members.map((m) => (
               <li key={m.id}>
-                {mode === 'equal' ? (
+                {mode === 'itemized' ? (
+                  <span className="split-input">{nameOf(m.id)}</span>
+                ) : mode === 'adjustment' ? (
+                  <label className="split-input adjust">
+                    <input
+                      type="checkbox"
+                      checked={included.has(m.id)}
+                      onChange={(e) => {
+                        const next = new Set(included)
+                        if (e.target.checked) next.add(m.id)
+                        else next.delete(m.id)
+                        setIncluded(next)
+                      }}
+                      aria-label={`Split the rest with ${m.name}`}
+                    />
+                    <span>{nameOf(m.id)}</span>
+                    <input
+                      inputMode="decimal"
+                      value={adjustments[m.id] ?? ''}
+                      placeholder="+0"
+                      onChange={(e) => setAdjustments({ ...adjustments, [m.id]: e.target.value })}
+                      aria-label={`Extra for ${m.name}`}
+                    />
+                  </label>
+                ) : mode === 'equal' ? (
                   <label className="check">
                     <input
                       type="checkbox"
@@ -338,9 +501,9 @@ function ExpenseForm({
           </ul>
           <p className="hint" aria-live="polite">
             {mode === 'exact' && total !== 0 && exactRemaining !== 0
-              ? exactRemaining > 0
-                ? `${money(exactRemaining, currency)} left to assign`
-                : `${money(-exactRemaining, currency)} too much`
+              ? leftOrOver(exactRemaining, 'left to assign')
+              : mode === 'itemized' && itemsRemaining !== 0
+                ? leftOrOver(itemsRemaining, 'not on any item yet')
               : mode === 'percent' && percentRemaining !== 0
                 ? percentRemaining > 0
                   ? `${percentText(percentRemaining)}% left to assign`
