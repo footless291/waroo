@@ -15,8 +15,24 @@ export interface Page {
  * Each page scrolls up and down on its own. Pages you aren't on are inert,
  * so keyboards and screen readers stay on the one you see.
  */
-export function Pager({ pages, current }: { pages: Page[]; current: string }) {
+export function Pager({
+  pages,
+  current,
+  onChange = go,
+  inline,
+  label,
+}: {
+  pages: Page[]
+  current: string
+  /** Called with a page's path when someone swipes to it. Defaults to going there. */
+  onChange?: (path: string) => void
+  /** Inside a page (not the whole screen): as tall as the page shown, no scrolling of its own. */
+  inline?: boolean
+  label?: string
+}) {
   const strip = useRef<HTMLDivElement>(null)
+  const onChangeRef = useRef(onChange)
+  onChangeRef.current = onChange
   const index = Math.max(0, pages.findIndex((p) => p.path === current))
   const currentRef = useRef(current)
   currentRef.current = current
@@ -31,7 +47,7 @@ export function Pager({ pages, current }: { pages: Page[]; current: string }) {
       const smooth = shown.current && !matchMedia('(prefers-reduced-motion: reduce)').matches
       el.scrollTo({ left, behavior: smooth ? 'smooth' : 'auto' })
     }
-    if (shown.current) {
+    if (shown.current && !inline) {
       // Like a new screen: start screen readers and keyboards at its title.
       el.children[index]?.querySelector<HTMLElement>('[data-page-title]')?.focus({ preventScroll: true })
     }
@@ -45,7 +61,7 @@ export function Pager({ pages, current }: { pages: Page[]; current: string }) {
     let timer: ReturnType<typeof setTimeout> | undefined
     const settled = () => {
       const page = pages[Math.round(el.scrollLeft / el.clientWidth)]
-      if (page && page.path !== currentRef.current) go(page.path)
+      if (page && page.path !== currentRef.current) onChangeRef.current(page.path)
     }
     const onScroll = () => {
       clearTimeout(timer)
@@ -66,8 +82,23 @@ export function Pager({ pages, current }: { pages: Page[]; current: string }) {
     }
   }, [pages])
 
+  // Inline: the strip is as tall as the page being shown, following it as it changes.
+  useLayoutEffect(() => {
+    const el = strip.current
+    if (!inline || !el) return
+    const page = el.children[index] as HTMLElement | undefined
+    if (!page) return
+    const fit = () => {
+      el.style.height = `${page.offsetHeight}px`
+    }
+    fit()
+    const watch = new ResizeObserver(fit)
+    watch.observe(page)
+    return () => watch.disconnect()
+  }, [index, inline])
+
   return (
-    <div className="pager" ref={strip}>
+    <div className={`pager${inline ? ' inline' : ''}`} ref={strip} aria-label={label} role={label ? 'region' : undefined}>
       {pages.map((page, i) => (
         <div key={page.path} className="pager-page" inert={i !== index} aria-hidden={i !== index || undefined}>
           {page.content}

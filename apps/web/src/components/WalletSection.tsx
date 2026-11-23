@@ -9,6 +9,7 @@ import {
   type ReceiveWallet,
   type SendWallet,
 } from '../lib/wallets.ts'
+import { Pager } from './Pager.tsx'
 import { RankedList } from './RankedList.tsx'
 import { Segmented } from './Segmented.tsx'
 import { CoinosGuide, OtherWallet, RizfulGuide } from './WalletGuides.tsx'
@@ -37,7 +38,8 @@ export function WalletSection() {
   const [tab, setTab] = useState<Tab>('send')
   const [receive, setReceive] = useState<ReceiveWallet[]>()
   const [send, setSend] = useState<SendWallet[]>()
-  const [open, setOpen] = useState<Option>()
+  // Each side remembers its own open guide, since both sides are on screen while swiping.
+  const [openGuides, setOpenGuides] = useState<Partial<Record<Tab, Option>>>({})
 
   async function load() {
     const [r, s] = await Promise.all([receiveWallets(), sendWallets()])
@@ -53,10 +55,13 @@ export function WalletSection() {
   }, [])
 
   if (!receive || !send) return <div className="wallet" />
-  const connected = (p: Option) => (tab === 'send' ? send : receive).some((w) => w.provider === p)
 
   // Coinos and Rizful when they aren't connected on this side, then "a different wallet".
-  const setupCards = (['coinos', 'rizful', 'other'] as const)
+  const setupCards = (side: Tab) => {
+    const connected = (p: Option) => (side === 'send' ? send : receive).some((w) => w.provider === p)
+    const open = openGuides[side]
+    const setOpen = (option: Option | undefined) => setOpenGuides((g) => ({ ...g, [side]: option }))
+    return (['coinos', 'rizful', 'other'] as const)
     // An open guide stays until closed, even once connected: Coinos has a step after the address.
     .filter((option) => option === 'other' || !connected(option) || open === option)
     .map((option) => {
@@ -83,83 +88,97 @@ export function WalletSection() {
             <div className="wallet-guide">
               {option === 'coinos' && <CoinosGuide receive={receive} send={send} onChange={() => void load()} />}
               {option === 'rizful' && <RizfulGuide receive={receive} send={send} onChange={() => void load()} />}
-              {option === 'other' && <OtherWallet tab={tab} onChange={() => void load()} />}
+              {option === 'other' && <OtherWallet tab={side} onChange={() => void load()} />}
             </div>
           )}
         </li>
       )
     })
+  }
 
   const status = <span className="chip on">Connected</span>
 
   return (
     <div className="wallet">
-      <Segmented
-        label="Wallets for sending or receiving"
-        options={TABS}
-        value={tab}
-        onChange={(t) => {
-          setTab(t)
-          setOpen(undefined)
-        }}
+      <Segmented label="Wallets for sending or receiving" options={TABS} value={tab} onChange={setTab} />
+      {/* Swipe between Send and Receive, like the main tabs. */}
+      <Pager
+        inline
+        label="Wallets"
+        current={tab}
+        onChange={(path) => setTab(path as Tab)}
+        pages={[
+          {
+            path: 'send',
+            content: (
+              <>
+                <p className="wallet-explain">
+                  When you pay, Footless asks these in order. If one can’t pay, you’ll see why and choose whether to try
+                  the next. You can always pay by opening your wallet app instead.
+                </p>
+                <RankedList
+                  items={send}
+                  label={sendLabel}
+                  render={(w) => (
+                    <>
+                      <strong>{sendLabel(w)}</strong>
+                      <span className="wallet-status">
+                        {status}
+                        <span className="muted">{w.kind === 'nwc' ? 'Pays in one tap' : 'Browser wallet'}</span>
+                      </span>
+                    </>
+                  )}
+                  removeQuestion={(w) => `Stop paying with ${sendLabel(w)}? You can connect it again any time.`}
+                  onChange={async (next) => {
+                    setSend(next)
+                    await saveSendWallets(next)
+                  }}
+                  onRemove={async (w) => {
+                    const next = send.filter((x) => x.id !== w.id)
+                    setSend(next)
+                    await saveSendWallets(next)
+                  }}
+                  after={setupCards('send')}
+                />
+              </>
+            ),
+          },
+          {
+            path: 'receive',
+            content: (
+              <>
+                <p className="wallet-explain">
+                  Friends pay you at these addresses, in order. If the first can’t take a payment, the next one is used.
+                </p>
+                <RankedList
+                  items={receive}
+                  label={(w) => w.address}
+                  render={(w) => (
+                    <>
+                      <strong className="address">{w.address}</strong>
+                      <span className="wallet-status">
+                        {status}
+                        {w.provider !== 'other' && <span className="muted">{PROVIDERS[w.provider].name}</span>}
+                      </span>
+                    </>
+                  )}
+                  removeQuestion={(w) => `Stop getting paid at ${w.address}? Your groups will stop using it.`}
+                  onChange={async (next) => {
+                    setReceive(next)
+                    await saveReceiveWallets(next)
+                  }}
+                  onRemove={async (w) => {
+                    const next = receive.filter((x) => x.id !== w.id)
+                    setReceive(next)
+                    await saveReceiveWallets(next)
+                  }}
+                  after={setupCards('receive')}
+                />
+              </>
+            ),
+          },
+        ]}
       />
-      <p className="wallet-explain">
-        {tab === 'send'
-          ? 'When you pay, Footless asks these in order. If one can’t pay, you’ll see why and choose whether to try the next. You can always pay by opening your wallet app instead.'
-          : 'Friends pay you at these addresses, in order. If the first can’t take a payment, the next one is used.'}
-      </p>
-
-      {tab === 'send' ? (
-        <RankedList
-          items={send}
-          label={sendLabel}
-          render={(w) => (
-            <>
-              <strong>{sendLabel(w)}</strong>
-              <span className="wallet-status">
-                {status}
-                <span className="muted">{w.kind === 'nwc' ? 'Pays in one tap' : 'Browser wallet'}</span>
-              </span>
-            </>
-          )}
-          removeQuestion={(w) => `Stop paying with ${sendLabel(w)}? You can connect it again any time.`}
-          onChange={async (next) => {
-            setSend(next)
-            await saveSendWallets(next)
-          }}
-          onRemove={async (w) => {
-            const next = send.filter((x) => x.id !== w.id)
-            setSend(next)
-            await saveSendWallets(next)
-          }}
-          after={setupCards}
-        />
-      ) : (
-        <RankedList
-          items={receive}
-          label={(w) => w.address}
-          render={(w) => (
-            <>
-              <strong className="address">{w.address}</strong>
-              <span className="wallet-status">
-                {status}
-                {w.provider !== 'other' && <span className="muted">{PROVIDERS[w.provider].name}</span>}
-              </span>
-            </>
-          )}
-          removeQuestion={(w) => `Stop getting paid at ${w.address}? Your groups will stop using it.`}
-          onChange={async (next) => {
-            setReceive(next)
-            await saveReceiveWallets(next)
-          }}
-          onRemove={async (w) => {
-            const next = receive.filter((x) => x.id !== w.id)
-            setReceive(next)
-            await saveReceiveWallets(next)
-          }}
-          after={setupCards}
-        />
-      )}
     </div>
   )
 }

@@ -26,65 +26,72 @@ const lnurl = (name, domain) => JSON.stringify({ tag: 'payRequest', callback: `h
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));
   const waitText = async (sel, needle, ms = 6000) => { try { await page.waitForFunction(([s, n]) => (document.querySelector(s)?.textContent || '').includes(n), [sel, needle], { timeout: ms }); return true; } catch { return false; } };
-  const paste = async (text) => { await page.evaluate((t) => navigator.clipboard.writeText(t), text); await page.click('.wallet-guide .paste-row button:has-text("Paste")'); };
+  const paste = async (text) => { await page.evaluate((t) => navigator.clipboard.writeText(t), text); await page.click('.pager.inline .pager-page:not([inert]) .wallet-guide .paste-row button:has-text("Paste")'); };
 
   await page.goto(B + '#/settings?open=wallet');
   check(await waitText('.wallet', 'Friends pay you at these addresses'), 'new: Wallet starts on Receive');
-  check((await page.$$('.ranked-row')).length === 0, 'with nothing connected');
-  check((await page.locator('.setup-card', { hasText: 'Coinos' }).textContent()).includes('Not connected') && (await page.locator('.setup-card', { hasText: 'Rizful' }).textContent()).includes('Not connected'), 'Coinos and Rizful show as not connected');
-  check((await page.locator('.wallet-list > li').last().textContent()).includes('Add a different wallet'), 'and adding a different wallet is the last card');
+  check((await page.$$('.pager.inline .pager-page:not([inert]) .ranked-row')).length === 0, 'with nothing connected');
+  check((await page.locator('.pager.inline .pager-page:not([inert]) .setup-card', { hasText: 'Coinos' }).textContent()).includes('Not connected') && (await page.locator('.pager.inline .pager-page:not([inert]) .setup-card', { hasText: 'Rizful' }).textContent()).includes('Not connected'), 'Coinos and Rizful show as not connected');
+  check((await page.locator('.pager.inline .pager-page:not([inert]) .wallet-list > li').last().textContent()).includes('Add a different wallet'), 'and adding a different wallet is the last card');
   await page.screenshot({ path: SHOTS + '/wallet-1-empty.png' });
 
   // Coinos
-  await page.click('.setup-card:has-text("Coinos") button:has-text("Set up")');
-  check((await page.getAttribute('.wallet-guide a:has-text("Open Coinos")', 'href')) === 'https://coinos.io/register', 'Coinos step 1 opens sign-up');
-  await page.fill('.wallet-guide input >> nth=0', 'Bob');
-  await page.click('.wallet-guide button:has-text("Save")');
+  await page.click('.pager.inline .pager-page:not([inert]) .setup-card:has-text("Coinos") button:has-text("Set up")');
+  check((await page.getAttribute('.pager.inline .pager-page:not([inert]) .wallet-guide a:has-text("Open Coinos")', 'href')) === 'https://coinos.io/register', 'Coinos step 1 opens sign-up');
+  await page.fill('.pager.inline .pager-page:not([inert]) .wallet-guide input >> nth=0', 'Bob');
+  await page.click('.pager.inline .pager-page:not([inert]) .wallet-guide button:has-text("Save")');
   check(await waitText('#coinos-address', 'Couldn’t find bob@coinos.io'), 'an unknown username is caught');
-  await page.fill('.wallet-guide input >> nth=0', 'anna');
-  await page.click('.wallet-guide button:has-text("Save")');
-  check(await waitText('.wallet-list', 'anna@coinos.io'), 'the Coinos address joins the Receive list');
-  check((await page.getAttribute('.wallet-guide a:has-text("Open Coinos Nostr settings")', 'href')) === 'https://coinos.io/settings/nostr', 'step 3 opens Coinos’s Nostr settings');
+  await page.fill('.pager.inline .pager-page:not([inert]) .wallet-guide input >> nth=0', 'anna');
+  await page.click('.pager.inline .pager-page:not([inert]) .wallet-guide button:has-text("Save")');
+  check(await waitText('.pager.inline .pager-page:not([inert]) .wallet-list', 'anna@coinos.io'), 'the Coinos address joins the Receive list');
+  check((await page.getAttribute('.pager.inline .pager-page:not([inert]) .wallet-guide a:has-text("Open Coinos Nostr settings")', 'href')) === 'https://coinos.io/settings/nostr', 'step 3 opens Coinos’s Nostr settings');
   await paste('not a connection');
-  check(await page.waitForFunction(() => document.querySelector('.wallet-guide input[type=password]')?.value === 'not a connection', null, { timeout: 3000 }).then(() => true, () => false), 'Paste fills in what was copied');
-  await page.click('.wallet-guide button:has-text("Connect")');
-  check(await waitText('.wallet-guide', 'isn’t a wallet connection'), 'a wrong connection is explained');
-  await page.click('.setup-card:has-text("Coinos") button:has-text("Close")');
-  check((await page.locator('.ranked-row', { hasText: 'anna@coinos.io' }).textContent()).includes('Connected'), 'Coinos shows as connected on its card');
-  check((await page.locator('.setup-card', { hasText: 'Coinos' }).count()) === 0, 'and isn’t offered for setup on Receive any more');
+  check(await page.waitForFunction(() => document.querySelector('.pager.inline .pager-page:not([inert]) .wallet-guide input[type=password]')?.value === 'not a connection', null, { timeout: 3000 }).then(() => true, () => false), 'Paste fills in what was copied');
+  await page.click('.pager.inline .pager-page:not([inert]) .wallet-guide button:has-text("Connect")');
+  check(await waitText('.pager.inline .pager-page:not([inert]) .wallet-guide', 'isn’t a wallet connection'), 'a wrong connection is explained');
+  await page.click('.pager.inline .pager-page:not([inert]) .setup-card:has-text("Coinos") button:has-text("Close")');
+  check((await page.locator('.pager.inline .pager-page:not([inert]) .ranked-row', { hasText: 'anna@coinos.io' }).textContent()).includes('Connected'), 'Coinos shows as connected on its card');
+  check((await page.locator('.pager.inline .pager-page:not([inert]) .setup-card', { hasText: 'Coinos' }).count()) === 0, 'and isn’t offered for setup on Receive any more');
 
   // Rizful: one code sets up both
-  await page.click('.setup-card:has-text("Rizful") button:has-text("Set up")');
-  check((await page.getAttribute('.wallet-guide a:has-text("Get a code in Rizful")', 'href')) === 'https://rizful.com/nostr_onboarding_auth_token/get_token', 'Rizful step 2 opens the code page');
+  await page.click('.pager.inline .pager-page:not([inert]) .setup-card:has-text("Rizful") button:has-text("Set up")');
+  check((await page.getAttribute('.pager.inline .pager-page:not([inert]) .wallet-guide a:has-text("Get a code in Rizful")', 'href')) === 'https://rizful.com/nostr_onboarding_auth_token/get_token', 'Rizful step 2 opens the code page');
   await paste('BAD');
-  await page.click('.wallet-guide button:has-text("Connect")');
-  check(await waitText('.wallet-guide', 'That code didn’t work'), 'a bad code is explained');
+  await page.click('.pager.inline .pager-page:not([inert]) .wallet-guide button:has-text("Connect")');
+  check(await waitText('.pager.inline .pager-page:not([inert]) .wallet-guide', 'That code didn’t work'), 'a bad code is explained');
   await paste('GOOD-CODE');
-  await page.click('.wallet-guide button:has-text("Connect")');
-  check(await waitText('.wallet-list', 'anna@rizful.com'), 'the Rizful address joins Receive, after Coinos');
+  await page.click('.pager.inline .pager-page:not([inert]) .wallet-guide button:has-text("Connect")');
+  check(await waitText('.pager.inline .pager-page:not([inert]) .wallet-list', 'anna@rizful.com'), 'the Rizful address joins Receive, after Coinos');
   check(/^[0-9a-f]{64}$/.test(exchanged?.nostr_public_key || ''), 'the code is exchanged with a fresh public key');
   await page.screenshot({ path: SHOTS + '/wallet-2-receive.png' });
   await page.click('.wallet .segmented label:has-text("Send")');
-  check(await waitText('.wallet-list', 'Rizful'), 'and Rizful joins Send too');
-  check((await page.locator('.ranked-row', { hasText: 'Rizful' }).textContent()).includes('Connected'), 'Rizful shows as connected on Send');
-  check((await page.locator('.setup-card', { hasText: 'Coinos' }).textContent()).includes('Not connected'), 'Coinos shows as not connected for sending');
-  check((await page.locator('.wallet-list > li').last().textContent()).includes('Add a different wallet'), 'adding a different wallet is the last card');
+  check(await waitText('.pager.inline .pager-page:not([inert]) .wallet-list', 'Rizful'), 'and Rizful joins Send too');
+  check((await page.locator('.pager.inline .pager-page:not([inert]) .ranked-row', { hasText: 'Rizful' }).textContent()).includes('Connected'), 'Rizful shows as connected on Send');
+  check((await page.locator('.pager.inline .pager-page:not([inert]) .setup-card', { hasText: 'Coinos' }).textContent()).includes('Not connected'), 'Coinos shows as not connected for sending');
+  check((await page.locator('.pager.inline .pager-page:not([inert]) .wallet-list > li').last().textContent()).includes('Add a different wallet'), 'adding a different wallet is the last card');
   await page.screenshot({ path: SHOTS + '/wallet-3-send.png' });
+
+  // Swiping inside Wallet moves between Send and Receive
+  await page.evaluate(() => { const s = document.querySelector('.pager.inline'); s.scrollBy({ left: s.clientWidth, behavior: 'instant' }); });
+  check(await page.waitForFunction(() => document.querySelector('.wallet .segmented input[value="receive"]')?.checked, null, { timeout: 3000 }).then(() => true, () => false), 'swiping left inside Wallet shows Receive');
+  check((await page.evaluate(() => location.hash)).startsWith('#/settings'), 'and stays on Settings');
+  await page.evaluate(() => { const s = document.querySelector('.pager.inline'); s.scrollBy({ left: -s.clientWidth, behavior: 'instant' }); });
+  check(await page.waitForFunction(() => document.querySelector('.wallet .segmented input[value="send"]')?.checked, null, { timeout: 3000 }).then(() => true, () => false), 'and swiping right goes back to Send');
 
   // Order and removal on Receive, and it sticks
   await page.click('.wallet .segmented label:has-text("Receive")');
   await page.click('button[aria-label="Move anna@rizful.com up"]');
-  let order = await page.$$eval('.wallet-list .address', (els) => els.map((e) => e.textContent));
+  let order = await page.$$eval('.pager.inline .pager-page:not([inert]) .wallet-list .address', (els) => els.map((e) => e.textContent));
   check(order.join() === 'anna@rizful.com,anna@coinos.io', 'up/down reorders');
   // Drag the second back to the top by its handle
-  const handle = await page.$$('.wallet-list .drag-handle');
+  const handle = await page.$$('.pager.inline .pager-page:not([inert]) .wallet-list .drag-handle');
   const box = await handle[1].boundingBox();
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await page.mouse.down();
   await page.mouse.move(box.x + box.width / 2, box.y - 60, { steps: 8 });
   await page.mouse.up();
   await page.waitForTimeout(300);
-  order = await page.$$eval('.wallet-list .address', (els) => els.map((e) => e.textContent));
+  order = await page.$$eval('.pager.inline .pager-page:not([inert]) .wallet-list .address', (els) => els.map((e) => e.textContent));
   check(order.join() === 'anna@coinos.io,anna@rizful.com', `dragging reorders (${order})`);
   await page.click('button[aria-label="Remove anna@rizful.com"]');
   check(await waitText('.confirm-remove', 'Stop getting paid at anna@rizful.com?'), 'the X asks first');
@@ -96,8 +103,8 @@ const lnurl = (name, domain) => JSON.stringify({ tag: 'payRequest', callback: `h
   await page.waitForTimeout(300);
   await page.reload();
   await page.click('.wallet .segmented label:has-text("Receive")');
-  await page.waitForSelector('.wallet-list .address');
-  order = await page.$$eval('.wallet-list .address', (els) => els.map((e) => e.textContent));
+  await page.waitForSelector('.pager.inline .pager-page:not([inert]) .wallet-list .address');
+  order = await page.$$eval('.pager.inline .pager-page:not([inert]) .wallet-list .address', (els) => els.map((e) => e.textContent));
   check(order.join() === 'anna@coinos.io', 'removing takes two taps, and the list is kept');
 
   // Appearance

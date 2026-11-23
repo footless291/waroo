@@ -1517,3 +1517,22 @@ body:has(.tabs-shell) {
 .form.settings {
   gap: var(--space-2);
 }
+
+/* A swipeable strip inside a page (Send and Receive in Wallet) */
+.pager.inline {
+  flex: none;
+  align-items: flex-start;
+  overflow-y: hidden;
+  /* Swipes inside stay inside: they don't also move the Settings page. */
+  overscroll-behavior-x: contain;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .pager.inline {
+    transition: height 200ms ease;
+  }
+}
+.pager.inline .pager-page {
+  height: auto;
+  overflow: visible;
+  padding: 0 2px 4px;
+}
