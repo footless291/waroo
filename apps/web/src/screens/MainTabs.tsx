@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { AppHeader } from '../components/Header.tsx'
 import { PlusIcon } from '../components/icons.tsx'
 import { Pager } from '../components/Pager.tsx'
 import { MAIN_TABS, TabBar } from '../components/TabBar.tsx'
@@ -22,6 +23,9 @@ export function MainTabs({ current, query }: { current: string; query: string })
   const hasGroups = !!groups && groups.length > 0
   return (
     <main className="tabs-shell">
+      <div className="screen shell-top">
+        <AppHeader />
+      </div>
       <Pager pages={pages} current={current} />
       {current === '/' && hasGroups && (
         <a className="fab" href="#/new">

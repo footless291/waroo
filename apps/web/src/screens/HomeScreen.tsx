@@ -1,6 +1,6 @@
 import { groupBalances, replay } from '@footless/ledger'
 import { useEffect, useState } from 'react'
-import { Header } from '../components/Header.tsx'
+import { PageTitle } from '../components/Header.tsx'
 import { getEvents, type GroupMeta } from '../lib/db.ts'
 import { money } from '../lib/format.ts'
 import { useGroups } from '../lib/hooks.ts'
@@ -45,20 +45,7 @@ export function HomePage() {
   const groups = useGroups()
   return (
     <div className="screen with-tabbar">
-      <Header
-        inPager
-        title="Footless"
-        action={
-          <>
-          <a className="icon-button" href="#/scan" aria-label="Scan a code">
-            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2" />
-              <path d="M8 12h8" />
-            </svg>
-          </a>
-          </>
-        }
-      />
+      <PageTitle>Groups</PageTitle>
       {groups && groups.length === 0 && (
         <section className="empty">
           <h2>Split anything with anyone</h2>

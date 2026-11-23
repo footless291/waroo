@@ -1,6 +1,6 @@
 import { AppearanceCard } from '../components/AppearanceCard.tsx'
 import { Collapsible } from '../components/Collapsible.tsx'
-import { Header } from '../components/Header.tsx'
+import { PageTitle } from '../components/Header.tsx'
 import { NotificationsCard } from '../components/NotificationsCard.tsx'
 import { WalletSection } from '../components/WalletSection.tsx'
 
@@ -12,7 +12,7 @@ export function SettingsPage({ params }: { params: URLSearchParams }) {
   const opened = (name: string) => params.get('open') === name
   return (
     <div className="screen with-tabbar">
-      <Header inPager title="Settings" />
+      <PageTitle>Settings</PageTitle>
       <div className="form settings">
         <Collapsible title="Wallet" className="wallet-card-section" defaultOpen={opened('wallet')}>
           <WalletSection />

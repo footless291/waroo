@@ -34,10 +34,13 @@ export function Collapsible({
               requestAnimationFrame(() => {
                 const el = section.current
                 if (!el) return
-                // The header of this page (pages side by side each have their own).
-                const page = el.closest('.pager-page') ?? document
-                const header = page.querySelector('.header')?.getBoundingClientRect().bottom ?? 0
-                if (el.getBoundingClientRect().top < header) {
+                // The top of what's visible: the page's own top when it scrolls under a fixed
+                // header, otherwise the bottom of the screen's header.
+                const page = el.closest('.pager-page')
+                const top = page
+                  ? page.getBoundingClientRect().top
+                  : (document.querySelector('.header')?.getBoundingClientRect().bottom ?? 0)
+                if (el.getBoundingClientRect().top < top) {
                   const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches
                   el.scrollIntoView({ block: 'start', behavior: smooth ? 'smooth' : 'auto' })
                 }

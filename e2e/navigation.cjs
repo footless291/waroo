@@ -109,7 +109,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await page.evaluate(() => document.querySelector('button.collapsible-toggle').click());
   await page.waitForTimeout(700);
   const top = await page.evaluate(() => document.querySelector('.collapsible').getBoundingClientRect().top);
-  const headerBottom = await page.evaluate(() => document.querySelector('.pager-page:not([inert]) .header').getBoundingClientRect().bottom);
+  const headerBottom = await page.evaluate(() => document.querySelector('.pager-page:not([inert])').getBoundingClientRect().top);
   check(top >= headerBottom - 1 && top < 400, `closing scrolls the section’s title into view (top ${Math.round(top)})`);
 
   check(errors.length === 0, `no page errors ${errors.join(' | ')}`);

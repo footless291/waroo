@@ -1,4 +1,4 @@
-import { Header } from '../components/Header.tsx'
+import { PageTitle } from '../components/Header.tsx'
 import { recentActivity, type ActivityItem } from '../lib/activity.ts'
 import { money } from '../lib/format.ts'
 import { locale, useLoad } from '../lib/hooks.ts'
@@ -61,7 +61,7 @@ export function ActivityPage() {
   }
   return (
     <div className="screen with-tabbar">
-      <Header inPager title="Activity" />
+      <PageTitle>Activity</PageTitle>
       {items && items.length === 0 && (
         <section className="empty">
           <h2>Nothing yet</h2>

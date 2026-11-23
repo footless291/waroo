@@ -1468,6 +1468,8 @@ body:has(.tabs-shell) {
   display: none;
 }
 .pager-page {
+  /* Keeps anything positioned inside a page (like hidden titles) within it, so the off-screen pages never widen the document. */
+  position: relative;
   flex: 0 0 100%;
   height: 100%;
   overflow-x: hidden;
@@ -1477,5 +1479,13 @@ body:has(.tabs-shell) {
   scroll-snap-stop: always;
 }
 .page-body {
+  padding-top: var(--space-2);
+}
+/* Pages under a fixed header scroll from just below it */
+.pager-page .collapsible {
+  scroll-margin-top: var(--space-3);
+}
+.shell-top + .pager .page-body,
+.shell-top + .pager .screen {
   padding-top: var(--space-2);
 }
