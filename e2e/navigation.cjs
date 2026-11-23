@@ -14,13 +14,16 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   const waitText = async (sel, needle, ms = 6000) => { try { await page.waitForFunction(([s, n]) => (document.querySelector(s)?.textContent || '').includes(n), [sel, needle], { timeout: ms }); return true; } catch { return false; } };
   const hash = () => page.evaluate(() => location.hash);
   // A finger swipe across the middle of the screen
-  const swipe = (direction) => page.evaluate((dir) => {
-    const el = document.querySelector('main');
-    const y = 420, from = dir === 'left' ? 300 : 90, to = dir === 'left' ? 90 : 300;
-    const t = (x) => new Touch({ identifier: 1, target: el, clientX: x, clientY: y });
-    el.dispatchEvent(new TouchEvent('touchstart', { touches: [t(from)], changedTouches: [t(from)], bubbles: true }));
-    el.dispatchEvent(new TouchEvent('touchend', { touches: [], changedTouches: [t(to)], bubbles: true }));
-  }, direction);
+  // A swipe moves the page strip sideways, as a finger does; the app follows where it settles.
+  const swipe = async (direction) => {
+    const before = await hash();
+    await page.evaluate((dir) => {
+      const strip = document.querySelector('.pager');
+      strip.scrollBy({ left: dir === 'left' ? strip.clientWidth : -strip.clientWidth, behavior: 'instant' });
+    }, direction);
+    await page.waitForFunction((h) => location.hash !== h, before, { timeout: 1500 }).catch(() => {});
+    await page.waitForTimeout(150);
+  };
   const makeGroup = async (name) => {
     await page.goto(B + '#/new');
     await page.fill('input[placeholder="Okinawa trip"]', name);
@@ -53,8 +56,9 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   // Activity
   await page.goto(B + '#/');
   await page.click('nav.tabbar a:has-text("Activity")');
-  check(await waitText('main', 'Today'), 'Activity groups items by day');
-  const titles = await page.$$eval('.cards .row-main', (els) => els.map((e) => e.textContent));
+  await page.waitForFunction(() => location.hash === '#/activity' && !document.querySelectorAll('.pager-page')[1].hasAttribute('inert'));
+  check(await waitText('.pager-page:not([inert])', 'Today'), 'Activity groups items by day');
+  const titles = await page.$$eval('.pager-page:not([inert]) .cards .row-main', (els) => els.map((e) => e.textContent));
   check(titles[0]?.includes('Ramen') && titles[1]?.includes('paid') && titles[2]?.includes('Ferry'), `newest first: ${titles.map((t) => t.slice(0, 12)).join(' / ')}`);
   check(titles[1]?.includes('Okinawa trip') && titles[0]?.includes('Ramen club'), 'each item says its group');
   await page.screenshot({ path: SHOTS + '/nav-2-activity.png' });
@@ -79,6 +83,10 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await page.waitForTimeout(200);
   await swipe('right');
   check((await hash()) === '#/activity', 'swipe right goes back');
+  check(await page.evaluate(() => document.querySelectorAll('.pager-page')[1].hasAttribute('inert') === false && document.querySelectorAll('.pager-page')[0].hasAttribute('inert')), 'only the page you’re on can be used');
+  // Tapping a tab scrolls the strip to its page
+  await page.click('nav.tabbar a:has-text("Settings")');
+  check(await page.waitForFunction(() => { const s = document.querySelector('.pager'); return Math.abs(s.scrollLeft - 2 * s.clientWidth) < 2; }, null, { timeout: 3000 }).then(() => true, () => false), 'tapping a tab slides to its page');
   await page.goto(B); await page.click('a.card-row:has-text("Okinawa trip")'); await page.waitForTimeout(300);
   const gid = (await hash()).split('/')[2];
   await swipe('left');
@@ -95,13 +103,13 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await page.click('button.collapsible-toggle:has-text("Wallet")');
   check(await waitText('.collapsible.open', 'Friends pay you') || await waitText('.collapsible.open', 'When you pay'), 'opening Wallet shows it');
   await page.screenshot({ path: SHOTS + '/nav-3-settings.png' });
-  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await page.evaluate(() => document.querySelector('.pager-page:not([inert])').scrollTo(0, 99999));
   await page.waitForTimeout(200);
   // Close it from its own title, as someone would after scrolling back a little
   await page.evaluate(() => document.querySelector('button.collapsible-toggle').click());
   await page.waitForTimeout(700);
   const top = await page.evaluate(() => document.querySelector('.collapsible').getBoundingClientRect().top);
-  const headerBottom = await page.evaluate(() => document.querySelector('.header').getBoundingClientRect().bottom);
+  const headerBottom = await page.evaluate(() => document.querySelector('.pager-page:not([inert]) .header').getBoundingClientRect().bottom);
   check(top >= headerBottom - 1 && top < 400, `closing scrolls the section’s title into view (top ${Math.round(top)})`);
 
   check(errors.length === 0, `no page errors ${errors.join(' | ')}`);

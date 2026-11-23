@@ -42,7 +42,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await addExpense(ana, 'Dinner', '4000', '2026-11-20');
   await addExpense(ana, 'Snacks', '1000', '2026-11-20');
   await ana.click('nav a:has-text("Expenses")');
-  const order = await ana.$$eval('.cards .row-main strong', (els) => els.map((e) => e.textContent));
+  const order = await ana.$$eval('.pager-page:not([inert]) .cards .row-main strong', (els) => els.map((e) => e.textContent));
   check(JSON.stringify(order) === JSON.stringify(['Snacks', 'Dinner', 'Ferry']), `expenses newest first (${order})`);
 
   // Bob joins
@@ -85,7 +85,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await bob.fill('input.amount-input', '3000');
   await bob.click('label:has-text("Bank transfer")');
   await bob.click('button:has-text("Mark as paid")'); await bob.waitForTimeout(400);
-  const pays = await bob.$$eval('.cards .amount', (els) => els.map((e) => e.textContent));
+  const pays = await bob.$$eval('.pager-page:not([inert]) .cards .amount', (els) => els.map((e) => e.textContent));
   check(JSON.stringify(pays) === JSON.stringify(['¥3,000', '¥1,000']), `payments newest first (${pays})`);
   await bob.screenshot({ path: SHOTS + '/mem-2-payments.png' });
 

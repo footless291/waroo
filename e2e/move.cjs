@@ -72,7 +72,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   check(await waitText(newer, 'main', 'stopped on the other phone'), 'and the new phone is told');
   check(await waitText(snoop, 'main', 'stopped on the other phone') || await waitText(snoop, 'main', 'Not moved'), 'the snoop gets nothing');
   await old.goto(B); await old.waitForTimeout(600);
-  check((await old.$$('.cards a.card-row')).length === 2, 'the old phone still has both groups');
+  check((await old.$$('.pager-page:not([inert]) .cards a.card-row')).length === 2, 'the old phone still has both groups');
 
   // Saying no on the old phone
   await old.goto(B + '#/move');

@@ -1,9 +1,6 @@
 import { groupBalances, replay } from '@footless/ledger'
 import { useEffect, useState } from 'react'
 import { Header } from '../components/Header.tsx'
-import { PlusIcon } from '../components/icons.tsx'
-import { MAIN_TABS, TabBar } from '../components/TabBar.tsx'
-import { useSwipeTabs } from '../lib/swipe.ts'
 import { getEvents, type GroupMeta } from '../lib/db.ts'
 import { money } from '../lib/format.ts'
 import { useGroups } from '../lib/hooks.ts'
@@ -43,12 +40,13 @@ function GroupSummary({ group }: { group: GroupMeta }) {
   )
 }
 
-export function HomeScreen() {
+/** The Groups page of the main tabs. */
+export function HomePage() {
   const groups = useGroups()
-  const swipe = useSwipeTabs(MAIN_TABS, '/')
   return (
-    <main className="screen with-tabbar" {...swipe}>
+    <div className="screen with-tabbar">
       <Header
+        inPager
         title="Footless"
         action={
           <>
@@ -89,13 +87,8 @@ export function HomeScreen() {
               </li>
             ))}
           </ul>
-          <a className="fab" href="#/new">
-            <PlusIcon />
-            New group
-          </a>
         </>
       )}
-      <TabBar tabs={MAIN_TABS} current="/" label="Main" />
-    </main>
+    </div>
   )
 }

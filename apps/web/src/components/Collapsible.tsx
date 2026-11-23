@@ -34,7 +34,9 @@ export function Collapsible({
               requestAnimationFrame(() => {
                 const el = section.current
                 if (!el) return
-                const header = document.querySelector('.header')?.getBoundingClientRect().bottom ?? 0
+                // The header of this page (pages side by side each have their own).
+                const page = el.closest('.pager-page') ?? document
+                const header = page.querySelector('.header')?.getBoundingClientRect().bottom ?? 0
                 if (el.getBoundingClientRect().top < header) {
                   const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches
                   el.scrollIntoView({ block: 'start', behavior: smooth ? 'smooth' : 'auto' })

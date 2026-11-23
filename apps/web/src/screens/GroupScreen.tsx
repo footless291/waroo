@@ -12,7 +12,7 @@ import { Header } from '../components/Header.tsx'
 import { PlusIcon } from '../components/icons.tsx'
 import { SyncLine } from '../components/SyncLine.tsx'
 import { groupTabs, TabBar } from '../components/TabBar.tsx'
-import { useSwipeTabs } from '../lib/swipe.ts'
+import { Pager } from '../components/Pager.tsx'
 import type { GroupMeta } from '../lib/db.ts'
 import { formatDate, money } from '../lib/format.ts'
 import { useGroup } from '../lib/hooks.ts'
@@ -22,7 +22,6 @@ export type Tab = 'balances' | 'expenses' | 'payments'
 export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Tab; joined?: boolean }) {
   const group = useGroup(groupId)
   const [toast, setToast] = useState(joined)
-  const swipe = useSwipeTabs(groupTabs(groupId), tab === 'balances' ? `/g/${groupId}` : `/g/${groupId}/${tab}`)
   useEffect(() => {
     if (!toast) return
     const t = setTimeout(() => setToast(false), 5000)
@@ -45,41 +44,67 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
   const current = [...state.members.values()].filter((m) => !m.left)
   const notJoined = current.filter((m) => !m.key && m.id !== meta.meId)
   const alone = current.every((m) => m.id === meta.meId || !m.key)
+  const pages = [
+    {
+      path: base,
+      content: (
+        <div className="screen with-tabbar page-body">
+          {alone && (
+            <section className="invite-card">
+              <h2>
+                {notJoined.length > 0
+                  ? `${listNames(notJoined.map((m) => m.name))} can’t see this yet`
+                  : 'Splitting with friends?'}
+              </h2>
+              <p>Invite them, and everyone can add expenses and settle up from their own phone.</p>
+              <a className="button primary" href={`#${base}/invite`}>
+                Invite people
+              </a>
+            </section>
+          )}
+          {state.conflicts.length > 0 && (
+            <p className="notice">
+              {state.conflicts.length === 1 ? 'One expense was' : `${state.conflicts.length} expenses were`} edited
+              by two people at once. The latest edit was kept.
+            </p>
+          )}
+          {!alone && <NotificationsNudge />}
+          <Balances meta={meta} state={state} />
+        </div>
+      ),
+    },
+    {
+      path: `${base}/expenses`,
+      content: (
+        <div className="screen with-tabbar page-body">
+          <Expenses meta={meta} state={state} />
+        </div>
+      ),
+    },
+    {
+      path: `${base}/payments`,
+      content: (
+        <div className="screen with-tabbar page-body">
+          <Payments meta={meta} state={state} />
+        </div>
+      ),
+    },
+  ]
   return (
-    <main className="screen with-tabbar" {...swipe}>
-      <Header
-        title={name}
-        back="/"
-        action={
-          <a className="button small" href={`#${base}/invite`}>
-            Invite
-          </a>
-        }
-      />
-      <SyncLine groupId={groupId} state={state} meId={meta.meId} />
-      {alone && tab === 'balances' && (
-        <section className="invite-card">
-          <h2>
-            {notJoined.length > 0
-              ? `${listNames(notJoined.map((m) => m.name))} can’t see this yet`
-              : 'Splitting with friends?'}
-          </h2>
-          <p>Invite them, and everyone can add expenses and settle up from their own phone.</p>
-          <a className="button primary" href={`#${base}/invite`}>
-            Invite people
-          </a>
-        </section>
-      )}
-      {state.conflicts.length > 0 && (
-        <p className="notice">
-          {state.conflicts.length === 1 ? 'One expense was' : `${state.conflicts.length} expenses were`} edited
-          by two people at once. The latest edit was kept.
-        </p>
-      )}
-      {!alone && tab === 'balances' && <NotificationsNudge />}
-      {tab === 'balances' && <Balances meta={meta} state={state} />}
-      {tab === 'expenses' && <Expenses meta={meta} state={state} />}
-      {tab === 'payments' && <Payments meta={meta} state={state} />}
+    <main className="tabs-shell">
+      <div className="screen shell-top">
+        <Header
+          title={name}
+          back="/"
+          action={
+            <a className="button small" href={`#${base}/invite`}>
+              Invite
+            </a>
+          }
+        />
+        <SyncLine groupId={groupId} state={state} meId={meta.meId} />
+      </div>
+      <Pager pages={pages} current={currentTab} />
       {toast && (
         <div className="toast" role="status">
           You joined {name} as {state.members.get(meta.meId)?.name}

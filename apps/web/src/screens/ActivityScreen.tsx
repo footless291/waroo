@@ -1,10 +1,7 @@
 import { Header } from '../components/Header.tsx'
-import { PlusIcon } from '../components/icons.tsx'
-import { MAIN_TABS, TabBar } from '../components/TabBar.tsx'
 import { recentActivity, type ActivityItem } from '../lib/activity.ts'
 import { money } from '../lib/format.ts'
-import { locale, useGroups, useLoad } from '../lib/hooks.ts'
-import { useSwipeTabs } from '../lib/swipe.ts'
+import { locale, useLoad } from '../lib/hooks.ts'
 
 const METHOD: Record<string, string> = { cash: 'Cash', bank: 'Bank transfer', other: 'Other', bitcoin: 'Bitcoin' }
 
@@ -51,10 +48,8 @@ function Row({ item }: { item: ActivityItem }) {
 }
 
 /** Recent expenses and payments in every group. Tapping one opens it in its group. */
-export function ActivityScreen() {
+export function ActivityPage() {
   const items = useLoad(() => recentActivity(), [])
-  const groups = useGroups()
-  const swipe = useSwipeTabs(MAIN_TABS, '/activity')
 
   // Grouped by day, newest first.
   const days: { label: string; items: ActivityItem[] }[] = []
@@ -64,11 +59,9 @@ export function ActivityScreen() {
     if (last?.label === label) last.items.push(item)
     else days.push({ label, items: [item] })
   }
-  const addHref = groups?.length === 1 ? `#/g/${groups[0]!.id}/add` : '#/add'
-
   return (
-    <main className="screen with-tabbar" {...swipe}>
-      <Header title="Activity" />
+    <div className="screen with-tabbar">
+      <Header inPager title="Activity" />
       {items && items.length === 0 && (
         <section className="empty">
           <h2>Nothing yet</h2>
@@ -85,13 +78,6 @@ export function ActivityScreen() {
           </ul>
         </section>
       ))}
-      {groups && groups.length > 0 && (
-        <a className="fab" href={addHref}>
-          <PlusIcon />
-          New expense
-        </a>
-      )}
-      <TabBar tabs={MAIN_TABS} current="/activity" label="Main" />
-    </main>
+    </div>
   )
 }

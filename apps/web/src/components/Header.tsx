@@ -7,10 +7,13 @@ export function Header({
   title,
   back,
   action,
+  inPager,
 }: {
   title: ReactNode
   back?: string
   action?: ReactNode
+  /** On a swipeable page: the pager moves focus here when the page is shown, not on mount. */
+  inPager?: boolean
 }) {
   // Move focus to the new screen's heading so screen readers announce it and
   // keyboard users start from the top, as they would on a page load.
@@ -19,7 +22,8 @@ export function Header({
     // Not on the very first screen: there the browser's own page-load
     // announcement already does this job.
     if (firstScreen) firstScreen = false
-    else heading.current?.focus({ preventScroll: true })
+    else if (!inPager) heading.current?.focus({ preventScroll: true })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
@@ -35,7 +39,7 @@ export function Header({
           <Logo size={34} />
         </span>
       )}
-      <h1 ref={heading} tabIndex={-1}>
+      <h1 ref={heading} tabIndex={-1} data-page-title>
         {title}
       </h1>
       <div className="header-action">{action}</div>

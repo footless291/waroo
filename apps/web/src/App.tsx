@@ -1,11 +1,10 @@
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import { Banners } from './components/Banners.tsx'
 import { go, useRoute } from './lib/hooks.ts'
-import { ActivityScreen } from './screens/ActivityScreen.tsx'
 import { ExpenseScreen } from './screens/ExpenseScreen.tsx'
 import { GroupScreen } from './screens/GroupScreen.tsx'
-import { HomeScreen } from './screens/HomeScreen.tsx'
 import { InviteScreen } from './screens/InviteScreen.tsx'
+import { MainTabs } from './screens/MainTabs.tsx'
 import { JoinScreen } from './screens/JoinScreen.tsx'
 import { MemberScreen } from './screens/MemberScreen.tsx'
 import { MoveInScreen } from './screens/MoveInScreen.tsx'
@@ -14,7 +13,6 @@ import { NewGroupScreen } from './screens/NewGroupScreen.tsx'
 import { PickGroupScreen } from './screens/PickGroupScreen.tsx'
 import { ScanScreen } from './screens/ScanScreen.tsx'
 import { SettleScreen } from './screens/SettleScreen.tsx'
-import { YouScreen } from './screens/YouScreen.tsx'
 
 function Router() {
   const route = useRoute()
@@ -22,11 +20,12 @@ function Router() {
   const parts = path.split('/').filter(Boolean)
   const params = new URLSearchParams(query)
 
-  if (parts.length === 0) return <HomeScreen />
+  // The main tabs are one screen, so swiping between them keeps each page alive.
+  if (parts.length === 0) return <MainTabs current="/" query={query} />
   if (parts[0] === 'new') return <NewGroupScreen />
   if (parts[0] === 'join') return <JoinScreen params={params} />
-  if (parts[0] === 'you' || parts[0] === 'settings') return <YouScreen key={query} params={params} />
-  if (parts[0] === 'activity') return <ActivityScreen />
+  if (parts[0] === 'you' || parts[0] === 'settings') return <MainTabs current="/settings" query={query} />
+  if (parts[0] === 'activity') return <MainTabs current="/activity" query={query} />
   if (parts[0] === 'add') return <PickGroupScreen />
   if (parts[0] === 'scan') return <ScanScreen />
   if (parts[0] === 'move') return <MoveScreen />
@@ -42,7 +41,7 @@ function Router() {
     const tab = parts[2] === 'expenses' || parts[2] === 'payments' ? parts[2] : 'balances'
     return <GroupScreen key={groupId} groupId={groupId} tab={tab} joined={params.get('joined') === '1'} />
   }
-  return <HomeScreen />
+  return <MainTabs current="/" query={query} />
 }
 
 function UpdatePrompt() {
