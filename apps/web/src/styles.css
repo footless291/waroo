@@ -1342,62 +1342,55 @@ input[type='checkbox'] {
   min-height: 52px;
 }
 
-/* Bottom menu */
+/* Bottom menu: the floating pill the tabs always were, now at the bottom */
 .screen.with-tabbar {
   padding-bottom: calc(180px + env(safe-area-inset-bottom));
 }
 .tabbar {
   position: fixed;
   z-index: 10;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  left: 50%;
+  bottom: calc(14px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
   display: flex;
-  justify-content: center;
   gap: 4px;
-  padding: 6px 12px calc(6px + env(safe-area-inset-bottom));
-  border-top: 1px solid var(--line);
-  background: var(--paper);
+  width: min(520px, calc(100% - 2 * var(--space-5)));
+  padding: 4px;
+  border-radius: var(--pill);
+  background: var(--line);
+  box-shadow: var(--shadow);
 }
 .tabbar a {
   flex: 1;
-  max-width: 160px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  min-height: 52px;
-  padding: 6px 4px 4px;
-  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  min-height: var(--target);
+  border-radius: var(--pill);
   color: var(--muted);
-  font-size: 0.78rem;
   font-weight: 600;
   text-decoration: none;
 }
 .tabbar a[aria-current='page'] {
+  background: var(--card);
   color: var(--text);
 }
-.tabbar a[aria-current='page'] .tabbar-icon {
-  background: var(--primary);
-  color: var(--on-primary);
-}
 .tabbar-icon {
-  display: grid;
-  place-items: center;
-  width: 56px;
-  height: 30px;
-  border-radius: var(--pill);
+  display: none;
 }
 .tabbar a:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: -3px;
 }
-.with-tabbar .fab {
-  bottom: calc(86px + env(safe-area-inset-bottom));
+@media (prefers-reduced-motion: no-preference) {
+  .tabbar a {
+    transition: background-color 120ms ease, color 120ms ease;
+  }
 }
-.with-tabbar ~ .toast,
+.with-tabbar .fab {
+  bottom: calc(80px + env(safe-area-inset-bottom));
+}
 .toast {
-  bottom: calc(158px + env(safe-area-inset-bottom));
+  bottom: calc(150px + env(safe-area-inset-bottom));
 }
 
 /* Collapsible settings sections */
