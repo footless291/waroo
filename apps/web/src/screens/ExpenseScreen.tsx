@@ -8,6 +8,7 @@ import {
 } from '@footless/ledger'
 import { useState, type FormEvent } from 'react'
 import { Header } from '../components/Header.tsx'
+import { DateField } from '../components/DateField.tsx'
 import { Segmented } from '../components/Segmented.tsx'
 import { append, newId, type GroupMeta } from '../lib/db.ts'
 import { CURRENCIES, money, today, toInput } from '../lib/format.ts'
@@ -257,10 +258,7 @@ function ExpenseForm({
               ))}
             </select>
           </label>
-          <label className="field grow">
-            <span>Date</span>
-            <input type="date" value={date} onChange={(e) => e.target.value && setDate(e.target.value)} />
-          </label>
+          <DateField label="Date" value={date} onChange={setDate} />
         </div>
 
         <fieldset className="field">
