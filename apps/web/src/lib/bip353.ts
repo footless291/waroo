@@ -39,7 +39,7 @@ export async function resolveOffer(text: string): Promise<{ name: string; offer:
   }
   if (answer.Status === 3 || !answer.Answer?.length) throw new Error(t`That name has no bitcoin payment details.`)
   if (answer.Status !== 0) throw new Error(t`Couldn’t look the name up right now.`)
-  if (!answer.AD) throw new Error(t`The name’s records aren’t signed (DNSSEC), so Footless can’t trust them.`)
+  if (!answer.AD) throw new Error(t`The name’s records aren’t signed (DNSSEC), so Waroo can’t trust them.`)
   for (const record of answer.Answer.filter((a) => a.type === 16)) {
     // A TXT record can come in several quoted pieces: join them.
     const pieces = record.data.match(/"((?:[^"\\]|\\.)*)"/g)

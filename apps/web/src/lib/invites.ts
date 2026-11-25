@@ -129,7 +129,7 @@ export async function openInvite(secret: string): Promise<InviteTicket> {
   try {
     res = await fetch(relayHttpUrl(`invites/${id}/open`), { method: 'POST', cache: 'no-store' })
   } catch {
-    throw new Error(t`Couldn’t reach Footless. Check your connection and try again.`)
+    throw new Error(t`Couldn’t reach Waroo. Check your connection and try again.`)
   }
   const body = (await res.json().catch(() => ({}))) as { state?: InviteState; data?: string }
   if (!res.ok || !body.data) throw new InviteClosed(body.state ?? 'unknown')

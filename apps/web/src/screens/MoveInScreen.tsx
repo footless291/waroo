@@ -131,7 +131,7 @@ export function MoveInScreen({ params }: { params: URLSearchParams }) {
           <h2>{t`Not moved`}</h2>
           <p role="alert">{phase.message}</p>
           <a className="button primary" href="#/">
-            {t`Open Footless`}
+            {t`Open Waroo`}
           </a>
         </section>
       )}

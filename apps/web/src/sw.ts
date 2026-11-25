@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 /**
- * Footless's service worker: works offline, and turns push wake-ups into
+ * Waroo's service worker: works offline, and turns push wake-ups into
  * notifications.
  *
  * A push carries nothing: the relay can't read the groups, so it can't say
@@ -96,7 +96,7 @@ async function onPush() {
     // Browsers expect every push to show something; iPhones stop delivering
     // to apps that don't. If the news was already seen, say something brief.
     if (!shown) {
-      await self.registration.showNotification('Footless', {
+      await self.registration.showNotification('Waroo', {
         body: t`There’s something new in one of your groups.`,
         icon: '/icon-192.png',
         tag: 'footless',

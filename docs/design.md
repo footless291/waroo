@@ -1,13 +1,13 @@
-# Footless design system
+# Waroo design system
 
-Footless should feel modern, friendly and calm: a place where money between friends gets sorted without fuss. Youthful without being loud. It is not a crypto app, and nothing in the main flows should look or sound like one.
+Waroo should feel modern, friendly and calm: a place where money between friends gets sorted without fuss. Youthful without being loud. It is not a crypto app, and nothing in the main flows should look or sound like one.
 
 There are two themes, chosen automatically from the phone's setting:
 
 - **Apricot** (light): a warm off-white page, white rows, and the balance card kept dark plum, like a piece of night mode carried into the day.
 - **Night market** (dark): deep plum, with peach for the things that matter.
 
-The tokens live as CSS variables at the top of `apps/web/src/styles.css`. Use the variables, never raw values. Mockups: the design canvas "Footless: invite and join flow".
+The tokens live as CSS variables at the top of `apps/web/src/styles.css`. Use the variables, never raw values. Mockups: the design canvas "Waroo: invite and join flow".
 
 ## Colour
 
@@ -66,6 +66,6 @@ One family: **Outfit** (variable, self-hosted, SIL Open Font License), falling b
 - **Plain words.** "Settle up", "gets back", "owes", "mark as paid". Never "invoice", "sats", "Lightning", "node" or "wallet address" in main flows; those can appear in details for people who look.
 - **Amounts in the person's currency, always.** Bitcoin amounts appear only in a payment's details and exports.
 - **Talk to the person.** "You owe", "You get back", "Bob pays you". Lower-case "you" mid-sentence; "gets" and "owes" only for other people.
-- **Footless** is always capitalized.
+- **Waroo** is always capitalized.
 - **Short and specific errors.** Say what's wrong in money terms: "¥5,000 left to assign".
 - **Calm about money.** No exclamation marks, no urgency. Red is for errors only; debts use the softer `--owes`.

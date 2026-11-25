@@ -126,7 +126,7 @@ export function BitcoinPay(props: {
         return
       }
       try {
-        const invoice = await getInvoice(await payParams(addr), sats, `Footless: ${state.name ?? meta.name}`)
+        const invoice = await getInvoice(await payParams(addr), sats, `Waroo: ${state.name ?? meta.name}`)
         setPhase({ at: 'ready', quote: { invoice, sats: invoice.sats, price: rate.price, source: rate.source, target }, next })
         return
       } catch (err) {
@@ -412,7 +412,7 @@ function WalletChoices({
 
 /**
  * Paying an offer from another app. The amount has to be typed there (an
- * offer can be for any amount), and Footless can't see the payment, so the
+ * offer can be for any amount), and Waroo can't see the payment, so the
  * person marks it paid.
  */
 function OfferExternal({ offer, sats, toName, onPaid }: { offer: string; sats: number; toName: string; onPaid: () => void }) {
@@ -439,7 +439,7 @@ function OfferExternal({ offer, sats, toName, onPaid }: { offer: string; sats: n
       >
         {copied ? t`Offer copied` : t`Copy offer`}
       </button>
-      <p>{t`Footless can’t see payments to an offer. Once you’ve paid, mark it here.`}</p>
+      <p>{t`Waroo can’t see payments to an offer. Once you’ve paid, mark it here.`}</p>
       <button type="button" className="button outline" onClick={onPaid}>
         {t`I’ve paid it`}
       </button>

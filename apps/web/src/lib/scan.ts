@@ -4,7 +4,7 @@ import { t } from '@lingui/core/macro'
  *
  * An installed PWA can't rely on the phone's camera app: that opens links in
  * the browser, which on iOS is a separate app with its own storage, so the
- * person would join on the wrong "device". Scanning here keeps them in Footless.
+ * person would join on the wrong "device". Scanning here keeps them in Waroo.
  *
  * The browser's own BarcodeDetector is used where it exists (Android Chrome).
  * Elsewhere, notably iOS Safari, jsQR decodes frames; it's loaded only then.
@@ -53,7 +53,7 @@ export async function makeDecoder(): Promise<Decoder> {
 
 /**
  * Turns scanned or pasted text into an in-app route, or null if it isn't a
- * Footless code: an invite ("#/join?i=…") or a move from another phone
+ * Waroo code: an invite ("#/join?i=…") or a move from another phone
  * ("#/move-in?t=…"). Accepts the full link or just the part after "#".
  */
 export function inviteRoute(text: string): string | null {
@@ -72,7 +72,7 @@ export function inviteRoute(text: string): string | null {
 export function cameraProblem(error: unknown): string {
   const name = (error as { name?: string })?.name
   if (name === 'NotAllowedError' || name === 'SecurityError')
-    return t`Footless can’t use the camera. Allow camera access for Footless in your phone’s settings, or paste the link below.`
+    return t`Waroo can’t use the camera. Allow camera access for Waroo in your phone’s settings, or paste the link below.`
   if (name === 'NotFoundError' || name === 'OverconstrainedError')
     return t`No camera found on this device. Paste the invite link below instead.`
   if (name === 'NotReadableError') return t`The camera is busy in another app. Close it and try again.`

@@ -29,7 +29,7 @@ export function languageChoice(): LanguageChoice {
   }
 }
 
-/** The first of the phone's languages that Footless speaks; English otherwise. */
+/** The first of the phone's languages that Waroo speaks; English otherwise. */
 export function phoneLocale(): Locale {
   for (const tag of navigator.languages ?? [navigator.language]) {
     const base = tag.toLowerCase().split('-')[0]

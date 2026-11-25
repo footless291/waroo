@@ -24,6 +24,10 @@
     { "tag": "v2", "new_sqlite_classes": ["InviteBox"] }
   ],
   "observability": { "enabled": true },
+  // Served at getwaroo.app. The old footless…workers.dev address keeps
+  // working too: phones that installed the app from it still sync.
+  "routes": [{ "pattern": "getwaroo.app", "custom_domain": true }],
+  "workers_dev": true,
   // Push notifications. The private half is a secret: VAPID_PRIVATE_JWK
   // (make a pair with `node scripts/vapid.cjs`). Local dev uses .dev.vars.
   "vars": {

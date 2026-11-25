@@ -11,7 +11,7 @@ import { addReceive, addReceiveNamed, addSend, type ReceiveWallet, type SendWall
 /**
  * Step-by-step setup for wallets we know, made as short as each allows, and
  * a plain form for any other wallet. Wallet sites open in the phone's own
- * browser sheet; they can't be shown inside Footless's page.
+ * browser sheet; they can't be shown inside Waroo's page.
  */
 
 const COINOS = {
@@ -74,7 +74,7 @@ function PasteField({
               onChange(await pasted())
               setNote('')
             } catch {
-              setNote(t`Footless couldn’t read what you copied. Press and hold the box, then choose Paste.`)
+              setNote(t`Waroo couldn’t read what you copied. Press and hold the box, then choose Paste.`)
             }
           }}
         >
@@ -143,7 +143,7 @@ export function CoinosGuide({ receive, send, onChange, onDone }: GuideProps & { 
         </a>
       </li>
       <li className={address ? 'done' : 'current'}>
-        <h3>{t`Tell Footless your username`}</h3>
+        <h3>{t`Tell Waroo your username`}</h3>
         {address ? (
           <p>
             <Trans>
@@ -178,14 +178,14 @@ export function CoinosGuide({ receive, send, onChange, onDone }: GuideProps & { 
       <li className={paying ? 'done' : 'current'}>
         <h3>{address ? t`Pay in one tap` : t`Pay in one tap (optional)`}</h3>
         {paying ? (
-          <p>{t`Connected. Footless asks Coinos to pay only when you confirm a payment.`}</p>
+          <p>{t`Connected. Waroo asks Coinos to pay only when you confirm a payment.`}</p>
         ) : (
           <>
             <p>{t`Without this, paying opens Coinos so you can approve it there. To pay without switching apps:`}</p>
             <ol className="substeps">
               <li>
                 <Trans>
-                  Open Coinos’s Nostr settings, then tap <strong>New connection</strong>, name it Footless, and set a budget
+                  Open Coinos’s Nostr settings, then tap <strong>New connection</strong>, name it Waroo, and set a budget
                   if you like.
                 </Trans>
               </li>
@@ -406,7 +406,7 @@ export function OtherWallet({ tab, onChange }: { tab: 'send' | 'receive'; onChan
   ) : (
     <div className="field-stack">
       <p>
-        {t`In your wallet app (Alby Hub, Zeus, Primal and others), make a new Nostr Wallet Connect connection for Footless, ideally with a budget, and paste it here. It stays on this phone.`}
+        {t`In your wallet app (Alby Hub, Zeus, Primal and others), make a new Nostr Wallet Connect connection for Waroo, ideally with a budget, and paste it here. It stays on this phone.`}
       </p>
       <form className="field-stack" onSubmit={connect}>
         <PasteField label={t`Wallet connection`} value={nwc} onChange={setNwc} placeholder="nostr+walletconnect://…" secret />

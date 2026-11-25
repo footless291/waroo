@@ -16,9 +16,9 @@ export default defineConfig({
       filename: 'sw.ts',
       includeAssets: ['icon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Footless',
-        short_name: 'Footless',
-        description: 'Split bills and settle up, without anyone holding your money.',
+        name: 'Waroo',
+        short_name: 'Waroo',
+        description: 'Split bills with friends and settle up in bitcoin, without anyone holding your money.',
         lang: 'en',
         start_url: '/',
         display: 'standalone',

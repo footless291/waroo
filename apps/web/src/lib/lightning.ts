@@ -9,7 +9,7 @@ import { t } from '@lingui/core/macro'
  * 4. After paying, the preimage the wallet returns proves payment: its
  *    SHA-256 must equal the invoice's payment hash.
  *
- * The phone talks to the provider directly; Footless's server is never in
+ * The phone talks to the provider directly; Waroo's server is never in
  * the middle of a payment.
  */
 import { verifyPreimage } from '@footless/ledger'
@@ -156,7 +156,7 @@ export async function checkPaid(invoice: CheckedInvoice): Promise<string | undef
   return undefined
 }
 
-/** The current price of one bitcoin, from Footless's Worker (which asks two sources). */
+/** The current price of one bitcoin, from Waroo's Worker (which asks two sources). */
 export async function btcPrice(currency: string): Promise<{ price: string; source: string; at: string }> {
   let res: Response
   try {

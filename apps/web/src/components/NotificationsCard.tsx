@@ -46,7 +46,7 @@ export function NotificationsCard() {
     <div className="notifications">
       {support === 'on' && (
         <>
-          <p>{t`This phone gets a notification when someone pays you, joins a group or adds an expense, even when Footless is closed.`}</p>
+          <p>{t`This phone gets a notification when someone pays you, joins a group or adds an expense, even when Waroo is closed.`}</p>
           <button className="button outline" disabled={busy} onClick={turnOff}>
             {t`Turn off notifications`}
           </button>
@@ -68,7 +68,7 @@ export function NotificationsCard() {
         </p>
       )}
       {support === 'blocked' && (
-        <p>{t`Notifications are blocked for Footless. To get them, allow notifications for Footless in your phone’s settings.`}</p>
+        <p>{t`Notifications are blocked for Waroo. To get them, allow notifications for Waroo in your phone’s settings.`}</p>
       )}
       {support === 'unsupported' && <p>{t`This browser can’t show notifications.`}</p>}
       <p className="hint" aria-live="polite">

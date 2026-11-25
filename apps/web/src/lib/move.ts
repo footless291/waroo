@@ -89,7 +89,7 @@ export class MoveChannel {
         ws.send(JSON.stringify({ t: 'hello', since: 0, ...(this.side === 'old' ? { ephemeral: true } : {}) }))
         resolve()
       }
-      ws.onerror = () => reject(new Error(t`Couldn’t reach Footless. Check your connection.`))
+      ws.onerror = () => reject(new Error(t`Couldn’t reach Waroo. Check your connection.`))
     })
     ws.onclose = () => {
       if (this.ws === ws) this.onLost()
@@ -141,7 +141,7 @@ export async function handOver(groups: GroupMeta[], newKey: string): Promise<Mov
   const deadline = Date.now() + 30_000
   for (const group of groups) {
     while ((await pendingEvents(group.id)).length > 0) {
-      if (Date.now() > deadline) throw new Error(t`Couldn’t reach Footless to hand over your groups. Check your connection and try again.`)
+      if (Date.now() > deadline) throw new Error(t`Couldn’t reach Waroo to hand over your groups. Check your connection and try again.`)
       await new Promise((r) => setTimeout(r, 300))
     }
   }

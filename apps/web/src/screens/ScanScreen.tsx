@@ -59,7 +59,7 @@ export function ScanScreen() {
             }
             if (text !== lastWrong) {
               lastWrong = text
-              setNotice(t`That code isn’t from Footless. Scan the code on a group’s Invite screen.`)
+              setNotice(t`That code isn’t from Waroo. Scan the code on a group’s Invite screen.`)
             }
           }
         }
@@ -79,7 +79,7 @@ export function ScanScreen() {
       if (document.hidden) {
         stop()
         setCamera('off')
-        setProblem(t`The camera stopped while Footless was in the background.`)
+        setProblem(t`The camera stopped while Waroo was in the background.`)
       }
     }
     document.addEventListener('visibilitychange', onVisibility)
@@ -94,7 +94,7 @@ export function ScanScreen() {
     e.preventDefault()
     const route = inviteRoute(pasted)
     if (route) go(route)
-    else setPasteError(t`That isn’t a Footless invite link. It starts with this site’s address and includes “#/join”.`)
+    else setPasteError(t`That isn’t a Waroo invite link. It starts with this site’s address and includes “#/join”.`)
   }
 
   return (

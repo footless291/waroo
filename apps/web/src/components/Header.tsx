@@ -64,7 +64,7 @@ export function PageTitle({ children }: { children: ReactNode }) {
 export function AppHeader() {
   return (
     <Header
-      title="Footless"
+      title="Waroo"
       action={
         <a className="icon-button" href="#/scan" aria-label={t`Scan a code`}>
           <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

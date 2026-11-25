@@ -1,9 +1,9 @@
 import { t } from '@lingui/core/macro'
 /**
  * Rizful's onboarding: the person signs up at Rizful, taps "Get code" there,
- * and pastes the one-time code here. Footless trades it, straight from the
+ * and pastes the one-time code here. Waroo trades it, straight from the
  * phone, for a wallet connection (to pay) and a Lightning address (to get
- * paid). Nothing goes through Footless's server.
+ * paid). Nothing goes through Waroo's server.
  * See github.com/MegalithicBTC/rizful-integration-demo.
  */
 import { isLightningAddress } from '@footless/ledger'
@@ -15,7 +15,7 @@ export const RIZFUL = {
 }
 
 export async function exchangeRizfulCode(code: string): Promise<{ nwc: string; address: string }> {
-  // Rizful asks for a Nostr public key to tie the connection to. Footless has
+  // Rizful asks for a Nostr public key to tie the connection to. Waroo has
   // no Nostr identity, so it makes a fresh one that's used for nothing else.
   const { schnorr } = await import('@noble/curves/secp256k1.js')
   const { bytesToHex } = await import('@noble/curves/utils.js')

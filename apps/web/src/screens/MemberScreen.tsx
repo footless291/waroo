@@ -54,7 +54,7 @@ export function MemberScreen({ groupId }: { groupId: string }) {
         // Make sure the others hear about it before the group leaves this phone.
         const deadline = Date.now() + 20_000
         while ((await pendingEvents(meta.id)).length > 0) {
-          if (Date.now() > deadline) throw new Error(t`Couldn’t reach Footless to tell the group. Check your connection and try again.`)
+          if (Date.now() > deadline) throw new Error(t`Couldn’t reach Waroo to tell the group. Check your connection and try again.`)
           await new Promise((r) => setTimeout(r, 300))
         }
         syncHub.drop(meta.id)

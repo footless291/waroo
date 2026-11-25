@@ -108,6 +108,17 @@ export function MoveScreen() {
     }
   }
 
+  // Same phone, different app (e.g. moving to Waroo's new address): no camera can scan its own screen.
+  const [copied, setCopied] = useState(false)
+  async function copyLink(secret: string) {
+    try {
+      await navigator.clipboard.writeText(moveLink(secret))
+      setCopied(true)
+    } catch {
+      setCopied(false)
+    }
+  }
+
   async function reject() {
     await channel.current?.send({ from: 'old', type: 'cancel' })
     stop(t`Stopped. Nothing was moved. If a phone you don’t know scanned the code, that’s fine: it got nothing.`)
@@ -120,7 +131,7 @@ export function MoveScreen() {
         <section className="form">
           <p className="lead">{t`Your groups and wallets move to the new phone, and leave this one.`}</p>
           <ul className="steps">
-            <li>{t`Open Footless on the new phone, from its Home Screen.`}</li>
+            <li>{t`Open Waroo on the new phone, from its Home Screen.`}</li>
             <li>{t`Tap the scan button and scan the code this phone will show.`}</li>
             <li>{t`Check both phones show the same 4 numbers.`}</li>
           </ul>
@@ -135,12 +146,18 @@ export function MoveScreen() {
       {phase.at === 'starting' && <p className="muted" role="status">{t`Getting ready…`}</p>}
       {phase.at === 'waiting' && (
         <section className="move-qr" data-move-link={moveLink(phase.secret)}>
-          <p className="lead">{t`On the new phone, open Footless, tap the scan button and scan this code.`}</p>
+          <p className="lead">{t`On the new phone, open Waroo, tap the scan button and scan this code.`}</p>
           <QrCode text={moveLink(phase.secret)} label={t`Code to scan with the new phone`} />
           <p className="muted" role="status">
             {t`Waiting for the new phone…`}
           </p>
           <p className="muted">{t`Don’t share this code: it’s only for your own phone.`}</p>
+          <button className="button outline" onClick={() => void copyLink(phase.secret)}>
+            {copied ? t`Link copied` : t`Moving within this phone? Copy the link`}
+          </button>
+          {copied && (
+            <p className="muted">{t`Paste it under the scanner in the other app. You’ll still check the numbers on both.`}</p>
+          )}
         </section>
       )}
       {phase.at === 'confirm' && (

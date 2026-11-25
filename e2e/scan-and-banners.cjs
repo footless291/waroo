@@ -67,7 +67,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   check(await waitText(nocam, '.scanner', 'Allow camera access'), 'camera refused: says how to allow it');
   await nocam.fill('.paste-form input', 'https://example.com/nothing');
   await nocam.click('button:has-text("Open invite")');
-  check(await waitText(nocam, '#paste-error', 'isn’t a Footless invite link'), 'pasting a wrong link explains');
+  check(await waitText(nocam, '#paste-error', 'isn’t a Waroo invite link'), 'pasting a wrong link explains');
 
   // Bob scans from the installed app
   const bob = await mk('bob', { svg });

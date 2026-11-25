@@ -1,6 +1,6 @@
 import { t } from '@lingui/core/macro'
 /**
- * The person's own wallet, used to pay. Never anyone else's money: Footless
+ * The person's own wallet, used to pay. Never anyone else's money: Waroo
  * only asks the wallet to pay an invoice the person has just confirmed.
  *
  * Two ways to connect:
@@ -86,7 +86,7 @@ export async function payWithWallet(wallet: SendWallet, invoice: string): Promis
     try {
       await window.webln.enable()
     } catch (err) {
-      throw new WalletPayError(t`the browser wallet didn’t allow Footless to pay`, true, err)
+      throw new WalletPayError(t`the browser wallet didn’t allow Waroo to pay`, true, err)
     }
     try {
       return (await window.webln.sendPayment(invoice)).preimage
@@ -152,22 +152,22 @@ function explainNwcError(err: unknown, nwc: typeof import('@getalby/sdk/nwc')): 
   const code = (err as { code?: string })?.code
   const tech = ` (${[code, detail].filter(Boolean).join(': ')})`
   if (err instanceof nwc.Nip47PublishTimeoutError || err instanceof nwc.Nip47PublishError || err instanceof nwc.Nip47NetworkError) {
-    return { message: t`Footless couldn’t reach it, so the request wasn’t sent${tech}`, certain: true }
+    return { message: t`Waroo couldn’t reach it, so the request wasn’t sent${tech}`, certain: true }
   }
   if (err instanceof nwc.Nip47ReplyTimeoutError) {
     return { message: t`it got the request but didn’t answer within a minute${tech}`, certain: false }
   }
   if (err instanceof nwc.Nip47UnsupportedEncryptionError) {
-    return { message: t`it uses a kind of encryption Footless doesn’t support${tech}`, certain: true }
+    return { message: t`it uses a kind of encryption Waroo doesn’t support${tech}`, certain: true }
   }
   if (err instanceof nwc.Nip47ResponseDecodingError) {
-    return { message: t`it answered in a way Footless couldn’t read${tech}`, certain: false }
+    return { message: t`it answered in a way Waroo couldn’t read${tech}`, certain: false }
   }
   if (err instanceof nwc.Nip47WalletError) {
     if (code === 'INSUFFICIENT_BALANCE') return { message: t`it doesn’t have enough in it`, certain: true }
-    if (code === 'QUOTA_EXCEEDED') return { message: t`this would go over the spending limit you set for Footless`, certain: true }
+    if (code === 'QUOTA_EXCEEDED') return { message: t`this would go over the spending limit you set for Waroo`, certain: true }
     if (code === 'RESTRICTED' || code === 'UNAUTHORIZED' || code === 'NOT_IMPLEMENTED') {
-      return { message: t`it didn’t allow Footless to pay${tech}`, certain: true }
+      return { message: t`it didn’t allow Waroo to pay${tech}`, certain: true }
     }
     if (code === 'RATE_LIMITED') return { message: t`it’s getting too many requests right now${tech}`, certain: true }
     if (code === 'PAYMENT_FAILED') return { message: t`the payment failed${tech}`, certain: true }

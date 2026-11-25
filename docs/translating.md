@@ -1,6 +1,6 @@
-# Translating Footless
+# Translating Waroo
 
-Footless speaks English and Japanese. Strings live in the code in English and are translated through [Lingui](https://lingui.dev) catalogs.
+Waroo speaks English and Japanese. Strings live in the code in English and are translated through [Lingui](https://lingui.dev) catalogs.
 
 ## How it works
 

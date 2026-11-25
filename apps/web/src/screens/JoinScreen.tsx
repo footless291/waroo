@@ -33,8 +33,8 @@ export function JoinScreen({ params }: { params: URLSearchParams }) {
     <main className="screen">
       <section className="empty">
         <h2>{t`This invite link is out of date`}</h2>
-        <p>{t`It’s from an older version of Footless. Ask for a new invite link.`}</p>
-        <a className="button primary" href="#/">{t`Open Footless`}</a>
+        <p>{t`It’s from an older version of Waroo. Ask for a new invite link.`}</p>
+        <a className="button primary" href="#/">{t`Open Waroo`}</a>
       </section>
     </main>
   )
@@ -69,13 +69,13 @@ function JoinByInvite({ secret }: { secret: string }) {
     <main className="screen">
       <div className="join-brand">
         <Logo size={32} />
-        <span>Footless</span>
+        <span>Waroo</span>
       </div>
       {problem ? (
         <section className="empty">
           <h2>{problem.title}</h2>
           <p>{problem.text}</p>
-          <a className="button primary" href="#/">{t`Open Footless`}</a>
+          <a className="button primary" href="#/">{t`Open Waroo`}</a>
         </section>
       ) : (
         <p className="muted" role="status">{t`Opening the invite…`}</p>
@@ -134,7 +134,7 @@ function JoinGroup({ groupId, groupKey: key, from }: { groupId: string; groupKey
         <section className="empty">
           <h2>{t`This link isn’t complete`}</h2>
           <p>{t`Ask for the invite link again, and open the whole link.`}</p>
-          <a className="button primary" href="#/">{t`Open Footless`}</a>
+          <a className="button primary" href="#/">{t`Open Waroo`}</a>
         </section>
       </main>
     )
@@ -178,7 +178,7 @@ function JoinGroup({ groupId, groupKey: key, from }: { groupId: string; groupKey
     <main className="screen">
       <div className="join-brand">
         <Logo size={32} />
-        <span>Footless</span>
+        <span>Waroo</span>
       </div>
       {problem ? (
         <section className="empty">
@@ -233,7 +233,7 @@ function JoinGroup({ groupId, groupKey: key, from }: { groupId: string; groupKey
           <p className="muted">{t`You’ll see the group’s expenses once you join. No account or sign-up needed.`}</p>
           {inBrowserTab() && (
             <p className="notice">
-              {t`Have Footless on your Home Screen? Join from there instead: open it, tap the scan button and scan the invite code. Groups joined here stay in this browser.`}
+              {t`Have Waroo on your Home Screen? Join from there instead: open it, tap the scan button and scan the invite code. Groups joined here stay in this browser.`}
             </p>
           )}
         </form>

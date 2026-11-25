@@ -41,12 +41,26 @@ function GroupSummary({ group }: { group: GroupMeta }) {
   )
 }
 
+/** The app's first address, before it was called Waroo. */
+const OLD_ADDRESS = location.hostname.endsWith('.workers.dev')
+
 /** The Groups page of the main tabs. */
 export function HomePage() {
   const groups = useGroups()
   return (
     <div className="screen with-tabbar">
       <PageTitle>{t`Groups`}</PageTitle>
+      {OLD_ADDRESS && groups && groups.length > 0 && (
+        <section className="notice-card new-address">
+          <h2>{t`Waroo has a new address`}</h2>
+          <p>
+            {t`Footless is now Waroo, at getwaroo.app. This app keeps working, but new features arrive there. To move your groups: open getwaroo.app and add it to your Home Screen, then here, go to Settings → Moving to a new phone, and copy the link into the new app’s scanner.`}
+          </p>
+          <a className="button primary" href="https://getwaroo.app/" target="_blank" rel="noopener noreferrer">
+            {t`Open getwaroo.app`}
+          </a>
+        </section>
+      )}
       {groups && groups.length === 0 && (
         <section className="empty">
           <h2>{t`Split anything with anyone`}</h2>

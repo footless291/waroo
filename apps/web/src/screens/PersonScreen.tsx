@@ -99,7 +99,7 @@ export function PersonScreen({ groupId, memberId }: { groupId: string; memberId:
           <section className="settings-card">
             <h2>{t`Remove from the group`}</h2>
             <p>
-              {t`${who}’s phone stops getting anything new from ${groupName}, and can’t add to it. What they’ve added and what they owe stay. Footless gives the group a new key, so everyone else’s phones move over by themselves.`}
+              {t`${who}’s phone stops getting anything new from ${groupName}, and can’t add to it. What they’ve added and what they owe stay. Waroo gives the group a new key, so everyone else’s phones move over by themselves.`}
             </p>
             {problem && (
               <p className="problems" role="alert">

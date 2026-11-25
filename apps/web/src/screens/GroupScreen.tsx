@@ -364,7 +364,7 @@ function Expenses({ meta, state }: { meta: GroupMeta; state: GroupState }) {
     return (
       <section className="empty">
         <h2>{t`No expenses yet`}</h2>
-        <p>{t`Add what someone paid for, and Footless works out who owes what.`}</p>
+        <p>{t`Add what someone paid for, and Waroo works out who owes what.`}</p>
       </section>
     )
   }

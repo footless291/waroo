@@ -1,13 +1,13 @@
 # How sync works
 
-Footless groups sync between phones through a relay that stores and forwards encrypted changes. The relay can't read a group, can't change it, and can't pretend to be anyone in it. The money itself never touches any of this: it moves from wallet to wallet.
+Waroo groups sync between phones through a relay that stores and forwards encrypted changes. The relay can't read a group, can't change it, and can't pretend to be anyone in it. The money itself never touches any of this: it moves from wallet to wallet.
 
 ## The pieces
 
 | Piece | Where | What it knows |
 | --- | --- | --- |
 | Group key | Each member's phone, and invite links after the `#` | Everything: it decrypts the group |
-| Signing key | One per person per group, on their phone; the private half can't be exported, even by Footless | Proves "this change came from Bob's phone" |
+| Signing key | One per person per group, on their phone; the private half can't be exported, even by Waroo | Proves "this change came from Bob's phone" |
 | Relay room | Cloudflare Durable Object (`worker/index.ts`) | A list of encrypted blobs, their ids and arrival order. Nothing readable |
 | Event log | Each phone, in IndexedDB | The group's full history, verified |
 
@@ -72,7 +72,7 @@ The relay can't read a group, so it can't say what happened. A push carries noth
 - Phones with the app open aren't woken: they get the change live and show an in-app banner instead. "Open" means the app is on screen: it pings the room every 20 seconds and says `away`/`here` as it goes to the background and back. A phone put away can keep its connection for minutes, so a connection that's away, or hasn't pinged for 50 seconds, is woken like any other.
 - The relay keeps, per room, only push-service URLs. It never learns who they belong to. Dead subscriptions are dropped when the push service says so.
 - Only real push services are accepted as endpoints, so the relay can't be aimed at other sites.
-- On iPhone and iPad, notifications work only for Footless added to the Home Screen.
+- On iPhone and iPad, notifications work only for Waroo added to the Home Screen.
 
 ## Removing someone
 

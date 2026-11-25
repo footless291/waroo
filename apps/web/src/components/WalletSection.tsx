@@ -33,7 +33,7 @@ const blurb = (option: Option): string =>
       : t`Any wallet with a Lightning address or Nostr Wallet Connect.`
 
 /**
- * Your wallets as one list per side, in the order Footless uses them.
+ * Your wallets as one list per side, in the order Waroo uses them.
  * Connected wallets are ranked cards. Coinos and Rizful always appear, so
  * people see whether they're connected and can set them up; adding any other
  * wallet is the last card.
@@ -172,7 +172,7 @@ export function WalletSection() {
             content: (
               <>
                 <p className="wallet-explain">
-                  {t`When you pay, Footless asks these in order. If one can’t pay, you’ll see why and choose whether to try the next. You can always pay by opening your wallet app instead.`}
+                  {t`When you pay, Waroo asks these in order. If one can’t pay, you’ll see why and choose whether to try the next. You can always pay by opening your wallet app instead.`}
                 </p>
                 <RankedList
                   items={send}

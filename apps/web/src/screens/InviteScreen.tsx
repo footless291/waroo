@@ -109,7 +109,7 @@ export function InviteScreen({ groupId }: { groupId: string }) {
 
   async function share() {
     try {
-      await navigator.share({ title: name, text: t`Join ${name} on Footless`, url: link })
+      await navigator.share({ title: name, text: t`Join ${name} on Waroo`, url: link })
     } catch {
       // Dismissed the share sheet: nothing to do.
     }
@@ -176,7 +176,7 @@ export function InviteScreen({ groupId }: { groupId: string }) {
             {showQr && (
               <div className="qr-box">
                 <QrCode text={link} label={t`QR code for the invite link`} />
-                <p className="muted">{t`Scan it in Footless on the other phone, with the scan button.`}</p>
+                <p className="muted">{t`Scan it in Waroo on the other phone, with the scan button.`}</p>
               </div>
             )}
             <button className="link" onClick={() => setCurrent(undefined)}>
@@ -191,7 +191,7 @@ export function InviteScreen({ groupId }: { groupId: string }) {
         <section className="notice-card">
           <h2>{t`Share it only with the group`}</h2>
           <p>
-            {t`Whoever opens the link while it works can join and see the group’s expenses. Nobody else can read them, not even Footless.`}
+            {t`Whoever opens the link while it works can join and see the group’s expenses. Nobody else can read them, not even Waroo.`}
           </p>
         </section>
 

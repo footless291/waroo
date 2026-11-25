@@ -67,7 +67,7 @@ async function rotate(groupId: string, leaveOut: string): Promise<string> {
   await syncHub.ensure(groupId)
   const deadline = Date.now() + 20_000
   while ((await pendingEvents(groupId)).length > 0) {
-    if (Date.now() > deadline) throw new Error(t`Couldn’t reach Footless to tell the group. Check your connection and try again.`)
+    if (Date.now() > deadline) throw new Error(t`Couldn’t reach Waroo to tell the group. Check your connection and try again.`)
     await new Promise((r) => setTimeout(r, 300))
   }
   await moveToKey(groupId, newKey)

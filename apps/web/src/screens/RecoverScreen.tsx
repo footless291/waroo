@@ -139,7 +139,7 @@ export function RecoverScreen({ groupId, memberId }: { groupId: string; memberId
             </Trans>
           </p>
           <ul className="steps">
-            <li>{who} installs Footless on the new phone and opens it from the Home Screen.</li>
+            <li>{who} installs Waroo on the new phone and opens it from the Home Screen.</li>
             <li>{t`They tap the scan button and scan the code this phone will show. Not together? Send them the link instead.`}</li>
             <li>Check both phones show the same 4 numbers. If you’re apart, call {who} and read them out.</li>
           </ul>
@@ -157,14 +157,14 @@ export function RecoverScreen({ groupId, memberId }: { groupId: string; memberId
       {phase.at === 'starting' && <p className="muted" role="status">{t`Getting ready…`}</p>}
       {phase.at === 'waiting' && (
         <section className="move-qr" data-move-link={recoverLink(phase.secret)}>
-          <p className="lead">On {who}’s new phone, open Footless, tap the scan button and scan this code.</p>
+          <p className="lead">On {who}’s new phone, open Waroo, tap the scan button and scan this code.</p>
           <QrCode text={recoverLink(phase.secret)} label={t`Code for ${who}’s new phone to scan`} />
           <button className="button outline" onClick={() => copy(phase.secret)}>
             {copied ? t`Link copied` : t`Copy link instead`}
           </button>
           <p className="muted">
             <Trans>
-              Sending the link? {who} pastes it under the scanner in Footless. You’ll still check the numbers together.
+              Sending the link? {who} pastes it under the scanner in Waroo. You’ll still check the numbers together.
             </Trans>
           </p>
           <p className="muted" role="status">

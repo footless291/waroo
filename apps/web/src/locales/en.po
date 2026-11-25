@@ -29,7 +29,7 @@ msgid "{0, plural, one {{state}, opened once} other {{state}, opened # times}}"
 msgstr "{0, plural, one {{state}, opened once} other {{state}, opened # times}}"
 
 #. placeholder {0}: phase.count
-#: src/screens/MoveScreen.tsx:169
+#: src/screens/MoveScreen.tsx:186
 msgid "{0, plural, one {Your group and wallets are on the new phone now, and gone from this one.} other {Your # groups and wallets are on the new phone now, and gone from this one.}}"
 msgstr "{0, plural, one {Your group and wallets are on the new phone now, and gone from this one.} other {Your # groups and wallets are on the new phone now, and gone from this one.}}"
 
@@ -231,8 +231,8 @@ msgid "{who}: use a percentage like 25 or 12.5"
 msgstr "{who}: use a percentage like 25 or 12.5"
 
 #: src/screens/PersonScreen.tsx:102
-msgid "{who}’s phone stops getting anything new from {groupName}, and can’t add to it. What they’ve added and what they owe stay. Footless gives the group a new key, so everyone else’s phones move over by themselves."
-msgstr "{who}’s phone stops getting anything new from {groupName}, and can’t add to it. What they’ve added and what they owe stay. Footless gives the group a new key, so everyone else’s phones move over by themselves."
+msgid "{who}’s phone stops getting anything new from {groupName}, and can’t add to it. What they’ve added and what they owe stay. Waroo gives the group a new key, so everyone else’s phones move over by themselves."
+msgstr "{who}’s phone stops getting anything new from {groupName}, and can’t add to it. What they’ve added and what they owe stay. Waroo gives the group a new key, so everyone else’s phones move over by themselves."
 
 #: src/screens/JoinScreen.tsx:58
 msgid "{why} Ask for a new one."
@@ -358,8 +358,8 @@ msgid "Add the first expense to get started."
 msgstr "Add the first expense to get started."
 
 #: src/screens/GroupScreen.tsx:367
-msgid "Add what someone paid for, and Footless works out who owes what."
-msgstr "Add what someone paid for, and Footless works out who owes what."
+msgid "Add what someone paid for, and Waroo works out who owes what."
+msgstr "Add what someone paid for, and Waroo works out who owes what."
 
 #: src/screens/JoinScreen.tsx:219
 msgid "Add yourself as a new person"
@@ -511,7 +511,7 @@ msgstr "Cash"
 msgid "Change your name, or leave the group"
 msgstr "Change your name, or leave the group"
 
-#: src/screens/MoveScreen.tsx:125
+#: src/screens/MoveScreen.tsx:136
 msgid "Check both phones show the same 4 numbers."
 msgstr "Check both phones show the same 4 numbers."
 
@@ -538,7 +538,7 @@ msgstr "Choose a username and a password. Write the password down: it’s the on
 msgid "Close"
 msgstr "Close"
 
-#: src/screens/MoveScreen.tsx:195
+#: src/screens/MoveScreen.tsx:212
 msgid "Code {digits}"
 msgstr "Code {digits}"
 
@@ -550,7 +550,7 @@ msgstr "Code for {who}’s new phone to scan"
 msgid "Code from Rizful"
 msgstr "Code from Rizful"
 
-#: src/screens/MoveScreen.tsx:139
+#: src/screens/MoveScreen.tsx:150
 msgid "Code to scan with the new phone"
 msgstr "Code to scan with the new phone"
 
@@ -577,13 +577,13 @@ msgstr "Connected for getting paid and for paying."
 msgid "Connected."
 msgstr "Connected."
 
-#: src/components/WalletGuides.tsx:181
-msgid "Connected. Footless asks Coinos to pay only when you confirm a payment."
-msgstr "Connected. Footless asks Coinos to pay only when you confirm a payment."
-
 #: src/components/WalletGuides.tsx:234
 msgid "Connected. Friends can pay you at {address}."
 msgstr "Connected. Friends can pay you at {address}."
+
+#: src/components/WalletGuides.tsx:181
+msgid "Connected. Waroo asks Coinos to pay only when you confirm a payment."
+msgstr "Connected. Waroo asks Coinos to pay only when you confirm a payment."
 
 #: src/components/WalletGuides.tsx:228
 msgid "Connecting…"
@@ -637,23 +637,6 @@ msgstr "Couldn’t open the group"
 msgid "Couldn’t open the invite"
 msgstr "Couldn’t open the invite"
 
-#: src/lib/move.ts:144
-msgid "Couldn’t reach Footless to hand over your groups. Check your connection and try again."
-msgstr "Couldn’t reach Footless to hand over your groups. Check your connection and try again."
-
-#: src/lib/rekey.ts:70
-#: src/screens/MemberScreen.tsx:57
-msgid "Couldn’t reach Footless to tell the group. Check your connection and try again."
-msgstr "Couldn’t reach Footless to tell the group. Check your connection and try again."
-
-#: src/lib/invites.ts:132
-msgid "Couldn’t reach Footless. Check your connection and try again."
-msgstr "Couldn’t reach Footless. Check your connection and try again."
-
-#: src/lib/move.ts:92
-msgid "Couldn’t reach Footless. Check your connection."
-msgstr "Couldn’t reach Footless. Check your connection."
-
 #: src/lib/rizful.ts:33
 msgid "Couldn’t reach Rizful. Check your connection and try again."
 msgstr "Couldn’t reach Rizful. Check your connection and try again."
@@ -665,6 +648,23 @@ msgstr "Couldn’t reach the group"
 #: src/lib/lightning.ts:45
 msgid "Couldn’t reach their Lightning address. It may not work from web apps, or you may be offline."
 msgstr "Couldn’t reach their Lightning address. It may not work from web apps, or you may be offline."
+
+#: src/lib/move.ts:144
+msgid "Couldn’t reach Waroo to hand over your groups. Check your connection and try again."
+msgstr "Couldn’t reach Waroo to hand over your groups. Check your connection and try again."
+
+#: src/lib/rekey.ts:70
+#: src/screens/MemberScreen.tsx:57
+msgid "Couldn’t reach Waroo to tell the group. Check your connection and try again."
+msgstr "Couldn’t reach Waroo to tell the group. Check your connection and try again."
+
+#: src/lib/invites.ts:132
+msgid "Couldn’t reach Waroo. Check your connection and try again."
+msgstr "Couldn’t reach Waroo. Check your connection and try again."
+
+#: src/lib/move.ts:92
+msgid "Couldn’t reach Waroo. Check your connection."
+msgstr "Couldn’t reach Waroo. Check your connection."
 
 #: src/lib/invites.ts:100
 msgid "Couldn’t turn the link off. Check your connection and try again."
@@ -699,16 +699,16 @@ msgstr "Delete expense"
 msgid "Dismiss"
 msgstr "Dismiss"
 
-#: src/screens/MoveScreen.tsx:148
+#: src/screens/MoveScreen.tsx:165
 msgid "Does the new phone show these numbers?"
 msgstr "Does the new phone show these numbers?"
 
-#: src/screens/MoveScreen.tsx:143
+#: src/screens/MoveScreen.tsx:154
 msgid "Don’t share this code: it’s only for your own phone."
 msgstr "Don’t share this code: it’s only for your own phone."
 
 #: src/components/BitcoinPay.tsx:223
-#: src/screens/MoveScreen.tsx:175
+#: src/screens/MoveScreen.tsx:192
 #: src/screens/RecoverScreen.tsx:207
 msgid "Done"
 msgstr "Done"
@@ -776,21 +776,9 @@ msgstr "Extra {n}"
 msgid "Extra for {0}"
 msgstr "Extra for {0}"
 
-#: src/components/BitcoinPay.tsx:442
-msgid "Footless can’t see payments to an offer. Once you’ve paid, mark it here."
-msgstr "Footless can’t see payments to an offer. Once you’ve paid, mark it here."
-
-#: src/lib/scan.ts:75
-msgid "Footless can’t use the camera. Allow camera access for Footless in your phone’s settings, or paste the link below."
-msgstr "Footless can’t use the camera. Allow camera access for Footless in your phone’s settings, or paste the link below."
-
-#: src/lib/wallet.ts:155
-msgid "Footless couldn’t reach it, so the request wasn’t sent{tech}"
-msgstr "Footless couldn’t reach it, so the request wasn’t sent{tech}"
-
-#: src/components/WalletGuides.tsx:77
-msgid "Footless couldn’t read what you copied. Press and hold the box, then choose Paste."
-msgstr "Footless couldn’t read what you copied. Press and hold the box, then choose Paste."
+#: src/screens/HomeScreen.tsx:57
+msgid "Footless is now Waroo, at getwaroo.app. This app keeps working, but new features arrive there. To move your groups: open getwaroo.app and add it to your Home Screen, then here, go to Settings → Moving to a new phone, and copy the link into the new app’s scanner."
+msgstr "Footless is now Waroo, at getwaroo.app. This app keeps working, but new features arrive there. To move your groups: open getwaroo.app and add it to your Home Screen, then here, go to Settings → Moving to a new phone, and copy the link into the new app’s scanner."
 
 #: src/screens/InviteScreen.tsx:38
 msgid "For one person, until {date}"
@@ -861,7 +849,7 @@ msgstr "gets back {sum}"
 msgid "Gets back {sum}"
 msgstr "Gets back {sum}"
 
-#: src/screens/MoveScreen.tsx:135
+#: src/screens/MoveScreen.tsx:146
 #: src/screens/RecoverScreen.tsx:157
 msgid "Getting ready…"
 msgstr "Getting ready…"
@@ -891,7 +879,7 @@ msgid "Group sections"
 msgstr "Group sections"
 
 #: src/components/TabBar.tsx:44
-#: src/screens/HomeScreen.tsx:49
+#: src/screens/HomeScreen.tsx:52
 msgid "Groups"
 msgstr "Groups"
 
@@ -900,8 +888,8 @@ msgid "Hasn’t joined on a phone yet."
 msgstr "Hasn’t joined on a phone yet."
 
 #: src/screens/JoinScreen.tsx:236
-msgid "Have Footless on your Home Screen? Join from there instead: open it, tap the scan button and scan the invite code. Groups joined here stay in this browser."
-msgstr "Have Footless on your Home Screen? Join from there instead: open it, tap the scan button and scan the invite code. Groups joined here stay in this browser."
+msgid "Have Waroo on your Home Screen? Join from there instead: open it, tap the scan button and scan the invite code. Groups joined here stay in this browser."
+msgstr "Have Waroo on your Home Screen? Join from there instead: open it, tap the scan button and scan the invite code. Groups joined here stay in this browser."
 
 #: src/screens/PersonScreen.tsx:93
 msgid "Help {who} back in"
@@ -941,8 +929,8 @@ msgid "In Rizful, tap <0>Get code</0> and copy it. That one code sets up both ge
 msgstr "In Rizful, tap <0>Get code</0> and copy it. That one code sets up both getting paid and paying."
 
 #: src/components/WalletGuides.tsx:409
-msgid "In your wallet app (Alby Hub, Zeus, Primal and others), make a new Nostr Wallet Connect connection for Footless, ideally with a budget, and paste it here. It stays on this phone."
-msgstr "In your wallet app (Alby Hub, Zeus, Primal and others), make a new Nostr Wallet Connect connection for Footless, ideally with a budget, and paste it here. It stays on this phone."
+msgid "In your wallet app (Alby Hub, Zeus, Primal and others), make a new Nostr Wallet Connect connection for Waroo, ideally with a budget, and paste it here. It stays on this phone."
+msgstr "In your wallet app (Alby Hub, Zeus, Primal and others), make a new Nostr Wallet Connect connection for Waroo, ideally with a budget, and paste it here. It stays on this phone."
 
 #: src/screens/GroupScreen.tsx:112
 msgid "Invite"
@@ -962,8 +950,8 @@ msgid "Invite them, and everyone can add expenses and settle up from their own p
 msgstr "Invite them, and everyone can add expenses and settle up from their own phone."
 
 #: src/lib/wallet.ts:164
-msgid "it answered in a way Footless couldn’t read{tech}"
-msgstr "it answered in a way Footless couldn’t read{tech}"
+msgid "it answered in a way Waroo couldn’t read{tech}"
+msgstr "it answered in a way Waroo couldn’t read{tech}"
 
 #: src/lib/wallet.ts:119
 msgid "it can’t pay BOLT12 offers"
@@ -974,8 +962,8 @@ msgid "it can’t pay BOLT12 offers yet"
 msgstr "it can’t pay BOLT12 offers yet"
 
 #: src/lib/wallet.ts:170
-msgid "it didn’t allow Footless to pay{tech}"
-msgstr "it didn’t allow Footless to pay{tech}"
+msgid "it didn’t allow Waroo to pay{tech}"
+msgstr "it didn’t allow Waroo to pay{tech}"
 
 #. placeholder {0}: sendLabel(next)
 #: src/components/BitcoinPay.tsx:378
@@ -1006,16 +994,16 @@ msgid "it said: {detail}{0}"
 msgstr "it said: {detail}{0}"
 
 #: src/lib/wallet.ts:161
-msgid "it uses a kind of encryption Footless doesn’t support{tech}"
-msgstr "it uses a kind of encryption Footless doesn’t support{tech}"
+msgid "it uses a kind of encryption Waroo doesn’t support{tech}"
+msgstr "it uses a kind of encryption Waroo doesn’t support{tech}"
 
 #: src/screens/RecoverScreen.tsx:72
 msgid "It was cancelled on {who}’s new phone. Nothing changed."
 msgstr "It was cancelled on {who}’s new phone. Nothing changed."
 
 #: src/screens/JoinScreen.tsx:36
-msgid "It’s from an older version of Footless. Ask for a new invite link."
-msgstr "It’s from an older version of Footless. Ask for a new invite link."
+msgid "It’s from an older version of Waroo. Ask for a new invite link."
+msgstr "It’s from an older version of Waroo. Ask for a new invite link."
 
 #: src/lib/wallet.ts:172
 msgid "it’s getting too many requests right now{tech}"
@@ -1039,8 +1027,8 @@ msgid "Izakaya dinner"
 msgstr "Izakaya dinner"
 
 #: src/screens/InviteScreen.tsx:112
-msgid "Join {name} on Footless"
-msgstr "Join {name} on Footless"
+msgid "Join {name} on Waroo"
+msgstr "Join {name} on Waroo"
 
 #: src/screens/JoinScreen.tsx:245
 msgid "Join as {name}"
@@ -1050,7 +1038,7 @@ msgstr "Join as {name}"
 msgid "Join the group"
 msgstr "Join the group"
 
-#: src/screens/HomeScreen.tsx:61
+#: src/screens/HomeScreen.tsx:75
 msgid "Join with a QR code"
 msgstr "Join with a QR code"
 
@@ -1096,6 +1084,7 @@ msgid "Lightning address or BOLT12 offer"
 msgstr "Lightning address or BOLT12 offer"
 
 #: src/screens/InviteScreen.tsx:170
+#: src/screens/MoveScreen.tsx:156
 #: src/screens/RecoverScreen.tsx:163
 msgid "Link copied"
 msgstr "Link copied"
@@ -1174,7 +1163,7 @@ msgstr "Move {0} down"
 msgid "Move {0} up"
 msgstr "Move {0} up"
 
-#: src/screens/MoveScreen.tsx:118
+#: src/screens/MoveScreen.tsx:129
 #: src/screens/YouScreen.tsx:39
 msgid "Move to a new phone"
 msgstr "Move to a new phone"
@@ -1187,7 +1176,7 @@ msgstr "Move to this phone"
 msgid "Move your groups to another phone, so you can keep adding expenses and settling up there. Have both phones with you."
 msgstr "Move your groups to another phone, so you can keep adding expenses and settling up there. Have both phones with you."
 
-#: src/screens/MoveScreen.tsx:167
+#: src/screens/MoveScreen.tsx:184
 msgid "Moved"
 msgstr "Moved"
 
@@ -1195,11 +1184,15 @@ msgstr "Moved"
 msgid "Moving to a new phone"
 msgstr "Moving to a new phone"
 
+#: src/screens/MoveScreen.tsx:156
+msgid "Moving within this phone? Copy the link"
+msgstr "Moving within this phone? Copy the link"
+
 #: src/screens/MoveInScreen.tsx:104
 msgid "Moving your groups here. Keep both phones open…"
 msgstr "Moving your groups here. Keep both phones open…"
 
-#: src/screens/MoveScreen.tsx:162
+#: src/screens/MoveScreen.tsx:179
 msgid "Moving your groups. Keep both phones open…"
 msgstr "Moving your groups. Keep both phones open…"
 
@@ -1233,7 +1226,7 @@ msgstr "No expenses yet"
 msgid "No payments yet"
 msgstr "No payments yet"
 
-#: src/screens/MoveScreen.tsx:156
+#: src/screens/MoveScreen.tsx:173
 #: src/screens/RecoverScreen.tsx:189
 msgid "No, stop"
 msgstr "No, stop"
@@ -1251,7 +1244,7 @@ msgid "Not found"
 msgstr "Not found"
 
 #: src/screens/MoveInScreen.tsx:131
-#: src/screens/MoveScreen.tsx:181
+#: src/screens/MoveScreen.tsx:198
 msgid "Not moved"
 msgstr "Not moved"
 
@@ -1284,8 +1277,8 @@ msgid "Notifications"
 msgstr "Notifications"
 
 #: src/components/NotificationsCard.tsx:71
-msgid "Notifications are blocked for Footless. To get them, allow notifications for Footless in your phone’s settings."
-msgstr "Notifications are blocked for Footless. To get them, allow notifications for Footless in your phone’s settings."
+msgid "Notifications are blocked for Waroo. To get them, allow notifications for Waroo in your phone’s settings."
+msgstr "Notifications are blocked for Waroo. To get them, allow notifications for Waroo in your phone’s settings."
 
 #: src/components/NotificationsCard.tsx:39
 msgid "Notifications are off."
@@ -1319,9 +1312,9 @@ msgstr "Okinawa trip"
 msgid "On iPhone and iPad, only apps on the Home Screen can send notifications. Tap Share, then “Add to Home Screen”, and turn them on from there."
 msgstr "On iPhone and iPad, only apps on the Home Screen can send notifications. Tap Share, then “Add to Home Screen”, and turn them on from there."
 
-#: src/screens/MoveScreen.tsx:138
-msgid "On the new phone, open Footless, tap the scan button and scan this code."
-msgstr "On the new phone, open Footless, tap the scan button and scan this code."
+#: src/screens/MoveScreen.tsx:149
+msgid "On the new phone, open Waroo, tap the scan button and scan this code."
+msgstr "On the new phone, open Waroo, tap the scan button and scan this code."
 
 #: src/screens/InviteScreen.tsx:25
 msgid "One person"
@@ -1358,19 +1351,12 @@ msgid "Open Coinos settings"
 msgstr "Open Coinos settings"
 
 #: src/components/WalletGuides.tsx:187
-msgid "Open Coinos’s Nostr settings, then tap <0>New connection</0>, name it Footless, and set a budget if you like."
-msgstr "Open Coinos’s Nostr settings, then tap <0>New connection</0>, name it Footless, and set a budget if you like."
+msgid "Open Coinos’s Nostr settings, then tap <0>New connection</0>, name it Waroo, and set a budget if you like."
+msgstr "Open Coinos’s Nostr settings, then tap <0>New connection</0>, name it Waroo, and set a budget if you like."
 
-#: src/screens/JoinScreen.tsx:37
-#: src/screens/JoinScreen.tsx:78
-#: src/screens/JoinScreen.tsx:137
-#: src/screens/MoveInScreen.tsx:134
-msgid "Open Footless"
-msgstr "Open Footless"
-
-#: src/screens/MoveScreen.tsx:123
-msgid "Open Footless on the new phone, from its Home Screen."
-msgstr "Open Footless on the new phone, from its Home Screen."
+#: src/screens/HomeScreen.tsx:60
+msgid "Open getwaroo.app"
+msgstr "Open getwaroo.app"
 
 #: src/components/BitcoinPay.tsx:255
 #: src/components/BitcoinPay.tsx:389
@@ -1394,6 +1380,17 @@ msgstr "Open my groups"
 #: src/components/WalletGuides.tsx:249
 msgid "Open Rizful"
 msgstr "Open Rizful"
+
+#: src/screens/JoinScreen.tsx:37
+#: src/screens/JoinScreen.tsx:78
+#: src/screens/JoinScreen.tsx:137
+#: src/screens/MoveInScreen.tsx:134
+msgid "Open Waroo"
+msgstr "Open Waroo"
+
+#: src/screens/MoveScreen.tsx:134
+msgid "Open Waroo on the new phone, from its Home Screen."
+msgstr "Open Waroo on the new phone, from its Home Screen."
 
 #: src/screens/JoinScreen.tsx:189
 msgid "Opening the group…"
@@ -1460,6 +1457,10 @@ msgstr "Partial payment: {left} will still be owed."
 #: src/components/WalletGuides.tsx:81
 msgid "Paste"
 msgstr "Paste"
+
+#: src/screens/MoveScreen.tsx:159
+msgid "Paste it under the scanner in the other app. You’ll still check the numbers on both."
+msgstr "Paste it under the scanner in the other app. You’ll still check the numbers on both."
 
 #: src/components/WalletGuides.tsx:267
 msgid "Paste the code"
@@ -1656,8 +1657,8 @@ msgid "Scan a code"
 msgstr "Scan a code"
 
 #: src/screens/InviteScreen.tsx:179
-msgid "Scan it in Footless on the other phone, with the scan button."
-msgstr "Scan it in Footless on the other phone, with the scan button."
+msgid "Scan it in Waroo on the other phone, with the scan button."
+msgstr "Scan it in Waroo on the other phone, with the scan button."
 
 #: src/components/WalletSection.tsx:25
 msgid "Send"
@@ -1668,8 +1669,8 @@ msgid "Send the others a link to <0>{name}</0>. They open it, pick who they are,
 msgstr "Send the others a link to <0>{name}</0>. They open it, pick who they are, and the group appears on their phone with everything added so far."
 
 #: src/screens/RecoverScreen.tsx:166
-msgid "Sending the link? {who} pastes it under the scanner in Footless. You’ll still check the numbers together."
-msgstr "Sending the link? {who} pastes it under the scanner in Footless. You’ll still check the numbers together."
+msgid "Sending the link? {who} pastes it under the scanner in Waroo. You’ll still check the numbers together."
+msgstr "Sending the link? {who} pastes it under the scanner in Waroo. You’ll still check the numbers together."
 
 #: src/components/WalletSection.tsx:84
 msgid "Set up"
@@ -1720,7 +1721,7 @@ msgstr "Shares for {0}"
 msgid "Show QR code"
 msgstr "Show QR code"
 
-#: src/screens/MoveScreen.tsx:131
+#: src/screens/MoveScreen.tsx:142
 #: src/screens/RecoverScreen.tsx:153
 msgid "Show the code"
 msgstr "Show the code"
@@ -1752,7 +1753,7 @@ msgstr "Someone in this expense isn’t in the group"
 msgid "Split"
 msgstr "Split"
 
-#: src/screens/HomeScreen.tsx:52
+#: src/screens/HomeScreen.tsx:66
 msgid "Split anything with anyone"
 msgstr "Split anything with anyone"
 
@@ -1769,15 +1770,15 @@ msgstr "Split the rest with {0}"
 msgid "Splitting with friends?"
 msgstr "Splitting with friends?"
 
-#: src/screens/HomeScreen.tsx:58
+#: src/screens/HomeScreen.tsx:72
 msgid "Start a group"
 msgstr "Start a group"
 
-#: src/screens/HomeScreen.tsx:54
+#: src/screens/HomeScreen.tsx:68
 msgid "Start a group for a trip, a flat or a dinner, then invite the others from their own phones."
 msgstr "Start a group for a trip, a flat or a dinner, then invite the others from their own phones."
 
-#: src/screens/MoveScreen.tsx:184
+#: src/screens/MoveScreen.tsx:201
 #: src/screens/RecoverScreen.tsx:216
 msgid "Start again"
 msgstr "Start again"
@@ -1800,7 +1801,7 @@ msgstr "Stop paying with {0}? You can connect it again any time."
 msgid "Stopped. Nothing changed, and the phone that used the code got nothing."
 msgstr "Stopped. Nothing changed, and the phone that used the code got nothing."
 
-#: src/screens/MoveScreen.tsx:113
+#: src/screens/MoveScreen.tsx:124
 msgid "Stopped. Nothing was moved. If a phone you don’t know scanned the code, that’s fine: it got nothing."
 msgstr "Stopped. Nothing was moved. If a phone you don’t know scanned the code, that’s fine: it got nothing."
 
@@ -1832,7 +1833,7 @@ msgstr "Tap again to leave"
 msgid "Tap again to remove {who}"
 msgstr "Tap again to remove {who}"
 
-#: src/screens/MoveScreen.tsx:124
+#: src/screens/MoveScreen.tsx:135
 msgid "Tap the scan button and scan the code this phone will show."
 msgstr "Tap the scan button and scan the code this phone will show."
 
@@ -1841,8 +1842,8 @@ msgid "Tax, tip or discount"
 msgstr "Tax, tip or discount"
 
 #: src/components/WalletGuides.tsx:146
-msgid "Tell Footless your username"
-msgstr "Tell Footless your username"
+msgid "Tell Waroo your username"
+msgstr "Tell Waroo your username"
 
 #: src/lib/ledgerText.ts:23
 msgid "That amount is too large"
@@ -1853,16 +1854,12 @@ msgid "That code didn’t work. Codes work once and expire quickly, so get a new
 msgstr "That code didn’t work. Codes work once and expire quickly, so get a new one in Rizful and paste it again."
 
 #: src/screens/ScanScreen.tsx:62
-msgid "That code isn’t from Footless. Scan the code on a group’s Invite screen."
-msgstr "That code isn’t from Footless. Scan the code on a group’s Invite screen."
+msgid "That code isn’t from Waroo. Scan the code on a group’s Invite screen."
+msgstr "That code isn’t from Waroo. Scan the code on a group’s Invite screen."
 
 #: src/components/WalletGuides.tsx:306
 msgid "That doesn’t look like a Lightning address (name@provider.com) or a BOLT12 offer (lno1…)."
 msgstr "That doesn’t look like a Lightning address (name@provider.com) or a BOLT12 offer (lno1…)."
-
-#: src/screens/ScanScreen.tsx:97
-msgid "That isn’t a Footless invite link. It starts with this site’s address and includes “#/join”."
-msgstr "That isn’t a Footless invite link. It starts with this site’s address and includes “#/join”."
 
 #: src/lib/lightning.ts:72
 msgid "That isn’t a Lightning address."
@@ -1875,6 +1872,10 @@ msgstr "That isn’t a name like ₿you@wallet.com"
 #: src/lib/wallet.ts:33
 msgid "That isn’t a wallet connection. It should start with nostr+walletconnect://"
 msgstr "That isn’t a wallet connection. It should start with nostr+walletconnect://"
+
+#: src/screens/ScanScreen.tsx:97
+msgid "That isn’t a Waroo invite link. It starts with this site’s address and includes “#/join”."
+msgstr "That isn’t a Waroo invite link. It starts with this site’s address and includes “#/join”."
 
 #: src/lib/lightning.ts:74
 msgid "That Lightning address can’t receive payments."
@@ -1893,8 +1894,8 @@ msgid "That wallet connection is incomplete. Copy it again from your wallet."
 msgstr "That wallet connection is incomplete. Copy it again from your wallet."
 
 #: src/lib/wallet.ts:89
-msgid "the browser wallet didn’t allow Footless to pay"
-msgstr "the browser wallet didn’t allow Footless to pay"
+msgid "the browser wallet didn’t allow Waroo to pay"
+msgstr "the browser wallet didn’t allow Waroo to pay"
 
 #: src/lib/wallet.ts:85
 msgid "the browser wallet isn’t available right now"
@@ -1909,8 +1910,8 @@ msgid "The camera is busy in another app. Close it and try again."
 msgstr "The camera is busy in another app. Close it and try again."
 
 #: src/screens/ScanScreen.tsx:82
-msgid "The camera stopped while Footless was in the background."
-msgstr "The camera stopped while Footless was in the background."
+msgid "The camera stopped while Waroo was in the background."
+msgstr "The camera stopped while Waroo was in the background."
 
 #: src/lib/sync.ts:435
 msgid "The group took too long to load"
@@ -1937,8 +1938,8 @@ msgid "The move was stopped on the other phone. Nothing changed."
 msgstr "The move was stopped on the other phone. Nothing changed."
 
 #: src/lib/bip353.ts:42
-msgid "The name’s records aren’t signed (DNSSEC), so Footless can’t trust them."
-msgstr "The name’s records aren’t signed (DNSSEC), so Footless can’t trust them."
+msgid "The name’s records aren’t signed (DNSSEC), so Waroo can’t trust them."
+msgstr "The name’s records aren’t signed (DNSSEC), so Waroo can’t trust them."
 
 #: src/components/BitcoinPay.tsx:168
 msgid "the payment didn’t go through"
@@ -2089,16 +2090,16 @@ msgid "This link isn’t complete"
 msgstr "This link isn’t complete"
 
 #: src/components/NotificationsCard.tsx:49
-msgid "This phone gets a notification when someone pays you, joins a group or adds an expense, even when Footless is closed."
-msgstr "This phone gets a notification when someone pays you, joins a group or adds an expense, even when Footless is closed."
+msgid "This phone gets a notification when someone pays you, joins a group or adds an expense, even when Waroo is closed."
+msgstr "This phone gets a notification when someone pays you, joins a group or adds an expense, even when Waroo is closed."
 
 #: src/lib/news.ts:118
 msgid "This phone won’t get anything new from the group"
 msgstr "This phone won’t get anything new from the group"
 
 #: src/lib/wallet.ts:168
-msgid "this would go over the spending limit you set for Footless"
-msgstr "this would go over the spending limit you set for Footless"
+msgid "this would go over the spending limit you set for Waroo"
+msgstr "this would go over the spending limit you set for Waroo"
 
 #: src/components/BitcoinPay.tsx:312
 msgid "Tip: <0>set up one-tap payments</0>, so you don’t have to switch apps."
@@ -2174,7 +2175,7 @@ msgstr "Waiting for {other}…"
 msgid "Waiting for {who}’s new phone…"
 msgstr "Waiting for {who}’s new phone…"
 
-#: src/screens/MoveScreen.tsx:141
+#: src/screens/MoveScreen.tsx:152
 msgid "Waiting for the new phone…"
 msgstr "Waiting for the new phone…"
 
@@ -2199,6 +2200,26 @@ msgstr "Wallets"
 msgid "Wallets for sending or receiving"
 msgstr "Wallets for sending or receiving"
 
+#: src/components/BitcoinPay.tsx:442
+msgid "Waroo can’t see payments to an offer. Once you’ve paid, mark it here."
+msgstr "Waroo can’t see payments to an offer. Once you’ve paid, mark it here."
+
+#: src/lib/scan.ts:75
+msgid "Waroo can’t use the camera. Allow camera access for Waroo in your phone’s settings, or paste the link below."
+msgstr "Waroo can’t use the camera. Allow camera access for Waroo in your phone’s settings, or paste the link below."
+
+#: src/lib/wallet.ts:155
+msgid "Waroo couldn’t reach it, so the request wasn’t sent{tech}"
+msgstr "Waroo couldn’t reach it, so the request wasn’t sent{tech}"
+
+#: src/components/WalletGuides.tsx:77
+msgid "Waroo couldn’t read what you copied. Press and hold the box, then choose Paste."
+msgstr "Waroo couldn’t read what you copied. Press and hold the box, then choose Paste."
+
+#: src/screens/HomeScreen.tsx:55
+msgid "Waroo has a new address"
+msgstr "Waroo has a new address"
+
 #. placeholder {0}: index + 1
 #: src/components/ItemsEditor.tsx:120
 msgid "What extra {0} is"
@@ -2217,8 +2238,8 @@ msgid "When someone pays someone back, in bitcoin, cash or otherwise, it shows u
 msgstr "When someone pays someone back, in bitcoin, cash or otherwise, it shows up here."
 
 #: src/components/WalletSection.tsx:175
-msgid "When you pay, Footless asks these in order. If one can’t pay, you’ll see why and choose whether to try the next. You can always pay by opening your wallet app instead."
-msgstr "When you pay, Footless asks these in order. If one can’t pay, you’ll see why and choose whether to try the next. You can always pay by opening your wallet app instead."
+msgid "When you pay, Waroo asks these in order. If one can’t pay, you’ll see why and choose whether to try the next. You can always pay by opening your wallet app instead."
+msgstr "When you pay, Waroo asks these in order. If one can’t pay, you’ll see why and choose whether to try the next. You can always pay by opening your wallet app instead."
 
 #: src/screens/PickGroupScreen.tsx:20
 msgid "Which group is it for?"
@@ -2250,8 +2271,8 @@ msgid "Who paid how much"
 msgstr "Who paid how much"
 
 #: src/screens/InviteScreen.tsx:194
-msgid "Whoever opens the link while it works can join and see the group’s expenses. Nobody else can read them, not even Footless."
-msgstr "Whoever opens the link while it works can join and see the group’s expenses. Nobody else can read them, not even Footless."
+msgid "Whoever opens the link while it works can join and see the group’s expenses. Nobody else can read them, not even Waroo."
+msgstr "Whoever opens the link while it works can join and see the group’s expenses. Nobody else can read them, not even Waroo."
 
 #: src/components/WalletGuides.tsx:184
 msgid "Without this, paying opens Coinos so you can approve it there. To pay without switching apps:"
@@ -2274,7 +2295,7 @@ msgstr "yen"
 msgid "Yes, it’s {who}"
 msgstr "Yes, it’s {who}"
 
-#: src/screens/MoveScreen.tsx:153
+#: src/screens/MoveScreen.tsx:170
 msgid "Yes, move my groups"
 msgstr "Yes, move my groups"
 
@@ -2356,7 +2377,7 @@ msgstr "Your balance"
 msgid "Your Coinos username"
 msgstr "Your Coinos username"
 
-#: src/screens/MoveScreen.tsx:121
+#: src/screens/MoveScreen.tsx:132
 msgid "Your groups and wallets move to the new phone, and leave this one."
 msgstr "Your groups and wallets move to the new phone, and leave this one."
 
@@ -2364,7 +2385,7 @@ msgstr "Your groups and wallets move to the new phone, and leave this one."
 msgid "Your invite links"
 msgstr "Your invite links"
 
-#: src/screens/MoveScreen.tsx:128
+#: src/screens/MoveScreen.tsx:139
 msgid "Your Lightning addresses and wallet connections come along, in the same order. A wallet that’s built into this browser stays behind."
 msgstr "Your Lightning addresses and wallet connections come along, in the same order. A wallet that’s built into this browser stays behind."
 
@@ -2398,6 +2419,6 @@ msgstr "Your wallet didn’t answer. Check it’s online and the connection allo
 msgid "Your wallet reported the payment, but its proof didn’t check out."
 msgstr "Your wallet reported the payment, but its proof didn’t check out."
 
-#: src/screens/MoveScreen.tsx:169
+#: src/screens/MoveScreen.tsx:186
 msgid "Your wallets are on the new phone now, and gone from this one."
 msgstr "Your wallets are on the new phone now, and gone from this one."
