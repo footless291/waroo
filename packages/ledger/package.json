@@ -2,6 +2,7 @@
   "name": "@waroo/ledger",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "description": "Pure, dependency-free bill-splitting ledger: splits, balances, settlements and an event log.",
   "type": "module",
   "exports": {

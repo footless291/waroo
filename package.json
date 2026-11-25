@@ -1,6 +1,7 @@
 {
   "name": "waroo",
   "private": true,
+  "license": "MIT",
   "description": "Split bills any way you like and settle up in bitcoin, without anyone holding your money.",
   "type": "module",
   "engines": {

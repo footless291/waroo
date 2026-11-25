@@ -43,4 +43,4 @@ The ledger's tests also run with nothing installed: `cd packages/ledger && node 
 
 ## License
 
-Not chosen yet; this will be settled before the first public release. Parts of `packages/ledger` are adapted from [Spliit](https://github.com/spliit-app/spliit) under the MIT License; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+MIT, for everything: see [LICENSE](LICENSE). Parts of `packages/ledger` are adapted from [Spliit](https://github.com/spliit-app/spliit), also under the MIT License; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
