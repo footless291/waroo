@@ -52,15 +52,20 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await old.click('.pager.inline .pager-page:not([inert]) .wallet-guide button:has-text("Add")');
   await waitText(old, '.pager.inline .pager-page:not([inert]) .wallet-list', 'ana@pay.example.com');
   // Two wallet connections, and a browser wallet that can't move
-  const settings = (p, fn) => p.evaluate((fn) => new Promise((resolve) => {
+  // Reads and writes the app's settings directly (no eval: the app's Content-Security-Policy forbids it).
+  const settingsDo = (p, op, key, value) => p.evaluate(([op, key, value]) => new Promise((resolve) => {
     const open = indexedDB.open('waroo');
-    open.onsuccess = () => { const tx = open.result.transaction('settings', 'readwrite'); const st = tx.objectStore('settings'); new Function('st', 'resolve', fn)(st, resolve); };
-  }), fn);
-  await settings(old, `st.put([
+    open.onsuccess = () => {
+      const st = open.result.transaction('settings', 'readwrite').objectStore('settings');
+      if (op === 'put') { st.put(value, key).onsuccess = () => resolve(); }
+      else { const r = st.get(key); r.onsuccess = () => resolve(r.result); }
+    };
+  }), [op, key, value]);
+  await settingsDo(old, 'put', 'sendWallets', [
     { id: 'w1', provider: 'other', name: 'Alby Hub', kind: 'nwc', url: 'nostr+walletconnect://aa?relay=wss://relay.example&secret=11' },
     { id: 'w2', provider: 'coinos', name: 'Coinos', kind: 'nwc', url: 'nostr+walletconnect://bb?relay=wss://relay.coinos.io&secret=22' },
     { id: 'w3', provider: 'other', name: 'Browser wallet', kind: 'webln' },
-  ], 'sendWallets'); resolve()`);
+  ])
 
   // Someone glimpses the code and scans it too: the move stops, nothing leaks
   await old.goto(B + '#/settings?open=move');
@@ -132,7 +137,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   check(await waitText(bob, '.cards', 'Ana'), 'still as Ana');
   await newer.goto(B + '#/settings?open=wallet'); await newer.waitForTimeout(500);
   check(await waitText(newer, '.pager.inline .pager-page:not([inert]) .wallet-list', 'ana@pay.example.com'), 'her Lightning address came along');
-  const readSend = (p) => settings(p, `const r = st.get('sendWallets'); r.onsuccess = () => resolve((r.result || []).map((w) => w.name).join(','))`);
+  const readSend = async (p) => ((await settingsDo(p, 'get', 'sendWallets')) || []).map((w) => w.name).join(',');
   check((await readSend(newer)) === 'Alby Hub,Coinos', `her wallet connections came along, in order (${await readSend(newer)})`);
   await newer.click('.wallet .segmented label:has-text("Send")').catch(() => newer.click('label:has-text("Send")'));
   check(await waitText(newer, '.pager.inline .pager-page:not([inert]) .wallet-list', 'Alby Hub'), 'and show in Send');
