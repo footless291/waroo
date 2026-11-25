@@ -1,7 +1,7 @@
 /**
  * Bug reports, ideas, and sign-ups for news about the app.
  *
- * A report is emailed to hello@getwaroo.app (Cloudflare Email Service),
+ * A report is emailed to the maintainer (Cloudflare Email Service),
  * screenshots attached. Nothing about the report is stored. People who tick
  * "email me about updates" are kept in D1 (`subscribers`): just the address,
  * their language and when. Unlike everything else in Waroo, this is readable
@@ -10,11 +10,17 @@
 
 export interface FeedbackEnv {
   EMAIL?: SendEmail
+  /**
+   * Where reports are delivered. On Cloudflare's free plan, Email Service
+   * only sends to verified addresses, so this is the maintainer's verified
+   * inbox (a secret, so it isn't in the repository). hello@getwaroo.app
+   * forwards to the same inbox for people writing in directly.
+   */
+  FEEDBACK_TO?: string
   DB?: D1Database
   FEEDBACK_LIMIT?: RateLimit
 }
 
-const TO = 'hello@getwaroo.app'
 const FROM = { email: 'feedback@getwaroo.app', name: 'Waroo feedback' }
 const KINDS = { bug: 'Bug', idea: 'Idea', other: 'Feedback' } as const
 const MAX_MESSAGE = 5000
@@ -100,7 +106,7 @@ export async function feedback(request: Request, env: FeedbackEnv): Promise<Resp
 <hr><p style="color:#666;font:13px/1.5 system-ui,sans-serif">${details.map(escape).join('<br>')}</p>`
     try {
       await env.EMAIL.send({
-        to: TO,
+        to: env.FEEDBACK_TO ?? 'hello@getwaroo.app',
         from: FROM,
         ...(email ? { replyTo: email } : {}),
         subject: `[${KINDS[kind]}] ${firstLine}`,
