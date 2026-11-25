@@ -49,3 +49,11 @@ export const today = () => {
 export function isRemoved(state: { signed?: boolean }, member: { removedBy?: string; key?: unknown }): boolean {
   return !!state.signed && member.removedBy !== undefined && member.key === undefined
 }
+
+/**
+ * A person's name as said politely in a sentence or a list: "Bob" in
+ * English, "Bobさん" in Japanese.
+ */
+export function politeName(name: string): string {
+  return t({ context: 'a person’s name, said politely', message: `${name}` })
+}

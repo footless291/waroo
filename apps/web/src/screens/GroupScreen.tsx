@@ -16,7 +16,7 @@ import { SyncLine } from '../components/SyncLine.tsx'
 import { groupTabs, TabBar } from '../components/TabBar.tsx'
 import { Pager } from '../components/Pager.tsx'
 import { deleteGroupLocally, type GroupMeta } from '../lib/db.ts'
-import { formatDate, money, satsText } from '../lib/format.ts'
+import { formatDate, money, politeName, satsText } from '../lib/format.ts'
 import { methodName } from './ActivityScreen.tsx'
 import { go, locale, useGroup } from '../lib/hooks.ts'
 import { syncHub } from '../lib/sync.ts'
@@ -177,7 +177,8 @@ const nameOf = (state: GroupState, id: string, meId?: string) =>
   id === meId ? t`You` : (state.members.get(id)?.name ?? t`Someone`)
 
 /** "Bob", "Bob and Cai", "Bob, Cai and Dee", in the app's language. */
-const listNames = (names: string[]) => new Intl.ListFormat(locale(), { type: 'conjunction' }).format(names)
+const listNames = (names: string[]) =>
+  new Intl.ListFormat(locale(), { type: 'conjunction' }).format(names.map(politeName))
 
 function cantSeeYet(names: string[]) {
   const who = listNames(names)

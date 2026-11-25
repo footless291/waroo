@@ -30,7 +30,7 @@ export function AppearanceCard() {
 export function LanguageCard() {
   const choice = languageChoice()
   return (
-    <div className="appearance">
+    <div className="appearance language">
       <Segmented<LanguageChoice>
         label={t`Language`}
         options={[{ value: 'system', label: t`Phone’s` }, ...LANGUAGES.map((l) => ({ value: l.code, label: l.name }))]}
