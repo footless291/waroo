@@ -105,7 +105,18 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
     <main className="tabs-shell">
       <div className="screen shell-top">
         <Header
-          title={name}
+          title={
+            cutOff ? (
+              name
+            ) : (
+              <a className="title-link" href={`#${base}/edit`} aria-label={t`${name}: group settings`}>
+                {name}
+                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                  <path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+                </svg>
+              </a>
+            )
+          }
           back="/"
           action={
             <a className="button small" href={`#${base}/invite`}>
@@ -227,7 +238,7 @@ function Balances({ meta, state }: { meta: GroupMeta; state: GroupState }) {
   // The hero shows this person's own position, in the group's main currency
   // when they have one there, else the first currency they're in.
   const currencies = [...balances.keys()].sort((a, b) =>
-    a === meta.currency ? -1 : b === meta.currency ? 1 : a.localeCompare(b),
+    a === (state.currency ?? meta.currency) ? -1 : b === (state.currency ?? meta.currency) ? 1 : a.localeCompare(b),
   )
   const heroCurrency = currencies.find((c) => balances.get(c)?.get(meta.meId)) ?? currencies[0]!
   const mine = balances.get(heroCurrency)?.get(meta.meId) ?? 0

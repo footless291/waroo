@@ -438,11 +438,15 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
       }
 
       case 'group.updated':
+        if (e.name !== undefined && (typeof e.name !== 'string' || !e.name.trim() || e.name.length > 80)) {
+          reject(e, 'A group needs a name of up to 80 characters')
+          break
+        }
         if (e.currency !== undefined && !isKnownCurrency(e.currency)) {
           reject(e, `Unknown currency code: ${e.currency}`)
           break
         }
-        if (e.name !== undefined) state.name = e.name
+        if (e.name !== undefined) state.name = e.name.trim()
         if (e.currency !== undefined) state.currency = e.currency
         break
 

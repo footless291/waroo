@@ -89,7 +89,7 @@ function ExpenseForm({
   const initial = existing?.split
 
   const [title, setTitle] = useState(existing?.title ?? '')
-  const [currency, setCurrency] = useState(existing?.currency ?? meta.currency)
+  const [currency, setCurrency] = useState(existing?.currency ?? (state.currency ?? meta.currency))
   const [amountText, setAmountText] = useState(existing ? toInput(existing.total, existing.currency) : '')
   const [date, setDate] = useState(existing?.date ?? today())
   const existingPayers = existing ? Object.keys(existing.payers) : []
@@ -358,7 +358,7 @@ function ExpenseForm({
           <label className="field">
             <span>{t`Currency`}</span>
             <select value={currency} onChange={(e) => setCurrency(e.target.value)}>
-              {[...new Set([meta.currency, ...CURRENCIES])].map((c) => (
+              {[...new Set([(state.currency ?? meta.currency), ...CURRENCIES])].map((c) => (
                 <option key={c}>{c}</option>
               ))}
             </select>

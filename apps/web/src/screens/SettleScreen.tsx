@@ -40,7 +40,7 @@ export function SettleScreen({ groupId, params }: { groupId: string; params: URL
       ? pickedTo
       : (people.find((m) => m.id !== from)?.id ?? '')
     : (params.get('to') ?? '')
-  const currency = free ? (pickedCurrency ?? meta.currency) : (params.get('currency') ?? 'JPY')
+  const currency = free ? (pickedCurrency ?? (state.currency ?? meta.currency)) : (params.get('currency') ?? 'JPY')
   const done = free ? `/g/${meta.id}/payments` : `/g/${meta.id}`
   const label = (id: string) => {
     const name = state.members.get(id)?.name ?? ''
@@ -118,7 +118,7 @@ export function SettleScreen({ groupId, params }: { groupId: string; params: URL
           <label className="field">
             <span>{t`Currency`}</span>
             <select value={currency} onChange={(e) => setCurrency(e.target.value)}>
-              {[...new Set([meta.currency, ...CURRENCIES])].map((c) => (
+              {[...new Set([(state.currency ?? meta.currency), ...CURRENCIES])].map((c) => (
                 <option key={c}>{c}</option>
               ))}
             </select>

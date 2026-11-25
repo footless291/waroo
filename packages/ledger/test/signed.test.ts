@@ -396,3 +396,14 @@ describe('BOLT12 offers', () => {
     assert.ok(isOffer(OFFER))
   })
 })
+
+describe('group names', () => {
+  it('can be changed by anyone in the group, but not emptied', () => {
+    const joined = [...base(), ev('bob', 5, 'KB', { type: 'member.claimed', memberId: 'bob', key: 'KB' })]
+    const rename = ev('bob', 6, 'KB', { type: 'group.updated', name: '  Okinawa 2026  ' })
+    const empty = ev('ana', 7, 'KA', { type: 'group.updated', name: '   ' })
+    const state = replay([...joined, rename, empty])
+    assert.equal(state.name, 'Okinawa 2026')
+    assert.match(state.rejected[0]!.reason, /needs a name/)
+  })
+})
