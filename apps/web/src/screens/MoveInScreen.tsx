@@ -1,7 +1,10 @@
+import { Trans } from '@lingui/react/macro'
+import { plural, t } from '@lingui/core/macro'
 import { useEffect, useState } from 'react'
 import { Header } from '../components/Header.tsx'
 import { isGroupKey, moveCode, newSigningKeys } from '../lib/crypto.ts'
 import { MoveChannel, receiveGroups } from '../lib/move.ts'
+import { codeLabel } from './MoveScreen.tsx'
 
 type Phase =
   | { at: 'connecting' }
@@ -15,8 +18,8 @@ export function MoveInScreen({ params }: { params: URLSearchParams }) {
   const secret = params.get('t') ?? ''
   // Someone else in a group is vouching for this phone, after the old one was lost.
   const recovering = params.get('r') === '1'
-  const title = recovering ? 'Get back into a group' : 'Move to this phone'
-  const other = recovering ? 'the phone helping you' : 'your other phone'
+  const title = recovering ? t`Get back into a group` : t`Move to this phone`
+  const other = recovering ? t`the phone helping you` : t`your other phone`
   const valid = isGroupKey(secret)
   const [phase, setPhase] = useState<Phase>({ at: 'connecting' })
 
@@ -34,7 +37,7 @@ export function MoveInScreen({ params }: { params: URLSearchParams }) {
             if (msg.type === 'cancel') {
               finished = true
               channel?.close()
-              setPhase({ at: 'stopped', message: 'The move was stopped on the other phone. Nothing changed.' })
+              setPhase({ at: 'stopped', message: t`The move was stopped on the other phone. Nothing changed.` })
             } else if (msg.type === 'groups' && !finished) {
               setPhase({ at: 'receiving' })
               try {
@@ -51,7 +54,7 @@ export function MoveInScreen({ params }: { params: URLSearchParams }) {
             }
           },
           () => {
-            if (!finished) setPhase({ at: 'stopped', message: 'Lost the connection. Start again on the other phone.' })
+            if (!finished) setPhase({ at: 'stopped', message: t`Lost the connection. Start again on the other phone.` })
           },
         )
         await channel.open()
@@ -72,7 +75,7 @@ export function MoveInScreen({ params }: { params: URLSearchParams }) {
       <main className="screen">
         <Header title={title} back="/" />
         <section className="empty">
-          <h2>This code isn’t complete</h2>
+          <h2>{t`This code isn’t complete`}</h2>
           <p>Scan the code on {other} again.</p>
         </section>
       </main>
@@ -86,45 +89,49 @@ export function MoveInScreen({ params }: { params: URLSearchParams }) {
       {phase.at === 'code' && (
         <section className="form">
           <p className="lead">Check {other} shows the same numbers, and confirm there.</p>
-          <p className="move-code" aria-label={`Code ${phase.code.split('').join(' ')}`}>
+          <p className="move-code" aria-label={codeLabel(phase.code)}>
             {phase.code}
           </p>
           <p className="muted" role="status">
-            Waiting for {other}…
+            <Trans>
+              Waiting for {other}…
+            </Trans>
           </p>
         </section>
       )}
       {phase.at === 'receiving' && (
         <p className="lead" role="status">
-          {recovering ? 'Bringing your group here' : 'Moving your groups here'}. Keep both phones open…
+          {recovering ? t`Bringing your group here. Keep both phones open…` : t`Moving your groups here. Keep both phones open…`}
         </p>
       )}
       {phase.at === 'done' && (
         <section className="empty">
-          <h2>All here</h2>
+          <h2>{t`All here`}</h2>
           <p>
-            {phase.count === 0
-              ? 'Nothing to move but your wallets.'
-              : phase.count === 1
-                ? 'Your group is on this phone now.'
-                : `Your ${phase.count} groups are on this phone now.`}{' '}
+            {phase.count === 0 ? t`Nothing to move but your wallets.` : plural(phase.count, {
+              one: 'Your group is on this phone now.',
+              other: 'Your # groups are on this phone now.',
+            })}{' '}
             {recovering
-              ? 'Your wallet connection was on the lost phone: connect your wallet again in Settings, and in your wallet’s own app, turn off the connection the lost phone used.'
+              ? t`Your wallet connection was on the lost phone: connect your wallet again in Settings, and in your wallet’s own app, turn off the connection the lost phone used.`
               : phase.wallets > 0
-                ? `Your wallet ${phase.wallets === 1 ? 'connection came' : 'connections came'} too, in the same order.`
-                : 'If you paid from a wallet in this browser before, connect it again in Settings.'}
+                ? plural(phase.wallets, {
+                    one: 'Your wallet connection came too, in the same order.',
+                    other: 'Your wallet connections came too, in the same order.',
+                  })
+                : t`If you paid from a wallet in this browser before, connect it again in Settings.`}
           </p>
           <a className="button primary" href="#/">
-            Open my groups
+            {t`Open my groups`}
           </a>
         </section>
       )}
       {phase.at === 'stopped' && (
         <section className="empty">
-          <h2>Not moved</h2>
+          <h2>{t`Not moved`}</h2>
           <p role="alert">{phase.message}</p>
           <a className="button primary" href="#/">
-            Open Footless
+            {t`Open Footless`}
           </a>
         </section>
       )}

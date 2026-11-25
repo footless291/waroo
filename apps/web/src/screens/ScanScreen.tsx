@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Header } from '../components/Header.tsx'
 import { go } from '../lib/hooks.ts'
@@ -23,7 +24,7 @@ export function ScanScreen() {
     async function start() {
       if (!navigator.mediaDevices?.getUserMedia) {
         setCamera('off')
-        setProblem('This browser can’t open the camera. Paste the invite link below instead.')
+        setProblem(t`This browser can’t open the camera. Paste the invite link below instead.`)
         return
       }
       try {
@@ -58,7 +59,7 @@ export function ScanScreen() {
             }
             if (text !== lastWrong) {
               lastWrong = text
-              setNotice('That code isn’t from Footless. Scan the code on a group’s Invite screen.')
+              setNotice(t`That code isn’t from Footless. Scan the code on a group’s Invite screen.`)
             }
           }
         }
@@ -78,7 +79,7 @@ export function ScanScreen() {
       if (document.hidden) {
         stop()
         setCamera('off')
-        setProblem('The camera stopped while Footless was in the background.')
+        setProblem(t`The camera stopped while Footless was in the background.`)
       }
     }
     document.addEventListener('visibilitychange', onVisibility)
@@ -93,28 +94,28 @@ export function ScanScreen() {
     e.preventDefault()
     const route = inviteRoute(pasted)
     if (route) go(route)
-    else setPasteError('That isn’t a Footless invite link. It starts with this site’s address and includes “#/join”.')
+    else setPasteError(t`That isn’t a Footless invite link. It starts with this site’s address and includes “#/join”.`)
   }
 
   return (
     <main className="screen">
-      <Header title="Scan a code" back="/" />
-      <p className="lead">Point the camera at a friend’s invite code, or at your other phone’s code when you’re moving.</p>
+      <Header title={t`Scan a code`} back="/" />
+      <p className="lead">{t`Point the camera at a friend’s invite code, or at your other phone’s code when you’re moving.`}</p>
 
       <div className={`scanner${camera === 'on' ? ' live' : ''}`}>
         <video ref={video} playsInline muted aria-hidden="true" />
         <canvas ref={canvas} hidden />
         {camera === 'on' && <span className="scanner-frame" aria-hidden="true" />}
-        {camera === 'starting' && <span className="scanner-message">Starting the camera…</span>}
+        {camera === 'starting' && <span className="scanner-message">{t`Starting the camera…`}</span>}
         {camera === 'off' && <span className="scanner-message">{problem}</span>}
       </div>
       <p className="muted scanner-status" role="status">
-        {camera === 'on' ? notice || 'Looking for a code…' : ''}
+        {camera === 'on' ? notice || t`Looking for a code…` : ''}
       </p>
 
       <form className="form paste-form" onSubmit={openPasted} noValidate>
         <label className="field">
-          <span>Or paste the invite link</span>
+          <span>{t`Or paste the invite link`}</span>
           <input
             value={pasted}
             onChange={(e) => {
@@ -133,7 +134,7 @@ export function ScanScreen() {
           {pasteError}
         </p>
         <button className="button" disabled={!pasted.trim()}>
-          Open invite
+          {t`Open invite`}
         </button>
       </form>
     </main>

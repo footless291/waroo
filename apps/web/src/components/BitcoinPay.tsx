@@ -1,7 +1,9 @@
+import { Trans } from '@lingui/react/macro'
+import { t } from '@lingui/core/macro'
 import { fiatToSats, isOffer, receiveTargets, type GroupState } from '@footless/ledger'
 import { useEffect, useState } from 'react'
 import { append, newId, type GroupMeta } from '../lib/db.ts'
-import { money } from '../lib/format.ts'
+import { money, satsText } from '../lib/format.ts'
 import { locale } from '../lib/hooks.ts'
 import { btcPrice, checkPaid, getInvoice, payParams, provesPayment, type CheckedInvoice } from '../lib/lightning.ts'
 import { payOfferWithWallet, payWithWallet, WalletPayError } from '../lib/wallet.ts'
@@ -29,14 +31,13 @@ type Phase =
   | { at: 'paid'; sats: number }
   | { at: 'error'; message: string; checkWallet?: boolean }
 
-const satsText = (n: number) => `${new Intl.NumberFormat(locale()).format(n)} sats`
 
 /** "from Kraken, bitFlyer and 2 more" */
 const sourcesText = (source: string) => {
   const names = source.split('+')
   return names.length <= 3
-    ? `from ${names.join(', ')}`
-    : `from ${names.slice(0, 2).join(', ')} and ${names.length - 2} more`
+    ? fromList(names)
+    : fromSome(names.slice(0, 2), names.length - 2)
 }
 
 const pricePerBitcoin = (price: string, currency: string) =>
@@ -129,7 +130,8 @@ export function BitcoinPay(props: {
         setPhase({ at: 'ready', quote: { invoice, sats: invoice.sats, price: rate.price, source: rate.source, target }, next })
         return
       } catch (err) {
-        problems.push(`${addr}: ${(err as Error).message}`)
+        const why = (err as Error).message
+        problems.push(t`${addr}: ${why}`)
       }
     }
     setPhase({
@@ -137,7 +139,7 @@ export function BitcoinPay(props: {
       message:
         tried.length === 1
           ? (problems[0]!.split(': ').slice(1).join(': '))
-          : `None of ${toName}’s addresses could take a payment right now. ${problems.join(' ')}`,
+          : noneWorked(toName, problems.join(' ')),
     })
   }
 
@@ -163,7 +165,7 @@ export function BitcoinPay(props: {
         at: 'failed',
         quote: q,
         index,
-        reason: (err as Error).message || 'the payment didn’t go through',
+        reason: (err as Error).message || t`the payment didn’t go through`,
         certain: err instanceof WalletPayError && err.certain,
       })
       return
@@ -172,7 +174,7 @@ export function BitcoinPay(props: {
     if ((preimage || !q.offer) && !(paymentHash && preimage && (await provesPayment(paymentHash, preimage)))) {
       setPhase({
         at: 'error',
-        message: 'Your wallet reported the payment, but its proof didn’t check out.',
+        message: t`Your wallet reported the payment, but its proof didn’t check out.`,
         checkWallet: true,
       })
       return
@@ -206,34 +208,36 @@ export function BitcoinPay(props: {
 
   return (
     <section className="bitcoin" aria-labelledby="bitcoin-title">
-      <h2 id="bitcoin-title">Pay with bitcoin</h2>
+      <h2 id="bitcoin-title">{t`Pay with bitcoin`}</h2>
 
       {!address ? (
-        <p>{toName} hasn’t added a Lightning address yet, so they can’t receive bitcoin. They can add one in Settings.</p>
+        <p>{t`${toName} hasn’t added a Lightning address yet, so they can’t receive bitcoin. They can add one in Settings.`}</p>
       ) : phase.at === 'paid' ? (
         <>
           <p className="bitcoin-done" role="status">
-            Paid {money(amount, currency)} to {toName} ({satsText(phase.sats)}).
+            <Trans>
+              Paid {money(amount, currency)} to {toName} ({satsText(phase.sats)}).
+            </Trans>
           </p>
           <button type="button" className="button primary" onClick={onPaid}>
-            Done
+            {t`Done`}
           </button>
         </>
       ) : phase.at === 'ready' || phase.at === 'paying' || phase.at === 'external' || phase.at === 'failed' ? (
         <>
           <dl className="quote">
             <div>
-              <dt>You pay</dt>
+              <dt>{t`You pay`}</dt>
               <dd>{money(amount, currency)}</dd>
             </div>
             <div>
-              <dt>In bitcoin</dt>
+              <dt>{t`In bitcoin`}</dt>
               <dd>{satsText(phase.quote.sats)}</dd>
             </div>
             <div>
-              <dt>Price</dt>
+              <dt>{t`Price`}</dt>
               <dd>
-                {pricePerBitcoin(phase.quote.price, currency)} per bitcoin
+                {perBitcoin(pricePerBitcoin(phase.quote.price, currency))}
                 <span className="quote-source">{sourcesText(phase.quote.source)}</span>
               </dd>
             </div>
@@ -248,26 +252,26 @@ export function BitcoinPay(props: {
           ) : phase.at === 'external' ? (
             <>
               <a className="button primary" href={`lightning:${phase.quote.invoice!.invoice}`}>
-                Open in wallet app
+                {t`Open in wallet app`}
               </a>
-              <p className="muted">Or scan it with a wallet on another phone:</p>
-              <a className="qr-link" href={`lightning:${phase.quote.invoice!.invoice}`} aria-label="Open in your wallet app">
-                <QrCode text={`lightning:${phase.quote.invoice!.invoice.toUpperCase()}`} label="QR code to pay with a wallet app" />
+              <p className="muted">{t`Or scan it with a wallet on another phone:`}</p>
+              <a className="qr-link" href={`lightning:${phase.quote.invoice!.invoice}`} aria-label={t`Open in your wallet app`}>
+                <QrCode text={`lightning:${phase.quote.invoice!.invoice.toUpperCase()}`} label={t`QR code to pay with a wallet app`} />
               </a>
               <button
                 type="button"
                 className="button outline"
                 onClick={() => void navigator.clipboard.writeText(phase.quote.invoice!.invoice)}
               >
-                Copy invoice
+                {t`Copy invoice`}
               </button>
               {phase.quote.invoice!.verify ? (
-                <p role="status">Waiting for the payment… This updates by itself once it goes through.</p>
+                <p role="status">{t`Waiting for the payment… This updates by itself once it goes through.`}</p>
               ) : (
                 <>
-                  <p>{toName}’s provider can’t confirm payments automatically. Once you’ve paid, mark it here.</p>
+                  <p>{t`${toName}’s provider can’t confirm payments automatically. Once you’ve paid, mark it here.`}</p>
                   <button type="button" className="button outline" onClick={() => void record(phase.quote)}>
-                    I’ve paid it
+                    {t`I’ve paid it`}
                   </button>
                 </>
               )}
@@ -288,14 +292,11 @@ export function BitcoinPay(props: {
         </>
       ) : (
         <>
-          <p>
-            Straight from your wallet to {toName}’s, at today’s price. The payment is checked automatically and recorded in{' '}
-            {currency === 'JPY' ? 'yen' : currency}.
-          </p>
+          <p>{straightFrom(toName, currency === 'JPY' ? t`yen` : currency)}</p>
           {phase.at === 'error' && (
             <p className="bitcoin-error" role="alert">
               {phase.message}
-              {phase.checkWallet && ' Check your wallet to see whether it went through before trying again.'}
+              {phase.checkWallet && ` ${t`Check your wallet to see whether it went through before trying again.`}`}
             </p>
           )}
           <button
@@ -304,11 +305,13 @@ export function BitcoinPay(props: {
             disabled={amount <= 0 || phase.at === 'quoting'}
             onClick={() => void quote()}
           >
-            {phase.at === 'quoting' ? 'Getting the price…' : `Pay ${amount > 0 ? money(amount, currency) : ''} with bitcoin`}
+            {phase.at === 'quoting' ? t`Getting the price…` : amount > 0 ? payWithBitcoin(money(amount, currency)) : t`Pay with bitcoin`}
           </button>
           {wallets?.length === 0 && (
             <p className="muted">
-              Tip: <a href="#/settings?open=wallet">set up one-tap payments</a>, so you don’t have to switch apps.
+              <Trans>
+                Tip: <a href="#/settings?open=wallet">set up one-tap payments</a>, so you don’t have to switch apps.
+              </Trans>
             </p>
           )}
         </>
@@ -345,13 +348,17 @@ function WalletChoices({
       {phase.at === 'failed' && failed && (
         <div className="bitcoin-error" role="alert">
           <p>
-            <strong>{sendLabel(failed)} couldn’t pay:</strong> {phase.reason}.
+            <Trans>
+              <strong>{sendLabel(failed)} couldn’t pay:</strong> {phase.reason}.
+            </Trans>
           </p>
           {phase.certain ? (
-            <p>Nothing was paid.</p>
+            <p>{t`Nothing was paid.`}</p>
           ) : (
             <p>
-              It may still have paid. Check {sendLabel(failed)} before trying again, so you don’t pay twice.
+              <Trans>
+                It may still have paid. Check {sendLabel(failed)} before trying again, so you don’t pay twice.
+              </Trans>
             </p>
           )}
         </div>
@@ -364,12 +371,12 @@ function WalletChoices({
           onClick={() => onPay(nextIndex)}
         >
           {phase.at === 'paying'
-            ? `Paying with ${sendLabel(next)}…`
+            ? t`Paying with ${sendLabel(next)}…`
             : phase.at === 'failed'
               ? phase.certain
-                ? `Try ${sendLabel(next)}`
-                : `It didn’t pay. Try ${sendLabel(next)}`
-              : `Pay with ${sendLabel(next)}`}
+                ? t`Try ${sendLabel(next)}`
+                : t`It didn’t pay. Try ${sendLabel(next)}`
+              : t`Pay with ${sendLabel(next)}`}
         </button>
       )}
       {/* Hands the invoice to whatever wallet app is installed, and waits for it here. */}
@@ -379,21 +386,21 @@ function WalletChoices({
         aria-disabled={phase.at === 'paying'}
         onClick={onExternal}
       >
-        {wallets.length > 0 ? 'Open another wallet app' : 'Open in wallet app'}
+        {wallets.length > 0 ? t`Open another wallet app` : t`Open in wallet app`}
       </a>
       {wallets.length === 0 && (
         <button type="button" className="link" onClick={onExternal}>
-          Paying from another phone? Show a QR code
+          {t`Paying from another phone? Show a QR code`}
         </button>
       )}
       {phase.quote.offer && (
         <p className="muted">
-          This is a BOLT12 offer. Your wallet needs to support BOLT12 to pay it.
+          {t`This is a BOLT12 offer. Your wallet needs to support BOLT12 to pay it.`}
           {onNextTarget && (
             <>
               {' '}
               <button type="button" className="link" onClick={onNextTarget}>
-                Pay their Lightning address instead
+                {t`Pay their Lightning address instead`}
               </button>
             </>
           )}
@@ -414,26 +421,54 @@ function OfferExternal({ offer, sats, toName, onPaid }: { offer: string; sats: n
   return (
     <>
       <p className="lead">
-        Pay exactly <strong>{satsText(sats)}</strong>. You’ll type the amount in your wallet.
+        <Trans>
+          Pay exactly <strong>{satsText(sats)}</strong>. You’ll type the amount in your wallet.
+        </Trans>
       </p>
       <a className="button primary" href={link}>
-        Open in wallet app
+        {t`Open in wallet app`}
       </a>
-      <p className="muted">Or scan it with a wallet on another phone:</p>
-      <a className="qr-link" href={link} aria-label="Open in your wallet app">
-        <QrCode text={offer} label={`QR code of ${toName}’s BOLT12 offer`} />
+      <p className="muted">{t`Or scan it with a wallet on another phone:`}</p>
+      <a className="qr-link" href={link} aria-label={t`Open in your wallet app`}>
+        <QrCode text={offer} label={t`QR code of ${toName}’s BOLT12 offer`} />
       </a>
       <button
         type="button"
         className="button outline"
         onClick={() => void navigator.clipboard.writeText(offer).then(() => setCopied(true))}
       >
-        {copied ? 'Offer copied' : 'Copy offer'}
+        {copied ? t`Offer copied` : t`Copy offer`}
       </button>
-      <p>Footless can’t see payments to an offer. Once you’ve paid, mark it here.</p>
+      <p>{t`Footless can’t see payments to an offer. Once you’ve paid, mark it here.`}</p>
       <button type="button" className="button outline" onClick={onPaid}>
-        I’ve paid it
+        {t`I’ve paid it`}
       </button>
     </>
   )
+}
+
+function fromList(names: string[]) {
+  const list = new Intl.ListFormat(locale(), { type: 'conjunction' }).format(names)
+  return t`from ${list}`
+}
+
+function fromSome(names: string[], more: number) {
+  const list = names.join(t`, `)
+  return t`from ${list} and ${more} more`
+}
+
+function noneWorked(name: string, problems: string) {
+  return t`None of ${name}’s addresses could take a payment right now. ${problems}`
+}
+
+function payWithBitcoin(amount: string) {
+  return t`Pay ${amount} with bitcoin`
+}
+
+function perBitcoin(price: string) {
+  return t`${price} per bitcoin`
+}
+
+function straightFrom(name: string, currency: string) {
+  return t`Straight from your wallet to ${name}’s, at today’s price. The payment is checked automatically and recorded in ${currency}.`
 }

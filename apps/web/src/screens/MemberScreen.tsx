@@ -1,9 +1,10 @@
+import { t } from '@lingui/core/macro'
 import { groupBalances } from '@footless/ledger'
 import { useState, type FormEvent } from 'react'
 import { Header } from '../components/Header.tsx'
 import { append, deleteGroupLocally, pendingEvents } from '../lib/db.ts'
 import { money } from '../lib/format.ts'
-import { go, useGroup } from '../lib/hooks.ts'
+import { go, locale, useGroup } from '../lib/hooks.ts'
 import { syncHub } from '../lib/sync.ts'
 
 /** You, in one group: your name there, and leaving. */
@@ -37,7 +38,7 @@ export function MemberScreen({ groupId }: { groupId: string }) {
     if (!clean || clean === savedName) return
     await append(meta, [{ type: 'member.renamed', memberId: meta.meId, name: clean }])
     setName(undefined)
-    setNote('Saved. Everyone in the group sees the new name.')
+    setNote(t`Saved. Everyone in the group sees the new name.`)
   }
 
   async function leave() {
@@ -53,7 +54,7 @@ export function MemberScreen({ groupId }: { groupId: string }) {
         // Make sure the others hear about it before the group leaves this phone.
         const deadline = Date.now() + 20_000
         while ((await pendingEvents(meta.id)).length > 0) {
-          if (Date.now() > deadline) throw new Error('Couldn’t reach Footless to tell the group. Check your connection and try again.')
+          if (Date.now() > deadline) throw new Error(t`Couldn’t reach Footless to tell the group. Check your connection and try again.`)
           await new Promise((r) => setTimeout(r, 300))
         }
         syncHub.drop(meta.id)
@@ -68,16 +69,16 @@ export function MemberScreen({ groupId }: { groupId: string }) {
 
   return (
     <main className="screen">
-      <Header title="You in this group" back={`/g/${groupId}`} />
+      <Header title={t`You in this group`} back={`/g/${groupId}`} />
       <div className="form">
         <form className="settings-card" onSubmit={rename}>
-          <h2>Your name</h2>
+          <h2>{t`Your name`}</h2>
           <label className="field">
-            <span>Name in {groupName}</span>
+            <span>{t`Name in ${groupName}`}</span>
             <input value={shownName} onChange={(e) => setName(e.target.value)} autoComplete="given-name" />
           </label>
           <button className="button primary" disabled={!shownName.trim() || shownName.trim() === savedName}>
-            Save
+            {t`Save`}
           </button>
           <p className="hint" aria-live="polite">
             {note}
@@ -85,26 +86,29 @@ export function MemberScreen({ groupId }: { groupId: string }) {
         </form>
 
         <section className="settings-card">
-          <h2>Leave the group</h2>
+          <h2>{t`Leave the group`}</h2>
           {open.length > 0 ? (
-            <p>
-              You can leave once you’re all square. Right now you{' '}
-              {open
-                .map(({ currency, amount }) => `${amount > 0 ? 'get back' : 'owe'} ${money(Math.abs(amount), currency)}`)
-                .join(' and ')}
-              .
-            </p>
+            <p>{stillOpen(open)}</p>
           ) : (
             <p>
-              {groupName} leaves this phone, and the others can’t add you to new expenses. Past expenses keep your name.
-              To come back, you’d need a new invite.
+              {t`${groupName} leaves this phone, and the others can’t add you to new expenses. Past expenses keep your name. To come back, you’d need a new invite.`}
             </p>
           )}
           <button className="button danger" disabled={open.length > 0 || busy} onClick={leave}>
-            {busy ? 'Leaving…' : confirmLeave ? 'Tap again to leave' : 'Leave group'}
+            {busy ? t`Leaving…` : confirmLeave ? t`Tap again to leave` : t`Leave group`}
           </button>
         </section>
       </div>
     </main>
   )
+}
+
+/** "You can leave once you’re all square. Right now you owe ¥4,000." */
+function stillOpen(open: { currency: string; amount: number }[]) {
+  const parts = open.map(({ currency, amount }) => {
+    const sum = money(Math.abs(amount), currency)
+    return amount > 0 ? t`get back ${sum}` : t`owe ${sum}`
+  })
+  const what = new Intl.ListFormat(locale(), { type: 'conjunction' }).format(parts)
+  return t`You can leave once you’re all square. Right now you ${what}.`
 }

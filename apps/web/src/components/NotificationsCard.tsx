@@ -1,8 +1,7 @@
+import { t } from '@lingui/core/macro'
 import { useEffect, useState } from 'react'
 import { getSetting, setSetting } from '../lib/db.ts'
 import { disablePush, enablePush, pushSupport, type PushSupport } from '../lib/push.ts'
-
-const WHAT = 'when someone pays you, joins a group or adds an expense'
 
 function usePushSupport() {
   const [support, setSupport] = useState<PushSupport>()
@@ -24,7 +23,7 @@ export function NotificationsCard() {
     try {
       const result = await enablePush()
       setSupport(result)
-      setNote(result === 'on' ? 'Notifications are on.' : result === 'blocked' ? '' : 'Notifications weren’t turned on.')
+      setNote(result === 'on' ? t`Notifications are on.` : result === 'blocked' ? '' : t`Notifications weren’t turned on.`)
     } catch (err) {
       setNote((err as Error).message)
     } finally {
@@ -37,7 +36,7 @@ export function NotificationsCard() {
     try {
       await disablePush()
       setSupport('ready')
-      setNote('Notifications are off.')
+      setNote(t`Notifications are off.`)
     } finally {
       setBusy(false)
     }
@@ -47,30 +46,31 @@ export function NotificationsCard() {
     <div className="notifications">
       {support === 'on' && (
         <>
-          <p>This phone gets a notification {WHAT}, even when Footless is closed.</p>
+          <p>{t`This phone gets a notification when someone pays you, joins a group or adds an expense, even when Footless is closed.`}</p>
           <button className="button outline" disabled={busy} onClick={turnOff}>
-            Turn off notifications
+            {t`Turn off notifications`}
           </button>
         </>
       )}
       {support === 'ready' && (
         <>
-          <p>Get a notification {WHAT}. What happened is worked out on this phone; the server never sees it.</p>
+          <p>
+            {t`Get a notification when someone pays you, joins a group or adds an expense. What happened is worked out on this phone; the server never sees it.`}
+          </p>
           <button className="button primary" disabled={busy} onClick={turnOn}>
-            Turn on notifications
+            {t`Turn on notifications`}
           </button>
         </>
       )}
       {support === 'install-first' && (
         <p>
-          On iPhone and iPad, only apps on the Home Screen can send notifications. Tap Share, then “Add to Home Screen”,
-          and turn them on from there.
+          {t`On iPhone and iPad, only apps on the Home Screen can send notifications. Tap Share, then “Add to Home Screen”, and turn them on from there.`}
         </p>
       )}
       {support === 'blocked' && (
-        <p>Notifications are blocked for Footless. To get them, allow notifications for Footless in your phone’s settings.</p>
+        <p>{t`Notifications are blocked for Footless. To get them, allow notifications for Footless in your phone’s settings.`}</p>
       )}
-      {support === 'unsupported' && <p>This browser can’t show notifications.</p>}
+      {support === 'unsupported' && <p>{t`This browser can’t show notifications.`}</p>}
       <p className="hint" aria-live="polite">
         {note}
       </p>
@@ -95,13 +95,13 @@ export function NotificationsNudge() {
 
   return (
     <section className="nudge">
-      <p>Get a notification {WHAT}?</p>
+      <p>{t`Get a notification when someone pays you, joins a group or adds an expense?`}</p>
       <div className="nudge-actions">
         <button className="button small primary" onClick={() => answer(true)}>
-          Turn on
+          {t`Turn on`}
         </button>
         <button className="button small outline" onClick={() => answer(false)}>
-          Not now
+          {t`Not now`}
         </button>
       </div>
     </section>

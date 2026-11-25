@@ -1,8 +1,9 @@
+import { t } from '@lingui/core/macro'
 import { useMemo } from 'react'
 import { AppHeader } from '../components/Header.tsx'
 import { PlusIcon } from '../components/icons.tsx'
 import { Pager } from '../components/Pager.tsx'
-import { MAIN_TABS, TabBar } from '../components/TabBar.tsx'
+import { mainTabs, TabBar } from '../components/TabBar.tsx'
 import { useGroups } from '../lib/hooks.ts'
 import { ActivityPage } from './ActivityScreen.tsx'
 import { HomePage } from './HomeScreen.tsx'
@@ -30,16 +31,16 @@ export function MainTabs({ current, query }: { current: string; query: string })
       {current === '/' && hasGroups && (
         <a className="fab" href="#/new">
           <PlusIcon />
-          New group
+          {t`New group`}
         </a>
       )}
       {current === '/activity' && hasGroups && (
         <a className="fab" href={groups.length === 1 ? `#/g/${groups[0]!.id}/add` : '#/add'}>
           <PlusIcon />
-          New expense
+          {t`New expense`}
         </a>
       )}
-      <TabBar tabs={MAIN_TABS} current={current} label="Main" />
+      <TabBar tabs={mainTabs()} current={current} label={t`Main`} />
     </main>
   )
 }

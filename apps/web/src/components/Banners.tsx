@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro'
 import { replay, type LedgerEvent } from '@footless/ledger'
 import { useEffect, useRef, useState } from 'react'
 import { getEvents, getGroup, onNewEvents } from '../lib/db.ts'
@@ -75,7 +76,7 @@ export function Banners() {
               <span>{b.detail}</span>
             </span>
           </button>
-          <button className="banner-close" aria-label="Dismiss" onClick={() => dismiss(b.id)}>
+          <button className="banner-close" aria-label={t`Dismiss`} onClick={() => dismiss(b.id)}>
             <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
               <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
             </svg>

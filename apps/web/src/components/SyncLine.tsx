@@ -1,3 +1,5 @@
+import { locale } from '../lib/hooks.ts'
+import { t } from '@lingui/core/macro'
 import type { GroupState } from '@footless/ledger'
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import { syncHub, type SyncStatus } from '../lib/sync.ts'
@@ -12,8 +14,9 @@ function useSyncStatus(groupId: string): SyncStatus {
 /** "Ana and you", "Ana, Bob and you". */
 function whoIsHere(state: GroupState, meId: string): string {
   const others = [...state.members.values()].filter((m) => m.key && !m.left && m.id !== meId).map((m) => m.name)
-  if (others.length === 0) return 'only you so far'
-  return `${others.join(', ')} and you are here`
+  if (others.length === 0) return t`only you so far`
+  const names = new Intl.ListFormat(locale(), { style: 'narrow', type: 'unit' }).format(others)
+  return t`${names} and you are here`
 }
 
 /** One quiet line under the group title. Never alarming: offline is normal. */
@@ -32,18 +35,19 @@ export function SyncLine({ groupId, state, meId }: { groupId: string; state: Gro
   let text: string
   if (status === 'local') {
     icon = 'lock'
-    text = 'Only on this phone so far'
+    text = t`Only on this phone so far`
   } else if (status === 'offline') {
     icon = 'off'
-    text = 'Offline · changes will sync later'
+    text = t`Offline · changes will sync later`
   } else if (status === 'unreachable') {
     icon = 'clock'
-    text = 'Can’t reach the group · retrying'
+    text = t`Can’t reach the group · retrying`
   } else if ((status === 'syncing' || status === 'connecting') && lingering) {
     icon = 'sync'
-    text = 'Syncing…'
+    text = t`Syncing…`
   } else {
-    text = `Up to date · ${whoIsHere(state, meId)}`
+    const who = whoIsHere(state, meId)
+    text = t`Up to date · ${who}`
   }
 
   return (

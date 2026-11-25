@@ -1,4 +1,6 @@
 import { groupBalances, replay } from '@footless/ledger'
+import { t } from '@lingui/core/macro'
+import { Trans } from '@lingui/react/macro'
 import { useEffect, useState } from 'react'
 import { PageTitle } from '../components/Header.tsx'
 import { getEvents, type GroupMeta } from '../lib/db.ts'
@@ -25,13 +27,12 @@ function GroupSummary({ group }: { group: GroupMeta }) {
   return (
     <span className="row-main">
       <strong>{name}</strong>
-      {lines && lines.length === 0 && <span className="muted">All square</span>}
+      {lines && lines.length === 0 && <span className="muted">{t`All square`}</span>}
       {lines && lines.length > 0 && (
         <span className="position">
           {lines.map(({ amount, currency }) => (
             <span key={currency} className={amount > 0 ? 'owed' : 'owes'}>
-              {amount > 0 ? 'You get back ' : 'You owe '}
-              {money(Math.abs(amount), currency)}
+              {amount > 0 ? t`You get back ${money(amount, currency)}` : t`You owe ${money(-amount, currency)}`}
             </span>
           ))}
         </span>
@@ -45,19 +46,19 @@ export function HomePage() {
   const groups = useGroups()
   return (
     <div className="screen with-tabbar">
-      <PageTitle>Groups</PageTitle>
+      <PageTitle>{t`Groups`}</PageTitle>
       {groups && groups.length === 0 && (
         <section className="empty">
-          <h2>Split anything with anyone</h2>
+          <h2>{t`Split anything with anyone`}</h2>
           <p>
-            Start a group for a trip, a flat or a dinner, then invite the others from their own phones.
+            <Trans>Start a group for a trip, a flat or a dinner, then invite the others from their own phones.</Trans>
           </p>
           <div className="empty-actions">
             <a className="button primary" href="#/new">
-              Start a group
+              {t`Start a group`}
             </a>
             <a className="button outline" href="#/scan">
-              Join with a QR code
+              {t`Join with a QR code`}
             </a>
           </div>
         </section>

@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro'
 /**
  * Moving to a new phone.
  *
@@ -88,7 +89,7 @@ export class MoveChannel {
         ws.send(JSON.stringify({ t: 'hello', since: 0, ...(this.side === 'old' ? { ephemeral: true } : {}) }))
         resolve()
       }
-      ws.onerror = () => reject(new Error('Couldn’t reach Footless. Check your connection.'))
+      ws.onerror = () => reject(new Error(t`Couldn’t reach Footless. Check your connection.`))
     })
     ws.onclose = () => {
       if (this.ws === ws) this.onLost()
@@ -140,7 +141,7 @@ export async function handOver(groups: GroupMeta[], newKey: string): Promise<Mov
   const deadline = Date.now() + 30_000
   for (const group of groups) {
     while ((await pendingEvents(group.id)).length > 0) {
-      if (Date.now() > deadline) throw new Error('Couldn’t reach Footless to hand over your groups. Check your connection and try again.')
+      if (Date.now() > deadline) throw new Error(t`Couldn’t reach Footless to hand over your groups. Check your connection and try again.`)
       await new Promise((r) => setTimeout(r, 300))
     }
   }
@@ -212,7 +213,7 @@ export async function receiveGroups(
       }
       await new Promise((r) => setTimeout(r, 1500))
     }
-    if (!loaded) throw new Error(`“${g.name}” didn’t arrive. Keep both phones open and try again.`)
+    if (!loaded) throw new Error(t`“${g.name}” didn’t arrive. Keep both phones open and try again.`)
     await saveJoinedGroup(
       { ...g, signing: keys, publicKey, shared: true, cursor: loaded.cursor },
       loaded.received,

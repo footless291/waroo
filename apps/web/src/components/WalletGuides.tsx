@@ -1,3 +1,5 @@
+import { Trans } from '@lingui/react/macro'
+import { t } from '@lingui/core/macro'
 import { cleanOffer, isLightningAddress, isOffer } from '@footless/ledger'
 import { useState, type FormEvent } from 'react'
 import { looksLikeName, resolveOffer } from '../lib/bip353.ts'
@@ -72,11 +74,11 @@ function PasteField({
               onChange(await pasted())
               setNote('')
             } catch {
-              setNote('Footless couldn’t read what you copied. Press and hold the box, then choose Paste.')
+              setNote(t`Footless couldn’t read what you copied. Press and hold the box, then choose Paste.`)
             }
           }}
         >
-          Paste
+          {t`Paste`}
         </button>
       </div>
       {note && <p className="hint">{note}</p>}
@@ -99,14 +101,14 @@ export function CoinosGuide({ receive, send, onChange, onDone }: GuideProps & { 
     e.preventDefault()
     if (!candidate) return
     setBusy(true)
-    setNote('Checking…')
+    setNote(t`Checking…`)
     try {
       await payParams(candidate)
       await addReceive(candidate)
       setNote('')
       onChange()
     } catch {
-      setNote(`Couldn’t find ${candidate}. Check the username is exactly as you chose it in Coinos.`)
+      setNote(t`Couldn’t find ${candidate}. Check the username is exactly as you chose it in Coinos.`)
     } finally {
       setBusy(false)
     }
@@ -115,7 +117,7 @@ export function CoinosGuide({ receive, send, onChange, onDone }: GuideProps & { 
   async function connect(e: FormEvent) {
     e.preventDefault()
     setBusy(true)
-    setConnectNote('Checking your wallet…')
+    setConnectNote(t`Checking your wallet…`)
     try {
       const { url } = await checkNwc(nwc)
       await addSend({ provider: 'coinos', name: 'Coinos', kind: 'nwc', url })
@@ -134,22 +136,24 @@ export function CoinosGuide({ receive, send, onChange, onDone }: GuideProps & { 
   return (
     <ol className="setup-steps">
       <li className={address ? 'done' : 'current'}>
-        <h3>Make a Coinos account</h3>
-        <p>Choose a username and a password. Write the password down: it’s the only way back into your wallet.</p>
+        <h3>{t`Make a Coinos account`}</h3>
+        <p>{t`Choose a username and a password. Write the password down: it’s the only way back into your wallet.`}</p>
         <a className="button outline small" href={COINOS.signup} target="_blank" rel="noopener noreferrer">
-          Open Coinos
+          {t`Open Coinos`}
         </a>
       </li>
       <li className={address ? 'done' : 'current'}>
-        <h3>Tell Footless your username</h3>
+        <h3>{t`Tell Footless your username`}</h3>
         {address ? (
           <p>
-            Friends can pay you at <strong>{address}</strong>.
+            <Trans>
+              Friends can pay you at <strong>{address}</strong>.
+            </Trans>
           </p>
         ) : (
           <form className="field-stack" onSubmit={saveUsername}>
             <label className="field">
-              <span>Your Coinos username</span>
+              <span>{t`Your Coinos username`}</span>
               <input
                 value={username}
                 onChange={(e) => {
@@ -163,38 +167,42 @@ export function CoinosGuide({ receive, send, onChange, onDone }: GuideProps & { 
               />
             </label>
             <p id="coinos-address" className="hint" aria-live="polite">
-              {note || (candidate ? `Friends will pay you at ${candidate}` : '')}
+              {note || (candidate ? t`Friends will pay you at ${candidate}` : '')}
             </p>
             <button className="button primary" disabled={!candidate || busy}>
-              Save
+              {t`Save`}
             </button>
           </form>
         )}
       </li>
       <li className={paying ? 'done' : 'current'}>
-        <h3>Pay in one tap{address ? '' : ' (optional)'}</h3>
+        <h3>{address ? t`Pay in one tap` : t`Pay in one tap (optional)`}</h3>
         {paying ? (
-          <p>Connected. Footless asks Coinos to pay only when you confirm a payment.</p>
+          <p>{t`Connected. Footless asks Coinos to pay only when you confirm a payment.`}</p>
         ) : (
           <>
-            <p>Without this, paying opens Coinos so you can approve it there. To pay without switching apps:</p>
+            <p>{t`Without this, paying opens Coinos so you can approve it there. To pay without switching apps:`}</p>
             <ol className="substeps">
               <li>
-                Open Coinos’s Nostr settings, then tap <strong>New connection</strong>, name it Footless, and set a budget
-                if you like.
+                <Trans>
+                  Open Coinos’s Nostr settings, then tap <strong>New connection</strong>, name it Footless, and set a budget
+                  if you like.
+                </Trans>
               </li>
               <li>
-                Tap <strong>Submit</strong>, then <strong>Copy NWC</strong>.
+                <Trans>
+                  Tap <strong>Submit</strong>, then <strong>Copy NWC</strong>.
+                </Trans>
               </li>
-              <li>Come back here and tap Paste.</li>
+              <li>{t`Come back here and tap Paste.`}</li>
             </ol>
             <a className="button outline small" href={COINOS.nostrSettings} target="_blank" rel="noopener noreferrer">
-              Open Coinos settings
+              {t`Open Coinos settings`}
             </a>
             <form className="field-stack" onSubmit={connect}>
-              <PasteField label="Wallet connection" value={nwc} onChange={setNwc} placeholder="nostr+walletconnect://…" secret />
+              <PasteField label={t`Wallet connection`} value={nwc} onChange={setNwc} placeholder="nostr+walletconnect://…" secret />
               <button className="button primary" disabled={!nwc.trim() || busy}>
-                Connect
+                {t`Connect`}
               </button>
               <p className="hint" aria-live="polite">
                 {connectNote}
@@ -217,13 +225,13 @@ export function RizfulGuide({ receive, send, onChange }: GuideProps) {
   async function connect(e: FormEvent) {
     e.preventDefault()
     setBusy(true)
-    setNote('Connecting…')
+    setNote(t`Connecting…`)
     try {
       const { nwc, address } = await exchangeRizfulCode(code)
       await addReceive(address)
       await addSend({ provider: 'rizful', name: 'Rizful', kind: 'nwc', url: nwc })
       setCode('')
-      setNote(`Connected. Friends can pay you at ${address}.`)
+      setNote(t`Connected. Friends can pay you at ${address}.`)
       onChange()
     } catch (err) {
       setNote((err as Error).message)
@@ -235,28 +243,30 @@ export function RizfulGuide({ receive, send, onChange }: GuideProps) {
   return (
     <ol className="setup-steps">
       <li className={done ? 'done' : 'current'}>
-        <h3>Make a Rizful account</h3>
-        <p>Sign up with an email and a password. The email is how you get back in if you forget the password.</p>
+        <h3>{t`Make a Rizful account`}</h3>
+        <p>{t`Sign up with an email and a password. The email is how you get back in if you forget the password.`}</p>
         <a className="button outline small" href={RIZFUL.signup} target="_blank" rel="noopener noreferrer">
-          Open Rizful
+          {t`Open Rizful`}
         </a>
       </li>
       <li className={done ? 'done' : 'current'}>
-        <h3>Get a code and paste it here</h3>
+        <h3>{t`Get a code and paste it here`}</h3>
         {done ? (
-          <p>Connected for getting paid and for paying.</p>
+          <p>{t`Connected for getting paid and for paying.`}</p>
         ) : (
           <>
             <p>
-              In Rizful, tap <strong>Get code</strong> and copy it. That one code sets up both getting paid and paying.
+              <Trans>
+                In Rizful, tap <strong>Get code</strong> and copy it. That one code sets up both getting paid and paying.
+              </Trans>
             </p>
             <a className="button outline small" href={RIZFUL.code} target="_blank" rel="noopener noreferrer">
-              Get a code in Rizful
+              {t`Get a code in Rizful`}
             </a>
             <form className="field-stack" onSubmit={connect}>
-              <PasteField label="Code from Rizful" value={code} onChange={setCode} placeholder="Paste the code" />
+              <PasteField label={t`Code from Rizful`} value={code} onChange={setCode} placeholder={t`Paste the code`} />
               <button className="button primary" disabled={!code.trim() || busy}>
-                Connect
+                {t`Connect`}
               </button>
             </form>
           </>
@@ -287,22 +297,22 @@ export function OtherWallet({ tab, onChange }: { tab: 'send' | 'receive'; onChan
     if (isOffer(offer)) {
       await addReceiveNamed([offer])
       setAddress('')
-      setNote('Added your BOLT12 offer.')
+      setNote(t`Added your BOLT12 offer.`)
       onChange()
       return
     }
     const clean = address.trim().toLowerCase().replace(/^₿/, '')
     if (!isLightningAddress(clean)) {
-      setNote('That doesn’t look like a Lightning address (name@provider.com) or a BOLT12 offer (lno1…).')
+      setNote(t`That doesn’t look like a Lightning address (name@provider.com) or a BOLT12 offer (lno1…).`)
       return
     }
     setBusy(true)
-    setNote('Checking…')
+    setNote(t`Checking…`)
     const named = async () => {
       const found = await resolveOffer(clean)
       await addReceiveNamed([found.offer], { [found.offer]: found.name })
       setAddress('')
-      setNote(`Added ${found.name}, a BOLT12 offer.`)
+      setNote(t`Added ${found.name}, a BOLT12 offer.`)
       onChange()
     }
     try {
@@ -322,13 +332,13 @@ export function OtherWallet({ tab, onChange }: { tab: 'send' | 'receive'; onChan
       }
       await addReceive(clean)
       setAddress('')
-      setNote(`Added ${clean}.`)
+      setNote(t`Added ${clean}.`)
       onChange()
     } catch (err) {
       setNote(
         looksLikeName(address)
-          ? `${address.trim()} didn’t work: ${(err as Error).message}`
-          : `${clean} didn’t answer: ${(err as Error).message}`,
+          ? t`${address.trim()} didn’t work: ${(err as Error).message}`
+          : t`${clean} didn’t answer: ${(err as Error).message}`,
       )
     } finally {
       setBusy(false)
@@ -338,12 +348,12 @@ export function OtherWallet({ tab, onChange }: { tab: 'send' | 'receive'; onChan
   async function connect(e: FormEvent) {
     e.preventDefault()
     setBusy(true)
-    setNote('Checking your wallet…')
+    setNote(t`Checking your wallet…`)
     try {
       const { url, name } = await checkNwc(nwc)
       await addSend({ provider: 'other', name, kind: 'nwc', url })
       setNwc('')
-      setNote(`Connected ${name}.`)
+      setNote(t`Connected ${name}.`)
       onChange()
     } catch (err) {
       setNote((err as Error).message)
@@ -357,7 +367,7 @@ export function OtherWallet({ tab, onChange }: { tab: 'send' | 'receive'; onChan
     try {
       const { name } = await checkWebln()
       await addSend({ provider: 'other', name, kind: 'webln' })
-      setNote(`Connected ${name}.`)
+      setNote(t`Connected ${name}.`)
       onChange()
     } catch (err) {
       setNote((err as Error).message)
@@ -369,11 +379,10 @@ export function OtherWallet({ tab, onChange }: { tab: 'send' | 'receive'; onChan
   return tab === 'receive' ? (
     <form className="field-stack" onSubmit={saveAddress}>
       <p>
-        Any wallet with a Lightning address works, like Wallet of Satoshi. Or paste a BOLT12 offer (lno1…) or a ₿name
-        that has one, like Phoenix gives you.
+        {t`Any wallet with a Lightning address works, like Wallet of Satoshi. Or paste a BOLT12 offer (lno1…) or a ₿name that has one, like Phoenix gives you.`}
       </p>
       <label className="field">
-        <span>Lightning address or BOLT12 offer</span>
+        <span>{t`Lightning address or BOLT12 offer`}</span>
         <input
           value={address}
           onChange={(e) => {
@@ -388,7 +397,7 @@ export function OtherWallet({ tab, onChange }: { tab: 'send' | 'receive'; onChan
         />
       </label>
       <button className="button primary" disabled={!address.trim() || busy}>
-        Add
+        {t`Add`}
       </button>
       <p className="hint" aria-live="polite">
         {note}
@@ -397,18 +406,17 @@ export function OtherWallet({ tab, onChange }: { tab: 'send' | 'receive'; onChan
   ) : (
     <div className="field-stack">
       <p>
-        In your wallet app (Alby Hub, Zeus, Primal and others), make a new Nostr Wallet Connect connection for Footless,
-        ideally with a budget, and paste it here. It stays on this phone.
+        {t`In your wallet app (Alby Hub, Zeus, Primal and others), make a new Nostr Wallet Connect connection for Footless, ideally with a budget, and paste it here. It stays on this phone.`}
       </p>
       <form className="field-stack" onSubmit={connect}>
-        <PasteField label="Wallet connection" value={nwc} onChange={setNwc} placeholder="nostr+walletconnect://…" secret />
+        <PasteField label={t`Wallet connection`} value={nwc} onChange={setNwc} placeholder="nostr+walletconnect://…" secret />
         <button className="button primary" disabled={!nwc.trim() || busy}>
-          Connect
+          {t`Connect`}
         </button>
       </form>
       {hasWebln() && (
         <button type="button" className="button outline" disabled={busy} onClick={browser}>
-          Use my browser wallet
+          {t`Use my browser wallet`}
         </button>
       )}
       <p className="hint" aria-live="polite">

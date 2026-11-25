@@ -1,3 +1,5 @@
+import { Trans } from '@lingui/react/macro'
+import { t } from '@lingui/core/macro'
 import { receiveAddresses, receiveTargets } from '@footless/ledger'
 import { useEffect, useRef, useState } from 'react'
 import { Header } from '../components/Header.tsx'
@@ -6,6 +8,7 @@ import { moveCode } from '../lib/crypto.ts'
 import { go, useGroup } from '../lib/hooks.ts'
 import { MoveChannel, newMoveSecret, type MoveMessage } from '../lib/move.ts'
 import { recoverMember } from '../lib/rekey.ts'
+import { codeLabel } from './MoveScreen.tsx'
 
 type Phase =
   | { at: 'intro' }
@@ -58,7 +61,7 @@ export function RecoverScreen({ groupId, memberId }: { groupId: string; memberId
     if (msg.type === 'hello') {
       if (now.at !== 'waiting') {
         await channel.current?.send({ from: 'old', type: 'cancel' })
-        return stop('Another phone also used the code, so this was stopped. Nothing changed. Start again.')
+        return stop(t`Another phone also used the code, so this was stopped. Nothing changed. Start again.`)
       }
       setPhase({ at: 'confirm', secret, key: msg.key, code: await moveCode(secret, msg.key) })
     } else if (msg.type === 'done' && now.at === 'moving') {
@@ -66,7 +69,7 @@ export function RecoverScreen({ groupId, memberId }: { groupId: string; memberId
       channel.current = undefined
       setPhase({ at: 'done' })
     } else if (msg.type === 'cancel') {
-      stop(`It was cancelled on ${who}’s new phone. Nothing changed.`)
+      stop(t`It was cancelled on ${who}’s new phone. Nothing changed.`)
     }
   }
 
@@ -80,7 +83,7 @@ export function RecoverScreen({ groupId, memberId }: { groupId: string; memberId
         (msg) => void onMessage(msg, secret),
         () => {
           const at = phaseRef.current.at
-          if (at === 'waiting' || at === 'confirm' || at === 'moving') stop('Lost the connection. Start again.')
+          if (at === 'waiting' || at === 'confirm' || at === 'moving') stop(t`Lost the connection. Start again.`)
         },
       )
       channel.current = ch
@@ -113,7 +116,7 @@ export function RecoverScreen({ groupId, memberId }: { groupId: string; memberId
 
   async function reject() {
     await channel.current?.send({ from: 'old', type: 'cancel' })
-    stop('Stopped. Nothing changed, and the phone that used the code got nothing.')
+    stop(t`Stopped. Nothing changed, and the phone that used the code got nothing.`)
   }
 
   async function copy(secret: string) {
@@ -127,59 +130,71 @@ export function RecoverScreen({ groupId, memberId }: { groupId: string; memberId
 
   return (
     <main className="screen">
-      <Header title={`${who} lost their phone`} back={back} />
+      <Header title={t`${who} lost their phone`} back={back} />
       {phase.at === 'intro' && (
         <section className="form">
           <p className="lead">
-            Vouch for {who}’s new phone, so they’re back in {groupName} as themselves.
+            <Trans>
+              Vouch for {who}’s new phone, so they’re back in {groupName} as themselves.
+            </Trans>
           </p>
           <ul className="steps">
             <li>{who} installs Footless on the new phone and opens it from the Home Screen.</li>
-            <li>They tap the scan button and scan the code this phone will show. Not together? Send them the link instead.</li>
+            <li>{t`They tap the scan button and scan the code this phone will show. Not together? Send them the link instead.`}</li>
             <li>Check both phones show the same 4 numbers. If you’re apart, call {who} and read them out.</li>
           </ul>
           <p className="muted">
-            The lost phone stops working in {groupName}, and can’t read anything new. Everyone in the group sees that
-            you vouched. Do it only when you’re sure it’s really {who}.
+            <Trans>
+              The lost phone stops working in {groupName}, and can’t read anything new. Everyone in the group sees that
+              you vouched. Do it only when you’re sure it’s really {who}.
+            </Trans>
           </p>
           <button className="button primary" onClick={start}>
-            Show the code
+            {t`Show the code`}
           </button>
         </section>
       )}
-      {phase.at === 'starting' && <p className="muted" role="status">Getting ready…</p>}
+      {phase.at === 'starting' && <p className="muted" role="status">{t`Getting ready…`}</p>}
       {phase.at === 'waiting' && (
         <section className="move-qr" data-move-link={recoverLink(phase.secret)}>
           <p className="lead">On {who}’s new phone, open Footless, tap the scan button and scan this code.</p>
-          <QrCode text={recoverLink(phase.secret)} label={`Code for ${who}’s new phone to scan`} />
+          <QrCode text={recoverLink(phase.secret)} label={t`Code for ${who}’s new phone to scan`} />
           <button className="button outline" onClick={() => copy(phase.secret)}>
-            {copied ? 'Link copied' : 'Copy link instead'}
+            {copied ? t`Link copied` : t`Copy link instead`}
           </button>
           <p className="muted">
-            Sending the link? {who} pastes it under the scanner in Footless. You’ll still check the numbers together.
+            <Trans>
+              Sending the link? {who} pastes it under the scanner in Footless. You’ll still check the numbers together.
+            </Trans>
           </p>
           <p className="muted" role="status">
-            Waiting for {who}’s new phone…
+            <Trans>
+              Waiting for {who}’s new phone…
+            </Trans>
           </p>
         </section>
       )}
       {phase.at === 'confirm' && (
         <section className="form">
           <p className="lead">Does {who}’s new phone show these numbers?</p>
-          <p className="move-code" aria-label={`Code ${phase.code.split('').join(' ')}`}>
+          <p className="move-code" aria-label={codeLabel(phase.code)}>
             {phase.code}
           </p>
           <button className="button primary" onClick={confirm}>
-            Yes, it’s {who}
+            <Trans>
+              Yes, it’s {who}
+            </Trans>
           </button>
           <button className="button outline" onClick={reject}>
-            No, stop
+            {t`No, stop`}
           </button>
         </section>
       )}
       {phase.at === 'moving' && (
         <p className="lead" role="status">
-          Bringing {who} back in. Keep both phones open…
+          <Trans>
+            Bringing {who} back in. Keep both phones open…
+          </Trans>
         </p>
       )}
       {phase.at === 'done' && (
@@ -189,16 +204,16 @@ export function RecoverScreen({ groupId, memberId }: { groupId: string; memberId
             {who} is in {groupName} on the new phone. The lost phone can’t add anything or read anything new.
           </p>
           <a className="button primary" href={`#/g/${groupId}`}>
-            Done
+            {t`Done`}
           </a>
         </section>
       )}
       {phase.at === 'stopped' && (
         <section className="empty">
-          <h2>Nothing changed</h2>
+          <h2>{t`Nothing changed`}</h2>
           <p role="alert">{phase.message}</p>
           <button className="button primary" onClick={() => setPhase({ at: 'intro' })}>
-            Start again
+            {t`Start again`}
           </button>
         </section>
       )}

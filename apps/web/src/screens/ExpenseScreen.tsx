@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro'
 import {
   computeShares,
   parseAmount,
@@ -14,26 +15,29 @@ import { Segmented } from '../components/Segmented.tsx'
 import { append, newId, type GroupMeta } from '../lib/db.ts'
 import { CURRENCIES, isRemoved, money, today, toInput } from '../lib/format.ts'
 import { go, useGroup } from '../lib/hooks.ts'
+import { ledgerText } from '../lib/ledgerText.ts'
 
 type Mode = 'equal' | 'shares' | 'percent' | 'exact' | 'adjustment' | 'itemized'
 
-const MODES: { value: Mode; label: string }[] = [
-  { value: 'equal', label: 'Equally' },
-  { value: 'shares', label: 'Shares' },
-  { value: 'percent', label: 'Percent' },
-  { value: 'exact', label: 'Exact' },
-  { value: 'adjustment', label: 'Adjust' },
-  { value: 'itemized', label: 'Items' },
+const modes = (): { value: Mode; label: string }[] => [
+  { value: 'equal', label: t`Equally` },
+  { value: 'shares', label: t`Shares` },
+  { value: 'percent', label: t`Percent` },
+  { value: 'exact', label: t`Exact` },
+  { value: 'adjustment', label: t`Adjust` },
+  { value: 'itemized', label: t`Items` },
 ]
 
 /** The "Paid by" choice that opens a list of amounts. */
 const SEVERAL = '__several'
 
 /** What each split mode means, under the buttons. */
-const MODE_HINTS: Partial<Record<Mode, string>> = {
-  adjustment: 'Add or take off an amount for anyone, and split the rest equally among the people ticked.',
-  itemized: 'List what each person had. Shared things are split among whoever had them.',
-}
+const modeHint = (mode: Mode): string | undefined =>
+  mode === 'adjustment'
+    ? t`Add or take off an amount for anyone, and split the rest equally among the people ticked.`
+    : mode === 'itemized'
+      ? t`List what each person had. Shared things are split among whoever had them.`
+      : undefined
 
 /** "12.5" → 1250 hundredths of a percent; null if it isn't a percentage. */
 function parsePercent(text: string): number | null {
@@ -53,8 +57,8 @@ export function ExpenseScreen({ groupId, expenseId }: { groupId: string; expense
   if (expenseId && !existing) {
     return (
       <main className="screen">
-        <Header title="Expense" back={`/g/${groupId}/expenses`} />
-        <p className="empty">This expense was deleted.</p>
+        <Header title={t`Expense`} back={`/g/${groupId}/expenses`} />
+        <p className="empty">{t`This expense was deleted.`}</p>
       </main>
     )
   }
@@ -162,23 +166,24 @@ function ExpenseForm({
     try {
       return parseAmount(text, currency)
     } catch (e) {
-      problems.push(`${what}: ${(e as Error).message}`)
+      const message = ledgerText((e as Error).message)
+      problems.push(t`${what}: ${message}`)
       return 0
     }
   }
   // Items: the parts, and what they come to.
   const parsedItems = items.map((item, i) => ({
     label: item.label.trim() || undefined,
-    amount: parse(item.amount, item.label.trim() || `Item ${i + 1}`),
+    amount: parse(item.amount, item.label.trim() || itemName(i + 1)),
     among: item.among,
   }))
   const parsedExtras = extras.map((x, i) => ({
     label: x.label.trim() || undefined,
-    amount: parse(x.amount, x.label.trim() || `Extra ${i + 1}`),
+    amount: parse(x.amount, x.label.trim() || extraName(i + 1)),
   }))
   const itemsSum = [...parsedItems, ...parsedExtras].reduce((a, b) => a + b.amount, 0)
   // With items, a blank amount means "whatever the items come to".
-  const total = mode === 'itemized' && !amountText.trim() ? itemsSum : parse(amountText, 'Amount')
+  const total = mode === 'itemized' && !amountText.trim() ? itemsSum : parse(amountText, t`Amount`)
   let split: SplitMethod
   if (mode === 'equal') split = { kind: 'equal', among: [...included] }
   else if (mode === 'adjustment') {
@@ -217,7 +222,8 @@ function ExpenseForm({
           if (!text) return []
           const bp = parsePercent(text)
           if (bp === null) {
-            problems.push(`${state.members.get(id)!.name}: use a percentage like 25 or 12.5`)
+            const who = state.members.get(id)!.name
+            problems.push(t`${who}: use a percentage like 25 or 12.5`)
             return []
           }
           return bp > 0 ? [[id, bp]] : []
@@ -246,7 +252,8 @@ function ExpenseForm({
             allIds.flatMap((id) => {
               const text = paidAmounts[id]?.trim()
               if (!text) return []
-              const amount = parse(text, `Paid by ${state.members.get(id)!.name}`)
+              const who = state.members.get(id)!.name
+              const amount = parse(text, t`Paid by ${who}`)
               return amount ? [[id, amount]] : []
             }),
           )
@@ -254,8 +261,8 @@ function ExpenseForm({
     split,
     date,
   }
-  if (!expense.title) problems.push('Give it a name')
-  if (total === 0) problems.push(mode === 'itemized' ? 'Enter what each item cost' : 'Enter an amount')
+  if (!expense.title) problems.push(t`Give it a name`)
+  if (total === 0) problems.push(mode === 'itemized' ? t`Enter what each item cost` : t`Enter an amount`)
   else {
     problems.push(
       ...validateExpense(expense, new Set(allIds)).filter(
@@ -269,13 +276,16 @@ function ExpenseForm({
     )
     if (mode === 'itemized') {
       parsedItems.forEach((item, i) => {
-        if (item.among.length === 0) problems.push(`Pick who had ${item.label ?? `item ${i + 1}`}`)
+        if (item.among.length === 0) {
+          const what = item.label ?? itemName(i + 1)
+          problems.push(t`Pick who had ${what}`)
+        }
       })
     }
   }
   // These come from the ledger's wording; say them in the form's.
   for (let i = 0; i < problems.length; i++) {
-    if (problems[i] === 'A split needs at least one person') problems[i] = 'Pick at least one person to split it'
+    problems[i] = ledgerText(problems[i]!)
   }
 
   let shares: Map<string, number> | undefined
@@ -321,19 +331,22 @@ function ExpenseForm({
     go(`/g/${meta.id}/expenses`)
   }
 
-  const nameOf = (id: string) => (id === meta.meId ? `${state.members.get(id)?.name} (you)` : state.members.get(id)?.name)
+  const nameOf = (id: string) => {
+    const name = state.members.get(id)?.name ?? ''
+    return id === meta.meId ? t`${name} (you)` : name
+  }
 
   return (
     <main className="screen">
-      <Header title={existing ? 'Edit expense' : 'Add expense'} back={`/g/${meta.id}/expenses`} />
+      <Header title={existing ? t`Edit expense` : t`Add expense`} back={`/g/${meta.id}/expenses`} />
       <form className="form" onSubmit={save}>
         <label className="field">
-          <span>What for</span>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Izakaya dinner" />
+          <span>{t`What for`}</span>
+          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t`Izakaya dinner`} />
         </label>
         <div className="field-row">
           <label className="field grow">
-            <span>Amount</span>
+            <span>{t`Amount`}</span>
             <input
               className="amount-input"
               value={amountText}
@@ -343,7 +356,7 @@ function ExpenseForm({
             />
           </label>
           <label className="field">
-            <span>Currency</span>
+            <span>{t`Currency`}</span>
             <select value={currency} onChange={(e) => setCurrency(e.target.value)}>
               {[...new Set([meta.currency, ...CURRENCIES])].map((c) => (
                 <option key={c}>{c}</option>
@@ -353,21 +366,21 @@ function ExpenseForm({
         </div>
         <div className="field-row">
           <label className="field grow">
-            <span>Paid by</span>
+            <span>{t`Paid by`}</span>
             <select value={payer} onChange={(e) => setPayer(e.target.value)}>
               {members.map((m) => (
                 <option key={m.id} value={m.id}>
                   {nameOf(m.id)}
                 </option>
               ))}
-              <option value={SEVERAL}>Several people</option>
+              <option value={SEVERAL}>{t`Several people`}</option>
             </select>
           </label>
-          <DateField label="Date" value={date} onChange={setDate} />
+          <DateField label={t`Date`} value={date} onChange={setDate} />
         </div>
         {payer === SEVERAL && (
           <fieldset className="field">
-            <legend>Who paid how much</legend>
+            <legend>{t`Who paid how much`}</legend>
             <ul className="split-list">
               {members.map((m) => (
                 <li key={m.id}>
@@ -378,7 +391,7 @@ function ExpenseForm({
                       value={paidAmounts[m.id] ?? ''}
                       placeholder="0"
                       onChange={(e) => setPaidAmounts({ ...paidAmounts, [m.id]: e.target.value })}
-                      aria-label={`Paid by ${m.name}`}
+                      aria-label={t`Paid by ${m.name}`}
                     />
                   </label>
                 </li>
@@ -391,14 +404,14 @@ function ExpenseForm({
         )}
 
         <fieldset className="field">
-          <legend>Split</legend>
-          <Segmented label="Split method" options={MODES} value={mode} onChange={setMode} className="grid3" />
-          {MODE_HINTS[mode] && <p className="hint pad">{MODE_HINTS[mode]}</p>}
+          <legend>{t`Split`}</legend>
+          <Segmented label={t`Split method`} options={modes()} value={mode} onChange={setMode} className="grid3" />
+          {modeHint(mode) && <p className="hint pad">{modeHint(mode)}</p>}
           {mode === 'itemized' && (
             <ItemsEditor
               items={items}
               extras={extras}
-              people={members.map((m) => ({ id: m.id, name: m.id === meta.meId ? `${m.name} (you)` : m.name }))}
+              people={members.map((m) => ({ id: m.id, name: nameOf(m.id) }))}
               onItems={setItems}
               onExtras={setExtras}
             />
@@ -419,7 +432,7 @@ function ExpenseForm({
                         else next.delete(m.id)
                         setIncluded(next)
                       }}
-                      aria-label={`Split the rest with ${m.name}`}
+                      aria-label={t`Split the rest with ${m.name}`}
                     />
                     <span>{nameOf(m.id)}</span>
                     <input
@@ -427,7 +440,7 @@ function ExpenseForm({
                       value={adjustments[m.id] ?? ''}
                       placeholder="+0"
                       onChange={(e) => setAdjustments({ ...adjustments, [m.id]: e.target.value })}
-                      aria-label={`Extra for ${m.name}`}
+                      aria-label={t`Extra for ${m.name}`}
                     />
                   </label>
                 ) : mode === 'equal' ? (
@@ -454,7 +467,7 @@ function ExpenseForm({
                           value={percents[m.id] ?? ''}
                           placeholder="0"
                           onChange={(e) => setPercents({ ...percents, [m.id]: e.target.value })}
-                          aria-label={`Percent for ${m.name}`}
+                          aria-label={t`Percent for ${m.name}`}
                         />
                         <span aria-hidden="true">%</span>
                       </span>
@@ -462,7 +475,7 @@ function ExpenseForm({
                       <span className="stepper">
                         <button
                           type="button"
-                          aria-label={`One share fewer for ${m.name}`}
+                          aria-label={t`One share fewer for ${m.name}`}
                           disabled={(Number(weights[m.id]) || 0) <= 0}
                           onClick={() =>
                             setWeights({ ...weights, [m.id]: String(Math.max(0, (Number(weights[m.id]) || 0) - 1)) })
@@ -474,11 +487,11 @@ function ExpenseForm({
                           inputMode="numeric"
                           value={weights[m.id] ?? ''}
                           onChange={(e) => setWeights({ ...weights, [m.id]: e.target.value.replace(/\D/g, '') })}
-                          aria-label={`Shares for ${m.name}`}
+                          aria-label={t`Shares for ${m.name}`}
                         />
                         <button
                           type="button"
-                          aria-label={`One share more for ${m.name}`}
+                          aria-label={t`One share more for ${m.name}`}
                           onClick={() => setWeights({ ...weights, [m.id]: String((Number(weights[m.id]) || 0) + 1) })}
                         >
                           +
@@ -490,7 +503,7 @@ function ExpenseForm({
                         value={exact[m.id] ?? ''}
                         placeholder="0"
                         onChange={(e) => setExact({ ...exact, [m.id]: e.target.value })}
-                        aria-label={`Amount for ${m.name}`}
+                        aria-label={t`Amount for ${m.name}`}
                       />
                     )}
                   </label>
@@ -523,14 +536,17 @@ function ExpenseForm({
         </div>
 
         <button className="button primary" disabled={problems.length > 0 || unassigned}>
-          {existing ? 'Save changes' : 'Add expense'}
+          {existing ? t`Save changes` : t`Add expense`}
         </button>
         {existing && (
           <button type="button" className="button danger" onClick={remove}>
-            {confirmDelete ? 'Tap again to delete' : 'Delete expense'}
+            {confirmDelete ? t`Tap again to delete` : t`Delete expense`}
           </button>
         )}
       </form>
     </main>
   )
 }
+
+const itemName = (n: number) => t`Item ${n}`
+const extraName = (n: number) => t`Extra ${n}`

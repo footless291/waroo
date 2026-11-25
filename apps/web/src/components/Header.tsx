@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro'
 import { useEffect, useRef, type ReactNode } from 'react'
 import { Logo } from './icons.tsx'
 
@@ -29,7 +30,7 @@ export function Header({
   return (
     <header className="header">
       {back ? (
-        <a className="icon-button" href={`#${back}`} aria-label="Back">
+        <a className="icon-button" href={`#${back}`} aria-label={t`Back`}>
           <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
             <path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
@@ -65,7 +66,7 @@ export function AppHeader() {
     <Header
       title="Footless"
       action={
-        <a className="icon-button" href="#/scan" aria-label="Scan a code">
+        <a className="icon-button" href="#/scan" aria-label={t`Scan a code`}>
           <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2" />
             <path d="M8 12h8" />

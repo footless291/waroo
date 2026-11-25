@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro'
 import type { ReactNode } from 'react'
 
 export interface Tab {
@@ -11,12 +12,12 @@ export interface Tab {
 export function TabBar({ tabs, current, label }: { tabs: Tab[]; current: string; label: string }) {
   return (
     <nav className="tabbar" aria-label={label}>
-      {tabs.map((t) => (
-        <a key={t.path} href={`#${t.path}`} aria-current={t.path === current ? 'page' : undefined}>
+      {tabs.map((tab) => (
+        <a key={tab.path} href={`#${tab.path}`} aria-current={tab.path === current ? 'page' : undefined}>
           <span className="tabbar-icon" aria-hidden="true">
-            {t.icon}
+            {tab.icon}
           </span>
-          {t.label}
+          {tab.label}
         </a>
       ))}
     </nav>
@@ -39,14 +40,14 @@ export const ICONS = {
 }
 
 /** The three main pages. */
-export const MAIN_TABS: Tab[] = [
-  { path: '/', label: 'Groups', icon: ICONS.groups },
-  { path: '/activity', label: 'Activity', icon: ICONS.activity },
-  { path: '/settings', label: 'Settings', icon: ICONS.settings },
+export const mainTabs = (): Tab[] => [
+  { path: '/', label: t`Groups`, icon: ICONS.groups },
+  { path: '/activity', label: t`Activity`, icon: ICONS.activity },
+  { path: '/settings', label: t`Settings`, icon: ICONS.settings },
 ]
 
 export const groupTabs = (groupId: string): Tab[] => [
-  { path: `/g/${groupId}`, label: 'Balances', icon: ICONS.balances },
-  { path: `/g/${groupId}/expenses`, label: 'Expenses', icon: ICONS.expenses },
-  { path: `/g/${groupId}/payments`, label: 'Payments', icon: ICONS.payments },
+  { path: `/g/${groupId}`, label: t`Balances`, icon: ICONS.balances },
+  { path: `/g/${groupId}/expenses`, label: t`Expenses`, icon: ICONS.expenses },
+  { path: `/g/${groupId}/payments`, label: t`Payments`, icon: ICONS.payments },
 ]

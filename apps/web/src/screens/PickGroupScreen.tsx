@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro'
 import { replay } from '@footless/ledger'
 import { Header } from '../components/Header.tsx'
 import { getEvents } from '../lib/db.ts'
@@ -15,8 +16,8 @@ export function PickGroupScreen() {
   )
   return (
     <main className="screen">
-      <Header title="New expense" back="/activity" />
-      <p className="lead">Which group is it for?</p>
+      <Header title={t`New expense`} back="/activity" />
+      <p className="lead">{t`Which group is it for?`}</p>
       <ul className="cards">
         {(groups ?? []).map((g) => (
           <li key={g.id}>

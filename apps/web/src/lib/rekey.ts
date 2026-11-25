@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro'
 /**
  * Removing someone, and the new group key that makes it stick.
  *
@@ -27,7 +28,7 @@ type Rekeyed = Extract<LedgerEvent, { type: 'group.rekeyed' }>
 /** Removes someone's phone from a group and moves the group to a new key. */
 export async function removeMember(groupId: string, memberId: string): Promise<void> {
   const group = await getGroup(groupId)
-  if (!group?.shared || !group.key || !group.box || !group.boxPublic) throw new Error('This group isn’t shared, so there’s no phone to remove.')
+  if (!group?.shared || !group.key || !group.box || !group.boxPublic) throw new Error(t`This group isn’t shared, so there’s no phone to remove.`)
   await append(group, [{ type: 'member.removed', memberId }])
   await rotate(groupId, memberId)
 }
@@ -39,7 +40,7 @@ export async function removeMember(groupId: string, memberId: string): Promise<v
  */
 export async function recoverMember(groupId: string, memberId: string, newKey: string): Promise<MovedGroup> {
   const group = await getGroup(groupId)
-  if (!group?.shared || !group.key || !group.box || !group.boxPublic) throw new Error('This group isn’t shared yet.')
+  if (!group?.shared || !group.key || !group.box || !group.boxPublic) throw new Error(t`This group isn’t shared yet.`)
   await append(group, [{ type: 'member.recovered', memberId, key: newKey }])
   const key = await rotate(groupId, memberId)
   const moved = (await getGroup(groupId))!
@@ -66,7 +67,7 @@ async function rotate(groupId: string, leaveOut: string): Promise<string> {
   await syncHub.ensure(groupId)
   const deadline = Date.now() + 20_000
   while ((await pendingEvents(groupId)).length > 0) {
-    if (Date.now() > deadline) throw new Error('Couldn’t reach Footless to tell the group. Check your connection and try again.')
+    if (Date.now() > deadline) throw new Error(t`Couldn’t reach Footless to tell the group. Check your connection and try again.`)
     await new Promise((r) => setTimeout(r, 300))
   }
   await moveToKey(groupId, newKey)

@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro'
 /**
  * Rizful's onboarding: the person signs up at Rizful, taps "Get code" there,
  * and pastes the one-time code here. Footless trades it, straight from the
@@ -29,16 +30,16 @@ export async function exchangeRizfulCode(code: string): Promise<{ nwc: string; a
       body: JSON.stringify({ secret_code: code.trim(), nostr_public_key: publicKey }),
     })
   } catch {
-    throw new Error('Couldn’t reach Rizful. Check your connection and try again.')
+    throw new Error(t`Couldn’t reach Rizful. Check your connection and try again.`)
   }
   if (!res.ok) {
-    throw new Error('That code didn’t work. Codes work once and expire quickly, so get a new one in Rizful and paste it again.')
+    throw new Error(t`That code didn’t work. Codes work once and expire quickly, so get a new one in Rizful and paste it again.`)
   }
   const body = (await res.json().catch(() => null)) as { nwc_uri?: unknown; lightning_address?: unknown } | null
   const nwc = typeof body?.nwc_uri === 'string' ? body.nwc_uri.trim() : ''
   const address = typeof body?.lightning_address === 'string' ? body.lightning_address.trim().toLowerCase() : ''
   if (!/^nostr\+walletconnect:\/\//i.test(nwc) || !isLightningAddress(address)) {
-    throw new Error('Rizful sent back something unexpected. Try again with a new code.')
+    throw new Error(t`Rizful sent back something unexpected. Try again with a new code.`)
   }
   return { nwc, address }
 }

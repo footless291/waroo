@@ -1,8 +1,15 @@
+import { t } from '@lingui/core/macro'
 import { formatAmount, minorDigits, type CurrencyCode } from '@footless/ledger'
 import { locale } from './hooks.ts'
 
 export const money = (amount: number, currency: CurrencyCode) =>
   formatAmount(amount, currency, locale())
+
+/** "10,000 sats" */
+export function satsText(sats: number): string {
+  const n = new Intl.NumberFormat(locale()).format(sats)
+  return t`${n} sats`
+}
 
 /** Minor units → the plain decimal a person would type, e.g. 1250 USD → "12.50". */
 export function toInput(amount: number, currency: CurrencyCode): string {

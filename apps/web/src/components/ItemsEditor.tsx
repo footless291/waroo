@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro'
 /**
  * Line items for an itemized split: what each thing cost and who had it,
  * plus extras (tax, tip, service charge, or a discount) spread in proportion
@@ -51,9 +52,9 @@ export function ItemsEditor({
                 <input
                   className="item-label"
                   value={item.label}
-                  placeholder={`Item ${n}`}
+                  placeholder={t`Item ${n}`}
                   onChange={(e) => setItem(item.key, { label: e.target.value })}
-                  aria-label={`What item ${n} was`}
+                  aria-label={t`What item ${n} was`}
                 />
                 <input
                   className="item-amount"
@@ -61,12 +62,12 @@ export function ItemsEditor({
                   value={item.amount}
                   placeholder="0"
                   onChange={(e) => setItem(item.key, { amount: e.target.value })}
-                  aria-label={`Price of item ${n}`}
+                  aria-label={t`Price of item ${n}`}
                 />
                 <button
                   type="button"
                   className="icon-button item-remove"
-                  aria-label={`Remove item ${n}`}
+                  aria-label={t`Remove item ${n}`}
                   disabled={items.length === 1}
                   onClick={() => onItems(items.filter((i) => i.key !== item.key))}
                 >
@@ -75,7 +76,7 @@ export function ItemsEditor({
                   </svg>
                 </button>
               </div>
-              <div className="item-people" role="group" aria-label={`Who had item ${n}`}>
+              <div className="item-people" role="group" aria-label={t`Who had item ${n}`}>
                 {people.map((p) => {
                   const on = item.among.includes(p.id)
                   return (
@@ -104,7 +105,7 @@ export function ItemsEditor({
         className="button small outline"
         onClick={() => onItems([...items, newItem(people.map((p) => p.id))])}
       >
-        Add item
+        {t`Add item`}
       </button>
 
       {extras.length > 0 && (
@@ -114,9 +115,9 @@ export function ItemsEditor({
               <input
                 className="item-label"
                 value={extra.label}
-                placeholder="Tax, tip or discount"
+                placeholder={t`Tax, tip or discount`}
                 onChange={(e) => setExtra(extra.key, { label: e.target.value })}
-                aria-label={`What extra ${index + 1} is`}
+                aria-label={t`What extra ${index + 1} is`}
               />
               <input
                 className="item-amount"
@@ -124,12 +125,12 @@ export function ItemsEditor({
                 value={extra.amount}
                 placeholder="0"
                 onChange={(e) => setExtra(extra.key, { amount: e.target.value })}
-                aria-label={`Amount of extra ${index + 1}`}
+                aria-label={t`Amount of extra ${index + 1}`}
               />
               <button
                 type="button"
                 className="icon-button item-remove"
-                aria-label={`Remove extra ${index + 1}`}
+                aria-label={t`Remove extra ${index + 1}`}
                 onClick={() => onExtras(extras.filter((x) => x.key !== extra.key))}
               >
                 <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
@@ -141,10 +142,10 @@ export function ItemsEditor({
         </ul>
       )}
       <button type="button" className="link add-extra" onClick={() => onExtras([...extras, newExtra()])}>
-        Add tax, tip or discount
+        {t`Add tax, tip or discount`}
       </button>
       {extras.length > 0 && (
-        <p className="hint pad">Shared by what each person had. Use a minus sign for a discount.</p>
+        <p className="hint pad">{t`Shared by what each person had. Use a minus sign for a discount.`}</p>
       )}
     </div>
   )

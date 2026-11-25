@@ -1,3 +1,5 @@
+import { Trans } from '@lingui/react/macro'
+import { t } from '@lingui/core/macro'
 import { roomId } from '../lib/crypto.ts'
 import { replay, type GroupState, type LedgerEvent } from '@footless/ledger'
 import { useEffect, useState, type FormEvent } from 'react'
@@ -30,9 +32,9 @@ export function JoinScreen({ params }: { params: URLSearchParams }) {
   return (
     <main className="screen">
       <section className="empty">
-        <h2>This invite link is out of date</h2>
-        <p>It’s from an older version of Footless. Ask for a new invite link.</p>
-        <a className="button primary" href="#/">Open Footless</a>
+        <h2>{t`This invite link is out of date`}</h2>
+        <p>{t`It’s from an older version of Footless. Ask for a new invite link.`}</p>
+        <a className="button primary" href="#/">{t`Open Footless`}</a>
       </section>
     </main>
   )
@@ -44,7 +46,7 @@ function JoinByInvite({ secret }: { secret: string }) {
   const [problem, setProblem] = useState<{ title: string; text: string }>()
   useEffect(() => {
     if (!isGroupKey(secret)) {
-      setProblem({ title: 'This link isn’t complete', text: 'Ask for the invite link again, and open the whole link.' })
+      setProblem({ title: t`This link isn’t complete`, text: t`Ask for the invite link again, and open the whole link.` })
       return
     }
     let live = true
@@ -52,8 +54,9 @@ function JoinByInvite({ secret }: { secret: string }) {
       (t) => live && setTicket(t),
       (err: Error) => {
         if (!live) return
-        if (err instanceof InviteClosed) setProblem({ title: 'This invite doesn’t work any more', text: `${err.message} Ask for a new one.` })
-        else setProblem({ title: 'Couldn’t open the invite', text: err.message })
+        const why = err.message
+        if (err instanceof InviteClosed) setProblem({ title: t`This invite doesn’t work any more`, text: t`${why} Ask for a new one.` })
+        else setProblem({ title: t`Couldn’t open the invite`, text: why })
       },
     )
     return () => {
@@ -72,10 +75,10 @@ function JoinByInvite({ secret }: { secret: string }) {
         <section className="empty">
           <h2>{problem.title}</h2>
           <p>{problem.text}</p>
-          <a className="button primary" href="#/">Open Footless</a>
+          <a className="button primary" href="#/">{t`Open Footless`}</a>
         </section>
       ) : (
-        <p className="muted" role="status">Opening the invite…</p>
+        <p className="muted" role="status">{t`Opening the invite…`}</p>
       )}
     </main>
   )
@@ -103,20 +106,21 @@ function JoinGroup({ groupId, groupKey: key, from }: { groupId: string; groupKey
         const state = replay(received.map((r) => r.event))
         if (!live) return
         if (state.members.size === 0) {
-          setProblem('This invite doesn’t lead to a group. Ask for a new link.')
+          setProblem(t`This invite doesn’t lead to a group. Ask for a new link.`)
           return
         }
         // Someone was removed since this invite was made: the group has a new key.
         const room = await roomId(key)
         if (received.some((r) => r.event.type === 'group.rekeyed' && r.event.from === room)) {
-          if (live) setProblem('This invite is out of date: the group has changed since it was made. Ask for a new link.')
+          if (live) setProblem(t`This invite is out of date: the group has changed since it was made. Ask for a new link.`)
           return
         }
         setLoaded({ state, received, cursor })
         const firstFree = [...state.members.values()].find((m) => !m.key && !m.left)
         setPicked(firstFree?.id ?? NEW)
       } catch (e) {
-        if (live) setProblem(`${(e as Error).message}. Check your connection and try again.`)
+        const why = (e as Error).message
+        if (live) setProblem(t`${why}. Check your connection and try again.`)
       }
     })()
     return () => {
@@ -128,16 +132,16 @@ function JoinGroup({ groupId, groupKey: key, from }: { groupId: string; groupKey
     return (
       <main className="screen">
         <section className="empty">
-          <h2>This link isn’t complete</h2>
-          <p>Ask for the invite link again, and open the whole link.</p>
-          <a className="button primary" href="#/">Open Footless</a>
+          <h2>{t`This link isn’t complete`}</h2>
+          <p>{t`Ask for the invite link again, and open the whole link.`}</p>
+          <a className="button primary" href="#/">{t`Open Footless`}</a>
         </section>
       </main>
     )
   }
 
   const state = loaded?.state
-  const name = state?.name ?? 'a group'
+  const name = state?.name ?? t`a group`
   const inviter = state?.members.get(from)?.name
   const canJoin = picked && (picked !== NEW || newName.trim()) && !busy
 
@@ -149,7 +153,7 @@ function JoinGroup({ groupId, groupKey: key, from }: { groupId: string; groupKey
     const meId = picked === NEW ? newId() : picked!
     const group: GroupMeta = {
       id: groupId,
-      name: loaded.state.name ?? 'Group',
+      name: loaded.state.name ?? t`Group`,
       currency: loaded.state.currency ?? 'JPY',
       meId,
       createdAt: new Date().toISOString(),
@@ -178,19 +182,19 @@ function JoinGroup({ groupId, groupKey: key, from }: { groupId: string; groupKey
       </div>
       {problem ? (
         <section className="empty">
-          <h2>Couldn’t open the group</h2>
+          <h2>{t`Couldn’t open the group`}</h2>
           <p>{problem}</p>
         </section>
       ) : !state ? (
-        <p className="muted" role="status">Opening the group…</p>
+        <p className="muted" role="status">{t`Opening the group…`}</p>
       ) : (
         <form className="form" onSubmit={join}>
           <div className="join-title">
-            <p className="muted">{inviter ? `${inviter} invited you to` : 'You’re invited to'}</p>
+            <p className="muted">{inviter ? t`${inviter} invited you to` : t`You’re invited to`}</p>
             <h1>{name}</h1>
           </div>
           <fieldset className="field">
-            <legend className="join-legend">Which one are you?</legend>
+            <legend className="join-legend">{t`Which one are you?`}</legend>
             <div className="choices">
               {[...state.members.values()].filter((m) => !m.left).map((m) => (
                 <label key={m.id} className={`choice${m.key ? ' taken' : ''}`}>
@@ -204,33 +208,32 @@ function JoinGroup({ groupId, groupKey: key, from }: { groupId: string; groupKey
                   />
                   <span className="choice-text">
                     <strong>{m.name}</strong>
-                    {m.key && <span className="muted">Already joined on another phone</span>}
+                    {m.key && <span className="muted">{t`Already joined on another phone`}</span>}
                   </span>
                 </label>
               ))}
               <label className="choice">
                 <input type="radio" name="who" value={NEW} checked={picked === NEW} onChange={() => setPicked(NEW)} />
                 <span className="choice-text">
-                  <strong>Someone else</strong>
-                  <span className="muted">Add yourself as a new person</span>
+                  <strong>{t`Someone else`}</strong>
+                  <span className="muted">{t`Add yourself as a new person`}</span>
                 </span>
               </label>
             </div>
           </fieldset>
           {picked === NEW && (
             <label className="field">
-              <span>Your name</span>
+              <span>{t`Your name`}</span>
               <input value={newName} onChange={(e) => setNewName(e.target.value)} autoComplete="given-name" />
             </label>
           )}
           <button className="button primary" disabled={!canJoin}>
-            {picked === NEW ? 'Join the group' : `Join as ${state.members.get(picked ?? '')?.name ?? ''}`}
+            {picked === NEW ? t`Join the group` : joinAs(state.members.get(picked ?? '')?.name ?? '')}
           </button>
-          <p className="muted">You’ll see the group’s expenses once you join. No account or sign-up needed.</p>
+          <p className="muted">{t`You’ll see the group’s expenses once you join. No account or sign-up needed.`}</p>
           {inBrowserTab() && (
             <p className="notice">
-              Have Footless on your Home Screen? Join from there instead: open it, tap the scan button and scan the
-              invite code. Groups joined here stay in this browser.
+              {t`Have Footless on your Home Screen? Join from there instead: open it, tap the scan button and scan the invite code. Groups joined here stay in this browser.`}
             </p>
           )}
         </form>
@@ -238,3 +241,5 @@ function JoinGroup({ groupId, groupKey: key, from }: { groupId: string; groupKey
     </main>
   )
 }
+
+const joinAs = (name: string) => t`Join as ${name}`

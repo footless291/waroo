@@ -11,9 +11,12 @@ export interface ActivityItem {
   title: string
   amount: number
   currency: string
-  /** From the group's point of view: who paid, or who paid whom. */
-  from: string
-  to?: string
+  /** Who paid (an expense's payer, if one; a payment's sender). Null: this phone's person. */
+  from: string | null
+  /** For expenses paid by several people: how many. */
+  payers?: number
+  /** For payments: who was paid. Null: this phone's person. */
+  to?: string | null
   /** For expenses: this person's share, if any. */
   myShare?: number
   method?: string
@@ -30,7 +33,7 @@ export async function recentActivity(limit = 100): Promise<ActivityItem[]> {
     const events = await getEvents(group.id)
     const state = replay(events)
     const byId = new Map<string, LedgerEvent>(events.map((e) => [e.id, e]))
-    const name = (id: string) => (id === group.meId ? 'You' : (state.members.get(id)?.name ?? 'Someone'))
+    const name = (id: string) => (id === group.meId ? null : (state.members.get(id)?.name ?? '?'))
     const groupName = state.name ?? group.name
     for (const expense of state.expenses.values()) {
       const head = byId.get(state.heads.get(expense.id) ?? '')
@@ -50,7 +53,8 @@ export async function recentActivity(limit = 100): Promise<ActivityItem[]> {
         title: expense.title,
         amount: expense.total,
         currency: expense.currency,
-        from: payers.length === 1 ? name(payers[0]!) : `${payers.length} people`,
+        from: name(payers[0]!),
+        payers: payers.length,
         myShare,
       })
     }
@@ -67,7 +71,7 @@ export async function recentActivity(limit = 100): Promise<ActivityItem[]> {
         amount: s.amount,
         currency: s.currency,
         from: name(s.from),
-        to: s.to === group.meId ? 'you' : name(s.to),
+        to: name(s.to),
         method: s.method,
         sats: s.bitcoin?.sats,
       })

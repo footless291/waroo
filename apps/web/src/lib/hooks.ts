@@ -1,3 +1,4 @@
+import { i18n } from '@lingui/core'
 import { replay, type GroupState, type LedgerEvent } from '@footless/ledger'
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import { getEvents, getGroup, listGroups, subscribe, type GroupMeta } from './db.ts'
@@ -57,4 +58,12 @@ export const go = (path: string) => {
   window.location.hash = path
 }
 
-export const locale = () => navigator.language || 'en'
+/**
+ * The locale for numbers, money and dates: the app's language, in the
+ * phone's regional flavour when they match (en-GB stays en-GB).
+ */
+export const locale = () => {
+  const app = i18n.locale || 'en'
+  const phone = navigator.language || app
+  return phone.toLowerCase().split('-')[0] === app ? phone : app
+}

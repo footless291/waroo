@@ -1,7 +1,10 @@
+import { i18n } from '@lingui/core'
+import { I18nProvider } from '@lingui/react'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { App } from './App.tsx'
 import { publishProfile } from './lib/db.ts'
+import { startI18n } from './lib/i18n.ts'
 import { syncHub } from './lib/sync.ts'
 import './lib/rekey.ts'
 import '@fontsource-variable/outfit'
@@ -13,9 +16,13 @@ document.addEventListener('visibilitychange', () => syncHub.setVisible(document.
 // Publishes this phone's box key in groups made before keys could change.
 void publishProfile().catch((err) => console.warn('profile', err))
 
+// The language loads first: nothing renders until it's ready.
+await startI18n()
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <I18nProvider i18n={i18n}>
+      <App />
+    </I18nProvider>
   </StrictMode>,
 )
 

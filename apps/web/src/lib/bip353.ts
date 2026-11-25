@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro'
 /**
  * BIP-353 names: ₿bob@phoenixwallet.me, published in DNS as a TXT record
  * holding a bitcoin: URI with a BOLT12 offer (`lno=`).
@@ -24,7 +25,7 @@ export const looksLikeName = (text: string) => /^\s*(₿|₿)/.test(text) && par
 /** Finds the BOLT12 offer behind a name. Throws with a plain reason if there isn't one. */
 export async function resolveOffer(text: string): Promise<{ name: string; offer: string }> {
   const parts = parseName(text)
-  if (!parts) throw new Error('That isn’t a name like ₿you@wallet.com')
+  if (!parts) throw new Error(t`That isn’t a name like ₿you@wallet.com`)
   const host = `${parts.user}.user._bitcoin-payment.${parts.domain}`
   let answer: { Status: number; AD?: boolean; Answer?: { type: number; data: string }[] }
   try {
@@ -34,11 +35,11 @@ export async function resolveOffer(text: string): Promise<{ name: string; offer:
     if (!res.ok) throw new Error(String(res.status))
     answer = await res.json()
   } catch {
-    throw new Error('Couldn’t look the name up. Check your connection and try again.')
+    throw new Error(t`Couldn’t look the name up. Check your connection and try again.`)
   }
-  if (answer.Status === 3 || !answer.Answer?.length) throw new Error('That name has no bitcoin payment details.')
-  if (answer.Status !== 0) throw new Error('Couldn’t look the name up right now.')
-  if (!answer.AD) throw new Error('The name’s records aren’t signed (DNSSEC), so Footless can’t trust them.')
+  if (answer.Status === 3 || !answer.Answer?.length) throw new Error(t`That name has no bitcoin payment details.`)
+  if (answer.Status !== 0) throw new Error(t`Couldn’t look the name up right now.`)
+  if (!answer.AD) throw new Error(t`The name’s records aren’t signed (DNSSEC), so Footless can’t trust them.`)
   for (const record of answer.Answer.filter((a) => a.type === 16)) {
     // A TXT record can come in several quoted pieces: join them.
     const pieces = record.data.match(/"((?:[^"\\]|\\.)*)"/g)
@@ -52,5 +53,5 @@ export async function resolveOffer(text: string): Promise<{ name: string; offer:
       if (isOffer(offer)) return { name: `₿${parts.user}@${parts.domain}`, offer }
     }
   }
-  throw new Error('That name doesn’t have a BOLT12 offer.')
+  throw new Error(t`That name doesn’t have a BOLT12 offer.`)
 }

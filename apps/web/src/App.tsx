@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import { Banners } from './components/Banners.tsx'
 import { go, useRoute } from './lib/hooks.ts'
@@ -56,9 +57,9 @@ function UpdatePrompt() {
   if (!needRefresh) return null
   return (
     <div className="toast" role="status">
-      A new version is ready.
+      {t`A new version is ready.`}
       <button className="link" onClick={() => updateServiceWorker(true)}>
-        Reload
+        {t`Reload`}
       </button>
     </div>
   )

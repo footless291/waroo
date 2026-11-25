@@ -1,4 +1,6 @@
-import { AppearanceCard } from '../components/AppearanceCard.tsx'
+import { Trans } from '@lingui/react/macro'
+import { t } from '@lingui/core/macro'
+import { AppearanceCard, LanguageCard } from '../components/AppearanceCard.tsx'
 import { Collapsible } from '../components/Collapsible.tsx'
 import { PageTitle } from '../components/Header.tsx'
 import { NotificationsCard } from '../components/NotificationsCard.tsx'
@@ -12,24 +14,29 @@ export function SettingsPage({ params }: { params: URLSearchParams }) {
   const opened = (name: string) => params.get('open') === name
   return (
     <div className="screen with-tabbar">
-      <PageTitle>Settings</PageTitle>
+      <PageTitle>{t`Settings`}</PageTitle>
       <div className="form settings">
-        <Collapsible title="Wallet" className="wallet-card-section" defaultOpen={opened('wallet')}>
+        <Collapsible title={t`Wallet`} className="wallet-card-section" defaultOpen={opened('wallet')}>
           <WalletSection />
         </Collapsible>
-        <Collapsible title="Notifications" defaultOpen={opened('notifications')}>
+        <Collapsible title={t`Notifications`} defaultOpen={opened('notifications')}>
           <NotificationsCard />
         </Collapsible>
-        <Collapsible title="Appearance" defaultOpen={opened('appearance')}>
+        <Collapsible title={t`Appearance`} defaultOpen={opened('appearance')}>
           <AppearanceCard />
         </Collapsible>
-        <Collapsible title="Moving to a new phone" defaultOpen={opened('move')}>
+        <Collapsible title={t`Language`} defaultOpen={opened('language')}>
+          <LanguageCard />
+        </Collapsible>
+        <Collapsible title={t`Moving to a new phone`} defaultOpen={opened('move')}>
           <p>
-            Move your groups to another phone, so you can keep adding expenses and settling up there. Have both phones
-            with you.
+            <Trans>
+              Move your groups to another phone, so you can keep adding expenses and settling up there. Have both phones
+              with you.
+            </Trans>
           </p>
           <a className="button outline" href="#/move">
-            Move to a new phone
+            {t`Move to a new phone`}
           </a>
         </Collapsible>
       </div>

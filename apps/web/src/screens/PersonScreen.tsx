@@ -1,3 +1,5 @@
+import { Trans } from '@lingui/react/macro'
+import { t } from '@lingui/core/macro'
 import { groupBalances } from '@footless/ledger'
 import { useState } from 'react'
 import { Avatar } from '../components/Avatar.tsx'
@@ -29,7 +31,8 @@ export function PersonScreen({ groupId, memberId }: { groupId: string; memberId:
   const canRemove = state.signed && person.key !== undefined && !person.left && me?.key !== undefined
   // Anyone who's joined on a phone (or was removed) can be vouched back in.
   const canRecover = state.signed && !person.left && me?.key !== undefined && (person.key !== undefined || !!person.removedBy)
-  const remover = person.removedBy ? state.members.get(person.removedBy)?.name : undefined
+  const who = person.name
+  const by = (person.removedBy ? state.members.get(person.removedBy)?.name : undefined) ?? t`someone`
   const balances = [...groupBalances(state)].flatMap(([currency, byPerson]) => {
     const amount = byPerson.get(memberId)
     return amount ? [{ currency, amount }] : []
@@ -60,43 +63,43 @@ export function PersonScreen({ groupId, memberId }: { groupId: string; memberId:
           <p>
             {person.left
               ? person.removedBy
-                ? `Removed by ${remover ?? 'someone'}.`
-                : 'Left the group.'
+                ? t`Removed by ${by}.`
+                : t`Left the group.`
               : person.removedBy
-                ? `Removed by ${remover ?? 'someone'}. Their expenses stay, and they can join again as ${person.name} with a new invite.`
+                ? t`Removed by ${by}. Their expenses stay, and they can join again as ${who} with a new invite.`
                 : person.key
-                  ? `In ${groupName} on their phone.`
-                  : `Hasn’t joined on a phone yet.`}
+                  ? t`In ${groupName} on their phone.`
+                  : t`Hasn’t joined on a phone yet.`}
           </p>
           {balances.length > 0 && (
             <p className="muted">
               {balances
-                .map(({ currency, amount }) => `${amount > 0 ? 'Gets back' : 'Owes'} ${money(Math.abs(amount), currency)}`)
-                .join(', ')}
+                .map(({ currency, amount }) => {
+                  const sum = money(Math.abs(amount), currency)
+                  return amount > 0 ? t`Gets back ${sum}` : t`Owes ${sum}`
+                })
+                .join(t`, `)}
             </p>
           )}
         </section>
 
         {canRecover && (
           <section className="settings-card">
-            <h2>Lost their phone?</h2>
+            <h2>{t`Lost their phone?`}</h2>
             <p>
-              Vouch for {person.name}’s new phone, so they’re back in as themselves. The lost phone stops working in
-              this group.
+              {t`Vouch for ${who}’s new phone, so they’re back in as themselves. The lost phone stops working in this group.`}
             </p>
             <a className="button outline" href={`#/g/${groupId}/m/${memberId}/recover`}>
-              Help {person.name} back in
+              {t`Help ${who} back in`}
             </a>
           </section>
         )}
 
         {canRemove && (
           <section className="settings-card">
-            <h2>Remove from the group</h2>
+            <h2>{t`Remove from the group`}</h2>
             <p>
-              {person.name}’s phone stops getting anything new from {groupName}, and can’t add to it. What they’ve
-              added and what they owe stay. Footless gives the group a new key, so everyone else’s phones move over by
-              themselves.
+              {t`${who}’s phone stops getting anything new from ${groupName}, and can’t add to it. What they’ve added and what they owe stay. Footless gives the group a new key, so everyone else’s phones move over by themselves.`}
             </p>
             {problem && (
               <p className="problems" role="alert">
@@ -104,7 +107,7 @@ export function PersonScreen({ groupId, memberId }: { groupId: string; memberId:
               </p>
             )}
             <button className="button danger" disabled={busy} onClick={remove}>
-              {busy ? 'Removing…' : confirm ? `Tap again to remove ${person.name}` : `Remove ${person.name}`}
+              {busy ? t`Removing…` : confirm ? t`Tap again to remove ${who}` : t`Remove ${who}`}
             </button>
           </section>
         )}

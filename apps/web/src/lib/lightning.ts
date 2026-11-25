@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro'
 /**
  * Paying a Lightning address, safely.
  *
@@ -41,17 +42,17 @@ async function getJson(url: string): Promise<any> {
     res = await fetch(url, { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(10_000) })
   } catch {
     throw new PaymentError(
-      'Couldn’t reach their Lightning address. It may not work from web apps, or you may be offline.',
+      t`Couldn’t reach their Lightning address. It may not work from web apps, or you may be offline.`,
     )
   }
   let body: any
   try {
     body = await res.json()
   } catch {
-    throw new PaymentError('Their Lightning address sent back something unexpected.')
+    throw new PaymentError(t`Their Lightning address sent back something unexpected.`)
   }
-  if (body?.status === 'ERROR') throw new PaymentError(`Their Lightning address said: ${String(body.reason ?? 'error')}`)
-  if (!res.ok) throw new PaymentError('Their Lightning address isn’t working right now.')
+  if (body?.status === 'ERROR') throw new PaymentError(t`Their Lightning address said: ${String(body.reason ?? 'error')}`)
+  if (!res.ok) throw new PaymentError(t`Their Lightning address isn’t working right now.`)
   return body
 }
 
@@ -62,19 +63,19 @@ const httpsUrl = (value: unknown): string => {
   } catch {
     // fall through
   }
-  throw new PaymentError('Their Lightning address gave an unsafe link.')
+  throw new PaymentError(t`Their Lightning address gave an unsafe link.`)
 }
 
 /** Step 1: how to pay this address. */
 export async function payParams(address: string): Promise<PayParams> {
   const [name, domain] = address.toLowerCase().split('@')
-  if (!name || !domain) throw new PaymentError('That isn’t a Lightning address.')
+  if (!name || !domain) throw new PaymentError(t`That isn’t a Lightning address.`)
   const body = await getJson(`https://${domain}/.well-known/lnurlp/${encodeURIComponent(name)}`)
-  if (body?.tag !== 'payRequest') throw new PaymentError('That Lightning address can’t receive payments.')
+  if (body?.tag !== 'payRequest') throw new PaymentError(t`That Lightning address can’t receive payments.`)
   const min = Math.ceil(Number(body.minSendable) / 1000)
   const max = Math.floor(Number(body.maxSendable) / 1000)
   if (!Number.isFinite(min) || !Number.isFinite(max) || typeof body.metadata !== 'string') {
-    throw new PaymentError('Their Lightning address sent back something unexpected.')
+    throw new PaymentError(t`Their Lightning address sent back something unexpected.`)
   }
   return { callback: httpsUrl(body.callback), minSats: min, maxSats: max, metadata: body.metadata }
 }
@@ -90,7 +91,7 @@ export function readInvoice(invoice: string) {
   try {
     sections = decode(invoice).sections as { name: string; value?: unknown }[]
   } catch {
-    throw new PaymentError('Their Lightning address sent an invoice that doesn’t read correctly.')
+    throw new PaymentError(t`Their Lightning address sent an invoice that doesn’t read correctly.`)
   }
   const get = (name: string) => sections.find((s) => s.name === name)?.value
   const msats = get('amount')
@@ -106,8 +107,8 @@ export function readInvoice(invoice: string) {
 
 /** Steps 2 and 3: an invoice for exactly `sats`, checked before anyone pays it. */
 export async function getInvoice(params: PayParams, sats: number, comment?: string): Promise<CheckedInvoice> {
-  if (sats < params.minSats) throw new PaymentError(`Their Lightning address only takes ${params.minSats} sats or more.`)
-  if (sats > params.maxSats) throw new PaymentError(`Their Lightning address takes at most ${params.maxSats} sats at once.`)
+  if (sats < params.minSats) throw new PaymentError(t`Their Lightning address only takes ${params.minSats} sats or more.`)
+  if (sats > params.maxSats) throw new PaymentError(t`Their Lightning address takes at most ${params.maxSats} sats at once.`)
   const url = new URL(params.callback)
   url.searchParams.set('amount', String(sats * 1000))
   if (comment) url.searchParams.set('comment', comment.slice(0, 120))
@@ -116,15 +117,15 @@ export async function getInvoice(params: PayParams, sats: number, comment?: stri
   const read = readInvoice(invoice)
 
   if (read.msats !== BigInt(sats) * 1000n) {
-    throw new PaymentError('Their Lightning address asked for a different amount. Nothing was paid.')
+    throw new PaymentError(t`Their Lightning address asked for a different amount. Nothing was paid.`)
   }
   if (read.descriptionHash && read.descriptionHash !== (await sha256Hex(params.metadata))) {
-    throw new PaymentError('The invoice doesn’t match their Lightning address. Nothing was paid.')
+    throw new PaymentError(t`The invoice doesn’t match their Lightning address. Nothing was paid.`)
   }
   if (!/^[0-9a-f]{64}$/.test(read.paymentHash)) {
-    throw new PaymentError('Their Lightning address sent an invoice that doesn’t read correctly.')
+    throw new PaymentError(t`Their Lightning address sent an invoice that doesn’t read correctly.`)
   }
-  if (read.expiresAt * 1000 < Date.now() + 30_000) throw new PaymentError('The invoice had already expired. Try again.')
+  if (read.expiresAt * 1000 < Date.now() + 30_000) throw new PaymentError(t`The invoice had already expired. Try again.`)
   return {
     invoice,
     sats,
@@ -161,14 +162,14 @@ export async function btcPrice(currency: string): Promise<{ price: string; sourc
   try {
     res = await fetch(`/relay/rate?currency=${encodeURIComponent(currency)}`, { signal: AbortSignal.timeout(10_000) })
   } catch {
-    throw new PaymentError('Couldn’t get the bitcoin price. Check your connection.')
+    throw new PaymentError(t`Couldn’t get the bitcoin price. Check your connection.`)
   }
   const body = await res.json().catch(() => ({}))
   if (!res.ok || typeof body.price !== 'string') {
     throw new PaymentError(
       res.status === 502
-        ? 'Bitcoin price sources disagree right now, so paying is paused. Try again in a minute.'
-        : 'Couldn’t get the bitcoin price right now. Try again in a minute.',
+        ? t`Bitcoin price sources disagree right now, so paying is paused. Try again in a minute.`
+        : t`Couldn’t get the bitcoin price right now. Try again in a minute.`,
     )
   }
   return { price: body.price, source: String(body.source), at: String(body.at) }

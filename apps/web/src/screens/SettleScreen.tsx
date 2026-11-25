@@ -1,3 +1,5 @@
+import { Trans } from '@lingui/react/macro'
+import { t } from '@lingui/core/macro'
 import { parseAmount, type SettlementMethod } from '@footless/ledger'
 import { useState, type FormEvent } from 'react'
 import { BitcoinPay } from '../components/BitcoinPay.tsx'
@@ -6,11 +8,12 @@ import { Segmented } from '../components/Segmented.tsx'
 import { append, newId } from '../lib/db.ts'
 import { CURRENCIES, isRemoved, money, toInput } from '../lib/format.ts'
 import { go, useGroup } from '../lib/hooks.ts'
+import { ledgerText } from '../lib/ledgerText.ts'
 
-const METHODS: { value: SettlementMethod; label: string }[] = [
-  { value: 'cash', label: 'Cash' },
-  { value: 'bank', label: 'Bank transfer' },
-  { value: 'other', label: 'Other' },
+const methods = (): { value: SettlementMethod; label: string }[] => [
+  { value: 'cash', label: t`Cash` },
+  { value: 'bank', label: t`Bank transfer` },
+  { value: 'other', label: t`Other` },
 ]
 
 export function SettleScreen({ groupId, params }: { groupId: string; params: URLSearchParams }) {
@@ -39,19 +42,22 @@ export function SettleScreen({ groupId, params }: { groupId: string; params: URL
     : (params.get('to') ?? '')
   const currency = free ? (pickedCurrency ?? meta.currency) : (params.get('currency') ?? 'JPY')
   const done = free ? `/g/${meta.id}/payments` : `/g/${meta.id}`
-  const label = (id: string) => (id === meta.meId ? `${state.members.get(id)?.name} (you)` : state.members.get(id)?.name)
-  const fromName = from === meta.meId ? 'You' : state.members.get(from)?.name
-  const toName = to === meta.meId ? 'you' : state.members.get(to)?.name
+  const label = (id: string) => {
+    const name = state.members.get(id)?.name ?? ''
+    return id === meta.meId ? t`${name} (you)` : name
+  }
+  const fromName = state.members.get(from)?.name ?? ''
+  const toName = state.members.get(to)?.name ?? ''
 
   let amount = 0
   let problem = ''
   try {
     amount = parseAmount(amountText || '0', currency)
-    if (amount <= 0) problem = 'Enter an amount'
+    if (amount <= 0) problem = t`Enter an amount`
   } catch (e) {
-    problem = (e as Error).message
+    problem = ledgerText((e as Error).message)
   }
-  if (!to || from === to) problem = 'Pick two different people'
+  if (!to || from === to) problem = t`Pick two different people`
 
   async function record(e: FormEvent) {
     e.preventDefault()
@@ -64,12 +70,12 @@ export function SettleScreen({ groupId, params }: { groupId: string; params: URL
 
   return (
     <main className="screen">
-      <Header title={free ? 'Add payment' : 'Settle up'} back={done} />
+      <Header title={free ? t`Add payment` : t`Settle up`} back={done} />
       <form className="form" onSubmit={record}>
         {free ? (
           <div className="field-row">
             <label className="field grow">
-              <span>Who paid</span>
+              <span>{t`Who paid`}</span>
               <select value={from} onChange={(e) => setFrom(e.target.value)}>
                 {people.map((m) => (
                   <option key={m.id} value={m.id}>
@@ -79,7 +85,7 @@ export function SettleScreen({ groupId, params }: { groupId: string; params: URL
               </select>
             </label>
             <label className="field grow">
-              <span>To</span>
+              <span>{t`To`}</span>
               <select value={to} onChange={(e) => setTo(e.target.value)}>
                 {people
                   .filter((m) => m.id !== from)
@@ -93,12 +99,24 @@ export function SettleScreen({ groupId, params }: { groupId: string; params: URL
           </div>
         ) : (
           <p className="settle-summary">
-            <strong>{fromName}</strong> {from === meta.meId ? 'pay' : 'pays'} <strong>{toName}</strong>
+            {from === meta.meId ? (
+              <Trans>
+                <strong>You</strong> pay <strong>{toName}</strong>
+              </Trans>
+            ) : to === meta.meId ? (
+              <Trans>
+                <strong>{fromName}</strong> pays <strong>you</strong>
+              </Trans>
+            ) : (
+              <Trans>
+                <strong>{fromName}</strong> pays <strong>{toName}</strong>
+              </Trans>
+            )}
           </p>
         )}
         {free && (
           <label className="field">
-            <span>Currency</span>
+            <span>{t`Currency`}</span>
             <select value={currency} onChange={(e) => setCurrency(e.target.value)}>
               {[...new Set([meta.currency, ...CURRENCIES])].map((c) => (
                 <option key={c}>{c}</option>
@@ -107,7 +125,7 @@ export function SettleScreen({ groupId, params }: { groupId: string; params: URL
           </label>
         )}
         <label className="field">
-          <span>Amount ({currency})</span>
+          <span>{t`Amount (${currency})`}</span>
           <input
             readOnly={paidInBitcoin}
             className="amount-input"
@@ -118,7 +136,7 @@ export function SettleScreen({ groupId, params }: { groupId: string; params: URL
         </label>
         <p className="hint" aria-live="polite">
           {suggested > 0 && amount > 0 && amount < suggested
-            ? `Partial payment: ${money(suggested - amount, currency)} will still be owed.`
+            ? partial(money(suggested - amount, currency))
             : ''}
         </p>
 
@@ -137,15 +155,19 @@ export function SettleScreen({ groupId, params }: { groupId: string; params: URL
         {!paidInBitcoin && (
           <>
             <fieldset className="field">
-              <legend>{from === meta.meId ? 'Or mark it as paid another way' : 'Mark it as paid'}</legend>
-              <Segmented label="Payment method" options={METHODS} value={method} onChange={setMethod} />
+              <legend>{from === meta.meId ? t`Or mark it as paid another way` : t`Mark it as paid`}</legend>
+              <Segmented label={t`Payment method`} options={methods()} value={method} onChange={setMethod} />
             </fieldset>
             <button className="button primary" disabled={!!problem}>
-              Mark as paid
+              {t`Mark as paid`}
             </button>
           </>
         )}
       </form>
     </main>
   )
+}
+
+function partial(left: string) {
+  return t`Partial payment: ${left} will still be owed.`
 }

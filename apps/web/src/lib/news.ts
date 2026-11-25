@@ -5,6 +5,8 @@
  * Kept free of React and of the page (no window, no location): the service
  * worker imports it too.
  */
+import { i18n } from '@lingui/core'
+import { t } from '@lingui/core/macro'
 import { computeShares, formatAmount, type GroupState, type LedgerEvent, type Settlement } from '@footless/ledger'
 
 export type NewsKind = 'paid-you' | 'you-paid' | 'others-paid' | 'joined' | 'left' | 'expense'
@@ -16,9 +18,17 @@ export interface News {
   detail: string
 }
 
-const lang = () => (typeof navigator !== 'undefined' && navigator.language) || 'en'
+/** The app's language, in the phone's regional flavour when they match. Works in the service worker too. */
+const lang = () => {
+  const app = i18n.locale || 'en'
+  const phone = (typeof navigator !== 'undefined' && navigator.language) || app
+  return phone.toLowerCase().split('-')[0] === app ? phone : app
+}
 const money = (amount: number, currency: string) => formatAmount(amount, currency, lang())
-const sats = (n: number) => `${new Intl.NumberFormat(lang()).format(n)} sats`
+const satsText = (n: number) => {
+  const count = new Intl.NumberFormat(lang()).format(n)
+  return t`${count} sats`
+}
 
 /**
  * Events that should wake the others' phones. The sender decides, since the
@@ -53,77 +63,95 @@ export function describeEvent(
   groupName: string,
   mine: boolean,
 ): News | null {
-  const name = (id: string) => state.members.get(id)?.name ?? 'Someone'
-  const where = `in ${groupName}`
+  const name = (id: string) => state.members.get(id)?.name ?? t`Someone`
+  const group = groupName
+  const inGroup = t`In ${group}`
 
   if (event.type === 'settlement.recorded') {
     const s: Settlement = event.settlement
     const amount = money(s.amount, s.currency)
-    const proof = s.bitcoin ? `${sats(s.bitcoin.sats)}${s.bitcoin.preimage ? ', verified' : ''}` : ''
-    const detail = proof ? `${proof}, ${where}` : capital(where)
+    const sats = s.bitcoin ? satsText(s.bitcoin.sats) : ''
+    const detail = !s.bitcoin
+      ? inGroup
+      : s.bitcoin.preimage
+        ? t`${sats}, verified, in ${group}`
+        : t`${sats}, in ${group}`
     const base = { id: s.id }
+    const from = name(s.from)
+    const to = name(s.to)
     if (mine) {
       // Only a bitcoin payment is news to the payer: a manual record is what they just did.
       return s.from === meId && s.bitcoin
-        ? { ...base, kind: 'you-paid', title: `Payment sent: ${amount} to ${name(s.to)}`, detail }
+        ? { ...base, kind: 'you-paid', title: t`Payment sent: ${amount} to ${to}`, detail }
         : null
     }
     if (s.to === meId) {
       return s.bitcoin
-        ? { ...base, kind: 'paid-you', title: `${name(s.from)} paid you ${amount}`, detail }
-        : { ...base, kind: 'paid-you', title: `${name(s.from)} marked ${amount} as paid to you`, detail }
+        ? { ...base, kind: 'paid-you', title: t`${from} paid you ${amount}`, detail }
+        : { ...base, kind: 'paid-you', title: t`${from} marked ${amount} as paid to you`, detail }
     }
     if (s.from === meId) {
-      return { ...base, kind: 'you-paid', title: `${name(s.to)} marked your ${amount} as paid`, detail }
+      return { ...base, kind: 'you-paid', title: t`${to} marked your ${amount} as paid`, detail }
     }
-    return { ...base, kind: 'others-paid', title: `${name(s.from)} paid ${name(s.to)} ${amount}`, detail }
+    return { ...base, kind: 'others-paid', title: t`${from} paid ${to} ${amount}`, detail }
   }
 
   if (mine) return null
 
   if (isNotable(event) && (event.type === 'member.added' || event.type === 'member.claimed')) {
-    const who = event.type === 'member.added' ? event.member.id : event.memberId
-    return { id: event.id, kind: 'joined', title: `${name(who)} joined ${groupName}`, detail: 'They can see the group and add expenses now' }
+    const who = name(event.type === 'member.added' ? event.member.id : event.memberId)
+    return { id: event.id, kind: 'joined', title: t`${who} joined ${group}`, detail: t`They can see the group and add expenses now` }
   }
 
   if (event.type === 'member.recovered') {
     const by = name(event.author)
     if (event.memberId === meId) {
-      return { id: event.id, kind: 'joined', title: `${by} moved you to a new phone in ${groupName}`, detail: 'If that wasn’t you, tell the group' }
+      return { id: event.id, kind: 'joined', title: t`${by} moved you to a new phone in ${group}`, detail: t`If that wasn’t you, tell the group` }
     }
-    return { id: event.id, kind: 'joined', title: `${name(event.memberId)} is back in ${groupName} on a new phone`, detail: `${by} vouched for it` }
+    const who = name(event.memberId)
+    return { id: event.id, kind: 'joined', title: t`${who} is back in ${group} on a new phone`, detail: t`${by} vouched for it` }
   }
 
   if (event.type === 'member.removed') {
     const by = name(event.author)
     if (event.memberId === meId) {
-      return { id: event.id, kind: 'left', title: `${by} removed you from ${groupName}`, detail: 'This phone won’t get anything new from the group' }
+      return { id: event.id, kind: 'left', title: t`${by} removed you from ${group}`, detail: t`This phone won’t get anything new from the group` }
     }
-    return { id: event.id, kind: 'left', title: `${by} removed ${name(event.memberId)} from ${groupName}`, detail: 'Their expenses stay in the group' }
+    const who = name(event.memberId)
+    return { id: event.id, kind: 'left', title: t`${by} removed ${who} from ${group}`, detail: t`Their expenses stay in the group` }
   }
 
   if (event.type === 'member.left') {
-    return { id: event.id, kind: 'left', title: `${name(event.memberId)} left ${groupName}`, detail: 'They were all square' }
+    const who = name(event.memberId)
+    return { id: event.id, kind: 'left', title: t`${who} left ${group}`, detail: t`They were all square` }
   }
 
   if (event.type === 'expense.saved' && !event.basedOn) {
     // Say it as it is now: it may have been edited, or deleted, since.
     if (state.deleted.has(event.expense.id)) return null
     const e = state.expenses.get(event.expense.id) ?? event.expense
-    let share: number | undefined
+    let myShare: number | undefined
     try {
-      share = computeShares(e).get(meId)
+      myShare = computeShares(e).get(meId)
     } catch {
-      share = undefined
+      myShare = undefined
     }
+    const who = name(event.author)
+    const title = e.title
+    const total = money(e.total, e.currency)
+    const share = myShare ? money(myShare, e.currency) : ''
     return {
       id: event.id,
       kind: 'expense',
-      title: `${name(event.author)} added ${e.title}, ${money(e.total, e.currency)}`,
-      detail: share ? `Your share is ${money(share, e.currency)}, ${where}` : capital(where),
+      title: t`${who} added ${title}, ${total}`,
+      detail: myShare ? t`Your share is ${share}, in ${group}` : inGroup,
     }
   }
   return null
 }
 
-const capital = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+/** A notification for several things at once in one group. */
+export function severalNews(groupName: string, count: number): string {
+  const group = groupName
+  return t`${group}: ${count} new things`
+}

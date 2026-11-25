@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro'
 /**
  * Keeps shared groups in step with the relay while the app is open.
  *
@@ -431,12 +432,12 @@ export async function fetchGroup(key: string): Promise<{
   await new Promise<void>((resolve, reject) => {
     const timeout = setTimeout(() => {
       ws.close()
-      reject(new Error('The group took too long to load'))
+      reject(new Error(t`The group took too long to load`))
     }, 20_000)
     ws.onopen = () => ws.send(JSON.stringify({ t: 'hello', since: 0 }))
     ws.onerror = () => {
       clearTimeout(timeout)
-      reject(new Error('Couldn’t reach the group'))
+      reject(new Error(t`Couldn’t reach the group`))
     }
     ws.onmessage = (e) => {
       const msg = JSON.parse(e.data as string) as RelayMessage

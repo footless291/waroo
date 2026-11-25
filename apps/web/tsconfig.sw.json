@@ -13,6 +13,7 @@
     "exactOptionalPropertyTypes": false
   },
   "include": [
-    "src/sw.ts"
+    "src/sw.ts",
+    "src/locales.d.ts"
   ]
 }

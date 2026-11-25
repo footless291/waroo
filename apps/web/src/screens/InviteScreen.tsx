@@ -1,3 +1,5 @@
+import { Trans } from '@lingui/react/macro'
+import { plural, t } from '@lingui/core/macro'
 import { useEffect, useState } from 'react'
 import { Header } from '../components/Header.tsx'
 import { QrCode } from '../components/QrCode.tsx'
@@ -18,29 +20,37 @@ import { syncHub } from '../lib/sync.ts'
 type Who = 'many' | 'one'
 type Days = '1' | '7' | '30'
 
-const WHO: { value: Who; label: string }[] = [
-  { value: 'many', label: 'Several people' },
-  { value: 'one', label: 'One person' },
+const whoOptions = (): { value: Who; label: string }[] => [
+  { value: 'many', label: t`Several people` },
+  { value: 'one', label: t`One person` },
 ]
-const DAYS: { value: Days; label: string }[] = [
-  { value: '1', label: '1 day' },
-  { value: '7', label: '1 week' },
-  { value: '30', label: '1 month' },
+const dayOptions = (): { value: Days; label: string }[] => [
+  { value: '1', label: t`1 day` },
+  { value: '7', label: t`1 week` },
+  { value: '30', label: t`1 month` },
 ]
 
 const until = (ms: number) =>
   new Intl.DateTimeFormat(locale(), { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(ms)
 
 function describe(invite: SavedInvite) {
-  return `${invite.oneTime ? 'For one person' : 'For several people'}, until ${until(invite.expiresAt)}`
+  const date = until(invite.expiresAt)
+  return invite.oneTime ? t`For one person, until ${date}` : t`For several people, until ${date}`
 }
 
-const STATE_TEXT: Record<InviteStatus['state'], string> = {
-  open: 'Works',
-  used: 'Used',
-  expired: 'Expired',
-  stopped: 'Turned off',
-  unknown: 'Can’t check right now',
+function stateText(status: InviteStatus, oneTime: boolean): string {
+  const state =
+    status.state === 'open'
+      ? t`Works`
+      : status.state === 'used'
+        ? t`Used`
+        : status.state === 'expired'
+          ? t`Expired`
+          : status.state === 'stopped'
+            ? t`Turned off`
+            : t`Can’t check right now`
+  if (oneTime || status.opens === 0) return state
+  return plural(status.opens, { one: `${state}, opened once`, other: `${state}, opened # times` })
 }
 
 export function InviteScreen({ groupId }: { groupId: string }) {
@@ -99,7 +109,7 @@ export function InviteScreen({ groupId }: { groupId: string }) {
 
   async function share() {
     try {
-      await navigator.share({ title: name, text: `Join ${name} on Footless`, url: link })
+      await navigator.share({ title: name, text: t`Join ${name} on Footless`, url: link })
     } catch {
       // Dismissed the share sheet: nothing to do.
     }
@@ -115,7 +125,7 @@ export function InviteScreen({ groupId }: { groupId: string }) {
     try {
       await stopInvite(invite)
       if (current?.secret === invite.secret) setCurrent(undefined)
-      setNote('Link turned off. Nobody else can join with it.')
+      setNote(t`Link turned off. Nobody else can join with it.`)
       void refresh()
     } catch (err) {
       setNote((err as Error).message)
@@ -124,25 +134,27 @@ export function InviteScreen({ groupId }: { groupId: string }) {
 
   return (
     <main className="screen">
-      <Header title="Invite people" back={`/g/${groupId}`} />
+      <Header title={t`Invite people`} back={`/g/${groupId}`} />
       <div className="form">
         <p className="lead">
-          Send the others a link to <strong>{name}</strong>. They open it, pick who they are, and the group appears on
-          their phone with everything added so far.
+          <Trans>
+            Send the others a link to <strong>{name}</strong>. They open it, pick who they are, and the group appears on
+            their phone with everything added so far.
+          </Trans>
         </p>
 
         {!current ? (
           <section className="settings-card">
             <fieldset className="field">
-              <legend>Who it’s for</legend>
-              <Segmented label="Who it’s for" options={WHO} value={who} onChange={setWho} />
+              <legend>{t`Who it’s for`}</legend>
+              <Segmented label={t`Who it’s for`} options={whoOptions()} value={who} onChange={setWho} />
             </fieldset>
             <fieldset className="field">
-              <legend>Works for</legend>
-              <Segmented label="Works for" options={DAYS} value={days} onChange={setDays} />
+              <legend>{t`Works for`}</legend>
+              <Segmented label={t`Works for`} options={dayOptions()} value={days} onChange={setDays} />
             </fieldset>
             <button className="button primary" disabled={!ready || busy} onClick={create}>
-              {busy ? 'Making the link…' : 'Create invite link'}
+              {busy ? t`Making the link…` : t`Create invite link`}
             </button>
           </section>
         ) : (
@@ -150,58 +162,52 @@ export function InviteScreen({ groupId }: { groupId: string }) {
             <p className="invite-link-terms">{describe(current)}</p>
             {canShare && (
               <button className="button primary" onClick={share}>
-                Share invite link
+                {t`Share invite link`}
               </button>
             )}
             <div className="button-row">
               <button className={`button ${canShare ? 'outline' : 'primary'}`} onClick={copy}>
-                {copied ? 'Link copied' : 'Copy link'}
+                {copied ? t`Link copied` : t`Copy link`}
               </button>
               <button className="button outline" onClick={() => setShowQr(!showQr)} aria-expanded={showQr}>
-                {showQr ? 'Hide QR code' : 'Show QR code'}
+                {showQr ? t`Hide QR code` : t`Show QR code`}
               </button>
             </div>
             {showQr && (
               <div className="qr-box">
-                <QrCode text={link} label="QR code for the invite link" />
-                <p className="muted">Scan it in Footless on the other phone, with the scan button.</p>
+                <QrCode text={link} label={t`QR code for the invite link`} />
+                <p className="muted">{t`Scan it in Footless on the other phone, with the scan button.`}</p>
               </div>
             )}
             <button className="link" onClick={() => setCurrent(undefined)}>
-              Make a different link
+              {t`Make a different link`}
             </button>
           </section>
         )}
         <p className="hint" aria-live="polite">
-          {copied ? 'Invite link copied. Paste it to the people in this group.' : note}
+          {copied ? t`Invite link copied. Paste it to the people in this group.` : note}
         </p>
 
         <section className="notice-card">
-          <h2>Share it only with the group</h2>
+          <h2>{t`Share it only with the group`}</h2>
           <p>
-            Whoever opens the link while it works can join and see the group’s expenses. Nobody else can read them,
-            not even Footless.
+            {t`Whoever opens the link while it works can join and see the group’s expenses. Nobody else can read them, not even Footless.`}
           </p>
         </section>
 
         {links.length > 0 && (
           <section className="section">
-            <h2 className="section-title">Your invite links</h2>
+            <h2 className="section-title">{t`Your invite links`}</h2>
             <ul className="cards">
               {links.map((i) => (
                 <li key={i.secret} className="card-row invite-row">
                   <span className="row-main">
                     <strong>{describe(i)}</strong>
-                    <span className="muted">
-                      {i.status ? STATE_TEXT[i.status.state] : 'Checking…'}
-                      {i.status && i.status.opens > 0 && !i.oneTime
-                        ? `, opened ${i.status.opens === 1 ? 'once' : `${i.status.opens} times`}`
-                        : ''}
-                    </span>
+                    <span className="muted">{i.status ? stateText(i.status, i.oneTime) : t`Checking…`}</span>
                   </span>
                   {i.status?.state === 'open' && (
-                    <button className="button small outline" onClick={() => stop(i)} aria-label={`Turn off: ${describe(i)}`}>
-                      Turn off
+                    <button className="button small outline" onClick={() => stop(i)} aria-label={t`Turn off: ${describe(i)}`}>
+                      {t`Turn off`}
                     </button>
                   )}
                 </li>
@@ -210,13 +216,15 @@ export function InviteScreen({ groupId }: { groupId: string }) {
           </section>
         )}
 
-        <p className="muted">
-          Joined so far:{' '}
-          {joined.length <= 1
-            ? 'just you'
-            : joined.map((m) => (m.id === group?.meta.meId ? 'you' : m.name)).join(', ')}
-        </p>
+        <p className="muted">{joinedSoFar(joined.filter((m) => m.id !== group?.meta.meId).map((m) => m.name))}</p>
       </div>
     </main>
   )
+}
+
+/** "Joined so far: you, Ana and Bob" */
+function joinedSoFar(others: string[]) {
+  if (others.length === 0) return t`Joined so far: just you`
+  const names = new Intl.ListFormat(locale(), { type: 'conjunction' }).format(others)
+  return t`Joined so far: you, ${names}`
 }

@@ -59,6 +59,19 @@
           })
         }
       } catch (e) {}
+      // The app's language (lib/i18n.ts), so Japanese text gets Japanese glyphs from the start.
+      try {
+        var lang = localStorage.getItem('footless-language')
+        if (lang !== 'en' && lang !== 'ja') {
+          lang = 'en'
+          var tags = navigator.languages || [navigator.language]
+          for (var i = 0; i < tags.length; i++) {
+            var base = String(tags[i]).toLowerCase().split('-')[0]
+            if (base === 'ja' || base === 'en') { lang = base; break }
+          }
+        }
+        document.documentElement.lang = lang
+      } catch (e) {}
     </script>
   </head>
   <body>

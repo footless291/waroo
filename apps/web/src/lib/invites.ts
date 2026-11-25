@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro'
 /**
  * Invite links that expire, work for one person, or can be turned off.
  *
@@ -66,7 +67,7 @@ export async function createInvite(group: GroupMeta, options: { days: number; on
       stopHash: await sha256(stopToken),
     }),
   })
-  if (!res.ok) throw new Error('Couldn’t make the link. Check your connection and try again.')
+  if (!res.ok) throw new Error(t`Couldn’t make the link. Check your connection and try again.`)
   const invite: SavedInvite = {
     secret,
     groupId: group.id,
@@ -96,7 +97,7 @@ export async function stopInvite(invite: SavedInvite): Promise<void> {
     method: 'DELETE',
     headers: { 'X-Stop-Token': invite.stopToken },
   })
-  if (!res.ok) throw new Error('Couldn’t turn the link off. Check your connection and try again.')
+  if (!res.ok) throw new Error(t`Couldn’t turn the link off. Check your connection and try again.`)
 }
 
 export class InviteClosed extends Error {
@@ -104,12 +105,12 @@ export class InviteClosed extends Error {
   constructor(state: InviteState) {
     super(
       state === 'used'
-        ? 'This invite link has already been used.'
+        ? t`This invite link has already been used.`
         : state === 'expired'
-          ? 'This invite link has expired.'
+          ? t`This invite link has expired.`
           : state === 'stopped'
-            ? 'This invite link was turned off.'
-            : 'This invite link doesn’t work.',
+            ? t`This invite link was turned off.`
+            : t`This invite link doesn’t work.`,
     )
     this.state = state
   }
@@ -128,7 +129,7 @@ export async function openInvite(secret: string): Promise<InviteTicket> {
   try {
     res = await fetch(relayHttpUrl(`invites/${id}/open`), { method: 'POST', cache: 'no-store' })
   } catch {
-    throw new Error('Couldn’t reach Footless. Check your connection and try again.')
+    throw new Error(t`Couldn’t reach Footless. Check your connection and try again.`)
   }
   const body = (await res.json().catch(() => ({}))) as { state?: InviteState; data?: string }
   if (!res.ok || !body.data) throw new InviteClosed(body.state ?? 'unknown')

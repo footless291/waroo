@@ -11,9 +11,13 @@
 import { replay, type LedgerEvent } from '@footless/ledger'
 import { cleanupOutdatedCaches, createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching'
 import { NavigationRoute, registerRoute } from 'workbox-routing'
+import { i18n } from '@lingui/core'
+import { t } from '@lingui/core/macro'
 import { roomId } from './lib/crypto.ts'
-import { getEvents, getGroup, getStoredEvents, listGroups, putGroup, saveReceived, type GroupMeta } from './lib/db.ts'
-import { describeEvent, type News } from './lib/news.ts'
+import { getEvents, getGroup, getSetting, getStoredEvents, listGroups, putGroup, saveReceived, type GroupMeta } from './lib/db.ts'
+import { messages as en } from './locales/en.po'
+import { messages as ja } from './locales/ja.po'
+import { describeEvent, severalNews, type News } from './lib/news.ts'
 import { openItems, relayHttpUrl } from './lib/sync.ts'
 
 declare const self: ServiceWorkerGlobalScope
@@ -52,7 +56,7 @@ async function notifyGroup(group: GroupMeta, news: News[], groupName: string) {
   const [first] = news
   if (!first) return
   const single = news.length === 1
-  await self.registration.showNotification(single ? first.title : `${groupName}: ${news.length} new things`, {
+  await self.registration.showNotification(single ? first.title : severalNews(groupName, news.length), {
     body: single ? first.detail : news.map((n) => n.title).join('\n'),
     icon: '/icon-192.png',
     tag: group.id,
@@ -60,9 +64,16 @@ async function notifyGroup(group: GroupMeta, news: News[], groupName: string) {
   })
 }
 
+/** Notifications in the language the app last used (saved by lib/i18n.ts). */
+async function useAppLanguage() {
+  const locale = (await getSetting('language').catch(() => undefined)) === 'ja' ? 'ja' : 'en'
+  if (i18n.locale !== locale) i18n.loadAndActivate({ locale, messages: locale === 'ja' ? ja : en })
+}
+
 async function onPush() {
   let shown = false
   try {
+    await useAppLanguage()
     const groups = (await listGroups()).filter((g) => g.shared && g.key)
     for (const group of groups) {
       try {
@@ -86,7 +97,7 @@ async function onPush() {
     // to apps that don't. If the news was already seen, say something brief.
     if (!shown) {
       await self.registration.showNotification('Footless', {
-        body: 'There’s something new in one of your groups.',
+        body: t`There’s something new in one of your groups.`,
         icon: '/icon-192.png',
         tag: 'footless',
         data: { route: '/' },

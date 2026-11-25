@@ -1,0 +1,2398 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-11-25 19:12+0900\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: ja\n"
+
+#: src/components/BitcoinPay.tsx:456
+#: src/screens/ActivityScreen.tsx:62
+#: src/screens/GroupScreen.tsx:413
+#: src/screens/PersonScreen.tsx:81
+msgid ", "
+msgstr ""
+
+#. placeholder {0}: g.name
+#: src/lib/move.ts:216
+msgid "“{0}” didn’t arrive. Keep both phones open and try again."
+msgstr ""
+
+#: src/lib/ledgerText.ts:16
+msgid "“{input}” isn’t an amount"
+msgstr ""
+
+#. placeholder {0}: status.opens
+#: src/screens/InviteScreen.tsx:53
+msgid "{0, plural, one {{state}, opened once} other {{state}, opened # times}}"
+msgstr ""
+
+#. placeholder {0}: phase.count
+#: src/screens/MoveScreen.tsx:169
+msgid "{0, plural, one {Your group and wallets are on the new phone now, and gone from this one.} other {Your # groups and wallets are on the new phone now, and gone from this one.}}"
+msgstr ""
+
+#. placeholder {0}: phase.count
+#: src/screens/MoveInScreen.tsx:111
+msgid "{0, plural, one {Your group is on this phone now.} other {Your # groups are on this phone now.}}"
+msgstr ""
+
+#. placeholder {0}: phase.wallets
+#: src/screens/MoveInScreen.tsx:118
+msgid "{0, plural, one {Your wallet connection came too, in the same order.} other {Your wallet connections came too, in the same order.}}"
+msgstr ""
+
+#. placeholder {0}: address.trim()
+#. placeholder {1}: (err as Error).message
+#: src/components/WalletGuides.tsx:340
+msgid "{0} didn’t work: {1}"
+msgstr ""
+
+#. placeholder {0}: label(item!)
+#: src/components/RankedList.tsx:42
+msgid "{0} is now number {position} of {count}."
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:134
+msgid "{addr}: {why}"
+msgstr ""
+
+#: src/screens/ActivityScreen.tsx:24
+#: src/screens/GroupScreen.tsx:442
+msgid "{base}, your share {share}"
+msgstr ""
+
+#: src/lib/news.ts:109
+msgid "{by} moved you to a new phone in {group}"
+msgstr ""
+
+#: src/lib/news.ts:121
+msgid "{by} removed {who} from {group}"
+msgstr ""
+
+#: src/lib/news.ts:118
+msgid "{by} removed you from {group}"
+msgstr ""
+
+#: src/lib/news.ts:112
+msgid "{by} vouched for it"
+msgstr ""
+
+#. placeholder {0}: (err as Error).message
+#: src/components/WalletGuides.tsx:341
+msgid "{clean} didn’t answer: {0}"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:188
+msgid "{count, plural, one {One expense was edited by two people at once. The latest edit was kept.} other {# expenses were edited by two people at once. The latest edit was kept.}}"
+msgstr ""
+
+#: src/lib/news.ts:30
+msgid "{count} sats"
+msgstr ""
+
+#: src/lib/ledgerText.ts:21
+msgid "{currency} has no decimal places"
+msgstr ""
+
+#: src/lib/ledgerText.ts:21
+msgid "{currency} takes at most {digits} decimal places"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:439
+msgid "{date}, {count} people paid"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:439
+msgid "{date}, {who} paid"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:439
+msgid "{date}, you paid"
+msgstr ""
+
+#: src/lib/news.ts:91
+msgid "{from} marked {amount} as paid to you"
+msgstr ""
+
+#: src/lib/news.ts:96
+msgid "{from} paid {to} {amount}"
+msgstr ""
+
+#: src/lib/news.ts:90
+msgid "{from} paid you {amount}"
+msgstr ""
+
+#: src/screens/ActivityScreen.tsx:21
+msgid "{group}, {count} people paid"
+msgstr ""
+
+#: src/screens/ActivityScreen.tsx:21
+msgid "{group}, {who} paid"
+msgstr ""
+
+#: src/screens/ActivityScreen.tsx:21
+msgid "{group}, you paid"
+msgstr ""
+
+#: src/lib/news.ts:156
+msgid "{group}: {count} new things"
+msgstr ""
+
+#: src/screens/MemberScreen.tsx:94
+msgid "{groupName} leaves this phone, and the others can’t add you to new expenses. Past expenses keep your name. To come back, you’d need a new invite."
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:193
+msgid "{inviter} invited you to"
+msgstr ""
+
+#: src/lib/format.ts:11
+msgid "{n} sats"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:336
+#: src/screens/SettleScreen.tsx:47
+msgid "{name} (you)"
+msgstr ""
+
+#: src/components/SyncLine.tsx:19
+msgid "{names} and you are here"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:451
+msgid "{payer} paid {payee}"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:450
+msgid "{payer} paid you"
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:469
+msgid "{price} per bitcoin"
+msgstr ""
+
+#: src/lib/news.ts:78
+msgid "{sats}, in {group}"
+msgstr ""
+
+#: src/lib/news.ts:77
+msgid "{sats}, verified, in {group}"
+msgstr ""
+
+#: src/lib/news.ts:94
+msgid "{to} marked your {amount} as paid"
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:214
+msgid "{toName} hasn’t added a Lightning address yet, so they can’t receive bitcoin. They can add one in Settings."
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:272
+msgid "{toName}’s provider can’t confirm payments automatically. Once you’ve paid, mark it here."
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:170
+msgid "{what}: {message}"
+msgstr ""
+
+#: src/lib/news.ts:146
+msgid "{who} added {title}, {total}"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:184
+msgid "{who} can’t see this yet"
+msgstr ""
+
+#: src/lib/news.ts:112
+msgid "{who} is back in {group} on a new phone"
+msgstr ""
+
+#: src/lib/news.ts:103
+msgid "{who} joined {group}"
+msgstr ""
+
+#: src/lib/news.ts:126
+msgid "{who} left {group}"
+msgstr ""
+
+#: src/screens/RecoverScreen.tsx:133
+msgid "{who} lost their phone"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:226
+msgid "{who}: use a percentage like 25 or 12.5"
+msgstr ""
+
+#: src/screens/PersonScreen.tsx:102
+msgid "{who}’s phone stops getting anything new from {groupName}, and can’t add to it. What they’ve added and what they owe stay. Footless gives the group a new key, so everyone else’s phones move over by themselves."
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:58
+msgid "{why} Ask for a new one."
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:123
+msgid "{why}. Check your connection and try again."
+msgstr ""
+
+#. placeholder {0}: sendLabel(failed)
+#. placeholder {1}: phase.reason
+#: src/components/BitcoinPay.tsx:351
+msgid "<0>{0} couldn’t pay:</0> {1}."
+msgstr ""
+
+#: src/screens/ActivityScreen.tsx:32
+msgid "<0>{from}</0> paid <1>{to}</1>"
+msgstr ""
+
+#: src/screens/ActivityScreen.tsx:31
+msgid "<0>{from}</0> paid <1>you</1>"
+msgstr ""
+
+#: src/screens/SettleScreen.tsx:111
+msgid "<0>{fromName}</0> pays <1>{toName}</1>"
+msgstr ""
+
+#: src/screens/SettleScreen.tsx:107
+msgid "<0>{fromName}</0> pays <1>you</1>"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:200
+msgid "<0>{payer}</0> pays <1>{payee}</1>"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:199
+msgid "<0>{payer}</0> pays <1>you</1>"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:130
+msgid "<0>{remover} removed you from {name}.</0> This phone won’t get anything new from the group. To come back, ask for a new invite."
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:121
+msgid "<0>{replacedBy} moved you to a new phone in {name}.</0> This phone can’t add anything any more. If that wasn’t you, tell the group."
+msgstr ""
+
+#: src/screens/ActivityScreen.tsx:30
+msgid "<0>You</0> paid <1>{to}</1>"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:198
+msgid "<0>You</0> pay <1>{payee}</1>"
+msgstr ""
+
+#: src/screens/SettleScreen.tsx:103
+msgid "<0>You</0> pay <1>{toName}</1>"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:28
+msgid "1 day"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:30
+msgid "1 month"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:29
+msgid "1 week"
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:144
+msgid "a group"
+msgstr ""
+
+#: src/App.tsx:60
+msgid "A new version is ready."
+msgstr ""
+
+#: src/lib/ledgerText.ts:12
+msgid "A tax, tip or discount needs items that come to more than zero"
+msgstr ""
+
+#: src/components/TabBar.tsx:45
+#: src/screens/ActivityScreen.tsx:87
+msgid "Activity"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:400
+#: src/components/WalletSection.tsx:84
+msgid "Add"
+msgstr ""
+
+#: src/components/WalletSection.tsx:70
+msgid "Add a different wallet"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:341
+#: src/screens/ExpenseScreen.tsx:539
+#: src/screens/GroupScreen.tsx:167
+msgid "Add expense"
+msgstr ""
+
+#: src/components/ItemsEditor.tsx:108
+msgid "Add item"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:37
+msgid "Add or take off an amount for anyone, and split the rest equally among the people ticked."
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:162
+#: src/screens/SettleScreen.tsx:73
+msgid "Add payment"
+msgstr ""
+
+#: src/components/ItemsEditor.tsx:145
+msgid "Add tax, tip or discount"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:219
+msgid "Add the first expense to get started."
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:366
+msgid "Add what someone paid for, and Footless works out who owes what."
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:219
+msgid "Add yourself as a new person"
+msgstr ""
+
+#. placeholder {0}: found.name
+#: src/components/WalletGuides.tsx:315
+msgid "Added {0}, a BOLT12 offer."
+msgstr ""
+
+#: src/components/WalletGuides.tsx:335
+msgid "Added {clean}."
+msgstr ""
+
+#: src/components/WalletGuides.tsx:300
+msgid "Added your BOLT12 offer."
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:27
+msgid "Adjust"
+msgstr ""
+
+#: src/screens/MoveInScreen.tsx:109
+msgid "All here"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:338
+msgid "all square"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:218
+#: src/screens/HomeScreen.tsx:30
+msgid "All square"
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:211
+msgid "Already joined on another phone"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:186
+#: src/screens/ExpenseScreen.tsx:349
+msgid "Amount"
+msgstr ""
+
+#: src/screens/SettleScreen.tsx:128
+msgid "Amount ({currency})"
+msgstr ""
+
+#. placeholder {0}: m.name
+#: src/screens/ExpenseScreen.tsx:506
+msgid "Amount for {0}"
+msgstr ""
+
+#. placeholder {0}: index + 1
+#: src/components/ItemsEditor.tsx:128
+msgid "Amount of extra {0}"
+msgstr ""
+
+#: src/screens/NewGroupScreen.tsx:36
+msgid "Ana"
+msgstr ""
+
+#: src/screens/NewGroupScreen.tsx:45
+msgid "Another person"
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:52
+msgid "Another phone also scanned the code, so the move was stopped. Nothing changed. Start again, and keep the code to yourself."
+msgstr ""
+
+#: src/screens/RecoverScreen.tsx:64
+msgid "Another phone also used the code, so this was stopped. Nothing changed. Start again."
+msgstr ""
+
+#: src/components/WalletSection.tsx:33
+msgid "Any wallet with a Lightning address or Nostr Wallet Connect."
+msgstr ""
+
+#: src/components/WalletGuides.tsx:382
+msgid "Any wallet with a Lightning address works, like Wallet of Satoshi. Or paste a BOLT12 offer (lno1…) or a ₿name that has one, like Phoenix gives you."
+msgstr ""
+
+#: src/components/AppearanceCard.tsx:13
+#: src/screens/YouScreen.tsx:25
+msgid "Appearance"
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:49
+#: src/screens/JoinScreen.tsx:136
+msgid "Ask for the invite link again, and open the whole link."
+msgstr ""
+
+#: src/components/Header.tsx:33
+msgid "Back"
+msgstr ""
+
+#: src/components/TabBar.tsx:50
+msgid "Balances"
+msgstr ""
+
+#: src/screens/ActivityScreen.tsx:10
+#: src/screens/SettleScreen.tsx:15
+msgid "Bank transfer"
+msgstr ""
+
+#: src/screens/ActivityScreen.tsx:11
+msgid "Bitcoin"
+msgstr ""
+
+#: src/lib/lightning.ts:171
+msgid "Bitcoin price sources disagree right now, so paying is paused. Try again in a minute."
+msgstr ""
+
+#: src/screens/NewGroupScreen.tsx:45
+msgid "Bob"
+msgstr ""
+
+#: src/components/WalletSection.tsx:133
+msgid "BOLT12 offer"
+msgstr ""
+
+#: src/screens/RecoverScreen.tsx:195
+msgid "Bringing {who} back in. Keep both phones open…"
+msgstr ""
+
+#: src/screens/MoveInScreen.tsx:104
+msgid "Bringing your group here. Keep both phones open…"
+msgstr ""
+
+#: src/components/WalletSection.tsx:185
+#: src/lib/wallet.ts:61
+msgid "Browser wallet"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:51
+msgid "Can’t check right now"
+msgstr ""
+
+#: src/components/SyncLine.tsx:44
+msgid "Can’t reach the group · retrying"
+msgstr ""
+
+#: src/screens/ActivityScreen.tsx:9
+#: src/screens/SettleScreen.tsx:14
+msgid "Cash"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:343
+msgid "Change your name, or leave the group"
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:125
+msgid "Check both phones show the same 4 numbers."
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:299
+msgid "Check your wallet to see whether it went through before trying again."
+msgstr ""
+
+#: src/components/WalletGuides.tsx:120
+#: src/components/WalletGuides.tsx:351
+msgid "Checking your wallet…"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:104
+#: src/components/WalletGuides.tsx:310
+#: src/screens/InviteScreen.tsx:206
+msgid "Checking…"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:140
+msgid "Choose a username and a password. Write the password down: it’s the only way back into your wallet."
+msgstr ""
+
+#: src/components/WalletSection.tsx:84
+msgid "Close"
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:195
+msgid "Code {digits}"
+msgstr ""
+
+#: src/screens/RecoverScreen.tsx:161
+msgid "Code for {who}’s new phone to scan"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:267
+msgid "Code from Rizful"
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:139
+msgid "Code to scan with the new phone"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:197
+msgid "Come back here and tap Paste."
+msgstr ""
+
+#: src/components/WalletGuides.tsx:205
+#: src/components/WalletGuides.tsx:269
+#: src/components/WalletGuides.tsx:414
+msgid "Connect"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:356
+#: src/components/WalletGuides.tsx:370
+msgid "Connected {name}."
+msgstr ""
+
+#: src/components/WalletGuides.tsx:255
+msgid "Connected for getting paid and for paying."
+msgstr ""
+
+#: src/components/WalletSection.tsx:107
+msgid "Connected."
+msgstr ""
+
+#: src/components/WalletGuides.tsx:181
+msgid "Connected. Footless asks Coinos to pay only when you confirm a payment."
+msgstr ""
+
+#: src/components/WalletGuides.tsx:234
+msgid "Connected. Friends can pay you at {address}."
+msgstr ""
+
+#: src/components/WalletGuides.tsx:228
+msgid "Connecting…"
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:266
+msgid "Copy invoice"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:170
+msgid "Copy link"
+msgstr ""
+
+#: src/screens/RecoverScreen.tsx:163
+msgid "Copy link instead"
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:440
+msgid "Copy offer"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:111
+msgid "Couldn’t find {candidate}. Check the username is exactly as you chose it in Coinos."
+msgstr ""
+
+#: src/lib/lightning.ts:172
+msgid "Couldn’t get the bitcoin price right now. Try again in a minute."
+msgstr ""
+
+#: src/lib/lightning.ts:165
+msgid "Couldn’t get the bitcoin price. Check your connection."
+msgstr ""
+
+#: src/lib/bip353.ts:41
+msgid "Couldn’t look the name up right now."
+msgstr ""
+
+#: src/lib/bip353.ts:38
+msgid "Couldn’t look the name up. Check your connection and try again."
+msgstr ""
+
+#: src/lib/invites.ts:70
+msgid "Couldn’t make the link. Check your connection and try again."
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:185
+msgid "Couldn’t open the group"
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:59
+msgid "Couldn’t open the invite"
+msgstr ""
+
+#: src/lib/move.ts:144
+msgid "Couldn’t reach Footless to hand over your groups. Check your connection and try again."
+msgstr ""
+
+#: src/lib/rekey.ts:70
+#: src/screens/MemberScreen.tsx:57
+msgid "Couldn’t reach Footless to tell the group. Check your connection and try again."
+msgstr ""
+
+#: src/lib/invites.ts:132
+msgid "Couldn’t reach Footless. Check your connection and try again."
+msgstr ""
+
+#: src/lib/move.ts:92
+msgid "Couldn’t reach Footless. Check your connection."
+msgstr ""
+
+#: src/lib/rizful.ts:33
+msgid "Couldn’t reach Rizful. Check your connection and try again."
+msgstr ""
+
+#: src/lib/sync.ts:440
+msgid "Couldn’t reach the group"
+msgstr ""
+
+#: src/lib/lightning.ts:45
+msgid "Couldn’t reach their Lightning address. It may not work from web apps, or you may be offline."
+msgstr ""
+
+#: src/lib/invites.ts:100
+msgid "Couldn’t turn the link off. Check your connection and try again."
+msgstr ""
+
+#: src/screens/NewGroupScreen.tsx:67
+msgid "Create group"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:157
+msgid "Create invite link"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:359
+#: src/screens/SettleScreen.tsx:119
+msgid "Currency"
+msgstr ""
+
+#: src/components/AppearanceCard.tsx:17
+msgid "Dark"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:379
+msgid "Date"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:543
+msgid "Delete expense"
+msgstr ""
+
+#: src/components/Banners.tsx:79
+msgid "Dismiss"
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:148
+msgid "Does the new phone show these numbers?"
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:143
+msgid "Don’t share this code: it’s only for your own phone."
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:223
+#: src/screens/MoveScreen.tsx:175
+#: src/screens/RecoverScreen.tsx:207
+msgid "Done"
+msgstr ""
+
+#: src/screens/ActivityScreen.tsx:80
+msgid "Earlier"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:344
+msgid "Edit"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:341
+msgid "Edit expense"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:265
+#: src/screens/SettleScreen.tsx:56
+msgid "Enter an amount"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:265
+msgid "Enter what each item cost"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:23
+msgid "Equally"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:282
+#: src/screens/GroupScreen.tsx:326
+msgid "Everyone"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:282
+msgid "Everyone, in {currency}"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:26
+msgid "Exact"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:60
+msgid "Expense"
+msgstr ""
+
+#: src/components/TabBar.tsx:51
+msgid "Expenses"
+msgstr ""
+
+#: src/screens/ActivityScreen.tsx:91
+msgid "Expenses and payments from all your groups show up here, newest first."
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:48
+msgid "Expired"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:552
+msgid "Extra {n}"
+msgstr ""
+
+#. placeholder {0}: m.name
+#: src/screens/ExpenseScreen.tsx:443
+msgid "Extra for {0}"
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:442
+msgid "Footless can’t see payments to an offer. Once you’ve paid, mark it here."
+msgstr ""
+
+#: src/lib/scan.ts:75
+msgid "Footless can’t use the camera. Allow camera access for Footless in your phone’s settings, or paste the link below."
+msgstr ""
+
+#: src/lib/wallet.ts:155
+msgid "Footless couldn’t reach it, so the request wasn’t sent{tech}"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:77
+msgid "Footless couldn’t read what you copied. Press and hold the box, then choose Paste."
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:38
+msgid "For one person, until {date}"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:38
+msgid "For several people, until {date}"
+msgstr ""
+
+#: src/components/WalletSection.tsx:30
+msgid "Free. Just a username and a password."
+msgstr ""
+
+#: src/components/WalletSection.tsx:32
+msgid "Free. Sign up with email; one code sets up everything."
+msgstr ""
+
+#: src/components/WalletGuides.tsx:149
+msgid "Friends can pay you at <0>{address}</0>."
+msgstr ""
+
+#: src/components/WalletSection.tsx:124
+msgid "Friends pay you at these, in order. If the first can’t take a payment, the next one is used."
+msgstr ""
+
+#: src/components/WalletGuides.tsx:170
+msgid "Friends will pay you at {candidate}"
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:452
+msgid "from {list}"
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:457
+msgid "from {list} and {more} more"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:253
+msgid "Get a code and paste it here"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:264
+msgid "Get a code in Rizful"
+msgstr ""
+
+#: src/components/NotificationsCard.tsx:98
+msgid "Get a notification when someone pays you, joins a group or adds an expense?"
+msgstr ""
+
+#: src/components/NotificationsCard.tsx:58
+msgid "Get a notification when someone pays you, joins a group or adds an expense. What happened is worked out on this phone; the server never sees it."
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:426
+#: src/screens/MemberScreen.tsx:110
+msgid "get back {sum}"
+msgstr ""
+
+#: src/screens/MoveInScreen.tsx:21
+msgid "Get back into a group"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:426
+msgid "gets back {sum}"
+msgstr ""
+
+#: src/screens/PersonScreen.tsx:79
+msgid "Gets back {sum}"
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:135
+#: src/screens/RecoverScreen.tsx:157
+msgid "Getting ready…"
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:308
+msgid "Getting the price…"
+msgstr ""
+
+#: src/lib/ledgerText.ts:11
+msgid "Give at least one person a share"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:264
+msgid "Give it a name"
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:156
+msgid "Group"
+msgstr ""
+
+#: src/screens/NewGroupScreen.tsx:31
+msgid "Group name"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:170
+msgid "Group sections"
+msgstr ""
+
+#: src/components/TabBar.tsx:44
+#: src/screens/HomeScreen.tsx:49
+msgid "Groups"
+msgstr ""
+
+#: src/screens/PersonScreen.tsx:72
+msgid "Hasn’t joined on a phone yet."
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:236
+msgid "Have Footless on your Home Screen? Join from there instead: open it, tap the scan button and scan the invite code. Groups joined here stay in this browser."
+msgstr ""
+
+#: src/screens/PersonScreen.tsx:93
+msgid "Help {who} back in"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:173
+msgid "Hide QR code"
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:274
+#: src/components/BitcoinPay.tsx:444
+msgid "I’ve paid it"
+msgstr ""
+
+#: src/lib/news.ts:109
+msgid "If that wasn’t you, tell the group"
+msgstr ""
+
+#: src/screens/MoveInScreen.tsx:122
+msgid "If you paid from a wallet in this browser before, connect it again in Settings."
+msgstr ""
+
+#: src/lib/news.ts:68
+msgid "In {group}"
+msgstr ""
+
+#: src/screens/PersonScreen.tsx:71
+msgid "In {groupName} on their phone."
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:234
+msgid "In bitcoin"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:259
+msgid "In Rizful, tap <0>Get code</0> and copy it. That one code sets up both getting paid and paying."
+msgstr ""
+
+#: src/components/WalletGuides.tsx:409
+msgid "In your wallet app (Alby Hub, Zeus, Primal and others), make a new Nostr Wallet Connect connection for Footless, ideally with a budget, and paste it here. It stays on this phone."
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:112
+msgid "Invite"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:188
+msgid "Invite link copied. Paste it to the people in this group."
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:75
+#: src/screens/InviteScreen.tsx:137
+msgid "Invite people"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:73
+msgid "Invite them, and everyone can add expenses and settle up from their own phone."
+msgstr ""
+
+#: src/lib/wallet.ts:164
+msgid "it answered in a way Footless couldn’t read{tech}"
+msgstr ""
+
+#: src/lib/wallet.ts:119
+msgid "it can’t pay BOLT12 offers"
+msgstr ""
+
+#: src/lib/wallet.ts:133
+msgid "it can’t pay BOLT12 offers yet"
+msgstr ""
+
+#: src/lib/wallet.ts:170
+msgid "it didn’t allow Footless to pay{tech}"
+msgstr ""
+
+#. placeholder {0}: sendLabel(next)
+#: src/components/BitcoinPay.tsx:378
+msgid "It didn’t pay. Try {0}"
+msgstr ""
+
+#: src/lib/wallet.ts:167
+msgid "it doesn’t have enough in it"
+msgstr ""
+
+#: src/lib/wallet.ts:158
+msgid "it got the request but didn’t answer within a minute{tech}"
+msgstr ""
+
+#. placeholder {0}: sendLabel(failed)
+#: src/components/BitcoinPay.tsx:359
+msgid "It may still have paid. Check {0} before trying again, so you don’t pay twice."
+msgstr ""
+
+#. placeholder {0}: (err as Error)?.message ?? err
+#: src/lib/wallet.ts:94
+msgid "it reported a problem ({0})"
+msgstr ""
+
+#. placeholder {0}: code ? ` (${code})` : ''
+#: src/lib/wallet.ts:174
+msgid "it said: {detail}{0}"
+msgstr ""
+
+#: src/lib/wallet.ts:161
+msgid "it uses a kind of encryption Footless doesn’t support{tech}"
+msgstr ""
+
+#: src/screens/RecoverScreen.tsx:72
+msgid "It was cancelled on {who}’s new phone. Nothing changed."
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:36
+msgid "It’s from an older version of Footless. Ask for a new invite link."
+msgstr ""
+
+#: src/lib/wallet.ts:172
+msgid "it’s getting too many requests right now{tech}"
+msgstr ""
+
+#: src/lib/wallet.ts:141
+msgid "it’s still sending the payment"
+msgstr ""
+
+#: src/components/ItemsEditor.tsx:55
+#: src/screens/ExpenseScreen.tsx:551
+msgid "Item {n}"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:28
+msgid "Items"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:345
+msgid "Izakaya dinner"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:112
+msgid "Join {name} on Footless"
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:245
+msgid "Join as {name}"
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:231
+msgid "Join the group"
+msgstr ""
+
+#: src/screens/HomeScreen.tsx:61
+msgid "Join with a QR code"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:227
+msgid "Joined so far: just you"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:229
+msgid "Joined so far: you, {names}"
+msgstr ""
+
+#: src/components/RankedList.tsx:137
+msgid "Keep it"
+msgstr ""
+
+#: src/components/AppearanceCard.tsx:35
+#: src/screens/YouScreen.tsx:28
+msgid "Language"
+msgstr ""
+
+#: src/screens/MemberScreen.tsx:98
+msgid "Leave group"
+msgstr ""
+
+#: src/screens/MemberScreen.tsx:89
+msgid "Leave the group"
+msgstr ""
+
+#: src/screens/MemberScreen.tsx:98
+msgid "Leaving…"
+msgstr ""
+
+#: src/screens/PersonScreen.tsx:67
+msgid "Left the group."
+msgstr ""
+
+#: src/components/AppearanceCard.tsx:16
+msgid "Light"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:385
+msgid "Lightning address or BOLT12 offer"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:170
+#: src/screens/RecoverScreen.tsx:163
+msgid "Link copied"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:128
+msgid "Link turned off. Nobody else can join with it."
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:39
+msgid "List what each person had. Shared things are split among whoever had them."
+msgstr ""
+
+#: src/screens/ScanScreen.tsx:113
+msgid "Looking for a code…"
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:80
+msgid "Lost the connection. Nothing was moved; start again."
+msgstr ""
+
+#: src/screens/MoveInScreen.tsx:57
+msgid "Lost the connection. Start again on the other phone."
+msgstr ""
+
+#: src/screens/RecoverScreen.tsx:86
+msgid "Lost the connection. Start again."
+msgstr ""
+
+#: src/screens/PersonScreen.tsx:88
+msgid "Lost their phone?"
+msgstr ""
+
+#: src/screens/MainTabs.tsx:43
+msgid "Main"
+msgstr ""
+
+#: src/screens/NewGroupScreen.tsx:57
+msgid "Main currency"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:139
+msgid "Make a Coinos account"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:183
+msgid "Make a different link"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:246
+msgid "Make a Rizful account"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:157
+msgid "Making the link…"
+msgstr ""
+
+#: src/screens/SettleScreen.tsx:162
+msgid "Mark as paid"
+msgstr ""
+
+#: src/screens/SettleScreen.tsx:158
+msgid "Mark it as paid"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:431
+msgid "More about {name}"
+msgstr ""
+
+#. placeholder {0}: label(item)
+#: src/components/RankedList.tsx:111
+msgid "Move {0} down"
+msgstr ""
+
+#. placeholder {0}: label(item)
+#: src/components/RankedList.tsx:101
+msgid "Move {0} up"
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:118
+#: src/screens/YouScreen.tsx:39
+msgid "Move to a new phone"
+msgstr ""
+
+#: src/screens/MoveInScreen.tsx:21
+msgid "Move to this phone"
+msgstr ""
+
+#: src/screens/YouScreen.tsx:33
+msgid "Move your groups to another phone, so you can keep adding expenses and settling up there. Have both phones with you."
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:167
+msgid "Moved"
+msgstr ""
+
+#: src/screens/YouScreen.tsx:31
+msgid "Moving to a new phone"
+msgstr ""
+
+#: src/screens/MoveInScreen.tsx:104
+msgid "Moving your groups here. Keep both phones open…"
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:162
+msgid "Moving your groups. Keep both phones open…"
+msgstr ""
+
+#: src/screens/MemberScreen.tsx:77
+msgid "Name in {groupName}"
+msgstr ""
+
+#: src/screens/MainTabs.tsx:40
+#: src/screens/PickGroupScreen.tsx:19
+msgid "New expense"
+msgstr ""
+
+#: src/screens/MainTabs.tsx:34
+#: src/screens/NewGroupScreen.tsx:28
+msgid "New group"
+msgstr ""
+
+#: src/lib/wallet.ts:59
+msgid "No browser wallet found."
+msgstr ""
+
+#: src/lib/scan.ts:77
+msgid "No camera found on this device. Paste the invite link below instead."
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:365
+msgid "No expenses yet"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:397
+msgid "No payments yet"
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:156
+#: src/screens/RecoverScreen.tsx:189
+msgid "No, stop"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:219
+msgid "Nobody owes anybody."
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:461
+msgid "None of {name}’s addresses could take a payment right now. {problems}"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:38
+msgid "Not found"
+msgstr ""
+
+#: src/screens/MoveInScreen.tsx:131
+#: src/screens/MoveScreen.tsx:181
+msgid "Not moved"
+msgstr ""
+
+#: src/components/NotificationsCard.tsx:104
+msgid "Not now"
+msgstr ""
+
+#: src/screens/RecoverScreen.tsx:213
+msgid "Nothing changed"
+msgstr ""
+
+#: src/screens/MoveInScreen.tsx:111
+msgid "Nothing to move but your wallets."
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:218
+msgid "Nothing to split yet"
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:356
+msgid "Nothing was paid."
+msgstr ""
+
+#: src/screens/ActivityScreen.tsx:90
+msgid "Nothing yet"
+msgstr ""
+
+#: src/screens/YouScreen.tsx:22
+msgid "Notifications"
+msgstr ""
+
+#: src/components/NotificationsCard.tsx:71
+msgid "Notifications are blocked for Footless. To get them, allow notifications for Footless in your phone’s settings."
+msgstr ""
+
+#: src/components/NotificationsCard.tsx:39
+msgid "Notifications are off."
+msgstr ""
+
+#: src/components/NotificationsCard.tsx:26
+msgid "Notifications are on."
+msgstr ""
+
+#: src/lib/push.ts:42
+msgid "Notifications aren’t available right now"
+msgstr ""
+
+#: src/components/NotificationsCard.tsx:26
+msgid "Notifications weren’t turned on."
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:440
+msgid "Offer copied"
+msgstr ""
+
+#: src/components/SyncLine.tsx:41
+msgid "Offline · changes will sync later"
+msgstr ""
+
+#: src/screens/NewGroupScreen.tsx:32
+msgid "Okinawa trip"
+msgstr ""
+
+#: src/components/NotificationsCard.tsx:67
+msgid "On iPhone and iPad, only apps on the Home Screen can send notifications. Tap Share, then “Add to Home Screen”, and turn them on from there."
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:138
+msgid "On the new phone, open Footless, tap the scan button and scan this code."
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:25
+msgid "One person"
+msgstr ""
+
+#. placeholder {0}: m.name
+#: src/screens/ExpenseScreen.tsx:478
+msgid "One share fewer for {0}"
+msgstr ""
+
+#. placeholder {0}: m.name
+#: src/screens/ExpenseScreen.tsx:494
+msgid "One share more for {0}"
+msgstr ""
+
+#: src/components/SyncLine.tsx:38
+msgid "Only on this phone so far"
+msgstr ""
+
+#: src/components/SyncLine.tsx:17
+msgid "only you so far"
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:389
+msgid "Open another wallet app"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:142
+msgid "Open Coinos"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:200
+msgid "Open Coinos settings"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:187
+msgid "Open Coinos’s Nostr settings, then tap <0>New connection</0>, name it Footless, and set a budget if you like."
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:37
+#: src/screens/JoinScreen.tsx:78
+#: src/screens/JoinScreen.tsx:137
+#: src/screens/MoveInScreen.tsx:134
+msgid "Open Footless"
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:123
+msgid "Open Footless on the new phone, from its Home Screen."
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:255
+#: src/components/BitcoinPay.tsx:389
+#: src/components/BitcoinPay.tsx:429
+msgid "Open in wallet app"
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:258
+#: src/components/BitcoinPay.tsx:432
+msgid "Open in your wallet app"
+msgstr ""
+
+#: src/screens/ScanScreen.tsx:137
+msgid "Open invite"
+msgstr ""
+
+#: src/screens/MoveInScreen.tsx:125
+msgid "Open my groups"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:249
+msgid "Open Rizful"
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:189
+msgid "Opening the group…"
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:81
+msgid "Opening the invite…"
+msgstr ""
+
+#: src/screens/SettleScreen.tsx:158
+msgid "Or mark it as paid another way"
+msgstr ""
+
+#: src/screens/ScanScreen.tsx:118
+msgid "Or paste the invite link"
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:257
+#: src/components/BitcoinPay.tsx:431
+msgid "Or scan it with a wallet on another phone:"
+msgstr ""
+
+#: src/screens/ActivityScreen.tsx:12
+#: src/screens/SettleScreen.tsx:16
+msgid "Other"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:427
+#: src/screens/MemberScreen.tsx:110
+msgid "owe {sum}"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:427
+msgid "owes {sum}"
+msgstr ""
+
+#: src/screens/PersonScreen.tsx:79
+msgid "Owes {sum}"
+msgstr ""
+
+#. placeholder {0}: money(amount, currency)
+#. placeholder {1}: satsText(phase.sats)
+#: src/components/BitcoinPay.tsx:218
+msgid "Paid {0} to {toName} ({1})."
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:369
+msgid "Paid by"
+msgstr ""
+
+#. placeholder {0}: m.name
+#: src/screens/ExpenseScreen.tsx:394
+msgid "Paid by {0}"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:256
+msgid "Paid by {who}"
+msgstr ""
+
+#: src/screens/SettleScreen.tsx:172
+msgid "Partial payment: {left} will still be owed."
+msgstr ""
+
+#: src/components/WalletGuides.tsx:81
+msgid "Paste"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:267
+msgid "Paste the code"
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:465
+msgid "Pay {amount} with bitcoin"
+msgstr ""
+
+#. placeholder {0}: satsText(sats)
+#: src/components/BitcoinPay.tsx:424
+msgid "Pay exactly <0>{0}</0>. You’ll type the amount in your wallet."
+msgstr ""
+
+#: src/components/WalletGuides.tsx:179
+msgid "Pay in one tap"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:179
+msgid "Pay in one tap (optional)"
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:403
+msgid "Pay their Lightning address instead"
+msgstr ""
+
+#. placeholder {0}: sendLabel(next)
+#: src/components/BitcoinPay.tsx:379
+msgid "Pay with {0}"
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:211
+#: src/components/BitcoinPay.tsx:308
+msgid "Pay with bitcoin"
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:393
+msgid "Paying from another phone? Show a QR code"
+msgstr ""
+
+#. placeholder {0}: sendLabel(next)
+#: src/components/BitcoinPay.tsx:374
+msgid "Paying with {0}…"
+msgstr ""
+
+#: src/screens/SettleScreen.tsx:159
+msgid "Payment method"
+msgstr ""
+
+#: src/lib/news.ts:85
+msgid "Payment sent: {amount} to {to}"
+msgstr ""
+
+#: src/components/TabBar.tsx:52
+msgid "Payments"
+msgstr ""
+
+#: src/components/WalletSection.tsx:185
+msgid "Pays in one tap"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:25
+msgid "Percent"
+msgstr ""
+
+#. placeholder {0}: m.name
+#: src/screens/ExpenseScreen.tsx:470
+msgid "Percent for {0}"
+msgstr ""
+
+#: src/screens/NewGroupScreen.tsx:75
+msgid "Person {n}"
+msgstr ""
+
+#: src/components/AppearanceCard.tsx:36
+msgid "Phone’s"
+msgstr ""
+
+#: src/lib/ledgerText.ts:10
+msgid "Pick at least one person to split it"
+msgstr ""
+
+#: src/screens/SettleScreen.tsx:60
+msgid "Pick two different people"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:281
+msgid "Pick who had {what}"
+msgstr ""
+
+#: src/screens/ScanScreen.tsx:103
+msgid "Point the camera at a friend’s invite code, or at your other phone’s code when you’re moving."
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:238
+msgid "Price"
+msgstr ""
+
+#: src/components/ItemsEditor.tsx:65
+msgid "Price of item {n}"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:178
+msgid "QR code for the invite link"
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:433
+msgid "QR code of {toName}’s BOLT12 offer"
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:259
+msgid "QR code to pay with a wallet app"
+msgstr ""
+
+#: src/components/WalletSection.tsx:24
+msgid "Receive"
+msgstr ""
+
+#: src/App.tsx:62
+msgid "Reload"
+msgstr ""
+
+#: src/components/RankedList.tsx:148
+msgid "Remove"
+msgstr ""
+
+#. placeholder {0}: label(item)
+#: src/components/RankedList.tsx:123
+msgid "Remove {0}"
+msgstr ""
+
+#: src/screens/PersonScreen.tsx:110
+msgid "Remove {who}"
+msgstr ""
+
+#. placeholder {0}: index + 1
+#: src/components/ItemsEditor.tsx:133
+msgid "Remove extra {0}"
+msgstr ""
+
+#: src/screens/PersonScreen.tsx:100
+msgid "Remove from the group"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:146
+msgid "Remove from this phone"
+msgstr ""
+
+#: src/components/ItemsEditor.tsx:70
+msgid "Remove item {n}"
+msgstr ""
+
+#. placeholder {0}: label(item)
+#: src/components/RankedList.tsx:145
+msgid "Removed {0}."
+msgstr ""
+
+#: src/screens/PersonScreen.tsx:66
+msgid "Removed by {by}."
+msgstr ""
+
+#: src/screens/PersonScreen.tsx:69
+msgid "Removed by {by}. Their expenses stay, and they can join again as {who} with a new invite."
+msgstr ""
+
+#: src/screens/PersonScreen.tsx:110
+msgid "Removing…"
+msgstr ""
+
+#: src/lib/rizful.ts:42
+msgid "Rizful sent back something unexpected. Try again with a new code."
+msgstr ""
+
+#: src/components/WalletGuides.tsx:173
+#: src/screens/MemberScreen.tsx:81
+msgid "Save"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:539
+msgid "Save changes"
+msgstr ""
+
+#: src/screens/MemberScreen.tsx:41
+msgid "Saved. Everyone in the group sees the new name."
+msgstr ""
+
+#: src/lib/ledgerText.ts:13
+msgid "Say who paid"
+msgstr ""
+
+#: src/components/Header.tsx:69
+#: src/screens/ScanScreen.tsx:102
+msgid "Scan a code"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:179
+msgid "Scan it in Footless on the other phone, with the scan button."
+msgstr ""
+
+#: src/components/WalletSection.tsx:25
+msgid "Send"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:140
+msgid "Send the others a link to <0>{name}</0>. They open it, pick who they are, and the group appears on their phone with everything added so far."
+msgstr ""
+
+#: src/screens/RecoverScreen.tsx:166
+msgid "Sending the link? {who} pastes it under the scanner in Footless. You’ll still check the numbers together."
+msgstr ""
+
+#: src/components/WalletSection.tsx:84
+msgid "Set up"
+msgstr ""
+
+#: src/components/TabBar.tsx:46
+#: src/screens/YouScreen.tsx:17
+msgid "Settings"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:299
+msgid "Settle"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:268
+#: src/screens/GroupScreen.tsx:288
+#: src/screens/SettleScreen.tsx:73
+msgid "Settle up"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:376
+#: src/screens/InviteScreen.tsx:24
+msgid "Several people"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:165
+msgid "Share invite link"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:192
+msgid "Share it only with the group"
+msgstr ""
+
+#: src/components/ItemsEditor.tsx:148
+msgid "Shared by what each person had. Use a minus sign for a discount."
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:24
+msgid "Shares"
+msgstr ""
+
+#. placeholder {0}: m.name
+#: src/screens/ExpenseScreen.tsx:490
+msgid "Shares for {0}"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:173
+msgid "Show QR code"
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:131
+#: src/screens/RecoverScreen.tsx:153
+msgid "Show the code"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:247
+msgid "Sign up with an email and a password. The email is how you get back in if you forget the password."
+msgstr ""
+
+#: src/screens/PersonScreen.tsx:35
+msgid "someone"
+msgstr ""
+
+#: src/lib/news.ts:66
+#: src/screens/GroupScreen.tsx:57
+#: src/screens/GroupScreen.tsx:60
+#: src/screens/GroupScreen.tsx:177
+msgid "Someone"
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:218
+msgid "Someone else"
+msgstr ""
+
+#: src/lib/ledgerText.ts:24
+msgid "Someone in this expense isn’t in the group"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:407
+msgid "Split"
+msgstr ""
+
+#: src/screens/HomeScreen.tsx:52
+msgid "Split anything with anyone"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:408
+msgid "Split method"
+msgstr ""
+
+#. placeholder {0}: m.name
+#: src/screens/ExpenseScreen.tsx:435
+msgid "Split the rest with {0}"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:72
+msgid "Splitting with friends?"
+msgstr ""
+
+#: src/screens/HomeScreen.tsx:58
+msgid "Start a group"
+msgstr ""
+
+#: src/screens/HomeScreen.tsx:54
+msgid "Start a group for a trip, a flat or a dinner, then invite the others from their own phones."
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:184
+#: src/screens/RecoverScreen.tsx:216
+msgid "Start again"
+msgstr ""
+
+#: src/screens/ScanScreen.tsx:109
+msgid "Starting the camera…"
+msgstr ""
+
+#. placeholder {0}: receiveLabel(w)
+#: src/components/WalletSection.tsx:155
+msgid "Stop getting paid at {0}? Your groups will stop using it."
+msgstr ""
+
+#. placeholder {0}: sendLabel(w)
+#: src/components/WalletSection.tsx:189
+msgid "Stop paying with {0}? You can connect it again any time."
+msgstr ""
+
+#: src/screens/RecoverScreen.tsx:119
+msgid "Stopped. Nothing changed, and the phone that used the code got nothing."
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:113
+msgid "Stopped. Nothing was moved. If a phone you don’t know scanned the code, that’s fine: it got nothing."
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:473
+msgid "Straight from your wallet to {name}’s, at today’s price. The payment is checked automatically and recorded in {currency}."
+msgstr ""
+
+#: src/components/SyncLine.tsx:47
+msgid "Syncing…"
+msgstr ""
+
+#: src/components/AppearanceCard.tsx:15
+msgid "System"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:193
+msgid "Tap <0>Submit</0>, then <1>Copy NWC</1>."
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:543
+msgid "Tap again to delete"
+msgstr ""
+
+#: src/screens/MemberScreen.tsx:98
+msgid "Tap again to leave"
+msgstr ""
+
+#: src/screens/PersonScreen.tsx:110
+msgid "Tap again to remove {who}"
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:124
+msgid "Tap the scan button and scan the code this phone will show."
+msgstr ""
+
+#: src/components/ItemsEditor.tsx:118
+msgid "Tax, tip or discount"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:146
+msgid "Tell Footless your username"
+msgstr ""
+
+#: src/lib/ledgerText.ts:23
+msgid "That amount is too large"
+msgstr ""
+
+#: src/lib/rizful.ts:36
+msgid "That code didn’t work. Codes work once and expire quickly, so get a new one in Rizful and paste it again."
+msgstr ""
+
+#: src/screens/ScanScreen.tsx:62
+msgid "That code isn’t from Footless. Scan the code on a group’s Invite screen."
+msgstr ""
+
+#: src/components/WalletGuides.tsx:306
+msgid "That doesn’t look like a Lightning address (name@provider.com) or a BOLT12 offer (lno1…)."
+msgstr ""
+
+#: src/screens/ScanScreen.tsx:97
+msgid "That isn’t a Footless invite link. It starts with this site’s address and includes “#/join”."
+msgstr ""
+
+#: src/lib/lightning.ts:72
+msgid "That isn’t a Lightning address."
+msgstr ""
+
+#: src/lib/bip353.ts:28
+msgid "That isn’t a name like ₿you@wallet.com"
+msgstr ""
+
+#: src/lib/wallet.ts:33
+msgid "That isn’t a wallet connection. It should start with nostr+walletconnect://"
+msgstr ""
+
+#: src/lib/lightning.ts:74
+msgid "That Lightning address can’t receive payments."
+msgstr ""
+
+#: src/lib/bip353.ts:56
+msgid "That name doesn’t have a BOLT12 offer."
+msgstr ""
+
+#: src/lib/bip353.ts:40
+msgid "That name has no bitcoin payment details."
+msgstr ""
+
+#: src/lib/wallet.ts:40
+msgid "That wallet connection is incomplete. Copy it again from your wallet."
+msgstr ""
+
+#: src/lib/wallet.ts:89
+msgid "the browser wallet didn’t allow Footless to pay"
+msgstr ""
+
+#: src/lib/wallet.ts:85
+msgid "the browser wallet isn’t available right now"
+msgstr ""
+
+#: src/lib/scan.ts:79
+msgid "The camera didn’t start. Paste the invite link below instead."
+msgstr ""
+
+#: src/lib/scan.ts:78
+msgid "The camera is busy in another app. Close it and try again."
+msgstr ""
+
+#: src/screens/ScanScreen.tsx:82
+msgid "The camera stopped while Footless was in the background."
+msgstr ""
+
+#: src/lib/sync.ts:435
+msgid "The group took too long to load"
+msgstr ""
+
+#: src/lib/lightning.ts:123
+msgid "The invoice doesn’t match their Lightning address. Nothing was paid."
+msgstr ""
+
+#: src/lib/lightning.ts:128
+msgid "The invoice had already expired. Try again."
+msgstr ""
+
+#: src/screens/RecoverScreen.tsx:147
+msgid "The lost phone stops working in {groupName}, and can’t read anything new. Everyone in the group sees that you vouched. Do it only when you’re sure it’s really {who}."
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:62
+msgid "The move was cancelled on the new phone. Nothing changed here."
+msgstr ""
+
+#: src/screens/MoveInScreen.tsx:40
+msgid "The move was stopped on the other phone. Nothing changed."
+msgstr ""
+
+#: src/lib/bip353.ts:42
+msgid "The name’s records aren’t signed (DNSSEC), so Footless can’t trust them."
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:168
+msgid "the payment didn’t go through"
+msgstr ""
+
+#. placeholder {0}: result.failure_reason ?? 'no reason given'
+#: src/lib/wallet.ts:140
+msgid "the payment failed ({0})"
+msgstr ""
+
+#: src/lib/wallet.ts:173
+#: src/lib/wallet.ts:176
+msgid "the payment failed{tech}"
+msgstr ""
+
+#: src/screens/MoveInScreen.tsx:22
+msgid "the phone helping you"
+msgstr ""
+
+#: src/lib/news.ts:121
+msgid "Their expenses stay in the group"
+msgstr ""
+
+#: src/lib/lightning.ts:120
+msgid "Their Lightning address asked for a different amount. Nothing was paid."
+msgstr ""
+
+#: src/lib/lightning.ts:66
+msgid "Their Lightning address gave an unsafe link."
+msgstr ""
+
+#: src/lib/lightning.ts:55
+msgid "Their Lightning address isn’t working right now."
+msgstr ""
+
+#. placeholder {0}: params.minSats
+#: src/lib/lightning.ts:110
+msgid "Their Lightning address only takes {0} sats or more."
+msgstr ""
+
+#. placeholder {0}: String(body.reason ?? 'error')
+#: src/lib/lightning.ts:54
+msgid "Their Lightning address said: {0}"
+msgstr ""
+
+#: src/lib/lightning.ts:94
+#: src/lib/lightning.ts:126
+msgid "Their Lightning address sent an invoice that doesn’t read correctly."
+msgstr ""
+
+#: src/lib/lightning.ts:52
+#: src/lib/lightning.ts:78
+msgid "Their Lightning address sent back something unexpected."
+msgstr ""
+
+#. placeholder {0}: params.maxSats
+#: src/lib/lightning.ts:111
+msgid "Their Lightning address takes at most {0} sats at once."
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:71
+msgid "There’s nothing on this phone to move yet: no groups and no wallets."
+msgstr ""
+
+#: src/sw.ts:100
+msgid "There’s something new in one of your groups."
+msgstr ""
+
+#: src/lib/news.ts:103
+msgid "They can see the group and add expenses now"
+msgstr ""
+
+#: src/screens/RecoverScreen.tsx:143
+msgid "They tap the scan button and scan the code this phone will show. Not together? Send them the link instead."
+msgstr ""
+
+#: src/lib/news.ts:126
+msgid "They were all square"
+msgstr ""
+
+#: src/screens/ScanScreen.tsx:27
+msgid "This browser can’t open the camera. Paste the invite link below instead."
+msgstr ""
+
+#: src/components/NotificationsCard.tsx:73
+msgid "This browser can’t show notifications."
+msgstr ""
+
+#: src/screens/MoveInScreen.tsx:78
+msgid "This code isn’t complete"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:61
+msgid "This expense was deleted."
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:39
+msgid "This group isn’t on this device."
+msgstr ""
+
+#: src/lib/rekey.ts:43
+msgid "This group isn’t shared yet."
+msgstr ""
+
+#: src/lib/rekey.ts:31
+msgid "This group isn’t shared, so there’s no phone to remove."
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:109
+msgid "This invite doesn’t lead to a group. Ask for a new link."
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:58
+msgid "This invite doesn’t work any more"
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:115
+msgid "This invite is out of date: the group has changed since it was made. Ask for a new link."
+msgstr ""
+
+#: src/lib/invites.ts:113
+msgid "This invite link doesn’t work."
+msgstr ""
+
+#: src/lib/invites.ts:108
+msgid "This invite link has already been used."
+msgstr ""
+
+#: src/lib/invites.ts:110
+msgid "This invite link has expired."
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:35
+msgid "This invite link is out of date"
+msgstr ""
+
+#: src/lib/invites.ts:112
+msgid "This invite link was turned off."
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:398
+msgid "This is a BOLT12 offer. Your wallet needs to support BOLT12 to pay it."
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:49
+#: src/screens/JoinScreen.tsx:135
+msgid "This link isn’t complete"
+msgstr ""
+
+#: src/components/NotificationsCard.tsx:49
+msgid "This phone gets a notification when someone pays you, joins a group or adds an expense, even when Footless is closed."
+msgstr ""
+
+#: src/lib/news.ts:118
+msgid "This phone won’t get anything new from the group"
+msgstr ""
+
+#: src/lib/wallet.ts:168
+msgid "this would go over the spending limit you set for Footless"
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:312
+msgid "Tip: <0>set up one-tap payments</0>, so you don’t have to switch apps."
+msgstr ""
+
+#: src/screens/SettleScreen.tsx:88
+msgid "To"
+msgstr ""
+
+#: src/screens/ActivityScreen.tsx:40
+msgid "Today"
+msgstr ""
+
+#. placeholder {0}: sendLabel(next)
+#: src/components/BitcoinPay.tsx:377
+msgid "Try {0}"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:210
+msgid "Turn off"
+msgstr ""
+
+#: src/components/NotificationsCard.tsx:51
+msgid "Turn off notifications"
+msgstr ""
+
+#. placeholder {0}: describe(i)
+#: src/screens/InviteScreen.tsx:209
+msgid "Turn off: {0}"
+msgstr ""
+
+#: src/components/NotificationsCard.tsx:101
+msgid "Turn on"
+msgstr ""
+
+#: src/components/NotificationsCard.tsx:61
+msgid "Turn on notifications"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:50
+msgid "Turned off"
+msgstr ""
+
+#: src/components/SyncLine.tsx:50
+msgid "Up to date · {who}"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:419
+msgid "Use my browser wallet"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:46
+msgid "Used"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:411
+msgid "verified"
+msgstr ""
+
+#: src/screens/RecoverScreen.tsx:137
+msgid "Vouch for {who}’s new phone, so they’re back in {groupName} as themselves."
+msgstr ""
+
+#: src/screens/PersonScreen.tsx:90
+msgid "Vouch for {who}’s new phone, so they’re back in as themselves. The lost phone stops working in this group."
+msgstr ""
+
+#: src/screens/MoveInScreen.tsx:96
+msgid "Waiting for {other}…"
+msgstr ""
+
+#: src/screens/RecoverScreen.tsx:171
+msgid "Waiting for {who}’s new phone…"
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:141
+msgid "Waiting for the new phone…"
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:269
+msgid "Waiting for the payment… This updates by itself once it goes through."
+msgstr ""
+
+#: src/screens/YouScreen.tsx:19
+msgid "Wallet"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:203
+#: src/components/WalletGuides.tsx:412
+msgid "Wallet connection"
+msgstr ""
+
+#: src/components/WalletSection.tsx:115
+msgid "Wallets"
+msgstr ""
+
+#: src/components/WalletSection.tsx:111
+msgid "Wallets for sending or receiving"
+msgstr ""
+
+#. placeholder {0}: index + 1
+#: src/components/ItemsEditor.tsx:120
+msgid "What extra {0} is"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:344
+msgid "What for"
+msgstr ""
+
+#: src/components/ItemsEditor.tsx:57
+msgid "What item {n} was"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:398
+msgid "When someone pays someone back, in bitcoin, cash or otherwise, it shows up here."
+msgstr ""
+
+#: src/components/WalletSection.tsx:175
+msgid "When you pay, Footless asks these in order. If one can’t pay, you’ll see why and choose whether to try the next. You can always pay by opening your wallet app instead."
+msgstr ""
+
+#: src/screens/PickGroupScreen.tsx:20
+msgid "Which group is it for?"
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:197
+msgid "Which one are you?"
+msgstr ""
+
+#: src/screens/NewGroupScreen.tsx:39
+msgid "Who else?"
+msgstr ""
+
+#: src/components/ItemsEditor.tsx:79
+msgid "Who had item {n}"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:149
+#: src/screens/InviteScreen.tsx:150
+msgid "Who it’s for"
+msgstr ""
+
+#: src/screens/SettleScreen.tsx:78
+msgid "Who paid"
+msgstr ""
+
+#: src/screens/ExpenseScreen.tsx:383
+msgid "Who paid how much"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:194
+msgid "Whoever opens the link while it works can join and see the group’s expenses. Nobody else can read them, not even Footless."
+msgstr ""
+
+#: src/components/WalletGuides.tsx:184
+msgid "Without this, paying opens Coinos so you can approve it there. To pay without switching apps:"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:44
+msgid "Works"
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:153
+#: src/screens/InviteScreen.tsx:154
+msgid "Works for"
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:295
+msgid "yen"
+msgstr ""
+
+#: src/screens/RecoverScreen.tsx:184
+msgid "Yes, it’s {who}"
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:153
+msgid "Yes, move my groups"
+msgstr ""
+
+#: src/screens/ActivityScreen.tsx:41
+msgid "Yesterday"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:177
+msgid "You"
+msgstr ""
+
+#: src/screens/NewGroupScreen.tsx:54
+msgid "You can add more people later."
+msgstr ""
+
+#: src/screens/MemberScreen.tsx:113
+msgid "You can leave once you’re all square. Right now you {what}."
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:242
+msgid "You get back"
+msgstr ""
+
+#. placeholder {0}: money(amount, currency)
+#: src/screens/HomeScreen.tsx:35
+msgid "You get back {0}"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:244
+msgid "You get back from {from}"
+msgstr ""
+
+#: src/screens/MemberScreen.tsx:72
+msgid "You in this group"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:154
+msgid "You joined {name} as {myName}"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:240
+msgid "You owe"
+msgstr ""
+
+#. placeholder {0}: money(-amount, currency)
+#: src/screens/HomeScreen.tsx:35
+msgid "You owe {0}"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:240
+msgid "You owe {to}"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:449
+msgid "You paid {payee}"
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:230
+msgid "You pay"
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:233
+msgid "You’ll see the group’s expenses once you join. No account or sign-up needed."
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:252
+msgid "You’re all square"
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:193
+msgid "You’re invited to"
+msgstr ""
+
+#: src/screens/GroupScreen.tsx:249
+msgid "Your balance"
+msgstr ""
+
+#: src/components/WalletGuides.tsx:156
+msgid "Your Coinos username"
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:121
+msgid "Your groups and wallets move to the new phone, and leave this one."
+msgstr ""
+
+#: src/screens/InviteScreen.tsx:200
+msgid "Your invite links"
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:128
+msgid "Your Lightning addresses and wallet connections come along, in the same order. A wallet that’s built into this browser stays behind."
+msgstr ""
+
+#: src/screens/JoinScreen.tsx:226
+#: src/screens/MemberScreen.tsx:75
+#: src/screens/NewGroupScreen.tsx:35
+msgid "Your name"
+msgstr ""
+
+#: src/screens/MoveInScreen.tsx:22
+msgid "your other phone"
+msgstr ""
+
+#: src/lib/news.ts:147
+msgid "Your share is {share}, in {group}"
+msgstr ""
+
+#: src/lib/wallet.ts:42
+msgid "Your wallet"
+msgstr ""
+
+#: src/screens/MoveInScreen.tsx:116
+msgid "Your wallet connection was on the lost phone: connect your wallet again in Settings, and in your wallet’s own app, turn off the connection the lost phone used."
+msgstr ""
+
+#: src/lib/wallet.ts:51
+msgid "Your wallet didn’t answer. Check it’s online and the connection allows payments."
+msgstr ""
+
+#: src/components/BitcoinPay.tsx:177
+msgid "Your wallet reported the payment, but its proof didn’t check out."
+msgstr ""
+
+#: src/screens/MoveScreen.tsx:169
+msgid "Your wallets are on the new phone now, and gone from this one."
+msgstr ""

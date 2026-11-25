@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro'
 /**
  * Turning notifications on and off on this phone.
  *
@@ -38,7 +39,7 @@ export async function enablePush(): Promise<PushSupport> {
   const permission = await Notification.requestPermission()
   if (permission !== 'granted') return permission === 'denied' ? 'blocked' : 'ready'
   const res = await fetch(relayHttpUrl('push-key'))
-  if (!res.ok) throw new Error('Notifications aren’t available right now')
+  if (!res.ok) throw new Error(t`Notifications aren’t available right now`)
   const { key } = (await res.json()) as { key: string }
   const registration = await navigator.serviceWorker.ready
   const subscription =

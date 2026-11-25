@@ -1,3 +1,4 @@
+import { plural, t } from '@lingui/core/macro'
 import { useEffect, useRef, useState } from 'react'
 import { Header } from '../components/Header.tsx'
 import { QrCode } from '../components/QrCode.tsx'
@@ -48,7 +49,7 @@ export function MoveScreen() {
       if (now.at !== 'waiting') {
         // A second phone answered. Someone else may have the code: start over.
         await channel.current?.send({ from: 'old', type: 'cancel' })
-        return stop('Another phone also scanned the code, so the move was stopped. Nothing changed. Start again, and keep the code to yourself.')
+        return stop(t`Another phone also scanned the code, so the move was stopped. Nothing changed. Start again, and keep the code to yourself.`)
       }
       setPhase({ at: 'confirm', secret, key: msg.key, code: await moveCode(secret, msg.key) })
     } else if (msg.type === 'done' && now.at === 'moving') {
@@ -58,7 +59,7 @@ export function MoveScreen() {
       channel.current = undefined
       setPhase({ at: 'done', count: groups.current.length })
     } else if (msg.type === 'cancel') {
-      stop('The move was cancelled on the new phone. Nothing changed here.')
+      stop(t`The move was cancelled on the new phone. Nothing changed here.`)
     }
   }
 
@@ -67,7 +68,7 @@ export function MoveScreen() {
     try {
       groups.current = await groupsToMove()
       if (groups.current.length === 0 && (await sendWalletsToMove()).length === 0 && (await receiveWalletsToMove()).length === 0) {
-        return stop('There’s nothing on this phone to move yet: no groups and no wallets.')
+        return stop(t`There’s nothing on this phone to move yet: no groups and no wallets.`)
       }
       const secret = newMoveSecret()
       const ch = new MoveChannel(
@@ -76,7 +77,7 @@ export function MoveScreen() {
         (msg) => void onMessage(msg, secret),
         () => {
           const at = phaseRef.current.at
-          if (at === 'waiting' || at === 'confirm' || at === 'moving') stop('Lost the connection. Nothing was moved; start again.')
+          if (at === 'waiting' || at === 'confirm' || at === 'moving') stop(t`Lost the connection. Nothing was moved; start again.`)
         },
       )
       channel.current = ch
@@ -109,80 +110,87 @@ export function MoveScreen() {
 
   async function reject() {
     await channel.current?.send({ from: 'old', type: 'cancel' })
-    stop('Stopped. Nothing was moved. If a phone you don’t know scanned the code, that’s fine: it got nothing.')
+    stop(t`Stopped. Nothing was moved. If a phone you don’t know scanned the code, that’s fine: it got nothing.`)
   }
 
   return (
     <main className="screen">
-      <Header title="Move to a new phone" back="/settings" />
+      <Header title={t`Move to a new phone`} back="/settings" />
       {phase.at === 'intro' && (
         <section className="form">
-          <p className="lead">Your groups and wallets move to the new phone, and leave this one.</p>
+          <p className="lead">{t`Your groups and wallets move to the new phone, and leave this one.`}</p>
           <ul className="steps">
-            <li>Open Footless on the new phone, from its Home Screen.</li>
-            <li>Tap the scan button and scan the code this phone will show.</li>
-            <li>Check both phones show the same 4 numbers.</li>
+            <li>{t`Open Footless on the new phone, from its Home Screen.`}</li>
+            <li>{t`Tap the scan button and scan the code this phone will show.`}</li>
+            <li>{t`Check both phones show the same 4 numbers.`}</li>
           </ul>
           <p className="muted">
-            Your Lightning addresses and wallet connections come along, in the same order. A wallet that’s built into
-            this browser stays behind.
+            {t`Your Lightning addresses and wallet connections come along, in the same order. A wallet that’s built into this browser stays behind.`}
           </p>
           <button className="button primary" onClick={start}>
-            Show the code
+            {t`Show the code`}
           </button>
         </section>
       )}
-      {phase.at === 'starting' && <p className="muted" role="status">Getting ready…</p>}
+      {phase.at === 'starting' && <p className="muted" role="status">{t`Getting ready…`}</p>}
       {phase.at === 'waiting' && (
         <section className="move-qr" data-move-link={moveLink(phase.secret)}>
-          <p className="lead">On the new phone, open Footless, tap the scan button and scan this code.</p>
-          <QrCode text={moveLink(phase.secret)} label="Code to scan with the new phone" />
+          <p className="lead">{t`On the new phone, open Footless, tap the scan button and scan this code.`}</p>
+          <QrCode text={moveLink(phase.secret)} label={t`Code to scan with the new phone`} />
           <p className="muted" role="status">
-            Waiting for the new phone…
+            {t`Waiting for the new phone…`}
           </p>
-          <p className="muted">Don’t share this code: it’s only for your own phone.</p>
+          <p className="muted">{t`Don’t share this code: it’s only for your own phone.`}</p>
         </section>
       )}
       {phase.at === 'confirm' && (
         <section className="form">
-          <p className="lead">Does the new phone show these numbers?</p>
-          <p className="move-code" aria-label={`Code ${phase.code.split('').join(' ')}`}>
+          <p className="lead">{t`Does the new phone show these numbers?`}</p>
+          <p className="move-code" aria-label={codeLabel(phase.code)}>
             {phase.code}
           </p>
           <button className="button primary" onClick={confirm}>
-            Yes, move my groups
+            {t`Yes, move my groups`}
           </button>
           <button className="button outline" onClick={reject}>
-            No, stop
+            {t`No, stop`}
           </button>
         </section>
       )}
       {phase.at === 'moving' && (
         <p className="lead" role="status">
-          Moving your groups. Keep both phones open…
+          {t`Moving your groups. Keep both phones open…`}
         </p>
       )}
       {phase.at === 'done' && (
         <section className="empty">
-          <h2>Moved</h2>
+          <h2>{t`Moved`}</h2>
           <p>
-            {phase.count === 0 ? 'Your wallets are' : phase.count === 1 ? 'Your group and wallets are' : `Your ${phase.count} groups and wallets are`}{' '}
-            on the new phone now, and gone from this one.
+            {phase.count === 0 ? t`Your wallets are on the new phone now, and gone from this one.` : plural(phase.count, {
+              one: 'Your group and wallets are on the new phone now, and gone from this one.',
+              other: 'Your # groups and wallets are on the new phone now, and gone from this one.',
+            })}
           </p>
           <a className="button primary" href="#/">
-            Done
+            {t`Done`}
           </a>
         </section>
       )}
       {phase.at === 'stopped' && (
         <section className="empty">
-          <h2>Not moved</h2>
+          <h2>{t`Not moved`}</h2>
           <p role="alert">{phase.message}</p>
           <button className="button primary" onClick={() => setPhase({ at: 'intro' })}>
-            Start again
+            {t`Start again`}
           </button>
         </section>
       )}
     </main>
   )
+}
+
+/** "Code 1 2 3 4", for screen readers to read digit by digit. */
+export const codeLabel = (code: string) => {
+  const digits = code.split('').join(' ')
+  return t`Code ${digits}`
 }

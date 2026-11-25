@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro'
 import { useRef, useState, type PointerEvent, type ReactNode } from 'react'
 
 /**
@@ -36,7 +37,9 @@ export function RankedList<T extends { id: string }>({
     const [item] = next.splice(from, 1)
     next.splice(to, 0, item!)
     onChange(next)
-    setAnnounce(`${label(item!)} is now number ${to + 1} of ${items.length}.`)
+    const position = to + 1
+    const count = items.length
+    setAnnounce(t`${label(item!)} is now number ${position} of ${count}.`)
   }
 
   function start(e: PointerEvent<HTMLButtonElement>, item: T, index: number) {
@@ -95,7 +98,7 @@ export function RankedList<T extends { id: string }>({
                 <span className="ranked-arrows">
                   <button
                     type="button"
-                    aria-label={`Move ${label(item)} up`}
+                    aria-label={t`Move ${label(item)} up`}
                     disabled={index === 0}
                     onClick={() => move(index, index - 1)}
                   >
@@ -105,7 +108,7 @@ export function RankedList<T extends { id: string }>({
                   </button>
                   <button
                     type="button"
-                    aria-label={`Move ${label(item)} down`}
+                    aria-label={t`Move ${label(item)} down`}
                     disabled={index === items.length - 1}
                     onClick={() => move(index, index + 1)}
                   >
@@ -117,7 +120,7 @@ export function RankedList<T extends { id: string }>({
                 <button
                   type="button"
                   className="remove-x"
-                  aria-label={`Remove ${label(item)}`}
+                  aria-label={t`Remove ${label(item)}`}
                   aria-expanded={asking}
                   onClick={() => setConfirm(asking ? undefined : item.id)}
                 >
@@ -131,7 +134,7 @@ export function RankedList<T extends { id: string }>({
                   <p>{removeQuestion(item)}</p>
                   <div className="button-row">
                     <button type="button" className="button small outline" onClick={() => setConfirm(undefined)}>
-                      Keep it
+                      {t`Keep it`}
                     </button>
                     <button
                       type="button"
@@ -139,10 +142,10 @@ export function RankedList<T extends { id: string }>({
                       onClick={() => {
                         setConfirm(undefined)
                         onRemove(item)
-                        setAnnounce(`Removed ${label(item)}.`)
+                        setAnnounce(t`Removed ${label(item)}.`)
                       }}
                     >
-                      Remove
+                      {t`Remove`}
                     </button>
                   </div>
                 </div>

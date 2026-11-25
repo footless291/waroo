@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro'
 /**
  * Reading QR codes from the camera, inside the app.
  *
@@ -71,9 +72,9 @@ export function inviteRoute(text: string): string | null {
 export function cameraProblem(error: unknown): string {
   const name = (error as { name?: string })?.name
   if (name === 'NotAllowedError' || name === 'SecurityError')
-    return 'Footless can’t use the camera. Allow camera access for Footless in your phone’s settings, or paste the link below.'
+    return t`Footless can’t use the camera. Allow camera access for Footless in your phone’s settings, or paste the link below.`
   if (name === 'NotFoundError' || name === 'OverconstrainedError')
-    return 'No camera found on this device. Paste the invite link below instead.'
-  if (name === 'NotReadableError') return 'The camera is busy in another app. Close it and try again.'
-  return 'The camera didn’t start. Paste the invite link below instead.'
+    return t`No camera found on this device. Paste the invite link below instead.`
+  if (name === 'NotReadableError') return t`The camera is busy in another app. Close it and try again.`
+  return t`The camera didn’t start. Paste the invite link below instead.`
 }

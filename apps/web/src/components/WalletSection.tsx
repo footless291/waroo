@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro'
 import { useEffect, useState } from 'react'
 import {
   isOfferWallet,
@@ -19,16 +20,17 @@ import { CoinosGuide, OtherWallet, RizfulGuide } from './WalletGuides.tsx'
 type Tab = 'send' | 'receive'
 type Option = 'coinos' | 'rizful' | 'other'
 
-const TABS: { value: Tab; label: string }[] = [
-  { value: 'receive', label: 'Receive' },
-  { value: 'send', label: 'Send' },
+const tabs = (): { value: Tab; label: string }[] => [
+  { value: 'receive', label: t`Receive` },
+  { value: 'send', label: t`Send` },
 ]
 
-const BLURB: Record<Option, string> = {
-  coinos: 'Free. Just a username and a password.',
-  rizful: 'Free. Sign up with email; one code sets up everything.',
-  other: 'Any wallet with a Lightning address or Nostr Wallet Connect.',
-}
+const blurb = (option: Option): string =>
+  option === 'coinos'
+    ? t`Free. Just a username and a password.`
+    : option === 'rizful'
+      ? t`Free. Sign up with email; one code sets up everything.`
+      : t`Any wallet with a Lightning address or Nostr Wallet Connect.`
 
 /**
  * Your wallets as one list per side, in the order Footless uses them.
@@ -65,13 +67,13 @@ export function WalletSection() {
     .filter((option) => option === 'other' || !connected(option) || open === option)
     .map((option) => {
       const expanded = open === option
-      const name = option === 'other' ? 'Add a different wallet' : PROVIDERS[option].name
+      const name = option === 'other' ? t`Add a different wallet` : PROVIDERS[option].name
       return (
         <li key={option} className={`wallet-card setup-card${expanded ? ' open' : ''}`}>
           <div className="wallet-card-head">
             <span className="row-main">
               <strong>{name}</strong>
-              <span className="muted">{BLURB[option]}</span>
+              <span className="muted">{blurb(option)}</span>
             </span>
             <button
               type="button"
@@ -79,7 +81,7 @@ export function WalletSection() {
               aria-expanded={expanded}
               onClick={() => setOpen(expanded ? undefined : option)}
             >
-              {expanded ? 'Close' : option === 'other' ? 'Add' : 'Set up'}
+              {expanded ? t`Close` : option === 'other' ? t`Add` : t`Set up`}
             </button>
           </div>
           {expanded && (
@@ -102,15 +104,15 @@ export function WalletSection() {
   }
 
   // Connected shows as the green, gently pulsing number; this is for screen readers.
-  const status = <span className="visually-hidden">Connected.</span>
+  const status = <span className="visually-hidden">{t`Connected.`}</span>
 
   return (
     <div className="wallet">
-      <Segmented label="Wallets for sending or receiving" options={TABS} value={tab} onChange={setTab} />
+      <Segmented label={t`Wallets for sending or receiving`} options={tabs()} value={tab} onChange={setTab} />
       {/* Swipe between Send and Receive, like the main tabs. */}
       <Pager
         inline
-        label="Wallets"
+        label={t`Wallets`}
         current={tab}
         onChange={(path) => setTab(path as Tab)}
         pages={[
@@ -119,7 +121,7 @@ export function WalletSection() {
             content: (
               <>
                 <p className="wallet-explain">
-                  Friends pay you at these, in order. If the first can’t take a payment, the next one is used.
+                  {t`Friends pay you at these, in order. If the first can’t take a payment, the next one is used.`}
                 </p>
                 <RankedList
                   items={receive}
@@ -128,7 +130,7 @@ export function WalletSection() {
                     isOfferWallet(w) ? (
                       <>
                         <strong className="address" data-address={w.address}>
-                          {w.name ? w.name.split('@')[0] : 'BOLT12 offer'}
+                          {w.name ? w.name.split('@')[0] : t`BOLT12 offer`}
                         </strong>
                         <span className="wallet-status">
                           <span className="muted domain">
@@ -150,7 +152,7 @@ export function WalletSection() {
                       </>
                     )
                   }
-                  removeQuestion={(w) => `Stop getting paid at ${receiveLabel(w)}? Your groups will stop using it.`}
+                  removeQuestion={(w) => t`Stop getting paid at ${receiveLabel(w)}? Your groups will stop using it.`}
                   onChange={async (next) => {
                     setReceive(next)
                     await saveReceiveWallets(next)
@@ -170,8 +172,7 @@ export function WalletSection() {
             content: (
               <>
                 <p className="wallet-explain">
-                  When you pay, Footless asks these in order. If one can’t pay, you’ll see why and choose whether to try
-                  the next. You can always pay by opening your wallet app instead.
+                  {t`When you pay, Footless asks these in order. If one can’t pay, you’ll see why and choose whether to try the next. You can always pay by opening your wallet app instead.`}
                 </p>
                 <RankedList
                   items={send}
@@ -181,11 +182,11 @@ export function WalletSection() {
                       <strong>{sendLabel(w)}</strong>
                       <span className="wallet-status">
                         {status}
-                        <span className="muted">{w.kind === 'nwc' ? 'Pays in one tap' : 'Browser wallet'}</span>
+                        <span className="muted">{w.kind === 'nwc' ? t`Pays in one tap` : t`Browser wallet`}</span>
                       </span>
                     </>
                   )}
-                  removeQuestion={(w) => `Stop paying with ${sendLabel(w)}? You can connect it again any time.`}
+                  removeQuestion={(w) => t`Stop paying with ${sendLabel(w)}? You can connect it again any time.`}
                   onChange={async (next) => {
                     setSend(next)
                     await saveSendWallets(next)
