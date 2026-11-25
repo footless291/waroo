@@ -14,7 +14,7 @@ Status: early, experimental, and **not audited**. Real bitcoin moves, so please 
 - **Bitcoin is optional.** Cash and bank transfers are first-class, so the app works for groups where nobody uses bitcoin.
 - **A PWA, not an app-store app.** One codebase that installs from the browser and works offline.
 
-## Security, honestly
+## Security
 
 What it's designed to guarantee, and what it doesn't (yet). Details in [docs/sync.md](docs/sync.md) and [docs/payments.md](docs/payments.md); to report a problem, see [SECURITY.md](SECURITY.md).
 
