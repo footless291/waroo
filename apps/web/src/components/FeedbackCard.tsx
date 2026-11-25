@@ -186,7 +186,7 @@ export function FeedbackCard() {
         {note?.text}
       </p>
       <p className="muted small">
-        {t`This goes by email to the people making Waroo, and isn’t end-to-end encrypted like your groups, so leave out anything private. Your email is only used to reply and, if you ask, for news. You can stop the news any time.`}
+        {t`This goes by email to the people making Waroo, and isn’t end-to-end encrypted like your groups, so leave out anything private. We get only what you write and attach here, plus the app version, your language and your phone and browser type, to help fix bugs. Nothing from your groups or wallets is included. Your email is only used to reply and, if you ask, for news, which you can stop any time.`}
       </p>
     </form>
   )

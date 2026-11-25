@@ -2098,8 +2098,8 @@ msgid "This expense was deleted."
 msgstr "This expense was deleted."
 
 #: src/components/FeedbackCard.tsx:189
-msgid "This goes by email to the people making Waroo, and isn’t end-to-end encrypted like your groups, so leave out anything private. Your email is only used to reply and, if you ask, for news. You can stop the news any time."
-msgstr "This goes by email to the people making Waroo, and isn’t end-to-end encrypted like your groups, so leave out anything private. Your email is only used to reply and, if you ask, for news. You can stop the news any time."
+msgid "This goes by email to the people making Waroo, and isn’t end-to-end encrypted like your groups, so leave out anything private. We get only what you write and attach here, plus the app version, your language and your phone and browser type, to help fix bugs. Nothing from your groups or wallets is included. Your email is only used to reply and, if you ask, for news, which you can stop any time."
+msgstr "This goes by email to the people making Waroo, and isn’t end-to-end encrypted like your groups, so leave out anything private. We get only what you write and attach here, plus the app version, your language and your phone and browser type, to help fix bugs. Nothing from your groups or wallets is included. Your email is only used to reply and, if you ask, for news, which you can stop any time."
 
 #: src/screens/GroupScreen.tsx:39
 msgid "This group isn’t on this device."
