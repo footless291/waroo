@@ -3,6 +3,9 @@ import { useEffect, useState } from 'react'
 import {
   isOfferWallet,
   receiveLabel,
+  renameWallet,
+  walletKey,
+  walletNames,
   receiveWallets,
   saveReceiveWallets,
   saveSendWallets,
@@ -44,11 +47,15 @@ export function WalletSection() {
   const [send, setSend] = useState<SendWallet[]>()
   // Each side remembers its own open guide, since both sides are on screen while swiping.
   const [openGuides, setOpenGuides] = useState<Partial<Record<Tab, Option>>>({})
+  const [names, setNames] = useState<Record<string, string>>({})
+  /** The wallet being renamed, by its shared key, and which side it's on. */
+  const [renaming, setRenaming] = useState<{ key: string; side: Tab }>()
 
   async function load() {
-    const [r, s] = await Promise.all([receiveWallets(), sendWallets()])
+    const [r, s, n] = await Promise.all([receiveWallets(), sendWallets(), walletNames()])
     setReceive(r)
     setSend(s)
+    setNames(n)
     return { r, s }
   }
   useEffect(() => {
@@ -106,6 +113,37 @@ export function WalletSection() {
   // Connected shows as the green, gently pulsing number; this is for screen readers.
   const status = <span className="visually-hidden">{t`Connected.`}</span>
 
+  /** The name on a card: yours if you gave one, else the wallet's own. */
+  const nameOf = (w: ReceiveWallet | SendWallet) =>
+    names[walletKey(w)] ?? ('address' in w ? receiveLabel(w) : sendLabel(w))
+
+  /** The wallet's name, as a button that renames it in place. */
+  const nameButton = (w: ReceiveWallet | SendWallet, side: Tab, shown: string) => {
+    const key = walletKey(w)
+    if (renaming?.key === key && renaming.side === side) {
+      return (
+        <RenameForm
+          initial={names[key] ?? ''}
+          placeholder={'address' in w ? receiveLabel(w) : sendLabel(w)}
+          onDone={async (name) => {
+            if (name !== undefined) setNames(await renameWallet(key, name))
+            setRenaming(undefined)
+          }}
+        />
+      )
+    }
+    return (
+      <button type="button" className="wallet-name" onClick={() => setRenaming({ key, side })} aria-label={t`Rename ${shown}`}>
+        <strong className="address" data-address={'address' in w ? w.address : undefined}>
+          {shown}
+        </strong>
+        <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+          <path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+        </svg>
+      </button>
+    )
+  }
+
   return (
     <div className="wallet">
       <Segmented label={t`Wallets for sending or receiving`} options={tabs()} value={tab} onChange={setTab} />
@@ -125,13 +163,19 @@ export function WalletSection() {
                 </p>
                 <RankedList
                   items={receive}
-                  label={(w) => receiveLabel(w)}
+                  label={(w) => nameOf(w)}
                   render={(w) =>
-                    isOfferWallet(w) ? (
+                    names[walletKey(w)] ? (
                       <>
-                        <strong className="address" data-address={w.address}>
-                          {w.name ? w.name.split('@')[0] : t`BOLT12 offer`}
-                        </strong>
+                        {nameButton(w, 'receive', names[walletKey(w)]!)}
+                        <span className="wallet-status">
+                          <span className="muted domain">{receiveLabel(w)}</span>
+                          {status}
+                        </span>
+                      </>
+                    ) : isOfferWallet(w) ? (
+                      <>
+                        {nameButton(w, 'receive', w.name ? w.name.split('@')[0]! : t`BOLT12 offer`)}
                         <span className="wallet-status">
                           <span className="muted domain">
                             {w.name ? `@${w.name.split('@').slice(1).join('@')} · BOLT12` : `${w.address.slice(0, 12)}…${w.address.slice(-6)}`}
@@ -142,9 +186,7 @@ export function WalletSection() {
                     ) : (
                       <>
                         {/* Username on top, @provider underneath, so long addresses fit. */}
-                        <strong className="address" data-address={w.address}>
-                          {w.address.split('@')[0]}
-                        </strong>
+                        {nameButton(w, 'receive', w.address.split('@')[0]!)}
                         <span className="wallet-status">
                           <span className="muted domain">@{w.address.split('@').slice(1).join('@')}</span>
                           {status}
@@ -152,7 +194,7 @@ export function WalletSection() {
                       </>
                     )
                   }
-                  removeQuestion={(w) => t`Stop getting paid at ${receiveLabel(w)}? Your groups will stop using it.`}
+                  removeQuestion={(w) => t`Stop getting paid at ${nameOf(w)}? Your groups will stop using it.`}
                   onChange={async (next) => {
                     setReceive(next)
                     await saveReceiveWallets(next)
@@ -176,17 +218,17 @@ export function WalletSection() {
                 </p>
                 <RankedList
                   items={send}
-                  label={sendLabel}
+                  label={nameOf}
                   render={(w) => (
                     <>
-                      <strong>{sendLabel(w)}</strong>
+                      {nameButton(w, 'send', nameOf(w))}
                       <span className="wallet-status">
                         {status}
                         <span className="muted">{w.kind === 'nwc' ? t`Pays in one tap` : t`Browser wallet`}</span>
                       </span>
                     </>
                   )}
-                  removeQuestion={(w) => t`Stop paying with ${sendLabel(w)}? You can connect it again any time.`}
+                  removeQuestion={(w) => t`Stop paying with ${nameOf(w)}? You can connect it again any time.`}
                   onChange={async (next) => {
                     setSend(next)
                     await saveSendWallets(next)
@@ -204,5 +246,43 @@ export function WalletSection() {
         ]}
       />
     </div>
+  )
+}
+
+/** Renaming a wallet in place. Empty goes back to the wallet's own name; Escape or Cancel keeps it. */
+function RenameForm({
+  initial,
+  placeholder,
+  onDone,
+}: {
+  initial: string
+  placeholder: string
+  onDone: (name: string | undefined) => void
+}) {
+  const [value, setValue] = useState(initial)
+  return (
+    <form
+      className="rename-form"
+      onSubmit={(e) => {
+        e.preventDefault()
+        onDone(value)
+      }}
+    >
+      <input
+        autoFocus
+        value={value}
+        maxLength={40}
+        placeholder={placeholder}
+        aria-label={t`Wallet name`}
+        onChange={(e) => setValue(e.target.value)}
+        onKeyDown={(e) => e.key === 'Escape' && onDone(undefined)}
+      />
+      <div className="rename-actions">
+        <button className="button small primary">{t`Save`}</button>
+        <button type="button" className="button small outline" onClick={() => onDone(undefined)}>
+          {t`Cancel`}
+        </button>
+      </div>
+    </form>
   )
 }

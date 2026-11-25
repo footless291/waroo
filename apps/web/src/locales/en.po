@@ -7,7 +7,7 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: en\n"
 
-#: src/components/BitcoinPay.tsx:456
+#: src/components/BitcoinPay.tsx:462
 #: src/screens/ActivityScreen.tsx:62
 #: src/screens/GroupScreen.tsx:414
 #: src/screens/PersonScreen.tsx:81
@@ -15,7 +15,7 @@ msgid ", "
 msgstr ", "
 
 #. placeholder {0}: g.name
-#: src/lib/move.ts:216
+#: src/lib/move.ts:220
 msgid "“{0}” didn’t arrive. Keep both phones open and try again."
 msgstr "“{0}” didn’t arrive. Keep both phones open and try again."
 
@@ -29,7 +29,7 @@ msgid "{0, plural, one {{state}, opened once} other {{state}, opened # times}}"
 msgstr "{0, plural, one {{state}, opened once} other {{state}, opened # times}}"
 
 #. placeholder {0}: phase.count
-#: src/screens/MoveScreen.tsx:186
+#: src/screens/MoveScreen.tsx:188
 msgid "{0, plural, one {Your group and wallets are on the new phone now, and gone from this one.} other {Your # groups and wallets are on the new phone now, and gone from this one.}}"
 msgstr "{0, plural, one {Your group and wallets are on the new phone now, and gone from this one.} other {Your # groups and wallets are on the new phone now, and gone from this one.}}"
 
@@ -54,7 +54,7 @@ msgstr "{0} didn’t work: {1}"
 msgid "{0} is now number {position} of {count}."
 msgstr "{0} is now number {position} of {count}."
 
-#: src/components/BitcoinPay.tsx:134
+#: src/components/BitcoinPay.tsx:136
 msgid "{addr}: {why}"
 msgstr "{addr}: {why}"
 
@@ -174,7 +174,7 @@ msgstr "{payer} paid {payee}"
 msgid "{payer} paid you"
 msgstr "{payer} paid you"
 
-#: src/components/BitcoinPay.tsx:469
+#: src/components/BitcoinPay.tsx:475
 msgid "{price} per bitcoin"
 msgstr "{price} per bitcoin"
 
@@ -190,11 +190,11 @@ msgstr "{sats}, verified, in {group}"
 msgid "{to} marked your {amount} as paid"
 msgstr "{to} marked your {amount} as paid"
 
-#: src/components/BitcoinPay.tsx:214
+#: src/components/BitcoinPay.tsx:216
 msgid "{toName} hasn’t added a Lightning address yet, so they can’t receive bitcoin. They can add one in Settings."
 msgstr "{toName} hasn’t added a Lightning address yet, so they can’t receive bitcoin. They can add one in Settings."
 
-#: src/components/BitcoinPay.tsx:272
+#: src/components/BitcoinPay.tsx:274
 msgid "{toName}’s provider can’t confirm payments automatically. Once you’ve paid, mark it here."
 msgstr "{toName}’s provider can’t confirm payments automatically. Once you’ve paid, mark it here."
 
@@ -242,9 +242,9 @@ msgstr "{why} Ask for a new one."
 msgid "{why}. Check your connection and try again."
 msgstr "{why}. Check your connection and try again."
 
-#. placeholder {0}: sendLabel(failed)
+#. placeholder {0}: label(failed)
 #. placeholder {1}: phase.reason
-#: src/components/BitcoinPay.tsx:351
+#: src/components/BitcoinPay.tsx:357
 msgid "<0>{0} couldn’t pay:</0> {1}."
 msgstr "<0>{0} couldn’t pay:</0> {1}."
 
@@ -322,11 +322,11 @@ msgid "Activity"
 msgstr "Activity"
 
 #: src/components/WalletGuides.tsx:400
-#: src/components/WalletSection.tsx:84
+#: src/components/WalletSection.tsx:91
 msgid "Add"
 msgstr "Add"
 
-#: src/components/WalletSection.tsx:70
+#: src/components/WalletSection.tsx:77
 msgid "Add a different wallet"
 msgstr "Add a different wallet"
 
@@ -438,7 +438,7 @@ msgstr "Ana"
 msgid "Another person"
 msgstr "Another person"
 
-#: src/screens/MoveScreen.tsx:52
+#: src/screens/MoveScreen.tsx:53
 msgid "Another phone also scanned the code, so the move was stopped. Nothing changed. Start again, and keep the code to yourself."
 msgstr "Another phone also scanned the code, so the move was stopped. Nothing changed. Start again, and keep the code to yourself."
 
@@ -446,7 +446,7 @@ msgstr "Another phone also scanned the code, so the move was stopped. Nothing ch
 msgid "Another phone also used the code, so this was stopped. Nothing changed. Start again."
 msgstr "Another phone also used the code, so this was stopped. Nothing changed. Start again."
 
-#: src/components/WalletSection.tsx:33
+#: src/components/WalletSection.tsx:36
 msgid "Any wallet with a Lightning address or Nostr Wallet Connect."
 msgstr "Any wallet with a Lightning address or Nostr Wallet Connect."
 
@@ -489,7 +489,7 @@ msgstr "Bitcoin price sources disagree right now, so paying is paused. Try again
 msgid "Bob"
 msgstr "Bob"
 
-#: src/components/WalletSection.tsx:133
+#: src/components/WalletSection.tsx:178
 msgid "BOLT12 offer"
 msgstr "BOLT12 offer"
 
@@ -501,7 +501,7 @@ msgstr "Bringing {who} back in. Keep both phones open…"
 msgid "Bringing your group here. Keep both phones open…"
 msgstr "Bringing your group here. Keep both phones open…"
 
-#: src/components/WalletSection.tsx:185
+#: src/components/WalletSection.tsx:227
 #: src/lib/wallet.ts:61
 msgid "Browser wallet"
 msgstr "Browser wallet"
@@ -518,6 +518,10 @@ msgstr "Can’t check right now"
 msgid "Can’t reach the group · retrying"
 msgstr "Can’t reach the group · retrying"
 
+#: src/components/WalletSection.tsx:283
+msgid "Cancel"
+msgstr "Cancel"
+
 #: src/screens/ActivityScreen.tsx:9
 #: src/screens/SettleScreen.tsx:14
 msgid "Cash"
@@ -527,11 +531,11 @@ msgstr "Cash"
 msgid "Change your name, or leave the group"
 msgstr "Change your name, or leave the group"
 
-#: src/screens/MoveScreen.tsx:136
+#: src/screens/MoveScreen.tsx:138
 msgid "Check both phones show the same 4 numbers."
 msgstr "Check both phones show the same 4 numbers."
 
-#: src/components/BitcoinPay.tsx:299
+#: src/components/BitcoinPay.tsx:302
 msgid "Check your wallet to see whether it went through before trying again."
 msgstr "Check your wallet to see whether it went through before trying again."
 
@@ -550,11 +554,11 @@ msgstr "Checking…"
 msgid "Choose a username and a password. Write the password down: it’s the only way back into your wallet."
 msgstr "Choose a username and a password. Write the password down: it’s the only way back into your wallet."
 
-#: src/components/WalletSection.tsx:84
+#: src/components/WalletSection.tsx:91
 msgid "Close"
 msgstr "Close"
 
-#: src/screens/MoveScreen.tsx:212
+#: src/screens/MoveScreen.tsx:214
 msgid "Code {digits}"
 msgstr "Code {digits}"
 
@@ -566,7 +570,7 @@ msgstr "Code for {who}’s new phone to scan"
 msgid "Code from Rizful"
 msgstr "Code from Rizful"
 
-#: src/screens/MoveScreen.tsx:150
+#: src/screens/MoveScreen.tsx:152
 msgid "Code to scan with the new phone"
 msgstr "Code to scan with the new phone"
 
@@ -589,7 +593,7 @@ msgstr "Connected {name}."
 msgid "Connected for getting paid and for paying."
 msgstr "Connected for getting paid and for paying."
 
-#: src/components/WalletSection.tsx:107
+#: src/components/WalletSection.tsx:114
 msgid "Connected."
 msgstr "Connected."
 
@@ -605,7 +609,7 @@ msgstr "Connected. Waroo asks Coinos to pay only when you confirm a payment."
 msgid "Connecting…"
 msgstr "Connecting…"
 
-#: src/components/BitcoinPay.tsx:266
+#: src/components/BitcoinPay.tsx:268
 msgid "Copy invoice"
 msgstr "Copy invoice"
 
@@ -617,7 +621,7 @@ msgstr "Copy link"
 msgid "Copy link instead"
 msgstr "Copy link instead"
 
-#: src/components/BitcoinPay.tsx:440
+#: src/components/BitcoinPay.tsx:446
 msgid "Copy offer"
 msgstr "Copy offer"
 
@@ -665,7 +669,7 @@ msgstr "Couldn’t reach the group"
 msgid "Couldn’t reach their Lightning address. It may not work from web apps, or you may be offline."
 msgstr "Couldn’t reach their Lightning address. It may not work from web apps, or you may be offline."
 
-#: src/lib/move.ts:144
+#: src/lib/move.ts:147
 msgid "Couldn’t reach Waroo to hand over your groups. Check your connection and try again."
 msgstr "Couldn’t reach Waroo to hand over your groups. Check your connection and try again."
 
@@ -679,7 +683,7 @@ msgstr "Couldn’t reach Waroo to tell the group. Check your connection and try 
 msgid "Couldn’t reach Waroo. Check your connection and try again."
 msgstr "Couldn’t reach Waroo. Check your connection and try again."
 
-#: src/lib/move.ts:92
+#: src/lib/move.ts:95
 msgid "Couldn’t reach Waroo. Check your connection."
 msgstr "Couldn’t reach Waroo. Check your connection."
 
@@ -720,16 +724,16 @@ msgstr "Delete expense"
 msgid "Dismiss"
 msgstr "Dismiss"
 
-#: src/screens/MoveScreen.tsx:165
+#: src/screens/MoveScreen.tsx:167
 msgid "Does the new phone show these numbers?"
 msgstr "Does the new phone show these numbers?"
 
-#: src/screens/MoveScreen.tsx:154
+#: src/screens/MoveScreen.tsx:156
 msgid "Don’t share this code: it’s only for your own phone."
 msgstr "Don’t share this code: it’s only for your own phone."
 
-#: src/components/BitcoinPay.tsx:223
-#: src/screens/MoveScreen.tsx:192
+#: src/components/BitcoinPay.tsx:225
+#: src/screens/MoveScreen.tsx:194
 #: src/screens/RecoverScreen.tsx:207
 msgid "Done"
 msgstr "Done"
@@ -809,11 +813,11 @@ msgstr "For one person, until {date}"
 msgid "For several people, until {date}"
 msgstr "For several people, until {date}"
 
-#: src/components/WalletSection.tsx:30
+#: src/components/WalletSection.tsx:33
 msgid "Free. Just a username and a password."
 msgstr "Free. Just a username and a password."
 
-#: src/components/WalletSection.tsx:32
+#: src/components/WalletSection.tsx:35
 msgid "Free. Sign up with email; one code sets up everything."
 msgstr "Free. Sign up with email; one code sets up everything."
 
@@ -821,7 +825,7 @@ msgstr "Free. Sign up with email; one code sets up everything."
 msgid "Friends can pay you at <0>{address}</0>."
 msgstr "Friends can pay you at <0>{address}</0>."
 
-#: src/components/WalletSection.tsx:124
+#: src/components/WalletSection.tsx:162
 msgid "Friends pay you at these, in order. If the first can’t take a payment, the next one is used."
 msgstr "Friends pay you at these, in order. If the first can’t take a payment, the next one is used."
 
@@ -829,11 +833,11 @@ msgstr "Friends pay you at these, in order. If the first can’t take a payment,
 msgid "Friends will pay you at {candidate}"
 msgstr "Friends will pay you at {candidate}"
 
-#: src/components/BitcoinPay.tsx:452
+#: src/components/BitcoinPay.tsx:458
 msgid "from {list}"
 msgstr "from {list}"
 
-#: src/components/BitcoinPay.tsx:457
+#: src/components/BitcoinPay.tsx:463
 msgid "from {list} and {more} more"
 msgstr "from {list} and {more} more"
 
@@ -870,12 +874,12 @@ msgstr "gets back {sum}"
 msgid "Gets back {sum}"
 msgstr "Gets back {sum}"
 
-#: src/screens/MoveScreen.tsx:146
+#: src/screens/MoveScreen.tsx:148
 #: src/screens/RecoverScreen.tsx:157
 msgid "Getting ready…"
 msgstr "Getting ready…"
 
-#: src/components/BitcoinPay.tsx:308
+#: src/components/BitcoinPay.tsx:311
 msgid "Getting the price…"
 msgstr "Getting the price…"
 
@@ -920,8 +924,8 @@ msgstr "Help {who} back in"
 msgid "Hide QR code"
 msgstr "Hide QR code"
 
-#: src/components/BitcoinPay.tsx:274
-#: src/components/BitcoinPay.tsx:444
+#: src/components/BitcoinPay.tsx:276
+#: src/components/BitcoinPay.tsx:450
 msgid "I’ve paid it"
 msgstr "I’ve paid it"
 
@@ -945,7 +949,7 @@ msgstr "In {group}"
 msgid "In {groupName} on their phone."
 msgstr "In {groupName} on their phone."
 
-#: src/components/BitcoinPay.tsx:234
+#: src/components/BitcoinPay.tsx:236
 msgid "In bitcoin"
 msgstr "In bitcoin"
 
@@ -990,8 +994,8 @@ msgstr "it can’t pay BOLT12 offers yet"
 msgid "it didn’t allow Waroo to pay{tech}"
 msgstr "it didn’t allow Waroo to pay{tech}"
 
-#. placeholder {0}: sendLabel(next)
-#: src/components/BitcoinPay.tsx:378
+#. placeholder {0}: label(next)
+#: src/components/BitcoinPay.tsx:384
 msgid "It didn’t pay. Try {0}"
 msgstr "It didn’t pay. Try {0}"
 
@@ -1003,8 +1007,8 @@ msgstr "it doesn’t have enough in it"
 msgid "it got the request but didn’t answer within a minute{tech}"
 msgstr "it got the request but didn’t answer within a minute{tech}"
 
-#. placeholder {0}: sendLabel(failed)
-#: src/components/BitcoinPay.tsx:359
+#. placeholder {0}: label(failed)
+#: src/components/BitcoinPay.tsx:365
 msgid "It may still have paid. Check {0} before trying again, so you don’t pay twice."
 msgstr "It may still have paid. Check {0} before trying again, so you don’t pay twice."
 
@@ -1109,7 +1113,7 @@ msgid "Lightning address or BOLT12 offer"
 msgstr "Lightning address or BOLT12 offer"
 
 #: src/screens/InviteScreen.tsx:170
-#: src/screens/MoveScreen.tsx:156
+#: src/screens/MoveScreen.tsx:158
 #: src/screens/RecoverScreen.tsx:163
 msgid "Link copied"
 msgstr "Link copied"
@@ -1126,7 +1130,7 @@ msgstr "List what each person had. Shared things are split among whoever had the
 msgid "Looking for a code…"
 msgstr "Looking for a code…"
 
-#: src/screens/MoveScreen.tsx:80
+#: src/screens/MoveScreen.tsx:81
 msgid "Lost the connection. Nothing was moved; start again."
 msgstr "Lost the connection. Nothing was moved; start again."
 
@@ -1188,7 +1192,7 @@ msgstr "Move {0} down"
 msgid "Move {0} up"
 msgstr "Move {0} up"
 
-#: src/screens/MoveScreen.tsx:129
+#: src/screens/MoveScreen.tsx:131
 #: src/screens/YouScreen.tsx:43
 msgid "Move to a new phone"
 msgstr "Move to a new phone"
@@ -1201,7 +1205,7 @@ msgstr "Move to this phone"
 msgid "Move your groups to another phone, so you can keep adding expenses and settling up there. Have both phones with you."
 msgstr "Move your groups to another phone, so you can keep adding expenses and settling up there. Have both phones with you."
 
-#: src/screens/MoveScreen.tsx:184
+#: src/screens/MoveScreen.tsx:186
 msgid "Moved"
 msgstr "Moved"
 
@@ -1209,7 +1213,7 @@ msgstr "Moved"
 msgid "Moving to a new phone"
 msgstr "Moving to a new phone"
 
-#: src/screens/MoveScreen.tsx:156
+#: src/screens/MoveScreen.tsx:158
 msgid "Moving within this phone? Copy the link"
 msgstr "Moving within this phone? Copy the link"
 
@@ -1217,7 +1221,7 @@ msgstr "Moving within this phone? Copy the link"
 msgid "Moving your groups here. Keep both phones open…"
 msgstr "Moving your groups here. Keep both phones open…"
 
-#: src/screens/MoveScreen.tsx:179
+#: src/screens/MoveScreen.tsx:181
 msgid "Moving your groups. Keep both phones open…"
 msgstr "Moving your groups. Keep both phones open…"
 
@@ -1251,7 +1255,7 @@ msgstr "No expenses yet"
 msgid "No payments yet"
 msgstr "No payments yet"
 
-#: src/screens/MoveScreen.tsx:173
+#: src/screens/MoveScreen.tsx:175
 #: src/screens/RecoverScreen.tsx:189
 msgid "No, stop"
 msgstr "No, stop"
@@ -1260,7 +1264,7 @@ msgstr "No, stop"
 msgid "Nobody owes anybody."
 msgstr "Nobody owes anybody."
 
-#: src/components/BitcoinPay.tsx:461
+#: src/components/BitcoinPay.tsx:467
 msgid "None of {name}’s addresses could take a payment right now. {problems}"
 msgstr "None of {name}’s addresses could take a payment right now. {problems}"
 
@@ -1269,7 +1273,7 @@ msgid "Not found"
 msgstr "Not found"
 
 #: src/screens/MoveInScreen.tsx:131
-#: src/screens/MoveScreen.tsx:198
+#: src/screens/MoveScreen.tsx:200
 msgid "Not moved"
 msgstr "Not moved"
 
@@ -1289,7 +1293,7 @@ msgstr "Nothing to move but your wallets."
 msgid "Nothing to split yet"
 msgstr "Nothing to split yet"
 
-#: src/components/BitcoinPay.tsx:356
+#: src/components/BitcoinPay.tsx:362
 msgid "Nothing was paid."
 msgstr "Nothing was paid."
 
@@ -1321,7 +1325,7 @@ msgstr "Notifications aren’t available right now"
 msgid "Notifications weren’t turned on."
 msgstr "Notifications weren’t turned on."
 
-#: src/components/BitcoinPay.tsx:440
+#: src/components/BitcoinPay.tsx:446
 msgid "Offer copied"
 msgstr "Offer copied"
 
@@ -1337,7 +1341,7 @@ msgstr "Okinawa trip"
 msgid "On iPhone and iPad, only apps on the Home Screen can send notifications. Tap Share, then “Add to Home Screen”, and turn them on from there."
 msgstr "On iPhone and iPad, only apps on the Home Screen can send notifications. Tap Share, then “Add to Home Screen”, and turn them on from there."
 
-#: src/screens/MoveScreen.tsx:149
+#: src/screens/MoveScreen.tsx:151
 msgid "On the new phone, open Waroo, tap the scan button and scan this code."
 msgstr "On the new phone, open Waroo, tap the scan button and scan this code."
 
@@ -1363,7 +1367,7 @@ msgstr "Only on this phone so far"
 msgid "only you so far"
 msgstr "only you so far"
 
-#: src/components/BitcoinPay.tsx:389
+#: src/components/BitcoinPay.tsx:395
 msgid "Open another wallet app"
 msgstr "Open another wallet app"
 
@@ -1379,14 +1383,14 @@ msgstr "Open Coinos settings"
 msgid "Open Coinos’s Nostr settings, then tap <0>New connection</0>, name it Waroo, and set a budget if you like."
 msgstr "Open Coinos’s Nostr settings, then tap <0>New connection</0>, name it Waroo, and set a budget if you like."
 
-#: src/components/BitcoinPay.tsx:255
-#: src/components/BitcoinPay.tsx:389
-#: src/components/BitcoinPay.tsx:429
+#: src/components/BitcoinPay.tsx:257
+#: src/components/BitcoinPay.tsx:395
+#: src/components/BitcoinPay.tsx:435
 msgid "Open in wallet app"
 msgstr "Open in wallet app"
 
-#: src/components/BitcoinPay.tsx:258
-#: src/components/BitcoinPay.tsx:432
+#: src/components/BitcoinPay.tsx:260
+#: src/components/BitcoinPay.tsx:438
 msgid "Open in your wallet app"
 msgstr "Open in your wallet app"
 
@@ -1409,7 +1413,7 @@ msgstr "Open Rizful"
 msgid "Open Waroo"
 msgstr "Open Waroo"
 
-#: src/screens/MoveScreen.tsx:134
+#: src/screens/MoveScreen.tsx:136
 msgid "Open Waroo on the new phone, from its Home Screen."
 msgstr "Open Waroo on the new phone, from its Home Screen."
 
@@ -1429,8 +1433,8 @@ msgstr "Or mark it as paid another way"
 msgid "Or paste the invite link"
 msgstr "Or paste the invite link"
 
-#: src/components/BitcoinPay.tsx:257
-#: src/components/BitcoinPay.tsx:431
+#: src/components/BitcoinPay.tsx:259
+#: src/components/BitcoinPay.tsx:437
 msgid "Or scan it with a wallet on another phone:"
 msgstr "Or scan it with a wallet on another phone:"
 
@@ -1455,7 +1459,7 @@ msgstr "Owes {sum}"
 
 #. placeholder {0}: money(amount, currency)
 #. placeholder {1}: satsText(phase.sats)
-#: src/components/BitcoinPay.tsx:218
+#: src/components/BitcoinPay.tsx:220
 msgid "Paid {0} to {toName} ({1})."
 msgstr "Paid {0} to {toName} ({1})."
 
@@ -1480,7 +1484,7 @@ msgstr "Partial payment: {left} will still be owed."
 msgid "Paste"
 msgstr "Paste"
 
-#: src/screens/MoveScreen.tsx:159
+#: src/screens/MoveScreen.tsx:161
 msgid "Paste it under the scanner in the other app. You’ll still check the numbers on both."
 msgstr "Paste it under the scanner in the other app. You’ll still check the numbers on both."
 
@@ -1488,12 +1492,12 @@ msgstr "Paste it under the scanner in the other app. You’ll still check the nu
 msgid "Paste the code"
 msgstr "Paste the code"
 
-#: src/components/BitcoinPay.tsx:465
+#: src/components/BitcoinPay.tsx:471
 msgid "Pay {amount} with bitcoin"
 msgstr "Pay {amount} with bitcoin"
 
 #. placeholder {0}: satsText(sats)
-#: src/components/BitcoinPay.tsx:424
+#: src/components/BitcoinPay.tsx:430
 msgid "Pay exactly <0>{0}</0>. You’ll type the amount in your wallet."
 msgstr "Pay exactly <0>{0}</0>. You’ll type the amount in your wallet."
 
@@ -1505,26 +1509,26 @@ msgstr "Pay in one tap"
 msgid "Pay in one tap (optional)"
 msgstr "Pay in one tap (optional)"
 
-#: src/components/BitcoinPay.tsx:403
+#: src/components/BitcoinPay.tsx:409
 msgid "Pay their Lightning address instead"
 msgstr "Pay their Lightning address instead"
 
-#. placeholder {0}: sendLabel(next)
-#: src/components/BitcoinPay.tsx:379
+#. placeholder {0}: label(next)
+#: src/components/BitcoinPay.tsx:385
 msgid "Pay with {0}"
 msgstr "Pay with {0}"
 
-#: src/components/BitcoinPay.tsx:211
-#: src/components/BitcoinPay.tsx:308
+#: src/components/BitcoinPay.tsx:213
+#: src/components/BitcoinPay.tsx:311
 msgid "Pay with bitcoin"
 msgstr "Pay with bitcoin"
 
-#: src/components/BitcoinPay.tsx:393
+#: src/components/BitcoinPay.tsx:399
 msgid "Paying from another phone? Show a QR code"
 msgstr "Paying from another phone? Show a QR code"
 
-#. placeholder {0}: sendLabel(next)
-#: src/components/BitcoinPay.tsx:374
+#. placeholder {0}: label(next)
+#: src/components/BitcoinPay.tsx:380
 msgid "Paying with {0}…"
 msgstr "Paying with {0}…"
 
@@ -1540,7 +1544,7 @@ msgstr "Payment sent: {amount} to {to}"
 msgid "Payments"
 msgstr "Payments"
 
-#: src/components/WalletSection.tsx:185
+#: src/components/WalletSection.tsx:227
 msgid "Pays in one tap"
 msgstr "Pays in one tap"
 
@@ -1577,7 +1581,7 @@ msgstr "Pick who had {what}"
 msgid "Point the camera at a friend’s invite code, or at your other phone’s code when you’re moving."
 msgstr "Point the camera at a friend’s invite code, or at your other phone’s code when you’re moving."
 
-#: src/components/BitcoinPay.tsx:238
+#: src/components/BitcoinPay.tsx:240
 msgid "Price"
 msgstr "Price"
 
@@ -1589,15 +1593,15 @@ msgstr "Price of item {n}"
 msgid "QR code for the invite link"
 msgstr "QR code for the invite link"
 
-#: src/components/BitcoinPay.tsx:433
+#: src/components/BitcoinPay.tsx:439
 msgid "QR code of {toName}’s BOLT12 offer"
 msgstr "QR code of {toName}’s BOLT12 offer"
 
-#: src/components/BitcoinPay.tsx:259
+#: src/components/BitcoinPay.tsx:261
 msgid "QR code to pay with a wallet app"
 msgstr "QR code to pay with a wallet app"
 
-#: src/components/WalletSection.tsx:24
+#: src/components/WalletSection.tsx:27
 msgid "Receive"
 msgstr "Receive"
 
@@ -1657,11 +1661,16 @@ msgstr "Removed by {by}. Their expenses stay, and they can join again as {who} w
 msgid "Removing…"
 msgstr "Removing…"
 
+#: src/components/WalletSection.tsx:136
+msgid "Rename {shown}"
+msgstr "Rename {shown}"
+
 #: src/lib/rizful.ts:42
 msgid "Rizful sent back something unexpected. Try again with a new code."
 msgstr "Rizful sent back something unexpected. Try again with a new code."
 
 #: src/components/WalletGuides.tsx:173
+#: src/components/WalletSection.tsx:281
 #: src/screens/MemberScreen.tsx:81
 msgid "Save"
 msgstr "Save"
@@ -1693,7 +1702,7 @@ msgid "Screenshot {0}"
 msgstr "Screenshot {0}"
 
 #: src/components/FeedbackCard.tsx:183
-#: src/components/WalletSection.tsx:25
+#: src/components/WalletSection.tsx:28
 msgid "Send"
 msgstr "Send"
 
@@ -1713,7 +1722,7 @@ msgstr "Sending the link? {who} pastes it under the scanner in Waroo. You’ll s
 msgid "Sending…"
 msgstr "Sending…"
 
-#: src/components/WalletSection.tsx:84
+#: src/components/WalletSection.tsx:91
 msgid "Set up"
 msgstr "Set up"
 
@@ -1762,7 +1771,7 @@ msgstr "Shares for {0}"
 msgid "Show QR code"
 msgstr "Show QR code"
 
-#: src/screens/MoveScreen.tsx:142
+#: src/screens/MoveScreen.tsx:144
 #: src/screens/RecoverScreen.tsx:153
 msgid "Show the code"
 msgstr "Show the code"
@@ -1827,7 +1836,7 @@ msgstr "Start a group"
 msgid "Start a group for a trip, a flat or a dinner, then invite the others from their own phones."
 msgstr "Start a group for a trip, a flat or a dinner, then invite the others from their own phones."
 
-#: src/screens/MoveScreen.tsx:201
+#: src/screens/MoveScreen.tsx:203
 #: src/screens/RecoverScreen.tsx:216
 msgid "Start again"
 msgstr "Start again"
@@ -1836,13 +1845,13 @@ msgstr "Start again"
 msgid "Starting the camera…"
 msgstr "Starting the camera…"
 
-#. placeholder {0}: receiveLabel(w)
-#: src/components/WalletSection.tsx:155
+#. placeholder {0}: nameOf(w)
+#: src/components/WalletSection.tsx:197
 msgid "Stop getting paid at {0}? Your groups will stop using it."
 msgstr "Stop getting paid at {0}? Your groups will stop using it."
 
-#. placeholder {0}: sendLabel(w)
-#: src/components/WalletSection.tsx:189
+#. placeholder {0}: nameOf(w)
+#: src/components/WalletSection.tsx:231
 msgid "Stop paying with {0}? You can connect it again any time."
 msgstr "Stop paying with {0}? You can connect it again any time."
 
@@ -1850,11 +1859,11 @@ msgstr "Stop paying with {0}? You can connect it again any time."
 msgid "Stopped. Nothing changed, and the phone that used the code got nothing."
 msgstr "Stopped. Nothing changed, and the phone that used the code got nothing."
 
-#: src/screens/MoveScreen.tsx:124
+#: src/screens/MoveScreen.tsx:126
 msgid "Stopped. Nothing was moved. If a phone you don’t know scanned the code, that’s fine: it got nothing."
 msgstr "Stopped. Nothing was moved. If a phone you don’t know scanned the code, that’s fine: it got nothing."
 
-#: src/components/BitcoinPay.tsx:473
+#: src/components/BitcoinPay.tsx:479
 msgid "Straight from your wallet to {name}’s, at today’s price. The payment is checked automatically and recorded in {currency}."
 msgstr "Straight from your wallet to {name}’s, at today’s price. The payment is checked automatically and recorded in {currency}."
 
@@ -1882,7 +1891,7 @@ msgstr "Tap again to leave"
 msgid "Tap again to remove {who}"
 msgstr "Tap again to remove {who}"
 
-#: src/screens/MoveScreen.tsx:135
+#: src/screens/MoveScreen.tsx:137
 msgid "Tap the scan button and scan the code this phone will show."
 msgstr "Tap the scan button and scan the code this phone will show."
 
@@ -1990,7 +1999,7 @@ msgstr "The invoice had already expired. Try again."
 msgid "The lost phone stops working in {groupName}, and can’t read anything new. Everyone in the group sees that you vouched. Do it only when you’re sure it’s really {who}."
 msgstr "The lost phone stops working in {groupName}, and can’t read anything new. Everyone in the group sees that you vouched. Do it only when you’re sure it’s really {who}."
 
-#: src/screens/MoveScreen.tsx:62
+#: src/screens/MoveScreen.tsx:63
 msgid "The move was cancelled on the new phone. Nothing changed here."
 msgstr "The move was cancelled on the new phone. Nothing changed here."
 
@@ -2002,7 +2011,7 @@ msgstr "The move was stopped on the other phone. Nothing changed."
 msgid "The name’s records aren’t signed (DNSSEC), so Waroo can’t trust them."
 msgstr "The name’s records aren’t signed (DNSSEC), so Waroo can’t trust them."
 
-#: src/components/BitcoinPay.tsx:168
+#: src/components/BitcoinPay.tsx:170
 msgid "the payment didn’t go through"
 msgstr "the payment didn’t go through"
 
@@ -2061,7 +2070,7 @@ msgstr "Their Lightning address sent back something unexpected."
 msgid "Their Lightning address takes at most {0} sats at once."
 msgstr "Their Lightning address takes at most {0} sats at once."
 
-#: src/screens/MoveScreen.tsx:71
+#: src/screens/MoveScreen.tsx:72
 msgid "There’s nothing on this phone to move yet: no groups and no wallets."
 msgstr "There’s nothing on this phone to move yet: no groups and no wallets."
 
@@ -2145,7 +2154,7 @@ msgstr "This invite link is out of date"
 msgid "This invite link was turned off."
 msgstr "This invite link was turned off."
 
-#: src/components/BitcoinPay.tsx:398
+#: src/components/BitcoinPay.tsx:404
 msgid "This is a BOLT12 offer. Your wallet needs to support BOLT12 to pay it."
 msgstr "This is a BOLT12 offer. Your wallet needs to support BOLT12 to pay it."
 
@@ -2166,7 +2175,7 @@ msgstr "This phone won’t get anything new from the group"
 msgid "this would go over the spending limit you set for Waroo"
 msgstr "this would go over the spending limit you set for Waroo"
 
-#: src/components/BitcoinPay.tsx:312
+#: src/components/BitcoinPay.tsx:315
 msgid "Tip: <0>set up one-tap payments</0>, so you don’t have to switch apps."
 msgstr "Tip: <0>set up one-tap payments</0>, so you don’t have to switch apps."
 
@@ -2182,8 +2191,8 @@ msgstr "Today"
 msgid "Too many messages for now. Try again in a minute."
 msgstr "Too many messages for now. Try again in a minute."
 
-#. placeholder {0}: sendLabel(next)
-#: src/components/BitcoinPay.tsx:377
+#. placeholder {0}: label(next)
+#: src/components/BitcoinPay.tsx:383
 msgid "Try {0}"
 msgstr "Try {0}"
 
@@ -2244,11 +2253,11 @@ msgstr "Waiting for {other}…"
 msgid "Waiting for {who}’s new phone…"
 msgstr "Waiting for {who}’s new phone…"
 
-#: src/screens/MoveScreen.tsx:152
+#: src/screens/MoveScreen.tsx:154
 msgid "Waiting for the new phone…"
 msgstr "Waiting for the new phone…"
 
-#: src/components/BitcoinPay.tsx:269
+#: src/components/BitcoinPay.tsx:271
 msgid "Waiting for the payment… This updates by itself once it goes through."
 msgstr "Waiting for the payment… This updates by itself once it goes through."
 
@@ -2261,15 +2270,19 @@ msgstr "Wallet"
 msgid "Wallet connection"
 msgstr "Wallet connection"
 
-#: src/components/WalletSection.tsx:115
+#: src/components/WalletSection.tsx:276
+msgid "Wallet name"
+msgstr "Wallet name"
+
+#: src/components/WalletSection.tsx:153
 msgid "Wallets"
 msgstr "Wallets"
 
-#: src/components/WalletSection.tsx:111
+#: src/components/WalletSection.tsx:149
 msgid "Wallets for sending or receiving"
 msgstr "Wallets for sending or receiving"
 
-#: src/components/BitcoinPay.tsx:442
+#: src/components/BitcoinPay.tsx:448
 msgid "Waroo can’t see payments to an offer. Once you’ve paid, mark it here."
 msgstr "Waroo can’t see payments to an offer. Once you’ve paid, mark it here."
 
@@ -2322,7 +2335,7 @@ msgstr "What you did, what you expected, and what happened instead."
 msgid "When someone pays someone back, in bitcoin, cash or otherwise, it shows up here."
 msgstr "When someone pays someone back, in bitcoin, cash or otherwise, it shows up here."
 
-#: src/components/WalletSection.tsx:175
+#: src/components/WalletSection.tsx:217
 msgid "When you pay, Waroo asks these in order. If one can’t pay, you’ll see why and choose whether to try the next. You can always pay by opening your wallet app instead."
 msgstr "When you pay, Waroo asks these in order. If one can’t pay, you’ll see why and choose whether to try the next. You can always pay by opening your wallet app instead."
 
@@ -2372,7 +2385,7 @@ msgstr "Works"
 msgid "Works for"
 msgstr "Works for"
 
-#: src/components/BitcoinPay.tsx:295
+#: src/components/BitcoinPay.tsx:298
 msgid "yen"
 msgstr "yen"
 
@@ -2380,7 +2393,7 @@ msgstr "yen"
 msgid "Yes, it’s {who}"
 msgstr "Yes, it’s {who}"
 
-#: src/screens/MoveScreen.tsx:170
+#: src/screens/MoveScreen.tsx:172
 msgid "Yes, move my groups"
 msgstr "Yes, move my groups"
 
@@ -2438,7 +2451,7 @@ msgstr "You owe {to}"
 msgid "You paid {payee}"
 msgstr "You paid {payee}"
 
-#: src/components/BitcoinPay.tsx:230
+#: src/components/BitcoinPay.tsx:232
 msgid "You pay"
 msgstr "You pay"
 
@@ -2470,7 +2483,7 @@ msgstr "Your Coinos username"
 msgid "Your email (optional)"
 msgstr "Your email (optional)"
 
-#: src/screens/MoveScreen.tsx:132
+#: src/screens/MoveScreen.tsx:134
 msgid "Your groups and wallets move to the new phone, and leave this one."
 msgstr "Your groups and wallets move to the new phone, and leave this one."
 
@@ -2478,7 +2491,7 @@ msgstr "Your groups and wallets move to the new phone, and leave this one."
 msgid "Your invite links"
 msgstr "Your invite links"
 
-#: src/screens/MoveScreen.tsx:139
+#: src/screens/MoveScreen.tsx:141
 msgid "Your Lightning addresses and wallet connections come along, in the same order. A wallet that’s built into this browser stays behind."
 msgstr "Your Lightning addresses and wallet connections come along, in the same order. A wallet that’s built into this browser stays behind."
 
@@ -2512,10 +2525,10 @@ msgstr "Your wallet connection was on the lost phone: connect your wallet again 
 msgid "Your wallet didn’t answer. Check it’s online and the connection allows payments."
 msgstr "Your wallet didn’t answer. Check it’s online and the connection allows payments."
 
-#: src/components/BitcoinPay.tsx:177
+#: src/components/BitcoinPay.tsx:179
 msgid "Your wallet reported the payment, but its proof didn’t check out."
 msgstr "Your wallet reported the payment, but its proof didn’t check out."
 
-#: src/screens/MoveScreen.tsx:186
+#: src/screens/MoveScreen.tsx:188
 msgid "Your wallets are on the new phone now, and gone from this one."
 msgstr "Your wallets are on the new phone now, and gone from this one."

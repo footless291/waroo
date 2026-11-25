@@ -127,3 +127,38 @@ export function nwcProvider(url: string): Provider {
 export function sendLabel(w: SendWallet): string {
   return w.provider === 'other' ? w.name : PROVIDERS[w.provider].name
 }
+
+// ---- Names you give your wallets ----
+
+/**
+ * One name per wallet, shared by Send and Receive: Coinos and Rizful by
+ * provider; another wallet's receive address matches a connection that
+ * names the same Lightning address (NWC's `lud16`). Names stay on this
+ * phone; groups only ever see addresses.
+ */
+export function walletKey(w: ReceiveWallet | SendWallet): string {
+  if (w.provider !== 'other') return w.provider
+  if ('address' in w) return w.address.toLowerCase()
+  if (w.kind === 'webln') return 'webln'
+  try {
+    const lud16 = new URL(w.url.replace(/^nostr\+walletconnect:\/\//i, 'https://x/')).searchParams.get('lud16')
+    if (lud16) return lud16.toLowerCase()
+  } catch {
+    // Not a URL we can read: the connection gets its own name.
+  }
+  return `send:${w.id}`
+}
+
+export async function walletNames(): Promise<Record<string, string>> {
+  return ((await getSetting('walletNames')) as Record<string, string> | undefined) ?? {}
+}
+
+/** Renames a wallet everywhere it appears. An empty name goes back to the default. */
+export async function renameWallet(key: string, name: string): Promise<Record<string, string>> {
+  const names = { ...(await walletNames()) }
+  const clean = name.trim().slice(0, 40)
+  if (clean) names[key] = clean
+  else delete names[key]
+  await setSetting('walletNames', names)
+  return names
+}

@@ -1881,3 +1881,39 @@ select {
   font-size: 0.85rem;
   margin: 0;
 }
+
+/* Renaming a wallet */
+.wallet-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.wallet-name svg {
+  flex: none;
+  color: var(--muted);
+}
+.rename-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.rename-form input {
+  min-height: 44px;
+  width: 100%;
+}
+.rename-actions {
+  display: flex;
+  gap: 8px;
+}
+.rename-actions .button {
+  min-height: 40px;
+}

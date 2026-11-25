@@ -26,10 +26,11 @@ import {
   pendingEvents,
   publishProfile,
   saveJoinedGroup,
+  setSetting,
   type GroupMeta,
 } from './db.ts'
 import { fetchGroup, relayUrl, syncHub } from './sync.ts'
-import { addReceiveNamed, addSend, receiveWallets, saveSendWallets, sendWallets, type NewSendWallet } from './wallets.ts'
+import { addReceiveNamed, addSend, receiveWallets, walletNames, saveSendWallets, sendWallets, type NewSendWallet } from './wallets.ts'
 
 export interface MovedGroup {
   id: string
@@ -53,6 +54,8 @@ export type MoveMessage =
       receiveWallets?: { address: string; name?: string }[]
       /** Wallet connections, in order. Only on a move: they're secrets, so never sent when someone else vouches. */
       sendWallets?: NewSendWallet[]
+      /** The names you gave your wallets. */
+      walletNames?: Record<string, string>
     }
   | { from: 'new'; type: 'done'; moved: string[] }
   | { from: 'old' | 'new'; type: 'cancel' }
@@ -200,6 +203,7 @@ export async function receiveGroups(
   lightningAddresses: string[],
   wallets: NewSendWallet[] = [],
   receive?: { address: string; name?: string }[],
+  names?: Record<string, string>,
 ): Promise<string[]> {
   const moved: string[] = []
   for (const g of groups) {
@@ -230,5 +234,6 @@ export async function receiveGroups(
     )
   } else if (lightningAddresses.length) await addReceiveNamed(lightningAddresses)
   for (const wallet of wallets) await addSend(wallet)
+  if (names && Object.keys(names).length) await setSetting('walletNames', { ...(await walletNames()), ...names })
   return moved
 }

@@ -1,3 +1,4 @@
+import { walletNames } from '../lib/wallets.ts'
 import { plural, t } from '@lingui/core/macro'
 import { useEffect, useRef, useState } from 'react'
 import { Header } from '../components/Header.tsx'
@@ -102,6 +103,7 @@ export function MoveScreen() {
         lightningAddresses: addresses,
         sendWallets: await sendWalletsToMove(),
         receiveWallets: await receiveWalletsToMove(),
+        walletNames: await walletNames(),
       })
     } catch (err) {
       stop((err as Error).message)

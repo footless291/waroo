@@ -69,7 +69,7 @@ function JoinByInvite({ secret }: { secret: string }) {
     <main className="screen">
       <div className="join-brand">
         <Logo size={32} />
-        <span>Waroo</span>
+        <span>waroo</span>
       </div>
       {problem ? (
         <section className="empty">
@@ -178,7 +178,7 @@ function JoinGroup({ groupId, groupKey: key, from }: { groupId: string; groupKey
     <main className="screen">
       <div className="join-brand">
         <Logo size={32} />
-        <span>Waroo</span>
+        <span>waroo</span>
       </div>
       {problem ? (
         <section className="empty">

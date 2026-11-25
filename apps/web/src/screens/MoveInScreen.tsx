@@ -43,7 +43,7 @@ export function MoveInScreen({ params }: { params: URLSearchParams }) {
               try {
                 const addresses = msg.lightningAddresses ?? (msg.lightningAddress ? [msg.lightningAddress] : [])
                 const wallets = recovering ? [] : (msg.sendWallets ?? [])
-                const moved = await receiveGroups(msg.groups, keys, publicKey, addresses, wallets, msg.receiveWallets)
+                const moved = await receiveGroups(msg.groups, keys, publicKey, addresses, wallets, msg.receiveWallets, recovering ? undefined : msg.walletNames)
                 await channel?.send({ from: 'new', type: 'done', moved })
                 finished = true
                 channel?.close()

@@ -8,7 +8,7 @@ let failed = 0;
 const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++; };
 
 // Words allowed to stay in Latin letters: names, the brand, units and protocols.
-const ALLOWED = new Set(['Waroo', 'Ana', 'Bob', 'sats', 'JPY', 'USD', 'EUR', 'GBP', 'KRW', 'TWD', 'CNY', 'HKD', 'SGD', 'THB', 'AUD', 'CAD', 'CHF', 'NZD', 'Coinos', 'Rizful', 'BOLT12', 'Lightning', 'Nostr', 'Wallet', 'Connect', 'English', 'Phoenix', 'Satoshi', 'Alby', 'Hub', 'Zeus', 'Primal', 'Get', 'code', 'New', 'connection', 'Submit', 'Copy', 'NWC', 'iPhone', 'iPad', 'QR', 'Web', 'DNSSEC', 'lno1']);
+const ALLOWED = new Set(['Waroo', 'waroo', 'Ana', 'Bob', 'sats', 'JPY', 'USD', 'EUR', 'GBP', 'KRW', 'TWD', 'CNY', 'HKD', 'SGD', 'THB', 'AUD', 'CAD', 'CHF', 'NZD', 'Coinos', 'Rizful', 'BOLT12', 'Lightning', 'Nostr', 'Wallet', 'Connect', 'English', 'Phoenix', 'Satoshi', 'Alby', 'Hub', 'Zeus', 'Primal', 'Get', 'code', 'New', 'connection', 'Submit', 'Copy', 'NWC', 'iPhone', 'iPad', 'QR', 'Web', 'DNSSEC', 'lno1']);
 const english = (text) => (text.match(/[A-Za-z][A-Za-z’']{2,}/g) || []).filter((w) => !ALLOWED.has(w));
 
 (async () => {

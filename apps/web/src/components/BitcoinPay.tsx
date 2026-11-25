@@ -7,7 +7,7 @@ import { money, satsText } from '../lib/format.ts'
 import { locale } from '../lib/hooks.ts'
 import { btcPrice, checkPaid, getInvoice, payParams, provesPayment, type CheckedInvoice } from '../lib/lightning.ts'
 import { payOfferWithWallet, payWithWallet, WalletPayError } from '../lib/wallet.ts'
-import { sendLabel, sendWallets, type SendWallet } from '../lib/wallets.ts'
+import { sendLabel, sendWallets, walletKey, walletNames, type SendWallet } from '../lib/wallets.ts'
 import { QrCode } from './QrCode.tsx'
 
 /**
@@ -67,8 +67,10 @@ export function BitcoinPay(props: {
   const [wallets, setWallets] = useState<SendWallet[]>()
   const [phase, setPhase] = useState<Phase>({ at: 'idle' })
 
+  const [names, setNames] = useState<Record<string, string>>({})
   useEffect(() => {
     void sendWallets().then(setWallets)
+    void walletNames().then(setNames)
   }, [])
 
   // A new amount means a new quote.
@@ -282,6 +284,7 @@ export function BitcoinPay(props: {
               wallets={wallets ?? []}
               onPay={(index) => void pay(phase.quote, index)}
               onExternal={() => setPhase({ at: 'external', quote: phase.quote })}
+              label={(w) => names[walletKey(w)] ?? sendLabel(w)}
               onNextTarget={
                 phase.quote.offer && nextTarget(phase.quote) !== undefined && phase.at !== 'paying'
                   ? () => void quote(0, nextTarget(phase.quote)!)
@@ -331,7 +334,10 @@ function WalletChoices({
   onPay,
   onExternal,
   onNextTarget,
+  label,
 }: {
+  /** A wallet's name: yours, or its own. */
+  label: (w: SendWallet) => string
   phase: Extract<Phase, { at: 'ready' | 'paying' | 'failed' }>
   wallets: SendWallet[]
   onPay: (index: number) => void
@@ -349,7 +355,7 @@ function WalletChoices({
         <div className="bitcoin-error" role="alert">
           <p>
             <Trans>
-              <strong>{sendLabel(failed)} couldn’t pay:</strong> {phase.reason}.
+              <strong>{label(failed)} couldn’t pay:</strong> {phase.reason}.
             </Trans>
           </p>
           {phase.certain ? (
@@ -357,7 +363,7 @@ function WalletChoices({
           ) : (
             <p>
               <Trans>
-                It may still have paid. Check {sendLabel(failed)} before trying again, so you don’t pay twice.
+                It may still have paid. Check {label(failed)} before trying again, so you don’t pay twice.
               </Trans>
             </p>
           )}
@@ -371,12 +377,12 @@ function WalletChoices({
           onClick={() => onPay(nextIndex)}
         >
           {phase.at === 'paying'
-            ? t`Paying with ${sendLabel(next)}…`
+            ? t`Paying with ${label(next)}…`
             : phase.at === 'failed'
               ? phase.certain
-                ? t`Try ${sendLabel(next)}`
-                : t`It didn’t pay. Try ${sendLabel(next)}`
-              : t`Pay with ${sendLabel(next)}`}
+                ? t`Try ${label(next)}`
+                : t`It didn’t pay. Try ${label(next)}`
+              : t`Pay with ${label(next)}`}
         </button>
       )}
       {/* Hands the invoice to whatever wallet app is installed, and waits for it here. */}
