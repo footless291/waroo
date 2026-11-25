@@ -95,3 +95,7 @@ Signing keys can't be copied, so moving doesn't copy them. The old phone shows a
 ## Testing
 
 `pnpm relay` runs the app and relay locally on port 8787. `pnpm e2e` then drives several browser profiles as different phones: inviting, joining, live updates, offline changes, upgrading groups made before sharing existed, garbage or forged data at the relay, scanning invites, banners, notifications (a fake push service checks the relay's signatures, and Chromium's devtools protocol wakes the service worker), and moving to a new phone.
+
+## Feedback and updates
+
+Settings → Send feedback posts to `/relay/feedback` (`worker/feedback.ts`). A report (bug, idea or other, up to three screenshots shrunk on the phone to 1600px JPEGs, the app's build, language and browser) is emailed to hello@getwaroo.app through Cloudflare Email Service, from feedback@getwaroo.app, with Reply-To set to the person's address if they gave one; nothing about it is stored. Email Routing forwards hello@ to the maintainer's inbox. If someone ticks "email me about updates", their address and language go in the D1 database `waroo`, table `subscribers`. This is the one part of Waroo the server can read, and the form says so. Five sends per minute per IP.

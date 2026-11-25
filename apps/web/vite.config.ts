@@ -3,7 +3,11 @@ import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
+// Which build this is, for bug reports: the commit Workers Builds deployed, or "dev".
+const version = (process.env.WORKERS_CI_COMMIT_SHA ?? '').slice(0, 7) || 'dev'
+
 export default defineConfig({
+  define: { __APP_VERSION__: JSON.stringify(version) },
   plugins: [
     react(),
     // Translations: turns t`…` and <Trans> into catalog lookups, and compiles .po files.

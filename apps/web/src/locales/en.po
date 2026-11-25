@@ -330,6 +330,10 @@ msgstr "Add"
 msgid "Add a different wallet"
 msgstr "Add a different wallet"
 
+#: src/components/FeedbackCard.tsx:151
+msgid "Add another"
+msgstr "Add another"
+
 #: src/screens/ExpenseScreen.tsx:341
 #: src/screens/ExpenseScreen.tsx:539
 #: src/screens/GroupScreen.tsx:167
@@ -349,6 +353,10 @@ msgstr "Add or take off an amount for anyone, and split the rest equally among t
 msgid "Add payment"
 msgstr "Add payment"
 
+#: src/components/FeedbackCard.tsx:151
+msgid "Add screenshots"
+msgstr "Add screenshots"
+
 #: src/components/ItemsEditor.tsx:145
 msgid "Add tax, tip or discount"
 msgstr "Add tax, tip or discount"
@@ -360,6 +368,10 @@ msgstr "Add the first expense to get started."
 #: src/screens/GroupScreen.tsx:367
 msgid "Add what someone paid for, and Waroo works out who owes what."
 msgstr "Add what someone paid for, and Waroo works out who owes what."
+
+#: src/components/FeedbackCard.tsx:62
+msgid "Add your email address to get updates."
+msgstr "Add your email address to get updates."
 
 #: src/screens/JoinScreen.tsx:219
 msgid "Add yourself as a new person"
@@ -443,7 +455,7 @@ msgid "Any wallet with a Lightning address works, like Wallet of Satoshi. Or pas
 msgstr "Any wallet with a Lightning address works, like Wallet of Satoshi. Or paste a BOLT12 offer (lno1…) or a ₿name that has one, like Phoenix gives you."
 
 #: src/components/AppearanceCard.tsx:13
-#: src/screens/YouScreen.tsx:25
+#: src/screens/YouScreen.tsx:26
 msgid "Appearance"
 msgstr "Appearance"
 
@@ -493,6 +505,10 @@ msgstr "Bringing your group here. Keep both phones open…"
 #: src/lib/wallet.ts:61
 msgid "Browser wallet"
 msgstr "Browser wallet"
+
+#: src/components/FeedbackCard.tsx:109
+msgid "Bug"
+msgstr "Bug"
 
 #: src/screens/InviteScreen.tsx:51
 msgid "Can’t check right now"
@@ -658,6 +674,7 @@ msgstr "Couldn’t reach Waroo to hand over your groups. Check your connection a
 msgid "Couldn’t reach Waroo to tell the group. Check your connection and try again."
 msgstr "Couldn’t reach Waroo to tell the group. Check your connection and try again."
 
+#: src/components/FeedbackCard.tsx:98
 #: src/lib/invites.ts:132
 msgid "Couldn’t reach Waroo. Check your connection and try again."
 msgstr "Couldn’t reach Waroo. Check your connection and try again."
@@ -665,6 +682,10 @@ msgstr "Couldn’t reach Waroo. Check your connection and try again."
 #: src/lib/move.ts:92
 msgid "Couldn’t reach Waroo. Check your connection."
 msgstr "Couldn’t reach Waroo. Check your connection."
+
+#: src/components/FeedbackCard.tsx:84
+msgid "Couldn’t send it right now. Try again later."
+msgstr "Couldn’t send it right now. Try again later."
 
 #: src/lib/invites.ts:100
 msgid "Couldn’t turn the link off. Check your connection and try again."
@@ -724,6 +745,10 @@ msgstr "Edit"
 #: src/screens/ExpenseScreen.tsx:341
 msgid "Edit expense"
 msgstr "Edit expense"
+
+#: src/components/FeedbackCard.tsx:179
+msgid "Email me now and then about Waroo updates"
+msgstr "Email me now and then about Waroo updates"
 
 #: src/screens/ExpenseScreen.tsx:265
 #: src/screens/SettleScreen.tsx:56
@@ -900,6 +925,10 @@ msgstr "Hide QR code"
 msgid "I’ve paid it"
 msgstr "I’ve paid it"
 
+#: src/components/FeedbackCard.tsx:110
+msgid "Idea"
+msgstr "Idea"
+
 #: src/lib/news.ts:109
 msgid "If that wasn’t you, tell the group"
 msgstr "If that wasn’t you, tell the group"
@@ -1051,7 +1080,7 @@ msgid "Keep it"
 msgstr "Keep it"
 
 #: src/components/AppearanceCard.tsx:35
-#: src/screens/YouScreen.tsx:28
+#: src/screens/YouScreen.tsx:29
 msgid "Language"
 msgstr "Language"
 
@@ -1160,7 +1189,7 @@ msgid "Move {0} up"
 msgstr "Move {0} up"
 
 #: src/screens/MoveScreen.tsx:129
-#: src/screens/YouScreen.tsx:39
+#: src/screens/YouScreen.tsx:43
 msgid "Move to a new phone"
 msgstr "Move to a new phone"
 
@@ -1168,7 +1197,7 @@ msgstr "Move to a new phone"
 msgid "Move to this phone"
 msgstr "Move to this phone"
 
-#: src/screens/YouScreen.tsx:33
+#: src/screens/YouScreen.tsx:37
 msgid "Move your groups to another phone, so you can keep adding expenses and settling up there. Have both phones with you."
 msgstr "Move your groups to another phone, so you can keep adding expenses and settling up there. Have both phones with you."
 
@@ -1176,7 +1205,7 @@ msgstr "Move your groups to another phone, so you can keep adding expenses and s
 msgid "Moved"
 msgstr "Moved"
 
-#: src/screens/YouScreen.tsx:31
+#: src/screens/YouScreen.tsx:35
 msgid "Moving to a new phone"
 msgstr "Moving to a new phone"
 
@@ -1268,7 +1297,7 @@ msgstr "Nothing was paid."
 msgid "Nothing yet"
 msgstr "Nothing yet"
 
-#: src/screens/YouScreen.tsx:22
+#: src/screens/YouScreen.tsx:23
 msgid "Notifications"
 msgstr "Notifications"
 
@@ -1405,6 +1434,7 @@ msgstr "Or paste the invite link"
 msgid "Or scan it with a wallet on another phone:"
 msgstr "Or scan it with a wallet on another phone:"
 
+#: src/components/FeedbackCard.tsx:111
 #: src/screens/ActivityScreen.tsx:12
 #: src/screens/SettleScreen.tsx:16
 msgid "Other"
@@ -1605,6 +1635,11 @@ msgstr "Remove from this phone"
 msgid "Remove item {n}"
 msgstr "Remove item {n}"
 
+#. placeholder {0}: i + 1
+#: src/components/FeedbackCard.tsx:140
+msgid "Remove screenshot {0}"
+msgstr "Remove screenshot {0}"
+
 #. placeholder {0}: label(item)
 #: src/components/RankedList.tsx:145
 msgid "Removed {0}."
@@ -1652,9 +1687,19 @@ msgstr "Scan a code"
 msgid "Scan it in Waroo on the other phone, with the scan button."
 msgstr "Scan it in Waroo on the other phone, with the scan button."
 
+#. placeholder {0}: i + 1
+#: src/components/FeedbackCard.tsx:136
+msgid "Screenshot {0}"
+msgstr "Screenshot {0}"
+
+#: src/components/FeedbackCard.tsx:183
 #: src/components/WalletSection.tsx:25
 msgid "Send"
 msgstr "Send"
+
+#: src/screens/YouScreen.tsx:32
+msgid "Send feedback"
+msgstr "Send feedback"
 
 #: src/screens/InviteScreen.tsx:140
 msgid "Send the others a link to <0>{name}</0>. They open it, pick who they are, and the group appears on their phone with everything added so far."
@@ -1664,12 +1709,16 @@ msgstr "Send the others a link to <0>{name}</0>. They open it, pick who they are
 msgid "Sending the link? {who} pastes it under the scanner in Waroo. You’ll still check the numbers together."
 msgstr "Sending the link? {who} pastes it under the scanner in Waroo. You’ll still check the numbers together."
 
+#: src/components/FeedbackCard.tsx:183
+msgid "Sending…"
+msgstr "Sending…"
+
 #: src/components/WalletSection.tsx:84
 msgid "Set up"
 msgstr "Set up"
 
 #: src/components/TabBar.tsx:46
-#: src/screens/YouScreen.tsx:17
+#: src/screens/YouScreen.tsx:18
 msgid "Settings"
 msgstr "Settings"
 
@@ -1718,9 +1767,17 @@ msgstr "Show QR code"
 msgid "Show the code"
 msgstr "Show the code"
 
+#: src/components/FeedbackCard.tsx:183
+msgid "Sign me up"
+msgstr "Sign me up"
+
 #: src/components/WalletGuides.tsx:247
 msgid "Sign up with an email and a password. The email is how you get back in if you forget the password."
 msgstr "Sign up with an email and a password. The email is how you get back in if you forget the password."
+
+#: src/components/FeedbackCard.tsx:174
+msgid "So we can reply"
+msgstr "So we can reply"
 
 #: src/screens/PersonScreen.tsx:35
 msgid "someone"
@@ -1837,6 +1894,14 @@ msgstr "Tax, tip or discount"
 msgid "Tell Waroo your username"
 msgstr "Tell Waroo your username"
 
+#: src/components/FeedbackCard.tsx:93
+msgid "Thanks! It’s on its way, and you’ll get news about Waroo by email."
+msgstr "Thanks! It’s on its way, and you’ll get news about Waroo by email."
+
+#: src/components/FeedbackCard.tsx:94
+msgid "Thanks! It’s on its way."
+msgstr "Thanks! It’s on its way."
+
 #: src/lib/ledgerText.ts:23
 msgid "That amount is too large"
 msgstr "That amount is too large"
@@ -1852,6 +1917,10 @@ msgstr "That code isn’t from Waroo. Scan the code on a group’s Invite screen
 #: src/components/WalletGuides.tsx:306
 msgid "That doesn’t look like a Lightning address (name@provider.com) or a BOLT12 offer (lno1…)."
 msgstr "That doesn’t look like a Lightning address (name@provider.com) or a BOLT12 offer (lno1…)."
+
+#: src/components/FeedbackCard.tsx:53
+msgid "That image couldn’t be read. Try a screenshot in PNG or JPEG."
+msgstr "That image couldn’t be read. Try a screenshot in PNG or JPEG."
 
 #: src/lib/lightning.ts:72
 msgid "That isn’t a Lightning address."
@@ -2028,6 +2097,10 @@ msgstr "This code isn’t complete"
 msgid "This expense was deleted."
 msgstr "This expense was deleted."
 
+#: src/components/FeedbackCard.tsx:189
+msgid "This goes by email to the people making Waroo, and isn’t end-to-end encrypted like your groups, so leave out anything private. Your email is only used to reply and, if you ask, for news. You can stop the news any time."
+msgstr "This goes by email to the people making Waroo, and isn’t end-to-end encrypted like your groups, so leave out anything private. Your email is only used to reply and, if you ask, for news. You can stop the news any time."
+
 #: src/screens/GroupScreen.tsx:39
 msgid "This group isn’t on this device."
 msgstr "This group isn’t on this device."
@@ -2105,6 +2178,10 @@ msgstr "To"
 msgid "Today"
 msgstr "Today"
 
+#: src/components/FeedbackCard.tsx:84
+msgid "Too many messages for now. Try again in a minute."
+msgstr "Too many messages for now. Try again in a minute."
+
 #. placeholder {0}: sendLabel(next)
 #: src/components/BitcoinPay.tsx:377
 msgid "Try {0}"
@@ -2175,7 +2252,7 @@ msgstr "Waiting for the new phone…"
 msgid "Waiting for the payment… This updates by itself once it goes through."
 msgstr "Waiting for the payment… This updates by itself once it goes through."
 
-#: src/screens/YouScreen.tsx:19
+#: src/screens/YouScreen.tsx:20
 msgid "Wallet"
 msgstr "Wallet"
 
@@ -2217,9 +2294,29 @@ msgstr "What extra {0} is"
 msgid "What for"
 msgstr "What for"
 
+#: src/components/FeedbackCard.tsx:117
+msgid "What happened?"
+msgstr "What happened?"
+
+#: src/components/FeedbackCard.tsx:107
+msgid "What is it?"
+msgstr "What is it?"
+
 #: src/components/ItemsEditor.tsx:57
 msgid "What item {n} was"
 msgstr "What item {n} was"
+
+#: src/components/FeedbackCard.tsx:127
+msgid "What would make Waroo better for you?"
+msgstr "What would make Waroo better for you?"
+
+#: src/components/FeedbackCard.tsx:117
+msgid "What would you like?"
+msgstr "What would you like?"
+
+#: src/components/FeedbackCard.tsx:125
+msgid "What you did, what you expected, and what happened instead."
+msgstr "What you did, what you expected, and what happened instead."
 
 #: src/screens/GroupScreen.tsx:399
 msgid "When someone pays someone back, in bitcoin, cash or otherwise, it shows up here."
@@ -2357,6 +2454,10 @@ msgstr "You’re all square"
 msgid "You’re invited to"
 msgstr "You’re invited to"
 
+#: src/components/FeedbackCard.tsx:95
+msgid "You’re on the list for news about Waroo."
+msgstr "You’re on the list for news about Waroo."
+
 #: src/screens/GroupScreen.tsx:250
 msgid "Your balance"
 msgstr "Your balance"
@@ -2364,6 +2465,10 @@ msgstr "Your balance"
 #: src/components/WalletGuides.tsx:156
 msgid "Your Coinos username"
 msgstr "Your Coinos username"
+
+#: src/components/FeedbackCard.tsx:166
+msgid "Your email (optional)"
+msgstr "Your email (optional)"
 
 #: src/screens/MoveScreen.tsx:132
 msgid "Your groups and wallets move to the new phone, and leave this one."
@@ -2376,6 +2481,10 @@ msgstr "Your invite links"
 #: src/screens/MoveScreen.tsx:139
 msgid "Your Lightning addresses and wallet connections come along, in the same order. A wallet that’s built into this browser stays behind."
 msgstr "Your Lightning addresses and wallet connections come along, in the same order. A wallet that’s built into this browser stays behind."
+
+#: src/components/FeedbackCard.tsx:117
+msgid "Your message"
+msgstr "Your message"
 
 #: src/screens/JoinScreen.tsx:226
 #: src/screens/MemberScreen.tsx:75

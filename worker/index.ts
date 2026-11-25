@@ -8,12 +8,13 @@
  */
 import { DurableObject } from 'cloudflare:workers'
 import { agree, type Quote } from './price.ts'
+import { feedback, type FeedbackEnv } from './feedback.ts'
 import { InviteBox } from './invites.ts'
 import { isPushEndpoint, sendPush, type PushEnv } from './push.ts'
 
 export { InviteBox }
 
-export interface Env extends PushEnv {
+export interface Env extends PushEnv, FeedbackEnv {
   ASSETS: Fetcher
   ROOMS: DurableObjectNamespace<RelayRoom>
   INVITES: DurableObjectNamespace<InviteBox>
@@ -36,6 +37,7 @@ export default {
     const url = new URL(request.url)
     if (url.pathname === '/relay/health') return Response.json({ ok: true })
     if (url.pathname === '/relay/rate') return rate(url)
+    if (url.pathname === '/relay/feedback') return feedback(request, env)
     if (url.pathname === '/relay/push-key') {
       return env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_JWK
         ? Response.json({ key: env.VAPID_PUBLIC_KEY })

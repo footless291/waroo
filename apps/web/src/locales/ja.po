@@ -330,6 +330,10 @@ msgstr "追加"
 msgid "Add a different wallet"
 msgstr "別のウォレットを追加"
 
+#: src/components/FeedbackCard.tsx:151
+msgid "Add another"
+msgstr "さらに追加"
+
 #: src/screens/ExpenseScreen.tsx:341
 #: src/screens/ExpenseScreen.tsx:539
 #: src/screens/GroupScreen.tsx:167
@@ -349,6 +353,10 @@ msgstr "誰かの分を増減して、残りをチェックした人で均等に
 msgid "Add payment"
 msgstr "支払いを追加"
 
+#: src/components/FeedbackCard.tsx:151
+msgid "Add screenshots"
+msgstr "スクリーンショットを追加"
+
 #: src/components/ItemsEditor.tsx:145
 msgid "Add tax, tip or discount"
 msgstr "税・チップ・割引を追加"
@@ -360,6 +368,10 @@ msgstr "最初の支出を追加して始めましょう。"
 #: src/screens/GroupScreen.tsx:367
 msgid "Add what someone paid for, and Waroo works out who owes what."
 msgstr "誰が何を払ったかを追加すると、Warooが誰がいくら払うべきかを計算します。"
+
+#: src/components/FeedbackCard.tsx:62
+msgid "Add your email address to get updates."
+msgstr "お知らせを受け取るには、メールアドレスを入力してください。"
 
 #: src/screens/JoinScreen.tsx:219
 msgid "Add yourself as a new person"
@@ -443,7 +455,7 @@ msgid "Any wallet with a Lightning address works, like Wallet of Satoshi. Or pas
 msgstr "Wallet of Satoshiなど、ライトニングアドレスのあるウォレットならどれでも使えます。BOLT12オファー（lno1…）や、Phoenixのようにオファーを持つ₿名を貼り付けることもできます。"
 
 #: src/components/AppearanceCard.tsx:13
-#: src/screens/YouScreen.tsx:25
+#: src/screens/YouScreen.tsx:26
 msgid "Appearance"
 msgstr "外観"
 
@@ -493,6 +505,10 @@ msgstr "グループを移しています。両方のスマホを開いたまま
 #: src/lib/wallet.ts:61
 msgid "Browser wallet"
 msgstr "ブラウザのウォレット"
+
+#: src/components/FeedbackCard.tsx:109
+msgid "Bug"
+msgstr "不具合"
 
 #: src/screens/InviteScreen.tsx:51
 msgid "Can’t check right now"
@@ -658,6 +674,7 @@ msgstr "グループを引き渡すためにWarooに接続できませんでし�
 msgid "Couldn’t reach Waroo to tell the group. Check your connection and try again."
 msgstr "グループに知らせるためにWarooに接続できませんでした。接続を確認して、もう一度お試しください。"
 
+#: src/components/FeedbackCard.tsx:98
 #: src/lib/invites.ts:132
 msgid "Couldn’t reach Waroo. Check your connection and try again."
 msgstr "Warooに接続できませんでした。接続を確認して、もう一度お試しください。"
@@ -665,6 +682,10 @@ msgstr "Warooに接続できませんでした。接続を確認して、もう�
 #: src/lib/move.ts:92
 msgid "Couldn’t reach Waroo. Check your connection."
 msgstr "Warooに接続できませんでした。接続を確認してください。"
+
+#: src/components/FeedbackCard.tsx:84
+msgid "Couldn’t send it right now. Try again later."
+msgstr "今は送信できませんでした。あとでもう一度お試しください。"
 
 #: src/lib/invites.ts:100
 msgid "Couldn’t turn the link off. Check your connection and try again."
@@ -724,6 +745,10 @@ msgstr "編集"
 #: src/screens/ExpenseScreen.tsx:341
 msgid "Edit expense"
 msgstr "支出を編集"
+
+#: src/components/FeedbackCard.tsx:179
+msgid "Email me now and then about Waroo updates"
+msgstr "Warooの最新情報をときどきメールで受け取る"
 
 #: src/screens/ExpenseScreen.tsx:265
 #: src/screens/SettleScreen.tsx:56
@@ -900,6 +925,10 @@ msgstr "QRコードを隠す"
 msgid "I’ve paid it"
 msgstr "支払い済み"
 
+#: src/components/FeedbackCard.tsx:110
+msgid "Idea"
+msgstr "アイデア"
+
 #: src/lib/news.ts:109
 msgid "If that wasn’t you, tell the group"
 msgstr "心当たりがなければ、グループに知らせてください"
@@ -1051,7 +1080,7 @@ msgid "Keep it"
 msgstr "残す"
 
 #: src/components/AppearanceCard.tsx:35
-#: src/screens/YouScreen.tsx:28
+#: src/screens/YouScreen.tsx:29
 msgid "Language"
 msgstr "言語"
 
@@ -1160,7 +1189,7 @@ msgid "Move {0} up"
 msgstr "{0}を上へ"
 
 #: src/screens/MoveScreen.tsx:129
-#: src/screens/YouScreen.tsx:39
+#: src/screens/YouScreen.tsx:43
 msgid "Move to a new phone"
 msgstr "新しいスマホに移す"
 
@@ -1168,7 +1197,7 @@ msgstr "新しいスマホに移す"
 msgid "Move to this phone"
 msgstr "このスマホに移す"
 
-#: src/screens/YouScreen.tsx:33
+#: src/screens/YouScreen.tsx:37
 msgid "Move your groups to another phone, so you can keep adding expenses and settling up there. Have both phones with you."
 msgstr "グループを別のスマホに移して、そちらで支出の追加や精算を続けられます。両方のスマホを用意してください。"
 
@@ -1176,7 +1205,7 @@ msgstr "グループを別のスマホに移して、そちらで支出の追加
 msgid "Moved"
 msgstr "移行完了"
 
-#: src/screens/YouScreen.tsx:31
+#: src/screens/YouScreen.tsx:35
 msgid "Moving to a new phone"
 msgstr "新しいスマホへの移行"
 
@@ -1268,7 +1297,7 @@ msgstr "支払いは行われていません。"
 msgid "Nothing yet"
 msgstr "まだ何もありません"
 
-#: src/screens/YouScreen.tsx:22
+#: src/screens/YouScreen.tsx:23
 msgid "Notifications"
 msgstr "通知"
 
@@ -1405,6 +1434,7 @@ msgstr "または招待リンクを貼り付け"
 msgid "Or scan it with a wallet on another phone:"
 msgstr "または別のスマホのウォレットで読み取ってください："
 
+#: src/components/FeedbackCard.tsx:111
 #: src/screens/ActivityScreen.tsx:12
 #: src/screens/SettleScreen.tsx:16
 msgid "Other"
@@ -1605,6 +1635,11 @@ msgstr "このスマホから削除"
 msgid "Remove item {n}"
 msgstr "品目{n}を削除"
 
+#. placeholder {0}: i + 1
+#: src/components/FeedbackCard.tsx:140
+msgid "Remove screenshot {0}"
+msgstr "スクリーンショット{0}を削除"
+
 #. placeholder {0}: label(item)
 #: src/components/RankedList.tsx:145
 msgid "Removed {0}."
@@ -1652,9 +1687,19 @@ msgstr "コードを読み取る"
 msgid "Scan it in Waroo on the other phone, with the scan button."
 msgstr "相手のスマホのWarooで、読み取りボタンから読み取ってください。"
 
+#. placeholder {0}: i + 1
+#: src/components/FeedbackCard.tsx:136
+msgid "Screenshot {0}"
+msgstr "スクリーンショット{0}"
+
+#: src/components/FeedbackCard.tsx:183
 #: src/components/WalletSection.tsx:25
 msgid "Send"
 msgstr "支払い"
+
+#: src/screens/YouScreen.tsx:32
+msgid "Send feedback"
+msgstr "フィードバックを送る"
 
 #: src/screens/InviteScreen.tsx:140
 msgid "Send the others a link to <0>{name}</0>. They open it, pick who they are, and the group appears on their phone with everything added so far."
@@ -1664,12 +1709,16 @@ msgstr "<0>{name}</0>へのリンクを送りましょう。開いて自分を�
 msgid "Sending the link? {who} pastes it under the scanner in Waroo. You’ll still check the numbers together."
 msgstr "リンクを送る場合は、{who}さんがWarooの読み取り画面の下に貼り付けます。数字の確認は一緒に行います。"
 
+#: src/components/FeedbackCard.tsx:183
+msgid "Sending…"
+msgstr "送信中…"
+
 #: src/components/WalletSection.tsx:84
 msgid "Set up"
 msgstr "設定する"
 
 #: src/components/TabBar.tsx:46
-#: src/screens/YouScreen.tsx:17
+#: src/screens/YouScreen.tsx:18
 msgid "Settings"
 msgstr "設定"
 
@@ -1718,9 +1767,17 @@ msgstr "QRコードを表示"
 msgid "Show the code"
 msgstr "コードを表示"
 
+#: src/components/FeedbackCard.tsx:183
+msgid "Sign me up"
+msgstr "登録する"
+
 #: src/components/WalletGuides.tsx:247
 msgid "Sign up with an email and a password. The email is how you get back in if you forget the password."
 msgstr "メールアドレスとパスワードで登録します。パスワードを忘れたときは、メールアドレスで戻れます。"
+
+#: src/components/FeedbackCard.tsx:174
+msgid "So we can reply"
+msgstr "返信が必要な場合"
 
 #: src/screens/PersonScreen.tsx:35
 msgid "someone"
@@ -1837,6 +1894,14 @@ msgstr "税・チップ・割引"
 msgid "Tell Waroo your username"
 msgstr "Coinosのユーザー名を入力"
 
+#: src/components/FeedbackCard.tsx:93
+msgid "Thanks! It’s on its way, and you’ll get news about Waroo by email."
+msgstr "ありがとうございます！送信しました。Warooのお知らせもメールでお届けします。"
+
+#: src/components/FeedbackCard.tsx:94
+msgid "Thanks! It’s on its way."
+msgstr "ありがとうございます！送信しました。"
+
 #: src/lib/ledgerText.ts:23
 msgid "That amount is too large"
 msgstr "金額が大きすぎます"
@@ -1852,6 +1917,10 @@ msgstr "Warooのコードではありません。グループの招待画面の�
 #: src/components/WalletGuides.tsx:306
 msgid "That doesn’t look like a Lightning address (name@provider.com) or a BOLT12 offer (lno1…)."
 msgstr "ライトニングアドレス（name@provider.com）やBOLT12オファー（lno1…）ではないようです。"
+
+#: src/components/FeedbackCard.tsx:53
+msgid "That image couldn’t be read. Try a screenshot in PNG or JPEG."
+msgstr "その画像を読み込めませんでした。PNGかJPEGのスクリーンショットでお試しください。"
 
 #: src/lib/lightning.ts:72
 msgid "That isn’t a Lightning address."
@@ -2028,6 +2097,10 @@ msgstr "このコードは不完全です"
 msgid "This expense was deleted."
 msgstr "この支出は削除されました。"
 
+#: src/components/FeedbackCard.tsx:189
+msgid "This goes by email to the people making Waroo, and isn’t end-to-end encrypted like your groups, so leave out anything private. Your email is only used to reply and, if you ask, for news. You can stop the news any time."
+msgstr "これはWarooの開発者にメールで届きます。グループのようなエンドツーエンド暗号化はされないため、個人的な情報は書かないでください。メールアドレスは返信と、希望された場合のお知らせにだけ使います。お知らせはいつでも停止できます。"
+
 #: src/screens/GroupScreen.tsx:39
 msgid "This group isn’t on this device."
 msgstr "このグループはこの端末にありません。"
@@ -2105,6 +2178,10 @@ msgstr "受け取る人"
 msgid "Today"
 msgstr "今日"
 
+#: src/components/FeedbackCard.tsx:84
+msgid "Too many messages for now. Try again in a minute."
+msgstr "送信が多すぎます。1分ほどしてからお試しください。"
+
 #. placeholder {0}: sendLabel(next)
 #: src/components/BitcoinPay.tsx:377
 msgid "Try {0}"
@@ -2175,7 +2252,7 @@ msgstr "新しいスマホを待っています…"
 msgid "Waiting for the payment… This updates by itself once it goes through."
 msgstr "支払いを待っています…完了すると自動で更新されます。"
 
-#: src/screens/YouScreen.tsx:19
+#: src/screens/YouScreen.tsx:20
 msgid "Wallet"
 msgstr "ウォレット"
 
@@ -2217,9 +2294,29 @@ msgstr "追加料金{0}の内容"
 msgid "What for"
 msgstr "内容"
 
+#: src/components/FeedbackCard.tsx:117
+msgid "What happened?"
+msgstr "何が起きましたか？"
+
+#: src/components/FeedbackCard.tsx:107
+msgid "What is it?"
+msgstr "種類"
+
 #: src/components/ItemsEditor.tsx:57
 msgid "What item {n} was"
 msgstr "品目{n}の内容"
+
+#: src/components/FeedbackCard.tsx:127
+msgid "What would make Waroo better for you?"
+msgstr "どうなればWarooがもっと使いやすくなりますか？"
+
+#: src/components/FeedbackCard.tsx:117
+msgid "What would you like?"
+msgstr "どんな機能がほしいですか？"
+
+#: src/components/FeedbackCard.tsx:125
+msgid "What you did, what you expected, and what happened instead."
+msgstr "何をしたか、どうなるはずだったか、実際にどうなったか。"
 
 #: src/screens/GroupScreen.tsx:399
 msgid "When someone pays someone back, in bitcoin, cash or otherwise, it shows up here."
@@ -2357,6 +2454,10 @@ msgstr "精算済みです"
 msgid "You’re invited to"
 msgstr "招待されたグループ"
 
+#: src/components/FeedbackCard.tsx:95
+msgid "You’re on the list for news about Waroo."
+msgstr "Warooのお知らせに登録しました。"
+
 #: src/screens/GroupScreen.tsx:250
 msgid "Your balance"
 msgstr "あなたの残高"
@@ -2364,6 +2465,10 @@ msgstr "あなたの残高"
 #: src/components/WalletGuides.tsx:156
 msgid "Your Coinos username"
 msgstr "Coinosのユーザー名"
+
+#: src/components/FeedbackCard.tsx:166
+msgid "Your email (optional)"
+msgstr "メールアドレス（任意）"
 
 #: src/screens/MoveScreen.tsx:132
 msgid "Your groups and wallets move to the new phone, and leave this one."
@@ -2376,6 +2481,10 @@ msgstr "あなたの招待リンク"
 #: src/screens/MoveScreen.tsx:139
 msgid "Your Lightning addresses and wallet connections come along, in the same order. A wallet that’s built into this browser stays behind."
 msgstr "ライトニングアドレスとウォレットの接続も、同じ順番で移ります。このブラウザに組み込まれたウォレットは移りません。"
+
+#: src/components/FeedbackCard.tsx:117
+msgid "Your message"
+msgstr "メッセージ"
 
 #: src/screens/JoinScreen.tsx:226
 #: src/screens/MemberScreen.tsx:75
