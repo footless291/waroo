@@ -1,6 +1,6 @@
 # Waroo
 
-At [getwaroo.app](https://getwaroo.app). (Formerly called Footless.)
+At [getwaroo.app](https://getwaroo.app).
 
 Split bills any way you like, track who owes whom, and settle up in bitcoin, all shown in your own currency. No one ever holds your money, and the server can't read your groups.
 
