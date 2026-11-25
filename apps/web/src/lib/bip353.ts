@@ -10,7 +10,7 @@ import { t } from '@lingui/core/macro'
  * the person is looking up their own name, and sees the result before
  * saving it.)
  */
-import { cleanOffer, isOffer } from '@footless/ledger'
+import { cleanOffer, isOffer } from '@waroo/ledger'
 
 const RESOLVER = 'https://cloudflare-dns.com/dns-query'
 

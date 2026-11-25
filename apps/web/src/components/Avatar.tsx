@@ -1,4 +1,4 @@
-import type { GroupState } from '@footless/ledger'
+import type { GroupState } from '@waroo/ledger'
 
 /**
  * A friend's initial on their own colour. Colours follow the order people

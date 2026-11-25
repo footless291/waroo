@@ -6,7 +6,7 @@ import {
   suggestTransfers,
   type GroupState,
   type Transfer,
-} from '@footless/ledger'
+} from '@waroo/ledger'
 import { useEffect, useState } from 'react'
 import { Avatar } from '../components/Avatar.tsx'
 import { NotificationsNudge } from '../components/NotificationsCard.tsx'

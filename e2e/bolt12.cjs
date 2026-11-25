@@ -8,7 +8,7 @@ const crypto = require('crypto');
 const NT = require('path').join(__dirname, '../node_modules/.pnpm/nostr-tools@2.26.1_typescript@7.0.2/node_modules/nostr-tools/lib/cjs/');
 const { finalizeEvent, generateSecretKey, getPublicKey } = require(NT + 'pure.js');
 const nip44 = require(NT + 'nip44.js');
-const B = process.env.FOOTLESS_URL || 'http://127.0.0.1:8787/';
+const B = process.env.WAROO_URL || 'http://127.0.0.1:8787/';
 let failed = 0;
 const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++; };
 const cors = { 'access-control-allow-origin': '*', 'content-type': 'application/json' };
@@ -129,7 +129,7 @@ function fakeWallet({ alias, canPayOffers }) {
 
   // Ana has two wallets: one that can't pay offers, then one that can
   await ana.evaluate(([a, b]) => new Promise((resolve) => {
-    const open = indexedDB.open('footless');
+    const open = indexedDB.open('waroo');
     open.onsuccess = () => {
       const tx = open.result.transaction('settings', 'readwrite');
       tx.objectStore('settings').put([

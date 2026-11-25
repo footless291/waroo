@@ -6,7 +6,7 @@ import { t } from '@lingui/core/macro'
  * paid). Nothing goes through Waroo's server.
  * See github.com/MegalithicBTC/rizful-integration-demo.
  */
-import { isLightningAddress } from '@footless/ledger'
+import { isLightningAddress } from '@waroo/ledger'
 
 export const RIZFUL = {
   signup: 'https://rizful.com/create-account',

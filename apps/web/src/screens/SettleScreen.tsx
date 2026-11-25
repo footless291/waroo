@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/react/macro'
 import { t } from '@lingui/core/macro'
-import { parseAmount, type SettlementMethod } from '@footless/ledger'
+import { parseAmount, type SettlementMethod } from '@waroo/ledger'
 import { useState, type FormEvent } from 'react'
 import { BitcoinPay } from '../components/BitcoinPay.tsx'
 import { Header } from '../components/Header.tsx'

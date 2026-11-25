@@ -1,5 +1,5 @@
 import { t } from '@lingui/core/macro'
-import { replay, type LedgerEvent } from '@footless/ledger'
+import { replay, type LedgerEvent } from '@waroo/ledger'
 import { useEffect, useRef, useState } from 'react'
 import { getEvents, getGroup, onNewEvents } from '../lib/db.ts'
 import { go } from '../lib/hooks.ts'

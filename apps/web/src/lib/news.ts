@@ -7,7 +7,7 @@
  */
 import { i18n } from '@lingui/core'
 import { t } from '@lingui/core/macro'
-import { computeShares, formatAmount, type GroupState, type LedgerEvent, type Settlement } from '@footless/ledger'
+import { computeShares, formatAmount, type GroupState, type LedgerEvent, type Settlement } from '@waroo/ledger'
 
 export type NewsKind = 'paid-you' | 'you-paid' | 'others-paid' | 'joined' | 'left' | 'expense'
 

@@ -5,7 +5,7 @@
  */
 export type Theme = 'system' | 'light' | 'dark'
 
-const KEY = 'footless-theme'
+const KEY = 'waroo-theme'
 const COLORS = { light: '#fff5ee', dark: '#16121f' }
 
 export function getTheme(): Theme {

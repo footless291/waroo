@@ -1,5 +1,5 @@
 /**
- * The Footless Worker: serves the app, and runs the sync relay.
+ * The Waroo Worker: serves the app, and runs the sync relay.
  *
  * The relay is deliberately dumb. Each group has a room, addressed by an id
  * derived from the group's key, holding an ordered list of encrypted blobs.
@@ -89,7 +89,7 @@ async function rate(url: URL): Promise<Response> {
   const get = async (name: string, href: string, pick: (j: any) => unknown): Promise<Quote | null> => {
     try {
       const res = await fetch(href, {
-        headers: { Accept: 'application/json', 'User-Agent': 'Footless/1 (+https://github.com/footless291/footless)' },
+        headers: { Accept: 'application/json', 'User-Agent': 'Waroo/1 (+https://github.com/footless291/waroo)' },
         signal: AbortSignal.timeout(6000),
       })
       if (!res.ok) {

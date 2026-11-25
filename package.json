@@ -1,5 +1,5 @@
 {
-  "name": "footless",
+  "name": "waroo",
   "private": true,
   "description": "Split bills any way you like and settle up in bitcoin, without anyone holding your money.",
   "type": "module",
@@ -8,8 +8,8 @@
   },
   "packageManager": "pnpm@10.28.0",
   "scripts": {
-    "dev": "pnpm --filter @footless/web dev",
-    "build": "pnpm --filter @footless/web build",
+    "dev": "pnpm --filter @waroo/web dev",
+    "build": "pnpm --filter @waroo/web build",
     "test": "pnpm -r test && node --test worker/*.test.ts",
     "typecheck": "pnpm -r typecheck && tsc -p worker",
     "relay": "wrangler dev --port 8787 --ip 127.0.0.1",

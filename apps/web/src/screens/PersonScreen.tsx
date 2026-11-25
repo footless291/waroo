@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/react/macro'
 import { t } from '@lingui/core/macro'
-import { groupBalances } from '@footless/ledger'
+import { groupBalances } from '@waroo/ledger'
 import { useState } from 'react'
 import { Avatar } from '../components/Avatar.tsx'
 import { Header } from '../components/Header.tsx'

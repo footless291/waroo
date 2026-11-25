@@ -1,6 +1,6 @@
 import { locale } from '../lib/hooks.ts'
 import { t } from '@lingui/core/macro'
-import type { GroupState } from '@footless/ledger'
+import type { GroupState } from '@waroo/ledger'
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import { syncHub, type SyncStatus } from '../lib/sync.ts'
 

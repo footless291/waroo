@@ -26,9 +26,6 @@ importers:
       '@fontsource-variable/outfit':
         specifier: ^5.3.0
         version: 5.3.0
-      '@footless/ledger':
-        specifier: workspace:*
-        version: link:../../packages/ledger
       '@getalby/sdk':
         specifier: ^9.0.0
         version: 9.0.0(typescript@7.0.2)
@@ -41,6 +38,9 @@ importers:
       '@noble/curves':
         specifier: 2.0.1
         version: 2.0.1
+      '@waroo/ledger':
+        specifier: workspace:*
+        version: link:../../packages/ledger
       idb:
         specifier: ^8.0.4
         version: 8.0.4

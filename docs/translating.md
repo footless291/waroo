@@ -6,7 +6,7 @@ Waroo speaks English and Japanese. Strings live in the code in English and are t
 
 - **In the code:** text is wrapped as `` t`Add expense` `` (from `@lingui/core/macro`), or `<Trans>…</Trans>` (from `@lingui/react/macro`) when it has links or bold inside. Values go in as `${name}`, so translators can move them: Japanese puts the verb last.
 - **Whole sentences only:** never build a sentence from pieces (`'You owe ' + amount`). Write one message per case instead (`You owe {to}`, `{payer} pays you`, …). Plurals use `plural()`.
-- **Catalogs:** `apps/web/src/locales/{en,ja}.po`. Run `pnpm --filter @footless/web messages:extract` after changing text; it adds new messages and drops ones that are gone. A message missing from a catalog shows in English.
+- **Catalogs:** `apps/web/src/locales/{en,ja}.po`. Run `pnpm --filter @waroo/web messages:extract` after changing text; it adds new messages and drops ones that are gone. A message missing from a catalog shows in English.
 - **Choosing the language:** the phone's language by default, or the one picked in Settings → Language (saved in localStorage; changing it reloads the app). The app sets `<html lang>` before the first paint, so Japanese text gets Japanese glyphs.
 - **Notifications:** the service worker writes them, so it carries both catalogs and uses the language the app last saved in IndexedDB.
 - **Money, dates and lists** go through `Intl` in the app's language (`lib/hooks.ts` `locale()`), keeping the phone's regional flavour when it matches (en-GB stays en-GB).

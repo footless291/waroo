@@ -7,7 +7,7 @@ import { t } from '@lingui/core/macro'
  * acknowledged. Live updates stream in while connected. Drops reconnect with
  * backoff, and immediately when the phone comes back online.
  */
-import type { LedgerEvent } from '@footless/ledger'
+import type { LedgerEvent } from '@waroo/ledger'
 import { roomId, seal, unseal } from './crypto.ts'
 import {
   getGroup,

@@ -1,6 +1,6 @@
-# @footless/ledger
+# @waroo/ledger
 
-The bill-splitting core of footless. It is pure TypeScript with no runtime dependencies, so it runs the same in the browser, in a service worker and in Node.
+The bill-splitting core of waroo. It is pure TypeScript with no runtime dependencies, so it runs the same in the browser, in a service worker and in Node.
 
 ## What's in it
 

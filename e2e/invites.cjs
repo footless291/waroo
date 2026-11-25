@@ -1,7 +1,7 @@
 // Invite links that work once, can be turned off, and expire; old links still work.
 // Plus percentage splits.
 const { chromium } = require('playwright');
-const B = process.env.FOOTLESS_URL || 'http://127.0.0.1:8787/';
+const B = process.env.WAROO_URL || 'http://127.0.0.1:8787/';
 const SHOTS = process.env.SHOTS || '/tmp';
 let failed = 0;
 const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++; };
@@ -138,7 +138,7 @@ const b64u = (b) => Buffer.from(b).toString('base64url');
 
   // Links from before expiring invites held the key: no longer accepted
   const { gkey, gid, anaId } = await ana.evaluate(() => new Promise((resolve) => {
-    const open = indexedDB.open('footless');
+    const open = indexedDB.open('waroo');
     open.onsuccess = () => { const req = open.result.transaction('groups').objectStore('groups').getAll(); req.onsuccess = () => resolve({ gkey: req.result[0].key, gid: req.result[0].id, anaId: req.result[0].meId }); };
   }));
   await dee.goto(`${B}#/join?${new URLSearchParams({ g: gid, k: gkey, from: anaId })}`);

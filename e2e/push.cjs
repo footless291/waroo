@@ -7,7 +7,7 @@
 const { chromium } = require('playwright');
 const http = require('http');
 const fs = require('fs');
-const B = process.env.FOOTLESS_URL || 'http://127.0.0.1:8787/';
+const B = process.env.WAROO_URL || 'http://127.0.0.1:8787/';
 let failed = 0;
 const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++; };
 const devPublic = /VAPID_PUBLIC_KEY=(\S+)/.exec(fs.readFileSync(__dirname + '/../.dev.vars', 'utf8'))[1];
@@ -43,7 +43,7 @@ const b64 = (s) => Buffer.from(s, 'base64url');
   const waitText = async (p, sel, needle, ms = 8000) => { try { await p.waitForFunction(([s, n]) => (document.querySelector(s)?.textContent || '').includes(n), [sel, needle], { timeout: ms }); return true; } catch { return false; } };
   const waitFor = async (fn, ms = 6000) => { const end = Date.now() + ms; while (Date.now() < end) { if (fn()) return true; await new Promise((r) => setTimeout(r, 100)); } return false; };
   const setEndpoint = (p, url) => p.evaluate((url) => new Promise((resolve, reject) => {
-    const open = indexedDB.open('footless');
+    const open = indexedDB.open('waroo');
     open.onsuccess = () => { const tx = open.result.transaction('settings', 'readwrite'); tx.objectStore('settings').put(url, 'pushEndpoint'); tx.oncomplete = () => resolve(); tx.onerror = reject; };
   }), url);
 

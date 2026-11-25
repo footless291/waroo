@@ -51,7 +51,7 @@
         document.documentElement.classList.add('standalone')
       // Light or dark chosen in the app (lib/theme.ts), before the first paint.
       try {
-        var theme = localStorage.getItem('footless-theme')
+        var theme = localStorage.getItem('waroo-theme')
         if (theme === 'light' || theme === 'dark') {
           document.documentElement.setAttribute('data-theme', theme)
           document.querySelectorAll('meta[name="theme-color"]').forEach(function (m) {
@@ -61,7 +61,7 @@
       } catch (e) {}
       // The app's language (lib/i18n.ts), so Japanese text gets Japanese glyphs from the start.
       try {
-        var lang = localStorage.getItem('footless-language')
+        var lang = localStorage.getItem('waroo-language')
         if (lang !== 'en' && lang !== 'ja') {
           lang = 'en'
           var tags = navigator.languages || [navigator.language]

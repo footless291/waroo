@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/react/macro'
 import { t } from '@lingui/core/macro'
-import { fiatToSats, isOffer, receiveTargets, type GroupState } from '@footless/ledger'
+import { fiatToSats, isOffer, receiveTargets, type GroupState } from '@waroo/ledger'
 import { useEffect, useState } from 'react'
 import { append, newId, type GroupMeta } from '../lib/db.ts'
 import { money, satsText } from '../lib/format.ts'

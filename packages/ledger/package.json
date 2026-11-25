@@ -1,5 +1,5 @@
 {
-  "name": "@footless/ledger",
+  "name": "@waroo/ledger",
   "version": "0.1.0",
   "private": true,
   "description": "Pure, dependency-free bill-splitting ledger: splits, balances, settlements and an event log.",

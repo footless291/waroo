@@ -71,7 +71,7 @@ export async function vapidAuthorization(endpoint: string, env: PushEnv, now = D
       JSON.stringify({
         aud: new URL(endpoint).origin,
         exp: Math.floor(now / 1000) + 12 * 3600,
-        sub: env.VAPID_SUBJECT ?? 'https://github.com/footless291/footless',
+        sub: env.VAPID_SUBJECT ?? 'https://github.com/footless291/waroo',
       }),
     ),
   )

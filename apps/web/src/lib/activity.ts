@@ -1,4 +1,4 @@
-import { computeShares, replay, type LedgerEvent } from '@footless/ledger'
+import { computeShares, replay, type LedgerEvent } from '@waroo/ledger'
 import { getEvents, listGroups } from './db.ts'
 
 export interface ActivityItem {

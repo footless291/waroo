@@ -1,5 +1,5 @@
 import { i18n } from '@lingui/core'
-import { replay, type GroupState, type LedgerEvent } from '@footless/ledger'
+import { replay, type GroupState, type LedgerEvent } from '@waroo/ledger'
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import { getEvents, getGroup, listGroups, subscribe, type GroupMeta } from './db.ts'
 

@@ -3,7 +3,7 @@
   // Deployed by Workers Builds on every push to main (build: `pnpm build`,
   // deploy: `pnpm exec wrangler deploy`), or by hand with the same commands.
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "footless",
+  "name": "waroo",
   "main": "worker/index.ts",
   "compatibility_date": "2026-11-01",
   "assets": {
@@ -24,7 +24,7 @@
     { "tag": "v2", "new_sqlite_classes": ["InviteBox"] }
   ],
   "observability": { "enabled": true },
-  // Served at getwaroo.app. The old footless…workers.dev address keeps
+  // Served at getwaroo.app. The old waroo…workers.dev address keeps
   // working too: phones that installed the app from it still sync.
   "routes": [{ "pattern": "getwaroo.app", "custom_domain": true }],
   "workers_dev": true,
@@ -32,6 +32,6 @@
   // (make a pair with `node scripts/vapid.cjs`). Local dev uses .dev.vars.
   "vars": {
     "VAPID_PUBLIC_KEY": "BOfT-b4-qTJe5pExDG6K-_4fmKLpIwgpBASJwRzT0PypytmazN66MNZX25YkVIx3oMVMfJ_Zr3PkOy6Lsnc8szo",
-    "VAPID_SUBJECT": "https://github.com/footless291/footless"
+    "VAPID_SUBJECT": "https://github.com/footless291/waroo"
   }
 }

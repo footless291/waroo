@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/react/macro'
 import { t } from '@lingui/core/macro'
-import { cleanOffer, isLightningAddress, isOffer } from '@footless/ledger'
+import { cleanOffer, isLightningAddress, isOffer } from '@waroo/ledger'
 import { useState, type FormEvent } from 'react'
 import { looksLikeName, resolveOffer } from '../lib/bip353.ts'
 import { payParams } from '../lib/lightning.ts'

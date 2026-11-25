@@ -6,7 +6,7 @@
 const { chromium } = require('playwright');
 const bolt11 = require('bolt11');
 const crypto = require('crypto');
-const B = process.env.FOOTLESS_URL || 'http://127.0.0.1:8787/';
+const B = process.env.WAROO_URL || 'http://127.0.0.1:8787/';
 let failed = 0;
 const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++; };
 
@@ -223,7 +223,7 @@ let failSend = 0; // the next N payments, the wallet errors without saying wheth
 
   // Ana has two wallets; the first refuses, and she's asked before the second is tried
   await ana.evaluate(() => new Promise((resolve) => {
-    const open = indexedDB.open('footless');
+    const open = indexedDB.open('waroo');
     open.onsuccess = () => {
       const tx = open.result.transaction('settings', 'readwrite');
       tx.objectStore('settings').put([

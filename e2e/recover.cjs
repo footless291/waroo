@@ -1,7 +1,7 @@
 // Recovering a lost phone: another member vouches for the new one. The new
 // phone is back in as the same person; the lost phone is cut off and told.
 const { chromium } = require('playwright');
-const B = process.env.FOOTLESS_URL || 'http://127.0.0.1:8787/';
+const B = process.env.WAROO_URL || 'http://127.0.0.1:8787/';
 const SHOTS = process.env.SHOTS || '/tmp';
 let failed = 0;
 const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++; };

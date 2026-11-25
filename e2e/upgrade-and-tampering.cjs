@@ -1,6 +1,6 @@
 const { chromium } = require('playwright');
 const { webcrypto: wc } = require('crypto');
-const B = process.env.FOOTLESS_URL || 'http://127.0.0.1:8787/';
+const B = process.env.WAROO_URL || 'http://127.0.0.1:8787/';
 let failed = 0;
 const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++; };
 const b64u = b => Buffer.from(b).toString('base64url');
@@ -30,7 +30,7 @@ const b64u = b => Buffer.from(b).toString('base64url');
   await ana.click('button:has-text("Add expense")'); await ana.waitForTimeout(300);
   // Turn it into what the previous version stored
   await ana.evaluate(() => new Promise((res, rej) => {
-    const r = indexedDB.open('footless');
+    const r = indexedDB.open('waroo');
     r.onsuccess = () => {
       const db = r.result, tx = db.transaction(['groups', 'events'], 'readwrite');
       const gs = tx.objectStore('groups'), es = tx.objectStore('events');
@@ -62,10 +62,10 @@ const b64u = b => Buffer.from(b).toString('base64url');
   // --- Tampering at the relay ---
   // The group key and Ana's id, from her phone's storage (invite links no longer carry the key)
   const { gkey, anaId } = await ana.evaluate(() => new Promise((resolve) => {
-    const open = indexedDB.open('footless');
+    const open = indexedDB.open('waroo');
     open.onsuccess = () => { const req = open.result.transaction('groups').objectStore('groups').getAll(); req.onsuccess = () => resolve({ gkey: req.result[0].key, anaId: req.result[0].meId }); };
   }));
-  const label = new TextEncoder().encode('footless-room-v1:');
+  const label = new TextEncoder().encode('waroo-room-v1:');
   const raw = Buffer.from(gkey, 'base64url');
   const room = b64u(await wc.subtle.digest('SHA-256', Buffer.concat([label, raw])));
   const ws = new WebSocket(`${B.replace(/^http/, 'ws').replace(/\/$/, '')}/relay/rooms/${room}`);

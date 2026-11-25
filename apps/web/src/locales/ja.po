@@ -776,10 +776,6 @@ msgstr "追加料金{n}"
 msgid "Extra for {0}"
 msgstr "{0}さんの追加分"
 
-#: src/screens/HomeScreen.tsx:57
-msgid "Footless is now Waroo, at getwaroo.app. This app keeps working, but new features arrive there. To move your groups: open getwaroo.app and add it to your Home Screen, then here, go to Settings → Moving to a new phone, and copy the link into the new app’s scanner."
-msgstr "FootlessはWaroo（getwaroo.app）になりました。このアプリも引き続き使えますが、新機能はそちらに追加されます。グループを移すには、getwaroo.appを開いてホーム画面に追加し、このアプリの「設定 → 新しいスマホへの移行」でリンクをコピーして、新しいアプリの読み取り画面に貼り付けてください。"
-
 #: src/screens/InviteScreen.tsx:38
 msgid "For one person, until {date}"
 msgstr "1人用、{date}まで"
@@ -879,7 +875,7 @@ msgid "Group sections"
 msgstr "グループのメニュー"
 
 #: src/components/TabBar.tsx:44
-#: src/screens/HomeScreen.tsx:52
+#: src/screens/HomeScreen.tsx:49
 msgid "Groups"
 msgstr "グループ"
 
@@ -1038,7 +1034,7 @@ msgstr "{name}として参加"
 msgid "Join the group"
 msgstr "グループに参加"
 
-#: src/screens/HomeScreen.tsx:75
+#: src/screens/HomeScreen.tsx:61
 msgid "Join with a QR code"
 msgstr "QRコードで参加"
 
@@ -1353,10 +1349,6 @@ msgstr "Coinosの設定を開く"
 #: src/components/WalletGuides.tsx:187
 msgid "Open Coinos’s Nostr settings, then tap <0>New connection</0>, name it Waroo, and set a budget if you like."
 msgstr "CoinosのNostr設定を開き、<0>New connection</0>をタップして名前をWarooにし、必要なら予算を設定します。"
-
-#: src/screens/HomeScreen.tsx:60
-msgid "Open getwaroo.app"
-msgstr "getwaroo.appを開く"
 
 #: src/components/BitcoinPay.tsx:255
 #: src/components/BitcoinPay.tsx:389
@@ -1753,7 +1745,7 @@ msgstr "この支出に、グループにいない人が含まれています"
 msgid "Split"
 msgstr "割り方"
 
-#: src/screens/HomeScreen.tsx:66
+#: src/screens/HomeScreen.tsx:52
 msgid "Split anything with anyone"
 msgstr "誰とでも割り勘"
 
@@ -1770,11 +1762,11 @@ msgstr "残りを{0}さんと分ける"
 msgid "Splitting with friends?"
 msgstr "友だちと割り勘しますか？"
 
-#: src/screens/HomeScreen.tsx:72
+#: src/screens/HomeScreen.tsx:58
 msgid "Start a group"
 msgstr "グループを作る"
 
-#: src/screens/HomeScreen.tsx:68
+#: src/screens/HomeScreen.tsx:54
 msgid "Start a group for a trip, a flat or a dinner, then invite the others from their own phones."
 msgstr "旅行やシェアハウス、食事会のグループを作って、みんなを自分のスマホから招待しましょう。"
 
@@ -2215,10 +2207,6 @@ msgstr "接続できなかったため、依頼は送られていません{tech}
 #: src/components/WalletGuides.tsx:77
 msgid "Waroo couldn’t read what you copied. Press and hold the box, then choose Paste."
 msgstr "コピーした内容を読み取れませんでした。入力欄を長押しして「ペースト」を選んでください。"
-
-#: src/screens/HomeScreen.tsx:55
-msgid "Waroo has a new address"
-msgstr "Warooの新しいアドレス"
 
 #. placeholder {0}: index + 1
 #: src/components/ItemsEditor.tsx:120

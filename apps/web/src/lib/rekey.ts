@@ -16,7 +16,7 @@ import { t } from '@lingui/core/macro'
  * settles on the same key: the hand-off that sorts last, followed from the
  * oldest room it knows.
  */
-import { orderEvents, replay, type LedgerEvent } from '@footless/ledger'
+import { orderEvents, replay, type LedgerEvent } from '@waroo/ledger'
 import { newGroupKey, roomId, unwrapGroupKey, wrapGroupKey } from './crypto.ts'
 import { append, getGroup, getStoredEvents, markAllPending, pendingEvents, putGroup, type StoredEvent } from './db.ts'
 import { invitesFor, inviteStatus, stopInvite } from './invites.ts'

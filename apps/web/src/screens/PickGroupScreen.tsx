@@ -1,5 +1,5 @@
 import { t } from '@lingui/core/macro'
-import { replay } from '@footless/ledger'
+import { replay } from '@waroo/ledger'
 import { Header } from '../components/Header.tsx'
 import { getEvents } from '../lib/db.ts'
 import { useGroups, useLoad } from '../lib/hooks.ts'

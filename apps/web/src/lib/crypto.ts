@@ -9,7 +9,7 @@
  *   half can't be exported, even by this app. Every event is signed, then
  *   encrypted, before it leaves the phone.
  */
-import { signingBytes, type LedgerEvent } from '@footless/ledger'
+import { signingBytes, type LedgerEvent } from '@waroo/ledger'
 
 const enc = new TextEncoder()
 const dec = new TextDecoder()
@@ -54,17 +54,17 @@ function aesKey(groupKey: string): Promise<CryptoKey> {
 
 /** The relay room for a group: a hash of its key, safe to show the relay. */
 export function roomId(groupKey: string): Promise<string> {
-  return hashedId('footless-room-v1:', groupKey)
+  return hashedId('waroo-room-v1:', groupKey)
 }
 
 /** The relay's box for an invite link, from the secret in the link. */
 export function inviteId(secret: string): Promise<string> {
-  return hashedId('footless-invite-v1:', secret)
+  return hashedId('waroo-invite-v1:', secret)
 }
 
 /** The relay room for moving to a new phone, from the secret in the QR code. */
 export function moveRoomId(secret: string): Promise<string> {
-  return hashedId('footless-move-v1:', secret)
+  return hashedId('waroo-move-v1:', secret)
 }
 
 /**
@@ -72,7 +72,7 @@ export function moveRoomId(secret: string): Promise<string> {
  * new phone is theirs and not someone who glimpsed the QR code.
  */
 export async function moveCode(secret: string, newPhoneKey: string): Promise<string> {
-  const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode(`footless-move-code:${secret}:${newPhoneKey}`)))
+  const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode(`waroo-move-code:${secret}:${newPhoneKey}`)))
   const n = ((digest[0]! << 24) | (digest[1]! << 16) | (digest[2]! << 8) | digest[3]!) >>> 0
   return String(n % 10000).padStart(4, '0')
 }
@@ -206,7 +206,7 @@ async function sharedKey(privateKey: CryptoKey, publicKey: string, memberId: str
   const bits = await crypto.subtle.deriveBits({ name: 'ECDH', public: pub }, privateKey, 256)
   const material = await crypto.subtle.importKey('raw', bits, 'HKDF', false, ['deriveKey'])
   return crypto.subtle.deriveKey(
-    { name: 'HKDF', hash: 'SHA-256', salt: enc.encode('footless-rekey-v1'), info: enc.encode(memberId) },
+    { name: 'HKDF', hash: 'SHA-256', salt: enc.encode('waroo-rekey-v1'), info: enc.encode(memberId) },
     material,
     { name: 'AES-GCM', length: 256 },
     false,

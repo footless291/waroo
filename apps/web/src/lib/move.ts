@@ -13,7 +13,7 @@ import { t } from '@lingui/core/macro'
  * secret and the new phone's key; the person checks they match before
  * anything moves, so someone who glimpsed the QR code can't take the groups.
  */
-import { replay } from '@footless/ledger'
+import { replay } from '@waroo/ledger'
 import { decryptJson, encryptJson, moveRoomId, newGroupKey } from './crypto.ts'
 import {
   append,

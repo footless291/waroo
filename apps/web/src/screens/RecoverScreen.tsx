@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/react/macro'
 import { t } from '@lingui/core/macro'
-import { receiveAddresses, receiveTargets } from '@footless/ledger'
+import { receiveAddresses, receiveTargets } from '@waroo/ledger'
 import { useEffect, useRef, useState } from 'react'
 import { Header } from '../components/Header.tsx'
 import { QrCode } from '../components/QrCode.tsx'

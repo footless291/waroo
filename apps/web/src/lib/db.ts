@@ -3,7 +3,7 @@
  * IndexedDB. Sync reads and writes these same events; nothing here talks to
  * the network.
  */
-import { isOffer, receiveAddresses, receiveTargets, replay, type CurrencyCode, type LedgerEvent, type PersonId } from '@footless/ledger'
+import { isOffer, receiveAddresses, receiveTargets, replay, type CurrencyCode, type LedgerEvent, type PersonId } from '@waroo/ledger'
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb'
 import { newBoxKeys, newGroupKey, newSigningKeys, sign } from './crypto.ts'
 
@@ -50,17 +50,17 @@ export type StoredEvent = LedgerEvent & {
   pending?: 1
 }
 
-interface FootlessDB extends DBSchema {
+interface WarooDB extends DBSchema {
   groups: { key: string; value: GroupMeta }
   events: { key: string; value: StoredEvent; indexes: { byGroup: string } }
   /** Things that stay on this phone: the wallet connection, your profile. */
   settings: { key: string; value: unknown }
 }
 
-let dbPromise: Promise<IDBPDatabase<FootlessDB>> | undefined
+let dbPromise: Promise<IDBPDatabase<WarooDB>> | undefined
 
 function db() {
-  dbPromise ??= openDB<FootlessDB>('footless', 3, {
+  dbPromise ??= openDB<WarooDB>('waroo', 3, {
     upgrade(database, oldVersion) {
       if (oldVersion < 1) {
         database.createObjectStore('groups', { keyPath: 'id' })

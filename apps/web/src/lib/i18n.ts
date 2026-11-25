@@ -18,7 +18,7 @@ export const LANGUAGES: { code: Locale; name: string }[] = [
   { code: 'ja', name: '日本語' },
 ]
 
-const KEY = 'footless-language'
+const KEY = 'waroo-language'
 
 export function languageChoice(): LanguageChoice {
   try {

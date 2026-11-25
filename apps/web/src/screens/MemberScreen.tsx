@@ -1,5 +1,5 @@
 import { t } from '@lingui/core/macro'
-import { groupBalances } from '@footless/ledger'
+import { groupBalances } from '@waroo/ledger'
 import { useState, type FormEvent } from 'react'
 import { Header } from '../components/Header.tsx'
 import { append, deleteGroupLocally, pendingEvents } from '../lib/db.ts'

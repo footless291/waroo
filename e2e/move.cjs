@@ -1,7 +1,7 @@
 // Moving to a new phone: the code check, someone else racing to scan the code,
 // and the groups working on the new phone (and no longer on the old one).
 const { chromium } = require('playwright');
-const B = process.env.FOOTLESS_URL || 'http://127.0.0.1:8787/';
+const B = process.env.WAROO_URL || 'http://127.0.0.1:8787/';
 const SHOTS = process.env.SHOTS || '/tmp';
 let failed = 0;
 const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++; };
@@ -53,7 +53,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await waitText(old, '.pager.inline .pager-page:not([inert]) .wallet-list', 'ana@pay.example.com');
   // Two wallet connections, and a browser wallet that can't move
   const settings = (p, fn) => p.evaluate((fn) => new Promise((resolve) => {
-    const open = indexedDB.open('footless');
+    const open = indexedDB.open('waroo');
     open.onsuccess = () => { const tx = open.result.transaction('settings', 'readwrite'); const st = tx.objectStore('settings'); new Function('st', 'resolve', fn)(st, resolve); };
   }), fn);
   await settings(old, `st.put([

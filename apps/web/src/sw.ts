@@ -8,7 +8,7 @@
  * decrypts and verifies what's new with the keys on this phone, saves it, and
  * writes the notification itself. The text never leaves the phone.
  */
-import { replay, type LedgerEvent } from '@footless/ledger'
+import { replay, type LedgerEvent } from '@waroo/ledger'
 import { cleanupOutdatedCaches, createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching'
 import { NavigationRoute, registerRoute } from 'workbox-routing'
 import { i18n } from '@lingui/core'
@@ -99,7 +99,7 @@ async function onPush() {
       await self.registration.showNotification('Waroo', {
         body: t`There’s something new in one of your groups.`,
         icon: '/icon-192.png',
-        tag: 'footless',
+        tag: 'waroo',
         data: { route: '/' },
       })
     }

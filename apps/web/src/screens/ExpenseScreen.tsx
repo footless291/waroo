@@ -6,7 +6,7 @@ import {
   type Expense,
   type GroupState,
   type SplitMethod,
-} from '@footless/ledger'
+} from '@waroo/ledger'
 import { useState, type FormEvent } from 'react'
 import { Header } from '../components/Header.tsx'
 import { DateField } from '../components/DateField.tsx'

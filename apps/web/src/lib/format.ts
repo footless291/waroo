@@ -1,5 +1,5 @@
 import { t } from '@lingui/core/macro'
-import { formatAmount, minorDigits, type CurrencyCode } from '@footless/ledger'
+import { formatAmount, minorDigits, type CurrencyCode } from '@waroo/ledger'
 import { locale } from './hooks.ts'
 
 export const money = (amount: number, currency: CurrencyCode) =>

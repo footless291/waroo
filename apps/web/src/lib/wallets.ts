@@ -10,7 +10,7 @@
  * places. `provider` lets the You screen show whether a wallet we have a
  * guide for is connected.
  */
-import { isOffer } from '@footless/ledger'
+import { isOffer } from '@waroo/ledger'
 import { getSetting, publishProfile, setSetting } from './db.ts'
 
 export type Provider = 'coinos' | 'rizful' | 'other'

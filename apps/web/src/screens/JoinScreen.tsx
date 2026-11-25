@@ -1,7 +1,7 @@
 import { Trans } from '@lingui/react/macro'
 import { t } from '@lingui/core/macro'
 import { roomId } from '../lib/crypto.ts'
-import { replay, type GroupState, type LedgerEvent } from '@footless/ledger'
+import { replay, type GroupState, type LedgerEvent } from '@waroo/ledger'
 import { useEffect, useState, type FormEvent } from 'react'
 import { Logo } from '../components/icons.tsx'
 import { isGroupKey, newSigningKeys } from '../lib/crypto.ts'

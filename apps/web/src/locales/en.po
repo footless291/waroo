@@ -776,10 +776,6 @@ msgstr "Extra {n}"
 msgid "Extra for {0}"
 msgstr "Extra for {0}"
 
-#: src/screens/HomeScreen.tsx:57
-msgid "Footless is now Waroo, at getwaroo.app. This app keeps working, but new features arrive there. To move your groups: open getwaroo.app and add it to your Home Screen, then here, go to Settings → Moving to a new phone, and copy the link into the new app’s scanner."
-msgstr "Footless is now Waroo, at getwaroo.app. This app keeps working, but new features arrive there. To move your groups: open getwaroo.app and add it to your Home Screen, then here, go to Settings → Moving to a new phone, and copy the link into the new app’s scanner."
-
 #: src/screens/InviteScreen.tsx:38
 msgid "For one person, until {date}"
 msgstr "For one person, until {date}"
@@ -879,7 +875,7 @@ msgid "Group sections"
 msgstr "Group sections"
 
 #: src/components/TabBar.tsx:44
-#: src/screens/HomeScreen.tsx:52
+#: src/screens/HomeScreen.tsx:49
 msgid "Groups"
 msgstr "Groups"
 
@@ -1038,7 +1034,7 @@ msgstr "Join as {name}"
 msgid "Join the group"
 msgstr "Join the group"
 
-#: src/screens/HomeScreen.tsx:75
+#: src/screens/HomeScreen.tsx:61
 msgid "Join with a QR code"
 msgstr "Join with a QR code"
 
@@ -1353,10 +1349,6 @@ msgstr "Open Coinos settings"
 #: src/components/WalletGuides.tsx:187
 msgid "Open Coinos’s Nostr settings, then tap <0>New connection</0>, name it Waroo, and set a budget if you like."
 msgstr "Open Coinos’s Nostr settings, then tap <0>New connection</0>, name it Waroo, and set a budget if you like."
-
-#: src/screens/HomeScreen.tsx:60
-msgid "Open getwaroo.app"
-msgstr "Open getwaroo.app"
 
 #: src/components/BitcoinPay.tsx:255
 #: src/components/BitcoinPay.tsx:389
@@ -1753,7 +1745,7 @@ msgstr "Someone in this expense isn’t in the group"
 msgid "Split"
 msgstr "Split"
 
-#: src/screens/HomeScreen.tsx:66
+#: src/screens/HomeScreen.tsx:52
 msgid "Split anything with anyone"
 msgstr "Split anything with anyone"
 
@@ -1770,11 +1762,11 @@ msgstr "Split the rest with {0}"
 msgid "Splitting with friends?"
 msgstr "Splitting with friends?"
 
-#: src/screens/HomeScreen.tsx:72
+#: src/screens/HomeScreen.tsx:58
 msgid "Start a group"
 msgstr "Start a group"
 
-#: src/screens/HomeScreen.tsx:68
+#: src/screens/HomeScreen.tsx:54
 msgid "Start a group for a trip, a flat or a dinner, then invite the others from their own phones."
 msgstr "Start a group for a trip, a flat or a dinner, then invite the others from their own phones."
 
@@ -2215,10 +2207,6 @@ msgstr "Waroo couldn’t reach it, so the request wasn’t sent{tech}"
 #: src/components/WalletGuides.tsx:77
 msgid "Waroo couldn’t read what you copied. Press and hold the box, then choose Paste."
 msgstr "Waroo couldn’t read what you copied. Press and hold the box, then choose Paste."
-
-#: src/screens/HomeScreen.tsx:55
-msgid "Waroo has a new address"
-msgstr "Waroo has a new address"
 
 #. placeholder {0}: index + 1
 #: src/components/ItemsEditor.tsx:120

@@ -12,7 +12,7 @@ import { t } from '@lingui/core/macro'
  * The phone talks to the provider directly; Waroo's server is never in
  * the middle of a payment.
  */
-import { verifyPreimage } from '@footless/ledger'
+import { verifyPreimage } from '@waroo/ledger'
 import { decode } from 'light-bolt11-decoder'
 
 export class PaymentError extends Error {

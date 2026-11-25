@@ -2,7 +2,7 @@
 // by themselves (including a phone that was closed at the time), old invite
 // links stop working, and new invites lead to the new room with all history.
 const { chromium } = require('playwright');
-const B = process.env.FOOTLESS_URL || 'http://127.0.0.1:8787/';
+const B = process.env.WAROO_URL || 'http://127.0.0.1:8787/';
 const SHOTS = process.env.SHOTS || '/tmp';
 let failed = 0;
 const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++; };
@@ -36,7 +36,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
     await p.click('button:has-text("Add expense")'); await p.waitForTimeout(400);
   };
   const groupKey = (p) => p.evaluate(() => new Promise((resolve) => {
-    const open = indexedDB.open('footless');
+    const open = indexedDB.open('waroo');
     open.onsuccess = () => { const req = open.result.transaction('groups').objectStore('groups').getAll(); req.onsuccess = () => resolve(req.result[0]?.key); };
   }));
   const expensesText = async (p) => { await p.click('nav a:has-text("Expenses")'); await p.waitForTimeout(300); return text(p, '.pager-page:not([inert])'); };
