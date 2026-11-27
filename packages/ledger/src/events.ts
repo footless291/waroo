@@ -18,8 +18,10 @@
 import { computeBalances, type Balances, type Settlement } from './balances.ts'
 import { minorDigits } from './money.ts'
 import { computeShares, validateExpense, type Expense, type PersonId } from './splits.ts'
+import { isCurrencyCode, shapeProblem } from './shape.ts'
 
 function isKnownCurrency(code: string): boolean {
+  if (!isCurrencyCode(code)) return false
   try {
     minorDigits(code)
     return true
@@ -68,6 +70,7 @@ export interface Member {
 }
 
 const MAX_ADDRESSES = 5
+const MAX_CLOCK_JUMP = 1_000_000
 
 /** Where to pay someone, in order. Members from before lists existed have one address at most. */
 export function receiveAddresses(member: Member | undefined): string[] {
@@ -206,6 +209,8 @@ export interface GroupState {
   members: Map<PersonId, Member>
   expenses: Map<string, Expense>
   settlements: Map<string, Settlement>
+  /** Settlement id → who recorded it. */
+  recordedBy: Map<string, PersonId>
   /** Expense id → event id of its current version (or its deletion). */
   heads: Map<string, string>
   deleted: Set<string>
@@ -236,6 +241,7 @@ export function emptyState(): GroupState {
     members: new Map(),
     expenses: new Map(),
     settlements: new Map(),
+    recordedBy: new Map(),
     heads: new Map(),
     deleted: new Set(),
     conflicts: [],
@@ -258,12 +264,51 @@ export function emptyState(): GroupState {
  * - A deletion beats a concurrent edit. The edit is reported as a conflict.
  * - Invalid events are rejected and reported, never thrown.
  */
-export function replay(events: Iterable<LedgerEvent>): GroupState {
+export interface ReplayOptions {
+  /**
+   * Keys this phone has already seen people join with (member id → key).
+   * Clocks are chosen by whoever writes an event, so someone holding the
+   * group key could write a join or claim dated before a person's real one
+   * and take their place. A phone that already knows who joined with which
+   * key rejects that. See `firstKeys`.
+   */
+  pins?: Readonly<Record<PersonId, string>>
+}
+
+export function replay(input: Iterable<LedgerEvent>, options: ReplayOptions = {}): GroupState {
   const state = emptyState()
-  const reject = (e: LedgerEvent, reason: string) =>
-    state.rejected.push({ eventId: e.id, reason })
+  const reject = (e: { id?: unknown } | null, reason: string) =>
+    state.rejected.push({ eventId: typeof e?.id === 'string' ? e.id : '?', reason })
+  const pins = options.pins ?? {}
+  const pinned = (id: PersonId, key: string | undefined) => pins[id] !== undefined && pins[id] !== key
+
+  // Malformed events are set aside before anything else, so nothing below sees one.
+  const events: LedgerEvent[] = []
+  for (const e of input) {
+    const problem = shapeProblem(e)
+    if (problem) reject(e, problem)
+    else events.push(e)
+  }
+  // A group that has ever been shared is signed from its first event; an
+  // unsigned founding event in it is an attempt to switch the checks off.
+  const shared = events.some((e) => e.signer !== undefined)
 
   for (const e of orderEvents(events)) {
+    try {
+      step(e)
+    } catch {
+      reject(e, 'Malformed event')
+    }
+  }
+  return state
+
+  function step(e: LedgerEvent): void {
+    // Honest phones count up one at a time. A clock far ahead of everything
+    // before it could only be meant to run the clock out.
+    if (e.clock > state.clock + MAX_CLOCK_JUMP) {
+      reject(e, 'Clock jumps too far ahead')
+      return
+    }
     state.clock = Math.max(state.clock, e.clock)
 
     const founding = state.members.size === 0 && e.type === 'member.added'
@@ -274,48 +319,64 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
       !state.members.has(e.author)
 
     if (founding) {
+      if (e.type === 'member.added' && e.member.key === undefined && shared) {
+        reject(e, 'A shared group’s founder must sign')
+        return
+      }
+      if (e.type === 'member.added' && pinned(e.member.id, e.member.key)) {
+        reject(e, 'This phone knows them by another key')
+        return
+      }
       if (e.type === 'member.added' && e.member.key !== undefined) {
         if (e.signer !== e.member.key) {
           reject(e, 'The founder must sign with their own key')
-          continue
+          return
         }
         state.signed = true
       }
     } else if (selfJoin) {
       if (e.type !== 'member.added' || !e.member.key || e.signer !== e.member.key) {
         reject(e, 'A phone joining must sign with the key it joins with')
-        continue
+        return
+      }
+      if (pinned(e.member.id, e.member.key)) {
+        reject(e, 'This phone knows them by another key')
+        return
       }
     } else if (!state.members.has(e.author)) {
       reject(e, 'Author is not a member of this group')
-      continue
+      return
     } else if (state.members.get(e.author)!.left) {
       reject(e, 'Author has left the group')
-      continue
+      return
     } else if (state.signed) {
       const key = state.members.get(e.author)!.key
       if (e.type === 'member.claimed') {
         if (key !== undefined) {
           reject(e, 'That person has already joined on a phone')
-          continue
+          return
         }
         if (e.memberId !== e.author || e.signer !== e.key) {
           reject(e, 'A claim must be signed with the key it claims with')
-          continue
+          return
+        }
+        if (pinned(e.memberId, e.key) && !state.members.get(e.memberId)!.removedBy) {
+          reject(e, 'This phone knows them by another key')
+          return
         }
       } else if (key === undefined) {
         reject(e, 'Author has not joined on a phone yet')
-        continue
+        return
       } else if (e.signer !== key) {
         reject(e, 'Signed with the wrong key')
-        continue
+        return
       }
     } else if (e.type === 'member.claimed') {
       reject(e, 'Only shared groups can be joined')
-      continue
+      return
     } else if (e.type === 'member.rekeyed' || e.type === 'member.recovered') {
       reject(e, 'Only shared groups have keys to move')
-      continue
+      return
     }
 
     switch (e.type) {
@@ -324,12 +385,17 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
         else if (founding && e.member.id !== e.author) reject(e, 'The founder must add themselves')
         else if (!founding && !selfJoin && e.member.key !== undefined) {
           reject(e, 'Only the person themselves can add their key')
-        } else if (!founding && !selfJoin && e.member.lightningAddress !== undefined) {
+        } else if (
+          !founding &&
+          !selfJoin &&
+          (e.member.lightningAddress !== undefined || e.member.lightningAddresses !== undefined || e.member.receive !== undefined || e.member.boxKey !== undefined)
+        ) {
           reject(e, 'Only people themselves can set how they get paid')
         } else if (e.member.lightningAddress !== undefined && !isLightningAddress(e.member.lightningAddress)) {
           reject(e, 'Not a Lightning address')
-        } else if (!e.member.name.trim()) reject(e, 'A person needs a name')
-        else state.members.set(e.member.id, { ...e.member })
+        } else if (e.member.lightningAddresses?.some((a) => !isLightningAddress(a))) reject(e, 'Not a Lightning address')
+        else if (e.member.receive?.some((a) => !isLightningAddress(a) && !isOffer(a))) reject(e, 'Not a Lightning address or BOLT12 offer')
+        else state.members.set(e.member.id, { ...e.member, name: e.member.name.trim() })
         break
 
       case 'member.claimed': {
@@ -452,8 +518,8 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
 
       case 'member.renamed': {
         const member = state.members.get(e.memberId)
-        if (!member) reject(e, 'No such member')
-        else if (member.key !== undefined && e.memberId !== e.author) {
+        if (!member || member.left) reject(e, 'No such member')
+        else if ((member.key !== undefined || member.removedBy !== undefined) && e.memberId !== e.author) {
           reject(e, 'Only people themselves can change their name once they’ve joined')
         } else if (typeof e.name !== 'string' || !e.name.trim()) reject(e, 'A person needs a name')
         else member.name = e.name.trim()
@@ -526,21 +592,27 @@ export function replay(events: Iterable<LedgerEvent>): GroupState {
           reject(e, 'Someone in this payment has left the group')
         }
         else if (!isKnownCurrency(s.currency)) reject(e, `Unknown currency code: ${s.currency}`)
-        else state.settlements.set(s.id, s)
+        else if ((s.method === 'bitcoin' || s.bitcoin) && e.author !== s.from) {
+          reject(e, 'Only the person who paid can record a bitcoin payment')
+        } else {
+          state.settlements.set(s.id, s)
+          state.recordedBy.set(s.id, e.author)
+        }
         break
       }
 
       case 'settlement.voided': {
         const s = state.settlements.get(e.settlementId)
         if (!s) reject(e, 'No such settlement')
-        else if (state.members.get(s.from)?.left || state.members.get(s.to)?.left) {
+        else if (![s.from, s.to, state.recordedBy.get(e.settlementId)].includes(e.author)) {
+          reject(e, 'Only the people in a payment, or whoever recorded it, can undo it')
+        } else if (state.members.get(s.from)?.left || state.members.get(s.to)?.left) {
           reject(e, 'Someone in this payment has left the group')
         } else state.settlements.delete(e.settlementId)
         break
       }
     }
   }
-  return state
 }
 
 /** True if the person paid for, shared in, or was part of a payment in anything still in the group. */
@@ -582,4 +654,20 @@ function changesSomeoneWhoLeft(state: GroupState, before: Expense | undefined, a
 /** Balances for a replayed group. */
 export function groupBalances(state: GroupState): Balances {
   return computeBalances(state.expenses.values(), state.settlements.values())
+}
+
+/**
+ * The key each person first joined with, as this log shows it: the founder's,
+ * each self-join's and each claim's. A phone keeps these and passes them back
+ * to `replay` as `pins`; invites and moves to a new phone carry them along.
+ */
+export function firstKeys(events: Iterable<LedgerEvent>, state: GroupState): Record<PersonId, string> {
+  const rejected = new Set(state.rejected.map((r) => r.eventId))
+  const out: Record<PersonId, string> = {}
+  for (const e of orderEvents(events)) {
+    if (rejected.has(e.id)) continue
+    if (e.type === 'member.added' && e.member?.key && e.member.id === e.author && out[e.author] === undefined) out[e.author] = e.member.key
+    if (e.type === 'member.claimed' && out[e.memberId] === undefined) out[e.memberId] = e.key
+  }
+  return out
 }

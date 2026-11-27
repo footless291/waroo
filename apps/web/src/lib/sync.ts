@@ -252,6 +252,9 @@ class GroupSync {
  * the new key there; concurrent moves settle there. Saves what it reads;
  * sends only what it's asked to (a hand-off for a late phone).
  */
+/** Kinds of event an old room's watcher ignores (see OldRoomWatch.handle). */
+const OLD_ROOM_REFUSES = new Set<string>(['member.added', 'member.claimed', 'member.recovered', 'member.removed', 'member.rekeyed'])
+
 class OldRoomWatch {
   private ws?: WebSocket
   private stopped = false
@@ -294,7 +297,10 @@ class OldRoomWatch {
 
   private async handle(msg: RelayMessage) {
     if (msg.t !== 'items') return
-    const opened = await openItems(msg.items, this.key)
+    // Anyone with the old key can still write here, including whoever was
+    // just removed. Nobody joins, claims a place, vouches or removes through
+    // an old room: those come through the current one, or not at all.
+    const opened = (await openItems(msg.items, this.key)).filter(({ event }) => !OLD_ROOM_REFUSES.has(event.type))
     await saveReceived(this.groupId, opened, { quiet: true })
     const top = Math.max(msg.upTo ?? 0, ...msg.items.map((i) => i.seq))
     const group = await getGroup(this.groupId)

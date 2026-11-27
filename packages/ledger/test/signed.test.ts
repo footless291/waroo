@@ -106,7 +106,7 @@ describe('signed groups', () => {
       ev('ana', 2, undefined, { type: 'member.added', member: { id: 'bob', name: 'Bob' } }),
       ev('bob', 3, 'KB', { type: 'member.claimed', memberId: 'bob', key: 'KB' }),
     ])
-    assert.equal(state.members.get('bob')!.key, undefined)
+    assert.equal(state.members.get('bob')?.key, undefined)
   })
 })
 

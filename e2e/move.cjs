@@ -116,6 +116,24 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await old.click('button:has-text("Yes, move my groups")');
   check(await waitText(newer, 'main', 'Your 2 groups are on this phone now', 20000) && await waitText(newer, 'main', 'connections came too'), 'the new phone has both groups and the wallets');
   check(await waitText(old, 'main', 'Your 2 groups and wallets are on the new phone now', 10000), 'the old phone says they moved');
+  // Someone who saw the QR code reads the move room afterwards, without ever saying hello.
+  const peek = await bob.evaluate(async (link) => {
+    const secret = new URL(link).hash.split('t=')[1].split('&')[0];
+    const b64 = (t) => Uint8Array.from(atob(t.replaceAll('-', '+').replaceAll('_', '/')), (c) => c.charCodeAt(0));
+    const label = new TextEncoder().encode('waroo-move-v1:');
+    const key = b64(secret);
+    const input = new Uint8Array(label.length + key.length); input.set(label); input.set(key, label.length);
+    const room = btoa(String.fromCharCode(...new Uint8Array(await crypto.subtle.digest('SHA-256', input)))).replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/, '');
+    const { items } = await (await fetch(`/relay/rooms/${room}/items?since=0`)).json();
+    const aes = await crypto.subtle.importKey('raw', key, 'AES-GCM', false, ['decrypt']);
+    const read = [];
+    for (const item of items) {
+      const bytes = b64(item.data);
+      try { read.push(new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: bytes.slice(0, 12) }, aes, bytes.slice(12)))); } catch {}
+    }
+    return { count: items.length, read };
+  }, secret3);
+  check(peek.count > 0 && !peek.read.some((r) => r.includes('walletconnect') || r.includes('"groups"')), `someone with only the QR code can’t read the groups or wallets (${peek.count} items, ${peek.read.map((r) => JSON.parse(r).type).join(',')})`);
   await newer.screenshot({ path: SHOTS + '/move-4-done.png' });
 
   await old.goto(B); await old.waitForTimeout(600);

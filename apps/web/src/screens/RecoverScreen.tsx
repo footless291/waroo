@@ -6,7 +6,7 @@ import { Header } from '../components/Header.tsx'
 import { QrCode } from '../components/QrCode.tsx'
 import { moveCode } from '../lib/crypto.ts'
 import { go, useGroup } from '../lib/hooks.ts'
-import { MoveChannel, newMoveSecret, type MoveMessage } from '../lib/move.ts'
+import { doneIsGenuine, helloKeys, MoveChannel, newMoveSecret, sealHandover, type MoveMessage } from '../lib/move.ts'
 import { recoverMember } from '../lib/rekey.ts'
 import { codeLabel } from './MoveScreen.tsx'
 
@@ -14,7 +14,7 @@ type Phase =
   | { at: 'intro' }
   | { at: 'starting' }
   | { at: 'waiting'; secret: string }
-  | { at: 'confirm'; secret: string; key: string; code: string }
+  | { at: 'confirm'; secret: string; key: string; box: string; code: string }
   | { at: 'moving' }
   | { at: 'done' }
   | { at: 'stopped'; message: string }
@@ -32,6 +32,8 @@ export function RecoverScreen({ groupId, memberId }: { groupId: string; memberId
   const channel = useRef<MoveChannel>(undefined)
   const phaseRef = useRef(phase)
   phaseRef.current = phase
+  const answered = useRef(false)
+  const sessionKey = useRef<string>(undefined)
 
   useEffect(() => () => channel.current?.close(), [])
 
@@ -59,12 +61,15 @@ export function RecoverScreen({ groupId, memberId }: { groupId: string; memberId
   async function onMessage(msg: MoveMessage, secret: string) {
     const now = phaseRef.current
     if (msg.type === 'hello') {
-      if (now.at !== 'waiting') {
+      // Checked and set before anything waits, so two hellos can't both count.
+      if (answered.current || now.at !== 'waiting') {
         await channel.current?.send({ from: 'old', type: 'cancel' })
         return stop(t`Another phone also used the code, so this was stopped. Nothing changed. Start again.`)
       }
-      setPhase({ at: 'confirm', secret, key: msg.key, code: await moveCode(secret, msg.key) })
-    } else if (msg.type === 'done' && now.at === 'moving') {
+      answered.current = true
+      if (typeof msg.key !== 'string' || typeof msg.box !== 'string') return stop(t`The new phone needs updating first. Open Waroo on it again, then start over.`)
+      setPhase({ at: 'confirm', secret, key: msg.key, box: msg.box, code: await moveCode(secret, helloKeys(msg)) })
+    } else if (msg.type === 'done' && now.at === 'moving' && (await doneIsGenuine(msg, sessionKey.current))) {
       channel.current?.close()
       channel.current = undefined
       setPhase({ at: 'done' })
@@ -75,6 +80,8 @@ export function RecoverScreen({ groupId, memberId }: { groupId: string; memberId
 
   async function start() {
     setPhase({ at: 'starting' })
+    answered.current = false
+    sessionKey.current = undefined
     try {
       const secret = newMoveSecret()
       const ch = new MoveChannel(
@@ -101,14 +108,17 @@ export function RecoverScreen({ groupId, memberId }: { groupId: string; memberId
       const moved = await recoverMember(groupId, memberId, phase.key)
       const addresses = person ? receiveAddresses(person) : []
       const targets = person ? receiveTargets(person) : []
-      await channel.current?.send({
+      const sealed = await sealHandover({
         from: 'old',
         type: 'groups',
         groups: [moved],
         lightningAddress: addresses[0] ?? '',
         lightningAddresses: addresses,
         receiveWallets: targets.map((address) => ({ address })),
-      })
+
+      }, phase.box)
+      sessionKey.current = sealed.sessionKey
+      await channel.current?.send(sealed.message)
     } catch (err) {
       stop((err as Error).message)
     }

@@ -2,6 +2,7 @@ import { t } from '@lingui/core/macro'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import { Banners } from './components/Banners.tsx'
 import { go, useRoute } from './lib/hooks.ts'
+import { ErrorBoundary } from './components/ErrorBoundary.tsx'
 import { ExpenseScreen } from './screens/ExpenseScreen.tsx'
 import { GroupScreen } from './screens/GroupScreen.tsx'
 import { InviteScreen } from './screens/InviteScreen.tsx'
@@ -74,10 +75,15 @@ navigator.serviceWorker?.addEventListener('message', (event) => {
 })
 
 export function App() {
+  const route = useRoute()
   return (
     <>
-      <Router />
-      <Banners />
+      <ErrorBoundary key={route.split('?')[0]!.split('/').slice(0, 3).join('/').replace(/^\/(activity|settings)$/, '/')}>
+        <Router />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <Banners />
+      </ErrorBoundary>
       <UpdatePrompt />
     </>
   )

@@ -1,7 +1,7 @@
 import { Trans } from '@lingui/react/macro'
 import { t } from '@lingui/core/macro'
 import { roomId } from '../lib/crypto.ts'
-import { replay, type GroupState, type LedgerEvent } from '@waroo/ledger'
+import { firstKeys, replay, type GroupState, type LedgerEvent } from '@waroo/ledger'
 import { useEffect, useState, type FormEvent } from 'react'
 import { Logo } from '../components/icons.tsx'
 import { isGroupKey, newSigningKeys } from '../lib/crypto.ts'
@@ -64,7 +64,7 @@ function JoinByInvite({ secret }: { secret: string }) {
     }
   }, [secret])
 
-  if (ticket) return <JoinGroup groupId={ticket.g} groupKey={ticket.k} from={ticket.from} />
+  if (ticket) return <JoinGroup groupId={ticket.g} groupKey={ticket.k} from={ticket.from} pins={ticket.p} />
   return (
     <main className="screen">
       <div className="join-brand">
@@ -84,7 +84,7 @@ function JoinByInvite({ secret }: { secret: string }) {
   )
 }
 
-function JoinGroup({ groupId, groupKey: key, from }: { groupId: string; groupKey: string; from: string }) {
+function JoinGroup({ groupId, groupKey: key, from, pins }: { groupId: string; groupKey: string; from: string; pins?: Record<string, string> }) {
   const valid = /^[0-9a-f-]{36}$/.test(groupId) && isGroupKey(key)
 
   const [loaded, setLoaded] = useState<Loaded>()
@@ -97,13 +97,16 @@ function JoinGroup({ groupId, groupKey: key, from }: { groupId: string; groupKey
     if (!valid) return
     let live = true
     ;(async () => {
-      if (await getGroup(groupId)) {
-        go(`/g/${groupId}`)
+      const existing = await getGroup(groupId)
+      if (existing) {
+        // The id alone doesn't make it the same group: an invite names both.
+        if (existing.key === key || existing.previousKeys?.some((p) => p.key === key)) go(`/g/${groupId}`)
+        else if (live) setProblem(t`This phone already has a different group under this invite’s name. Ask for a new link.`)
         return
       }
       try {
         const { received, cursor } = await fetchGroup(key)
-        const state = replay(received.map((r) => r.event))
+        const state = replay(received.map((r) => r.event), { pins })
         if (!live) return
         if (state.members.size === 0) {
           setProblem(t`This invite doesn’t lead to a group. Ask for a new link.`)
@@ -111,7 +114,8 @@ function JoinGroup({ groupId, groupKey: key, from }: { groupId: string; groupKey
         }
         // Someone was removed since this invite was made: the group has a new key.
         const room = await roomId(key)
-        if (received.some((r) => r.event.type === 'group.rekeyed' && r.event.from === room)) {
+        const rejected = new Set(state.rejected.map((r) => r.eventId))
+        if (received.some((r) => r.event.type === 'group.rekeyed' && r.event.from === room && !rejected.has(r.event.id))) {
           if (live) setProblem(t`This invite is out of date: the group has changed since it was made. Ask for a new link.`)
           return
         }
@@ -162,6 +166,7 @@ function JoinGroup({ groupId, groupKey: key, from }: { groupId: string; groupKey
       publicKey,
       shared: true,
       cursor: loaded.cursor,
+      pins: { ...firstKeys(loaded.received.map((r) => r.event), loaded.state), ...pins },
     }
     await saveJoinedGroup(group, loaded.received)
     await append(group, [

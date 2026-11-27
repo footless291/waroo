@@ -14,7 +14,7 @@ import { NavigationRoute, registerRoute } from 'workbox-routing'
 import { i18n } from '@lingui/core'
 import { t } from '@lingui/core/macro'
 import { roomId } from './lib/crypto.ts'
-import { getEvents, getGroup, getSetting, getStoredEvents, listGroups, putGroup, saveReceived, type GroupMeta } from './lib/db.ts'
+import { getEvents, getGroup, replayGroup, getSetting, getStoredEvents, listGroups, putGroup, saveReceived, type GroupMeta } from './lib/db.ts'
 import { messages as en } from './locales/en.po'
 import { messages as ja } from './locales/ja.po'
 import { describeEvent, severalNews, type News } from './lib/news.ts'
@@ -79,7 +79,7 @@ async function onPush() {
       try {
         const fresh = await catchUp(group)
         if (fresh.length === 0) continue
-        const state = replay(await getEvents(group.id))
+        const state = await replayGroup(group.id)
         const name = state.name ?? group.name
         const news = fresh
           .map((e) => describeEvent(e, state, group.meId, name, e.author === group.meId))

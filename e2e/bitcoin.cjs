@@ -169,7 +169,7 @@ let failSend = 0; // the next N payments, the wallet errors without saying wheth
   check(await waitText(ana, '.bitcoin', 'Paid ¥1,500 to Bob (10,000 sats)'), 'Ana pays Bob in bitcoin');
   check(await waitText(ana, '.banners', 'Payment sent: ¥1,500 to Bob'), 'Ana gets a payment-sent banner');
   check(await waitText(bob, '.banners', 'Ana paid you ¥1,500'), 'Bob gets a payment-received banner, on another screen');
-  check((await bob.textContent('.banners')).includes('10,000 sats, verified'), 'Bob’s banner shows the sats and the proof');
+  check((await bob.textContent('.banners')).includes('10,000 sats over Lightning'), 'Bob’s banner shows the sats');
   await shot(ana, '3-paid');
   await shot(bob, '3b-bob-banner');
   check(!(await ana.isVisible('button:has-text("Mark as paid")')), 'no second way to record it once paid');
@@ -178,7 +178,7 @@ let failSend = 0; // the next N payments, the wallet errors without saying wheth
   await bob.goto(B + '#/');
   await bob.click('a.card-row'); await bob.waitForTimeout(400);
   await bob.click('nav a:has-text("Payments")');
-  check(await waitText(bob, 'main', 'Bitcoin, 10,000 sats, verified'), 'Bob sees the verified bitcoin payment');
+  check(await waitText(bob, 'main', 'Bitcoin, 10,000 sats'), 'Bob sees the bitcoin payment');
   await shot(bob, '4-bob-sees');
 
   // Paying from another wallet app: the provider confirms, the app notices
@@ -202,6 +202,7 @@ let failSend = 0; // the next N payments, the wallet errors without saying wheth
   // Bob adds a second address and puts it first; its provider is down, so Ana's
   // phone quietly uses the next one (asking for an invoice moves no money)
   await bob.goto(B + '#/settings?open=wallet');
+  await bob.waitForSelector('.banners .banner-body', { state: 'detached', timeout: 15000 }).catch(() => {});
   await bob.click('.wallet .segmented label:has-text("Receive")');
   await bob.click('.pager.inline .pager-page:not([inert]) .setup-card:has-text("Add a different wallet") button:has-text("Add")');
   await bob.fill('input[placeholder="you@walletofsatoshi.com"]', 'bob@broken.example.com');

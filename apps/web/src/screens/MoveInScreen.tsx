@@ -2,8 +2,8 @@ import { Trans } from '@lingui/react/macro'
 import { plural, t } from '@lingui/core/macro'
 import { useEffect, useState } from 'react'
 import { Header } from '../components/Header.tsx'
-import { isGroupKey, moveCode, newSigningKeys } from '../lib/crypto.ts'
-import { MoveChannel, receiveGroups } from '../lib/move.ts'
+import { encryptJson, isGroupKey, moveCode, newBoxKeys, newSigningKeys } from '../lib/crypto.ts'
+import { helloKeys, MoveChannel, openHandover, receiveGroups } from '../lib/move.ts'
 import { codeLabel } from './MoveScreen.tsx'
 
 type Phase =
@@ -30,6 +30,9 @@ export function MoveInScreen({ params }: { params: URLSearchParams }) {
     ;(async () => {
       try {
         const { keys, publicKey } = await newSigningKeys()
+        // Only this phone can open what the other phone sends: it's locked to this key.
+        const box = await newBoxKeys()
+        let taken = false
         channel = new MoveChannel(
           secret,
           'new',
@@ -38,16 +41,20 @@ export function MoveInScreen({ params }: { params: URLSearchParams }) {
               finished = true
               channel?.close()
               setPhase({ at: 'stopped', message: t`The move was stopped on the other phone. Nothing changed.` })
-            } else if (msg.type === 'groups' && !finished) {
+            } else if (msg.type === 'sealed' && !finished && !taken) {
+              taken = true
               setPhase({ at: 'receiving' })
               try {
-                const addresses = msg.lightningAddresses ?? (msg.lightningAddress ? [msg.lightningAddress] : [])
-                const wallets = recovering ? [] : (msg.sendWallets ?? [])
-                const moved = await receiveGroups(msg.groups, keys, publicKey, addresses, wallets, msg.receiveWallets, recovering ? undefined : msg.walletNames)
-                await channel?.send({ from: 'new', type: 'done', moved })
+                const opened = await openHandover(msg, box.keys.privateKey)
+                if (!opened) throw new Error(t`What the other phone sent didn’t open. Start again on the other phone.`)
+                const { handover: h, sessionKey } = opened
+                const addresses = h.lightningAddresses ?? (h.lightningAddress ? [h.lightningAddress] : [])
+                const wallets = recovering ? [] : (h.sendWallets ?? [])
+                const moved = await receiveGroups(h.groups, keys, publicKey, addresses, wallets, h.receiveWallets, recovering ? undefined : h.walletNames)
+                await channel?.send({ from: 'new', type: 'done', proof: await encryptJson(sessionKey, moved) })
                 finished = true
                 channel?.close()
-                setPhase({ at: 'done', count: msg.groups.length, wallets: wallets.length })
+                setPhase({ at: 'done', count: h.groups.length, wallets: wallets.length })
               } catch (err) {
                 setPhase({ at: 'stopped', message: (err as Error).message })
               }
@@ -58,8 +65,9 @@ export function MoveInScreen({ params }: { params: URLSearchParams }) {
           },
         )
         await channel.open()
-        await channel.send({ from: 'new', type: 'hello', key: publicKey })
-        setPhase({ at: 'code', code: await moveCode(secret, publicKey) })
+        const hello = { from: 'new', type: 'hello', key: publicKey, box: box.publicKey } as const
+        await channel.send(hello)
+        setPhase({ at: 'code', code: await moveCode(secret, helloKeys(hello)) })
       } catch (err) {
         setPhase({ at: 'stopped', message: (err as Error).message })
       }

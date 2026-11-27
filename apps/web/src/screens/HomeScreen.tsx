@@ -3,7 +3,7 @@ import { t } from '@lingui/core/macro'
 import { Trans } from '@lingui/react/macro'
 import { useEffect, useState } from 'react'
 import { PageTitle } from '../components/Header.tsx'
-import { getEvents, type GroupMeta } from '../lib/db.ts'
+import { replayGroup, type GroupMeta } from '../lib/db.ts'
 import { money } from '../lib/format.ts'
 import { useGroups } from '../lib/hooks.ts'
 
@@ -12,8 +12,7 @@ function GroupSummary({ group }: { group: GroupMeta }) {
   const [name, setName] = useState(group.name)
   const [lines, setLines] = useState<{ amount: number; currency: string }[]>()
   useEffect(() => {
-    getEvents(group.id).then((events) => {
-      const state = replay(events)
+    replayGroup(group.id).then((state) => {
       setName(state.name ?? group.name)
       const balances = groupBalances(state)
       setLines(

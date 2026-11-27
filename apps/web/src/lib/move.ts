@@ -9,12 +9,16 @@ import { t } from '@lingui/core/macro'
  *
  * The two phones talk through a one-off relay room named by a secret in the
  * QR code, with every message encrypted with that secret. The relay wipes
- * the room within the hour. Both phones show a 4-digit code made from the
- * secret and the new phone's key; the person checks they match before
- * anything moves, so someone who glimpsed the QR code can't take the groups.
+ * the room within the hour. The new phone says hello with its signing key
+ * and a one-off box key. Both phones show a 4-digit code made from the
+ * secret and those keys; the person checks they match before anything
+ * moves. The groups then travel locked to that box key, so someone who
+ * glimpsed the QR code (or read the link in a chat) sees only that a move
+ * happened. Only the old phone's first hello counts: a second one stops
+ * the move.
  */
-import { replay } from '@waroo/ledger'
-import { decryptJson, encryptJson, moveRoomId, newGroupKey } from './crypto.ts'
+import { ID, isCurrencyCode, isLightningAddress, isOffer, replay } from '@waroo/ledger'
+import { decryptJson, encryptJson, isGroupKey, moveRoomId, newGroupKey, unwrapGroupKey, wrapGroupKey } from './crypto.ts'
 import {
   append,
   deleteGroupLocally,
@@ -39,12 +43,12 @@ export interface MovedGroup {
   meId: string
   key: string
   createdAt: string
+  /** The keys the old phone knows people joined with: see GroupMeta.pins. */
+  pins?: Record<string, string>
 }
 
-export type MoveMessage =
-  | { from: 'new'; type: 'hello'; key: string }
-  /** `lightningAddresses` is the ordered list; older phones sent only `lightningAddress`. */
-  | {
+/** What the old phone hands over, locked to the new phone's box key inside a `sealed` message. */
+export type Handover = {
       from: 'old'
       type: 'groups'
       groups: MovedGroup[]
@@ -57,7 +61,13 @@ export type MoveMessage =
       /** The names you gave your wallets. */
       walletNames?: Record<string, string>
     }
-  | { from: 'new'; type: 'done'; moved: string[] }
+
+export type MoveMessage =
+  | { from: 'new'; type: 'hello'; key: string; box: string }
+  /** A `Handover`, encrypted with a one-off key that's locked to the hello's box key. */
+  | { from: 'old'; type: 'sealed'; ephemeral: string; wrapped: string; data: string }
+  /** `proof` is `moved` encrypted with that one-off key: only the new phone can make it. */
+  | { from: 'new'; type: 'done'; proof: string }
   | { from: 'old' | 'new'; type: 'cancel' }
 
 /** A new secret for the QR code. Same shape as a group key: 32 random bytes. */
@@ -122,6 +132,57 @@ export class MoveChannel {
   }
 }
 
+/** What both phones turn into the 4-digit code: the new phone's keys. */
+export const helloKeys = (msg: { key: string; box: string }) => `${msg.key}.${msg.box}`
+
+/** Locks a hand-over to the new phone's box key. Returns the message and the one-off key, for checking 'done'. */
+export async function sealHandover(handover: Handover, box: string): Promise<{ message: MoveMessage; sessionKey: string }> {
+  const sessionKey = newGroupKey()
+  const { ephemeral, wrapped } = await wrapGroupKey(sessionKey, [{ memberId: 'move', boxKey: box }])
+  if (!wrapped.move) throw new Error(t`The new phone’s key didn’t look right. Start again.`)
+  return { sessionKey, message: { from: 'old', type: 'sealed', ephemeral, wrapped: wrapped.move, data: await encryptJson(sessionKey, handover) } }
+}
+
+/** True if a 'done' really came from the phone the hand-over was locked to. */
+export async function doneIsGenuine(msg: { proof?: unknown }, sessionKey: string | undefined): Promise<boolean> {
+  if (!sessionKey || typeof msg.proof !== 'string') return false
+  return Array.isArray(await decryptJson<string[]>(sessionKey, msg.proof))
+}
+
+/** Opens a sealed hand-over on the new phone, and checks every field before anything uses it. */
+export async function openHandover(
+  msg: Extract<MoveMessage, { type: 'sealed' }>,
+  box: CryptoKey,
+): Promise<{ handover: Handover; sessionKey: string } | null> {
+  if (typeof msg.wrapped !== 'string' || typeof msg.ephemeral !== 'string' || typeof msg.data !== 'string') return null
+  const sessionKey = await unwrapGroupKey(msg.wrapped, msg.ephemeral, box, 'move')
+  if (!sessionKey) return null
+  const h = await decryptJson<Handover>(sessionKey, msg.data)
+  if (!h || h.type !== 'groups' || !Array.isArray(h.groups) || h.groups.length > 200) return null
+  const groupOk = (g: MovedGroup) =>
+    typeof g === 'object' && g !== null &&
+    typeof g.id === 'string' && /^[0-9a-f-]{36}$/.test(g.id) &&
+    typeof g.name === 'string' && g.name.length <= 80 &&
+    isCurrencyCode(g.currency) &&
+    typeof g.meId === 'string' && ID.test(g.meId) &&
+    typeof g.key === 'string' && isGroupKey(g.key) &&
+    typeof g.createdAt === 'string' && !Number.isNaN(Date.parse(g.createdAt)) &&
+    (g.pins === undefined || (typeof g.pins === 'object' && g.pins !== null && Object.values(g.pins).every((v) => typeof v === 'string')))
+  if (!h.groups.every(groupOk)) return null
+  const target = (a: unknown) => typeof a === 'string' && (isLightningAddress(a) || isOffer(a))
+  const list = (v: unknown, ok: (x: unknown) => boolean) => v === undefined || (Array.isArray(v) && v.length <= 5 && v.every(ok))
+  if (!list(h.lightningAddresses, (a) => typeof a === 'string' && isLightningAddress(a))) return null
+  if (typeof h.lightningAddress !== 'string' || (h.lightningAddress && !isLightningAddress(h.lightningAddress))) return null
+  if (!list(h.receiveWallets, (w) => typeof w === 'object' && w !== null && target((w as { address: unknown }).address))) return null
+  if (
+    h.sendWallets !== undefined &&
+    !(Array.isArray(h.sendWallets) && h.sendWallets.length <= 10 &&
+      h.sendWallets.every((w) => w?.kind === 'nwc' && typeof w.url === 'string' && w.url.startsWith('nostr+walletconnect://') && typeof w.name === 'string'))
+  ) return null
+  if (h.walletNames !== undefined && !(typeof h.walletNames === 'object' && h.walletNames !== null && Object.values(h.walletNames).every((v) => typeof v === 'string' && v.length <= 80))) return null
+  return { handover: h, sessionKey }
+}
+
 // ---- The old phone ----
 
 /** Every group on this phone, made shareable so it has a room to move through. */
@@ -155,6 +216,7 @@ export async function handOver(groups: GroupMeta[], newKey: string): Promise<Mov
     meId: g.meId,
     key: g.key!,
     createdAt: g.createdAt,
+    ...(g.pins ? { pins: g.pins } : {}),
   }))
 }
 
@@ -206,12 +268,16 @@ export async function receiveGroups(
   names?: Record<string, string>,
 ): Promise<string[]> {
   const moved: string[] = []
+  // Wallets only come along to a phone that has none of its own yet. On a
+  // phone already in use, a move-in link (perhaps from someone else) only
+  // adds groups: it never changes where this person gets paid.
+  const fresh = (await listGroups()).length === 0 && (await receiveWallets()).length === 0
   for (const g of groups) {
     if (await getGroup(g.id)) continue
     let loaded: Awaited<ReturnType<typeof fetchGroup>> | undefined
     for (let attempt = 0; attempt < 10; attempt++) {
       const result = await fetchGroup(g.key)
-      if (replay(result.received.map((r) => r.event)).members.get(g.meId)?.key === publicKey) {
+      if (replay(result.received.map((r) => r.event), { pins: g.pins }).members.get(g.meId)?.key === publicKey) {
         loaded = result
         break
       }
@@ -227,6 +293,7 @@ export async function receiveGroups(
     await publishProfile(g.id)
     moved.push(g.id)
   }
+  if (!fresh) return moved
   if (receive?.length) {
     await addReceiveNamed(
       receive.map((r) => r.address),

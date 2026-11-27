@@ -24,6 +24,8 @@ export interface PayParams {
   minSats: number
   maxSats: number
   metadata: string
+  /** Longest comment the address takes (LUD-12); 0 if it takes none. */
+  commentAllowed: number
 }
 
 export interface CheckedInvoice {
@@ -77,7 +79,8 @@ export async function payParams(address: string): Promise<PayParams> {
   if (!Number.isFinite(min) || !Number.isFinite(max) || typeof body.metadata !== 'string') {
     throw new PaymentError(t`Their Lightning address sent back something unexpected.`)
   }
-  return { callback: httpsUrl(body.callback), minSats: min, maxSats: max, metadata: body.metadata }
+  const commentAllowed = Number.isSafeInteger(body.commentAllowed) && body.commentAllowed > 0 ? Math.min(body.commentAllowed, 255) : 0
+  return { callback: httpsUrl(body.callback), minSats: min, maxSats: max, metadata: body.metadata, commentAllowed }
 }
 
 async function sha256Hex(text: string): Promise<string> {
@@ -111,7 +114,8 @@ export async function getInvoice(params: PayParams, sats: number, comment?: stri
   if (sats > params.maxSats) throw new PaymentError(t`Their Lightning address takes at most ${params.maxSats} sats at once.`)
   const url = new URL(params.callback)
   url.searchParams.set('amount', String(sats * 1000))
-  if (comment) url.searchParams.set('comment', comment.slice(0, 120))
+  // Only to an address that says it takes comments, and only as long as it allows.
+  if (comment && params.commentAllowed > 0) url.searchParams.set('comment', comment.slice(0, Math.min(120, params.commentAllowed)))
   const body = await getJson(url.toString())
   const invoice = String(body?.pr ?? '')
   const read = readInvoice(invoice)

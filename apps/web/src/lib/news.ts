@@ -66,6 +66,9 @@ export function describeEvent(
   const name = (id: string) => state.members.get(id)?.name ?? t`Someone`
   const group = groupName
   const inGroup = t`In ${group}`
+  // Only what the group actually accepted is news: an event replay threw out
+  // (wrong key, not a member, a forgery) says nothing about anyone.
+  if (state.rejected.some((r) => r.eventId === event.id)) return null
 
   if (event.type === 'settlement.recorded') {
     const s: Settlement = event.settlement
@@ -73,12 +76,11 @@ export function describeEvent(
     const sats = s.bitcoin ? satsText(s.bitcoin.sats) : ''
     const detail = !s.bitcoin
       ? inGroup
-      : s.bitcoin.preimage
-        ? t`${sats}, verified, in ${group}`
-        : t`${sats}, in ${group}`
+      : t`${sats} over Lightning, in ${group}`
     const base = { id: s.id }
     const from = name(s.from)
     const to = name(s.to)
+    const by = name(event.author)
     if (mine) {
       // Only a bitcoin payment is news to the payer: a manual record is what they just did.
       return s.from === meId && s.bitcoin
@@ -88,10 +90,14 @@ export function describeEvent(
     if (s.to === meId) {
       return s.bitcoin
         ? { ...base, kind: 'paid-you', title: t`${from} paid you ${amount}`, detail }
-        : { ...base, kind: 'paid-you', title: t`${from} marked ${amount} as paid to you`, detail }
+        : event.author === s.from
+          ? { ...base, kind: 'paid-you', title: t`${from} marked ${amount} as paid to you`, detail }
+          : { ...base, kind: 'paid-you', title: t`${by} marked ${from}’s ${amount} to you as paid`, detail }
     }
     if (s.from === meId) {
-      return { ...base, kind: 'you-paid', title: t`${to} marked your ${amount} as paid`, detail }
+      return event.author === s.to
+        ? { ...base, kind: 'you-paid', title: t`${to} marked your ${amount} as paid`, detail }
+        : { ...base, kind: 'you-paid', title: t`${by} marked your ${amount} to ${to} as paid`, detail }
     }
     return { ...base, kind: 'others-paid', title: t`${from} paid ${to} ${amount}`, detail }
   }
@@ -129,7 +135,8 @@ export function describeEvent(
   if (event.type === 'expense.saved' && !event.basedOn) {
     // Say it as it is now: it may have been edited, or deleted, since.
     if (state.deleted.has(event.expense.id)) return null
-    const e = state.expenses.get(event.expense.id) ?? event.expense
+    const e = state.expenses.get(event.expense.id)
+    if (!e) return null
     let myShare: number | undefined
     try {
       myShare = computeShares(e).get(meId)

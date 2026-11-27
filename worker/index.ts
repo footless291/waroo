@@ -15,6 +15,8 @@ import { isPushEndpoint, sendPush, type PushEnv } from './push.ts'
 export { InviteBox }
 
 export interface Env extends PushEnv, FeedbackEnv {
+  /** Per-address limit on relay requests, so one machine can't fill rooms or invites without end. */
+  RELAY_LIMIT?: RateLimit
   ASSETS: Fetcher
   ROOMS: DurableObjectNamespace<RelayRoom>
   INVITES: DurableObjectNamespace<InviteBox>
@@ -28,6 +30,18 @@ const MAX_ITEM_BYTES = 64 * 1024
 const MAX_ITEMS_PER_PUSH = 200
 const MAX_ROOM_BYTES = 25 * 1024 * 1024
 const PAGE = 500
+/** A page of backlog stops here too, so a room of big items never makes one huge frame. */
+const PAGE_BYTES = 2 * 1024 * 1024
+/** Blobs are base64url (encrypted events), nothing else. */
+const ITEM_DATA = /^[A-Za-z0-9_-]*$/
+/** A phone asks for the backlog once per connection, more or less. */
+const HELLO_EVERY_MS = 2000
+/** At most one round of push notifications per room this often. */
+const WAKE_EVERY_MS = 3000
+/** A push address that failed this many times in a row is dropped. */
+const MAX_PUSH_FAILS = 5
+/** A room that looks like a real group (more than this, or with phones subscribed) is never wiped by the move-room alarm. */
+const EPHEMERAL_MAX_ITEMS = 20
 const MAX_SUBSCRIPTIONS = 50
 /** Rooms used once, to move to a new phone, are wiped this long after they open. */
 const EPHEMERAL_MS = 60 * 60 * 1000
@@ -42,6 +56,14 @@ export default {
       return env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_JWK
         ? Response.json({ key: env.VAPID_PUBLIC_KEY })
         : Response.json({ error: 'Notifications aren’t set up on this relay' }, { status: 501 })
+    }
+
+    if (url.pathname.startsWith('/relay/') && env.RELAY_LIMIT) {
+      // Absent only when running locally.
+      const who = request.headers.get('CF-Connecting-IP')
+      // IPv6 users get a whole /64 each, so count them by it.
+      const key = who?.includes(':') ? who.split(':').slice(0, 4).join(':') : who
+      if (key && !(await env.RELAY_LIMIT.limit({ key })).success) return new Response('Slow down', { status: 429 })
     }
 
     const invite = /^\/relay\/invites\/([^/]+)(\/open)?$/.exec(url.pathname)
@@ -86,6 +108,9 @@ async function rate(url: URL): Promise<Response> {
   const cacheKey = new Request(`${url.origin}/relay/rate?v=3&currency=${currency}`, { method: 'GET' })
   const hit = await cache.match(cacheKey)
   if (hit) return hit
+  const missKey = new Request(`${url.origin}/relay/rate?v=3&miss=1&currency=${currency}`, { method: 'GET' })
+  const miss = await cache.match(missKey)
+  if (miss) return miss
 
   const failures: Record<string, string> = {}
   const get = async (name: string, href: string, pick: (j: any) => unknown): Promise<Quote | null> => {
@@ -130,14 +155,17 @@ async function rate(url: URL): Promise<Response> {
   const result = agree(quotes)
   console.log(JSON.stringify({ rate: currency, quotes, failures, result: result.ok ? result.price : result.reason }))
   if (!result.ok) {
-    return Response.json(
+    const failed = Response.json(
       {
         error: result.reason === 'too-few' ? 'Not enough price sources available right now' : 'Price sources disagree',
         quotes,
         failures,
       },
-      { status: result.reason === 'too-few' ? 503 : 502 },
+      // Remembered briefly too, so asking again doesn't hit every exchange again.
+      { status: result.reason === 'too-few' ? 503 : 502, headers: { 'Cache-Control': 'public, max-age=30' } },
     )
+    await cache.put(missKey, failed.clone())
+    return failed
   }
   const body = {
     currency,
@@ -221,13 +249,15 @@ type Row = { seq: number; id: string; data: string }
  * A connection that subscribed for pushes. `at` is when it last said it's
  * here; `away` is set while the app is in the background.
  */
-type Attachment = { endpoint?: string; at?: number; away?: boolean }
+type Attachment = { endpoint?: string; at?: number; away?: boolean; hello?: number }
 
 /** An open app pings every 20 seconds; a connection silent for longer is a phone that was put away. */
 const LIVE_MS = 50_000
 
 export class RelayRoom extends DurableObject<Env> {
   private sql: SqlStorage
+  private lastWake = 0
+  private wakeQueued = false
 
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env)
@@ -250,6 +280,11 @@ export class RelayRoom extends DurableObject<Env> {
       endpoint TEXT PRIMARY KEY,
       at INTEGER NOT NULL
     )`)
+    try {
+      this.sql.exec('ALTER TABLE subs ADD COLUMN fails INTEGER NOT NULL DEFAULT 0')
+    } catch {
+      // Already there.
+    }
   }
 
   override async fetch(request: Request): Promise<Response> {
@@ -257,7 +292,7 @@ export class RelayRoom extends DurableObject<Env> {
       const since = Number(new URL(request.url).searchParams.get('since') ?? 0)
       const rows = this.page(Number.isSafeInteger(since) && since >= 0 ? since : 0)
       return Response.json(
-        { items: rows, upTo: rows.at(-1)?.seq ?? since, done: rows.length < PAGE },
+        { items: rows, upTo: rows.at(-1)?.seq ?? since, done: this.isLast(rows) },
         { headers: { 'Cache-Control': 'no-store' } },
       )
     }
@@ -275,6 +310,9 @@ export class RelayRoom extends DurableObject<Env> {
     }
 
     if (msg.t === 'hello') {
+      const was = (ws.deserializeAttachment() as Attachment | null) ?? {}
+      if (was.hello && Date.now() - was.hello < HELLO_EVERY_MS) return this.fail(ws, 'Slow down')
+      ws.serializeAttachment({ ...was, hello: Date.now() } satisfies Attachment)
       const since = Number.isSafeInteger(msg.since) && msg.since >= 0 ? msg.since : 0
       if (msg.ephemeral === true && this.isEmpty() && (await this.ctx.storage.getAlarm()) === null) {
         await this.ctx.storage.setAlarm(Date.now() + EPHEMERAL_MS)
@@ -285,7 +323,7 @@ export class RelayRoom extends DurableObject<Env> {
         const rows = this.page(cursor)
         const last = rows.at(-1)
         if (last) cursor = last.seq
-        const done = rows.length < PAGE
+        const done = this.isLast(rows)
         ws.send(JSON.stringify({ t: 'items', items: rows, upTo: cursor, done }))
         if (done) break
       }
@@ -301,8 +339,10 @@ export class RelayRoom extends DurableObject<Env> {
         if (typeof item.data !== 'string' || item.data.length > MAX_ITEM_BYTES) {
           return this.fail(ws, 'Item too large')
         }
+        if (!ITEM_DATA.test(item.data)) return this.fail(ws, 'Bad item')
       }
-      if (this.ctx.storage.sql.databaseSize > MAX_ROOM_BYTES) return this.fail(ws, 'Group is full')
+      const incoming = msg.items.reduce((n, i) => n + i.data.length + i.id.length, 0)
+      if (this.ctx.storage.sql.databaseSize + incoming > MAX_ROOM_BYTES) return this.fail(ws, 'Group is full')
 
       const added: Row[] = []
       const now = Date.now()
@@ -321,7 +361,7 @@ export class RelayRoom extends DurableObject<Env> {
       if (added.length > 0) {
         const frame = JSON.stringify({ t: 'items', items: added, live: true })
         for (const other of this.ctx.getWebSockets()) if (other !== ws) other.send(frame)
-        if (msg.notify === true) await this.wake()
+        if (msg.notify === true) await this.wakeSoon()
       }
       return
     }
@@ -330,7 +370,8 @@ export class RelayRoom extends DurableObject<Env> {
       if (!isPushEndpoint(msg.endpoint, this.env)) return this.fail(ws, 'Not a push service')
       if (msg.t === 'unsubscribe') {
         this.sql.exec('DELETE FROM subs WHERE endpoint = ?', msg.endpoint)
-        ws.serializeAttachment({})
+        const was = (ws.deserializeAttachment() as Attachment | null) ?? {}
+        ws.serializeAttachment((was.hello ? { hello: was.hello } : {}) satisfies Attachment)
         return
       }
       const count = this.sql.exec<{ n: number }>('SELECT COUNT(*) AS n FROM subs').one().n
@@ -341,7 +382,8 @@ export class RelayRoom extends DurableObject<Env> {
         msg.endpoint,
         Date.now(),
       )
-      ws.serializeAttachment({ endpoint: msg.endpoint, at: Date.now() } satisfies Attachment)
+      const was = (ws.deserializeAttachment() as Attachment | null) ?? {}
+      ws.serializeAttachment({ ...was, endpoint: msg.endpoint, at: Date.now(), away: false } satisfies Attachment)
       return
     }
 
@@ -364,6 +406,26 @@ export class RelayRoom extends DurableObject<Env> {
    * connection can outlive the app being open (a phone put away keeps its
    * socket for a while), so it only counts while it's pinging and not away.
    */
+  /**
+   * Wakes phones now, or, if it did so moments ago, once more when the pause
+   * is over: a burst of pushes costs one round of notifications, and nothing
+   * pushed during the pause goes unannounced.
+   */
+  private async wakeSoon() {
+    const wait = this.lastWake + WAKE_EVERY_MS - Date.now()
+    if (wait <= 0) {
+      this.lastWake = Date.now()
+      return this.wake()
+    }
+    if (this.wakeQueued) return
+    this.wakeQueued = true
+    setTimeout(() => {
+      this.wakeQueued = false
+      this.lastWake = Date.now()
+      void this.wake().catch((err) => console.warn('wake', String(err)))
+    }, wait)
+  }
+
   private async wake() {
     const now = Date.now()
     const live = new Set(
@@ -383,19 +445,41 @@ export class RelayRoom extends DurableObject<Env> {
     const results = await Promise.all(subs.map(async (s) => [s.endpoint, await sendPush(s.endpoint, this.env)] as const))
     for (const [endpoint, result] of results) {
       if (result === 'gone') this.sql.exec('DELETE FROM subs WHERE endpoint = ?', endpoint)
+      else if (result === 'failed') {
+        this.sql.exec('UPDATE subs SET fails = fails + 1 WHERE endpoint = ?', endpoint)
+        this.sql.exec('DELETE FROM subs WHERE endpoint = ? AND fails >= ?', endpoint, MAX_PUSH_FAILS)
+      } else this.sql.exec('UPDATE subs SET fails = 0 WHERE endpoint = ?', endpoint)
     }
   }
 
   override async alarm(): Promise<void> {
+    // Only one-off move rooms ask to be wiped. If this one has since filled
+    // up like a group's room, someone asked for it by mistake (or on purpose).
+    const items = this.sql.exec<{ n: number }>('SELECT COUNT(*) AS n FROM items').one().n
+    const subs = this.sql.exec<{ n: number }>('SELECT COUNT(*) AS n FROM subs').one().n
+    if (items > EPHEMERAL_MAX_ITEMS || subs > 0) return
     for (const s of this.ctx.getWebSockets()) s.close(1000, 'Room closed')
     await this.ctx.storage.deleteAll()
     this.setup()
   }
 
+  /** Up to PAGE items after `since`, and no more than PAGE_BYTES of them (always at least one). */
   private page(since: number): Row[] {
-    return this.sql
-      .exec<Row>('SELECT seq, id, data FROM items WHERE seq > ? ORDER BY seq LIMIT ?', since, PAGE)
-      .toArray()
+    const rows: Row[] = []
+    let bytes = 0
+    for (const row of this.sql.exec<Row>('SELECT seq, id, data FROM items WHERE seq > ? ORDER BY seq LIMIT ?', since, PAGE)) {
+      bytes += row.data.length + row.id.length + 32
+      if (rows.length > 0 && bytes > PAGE_BYTES) break
+      rows.push(row)
+    }
+    return rows
+  }
+
+  /** True if nothing comes after this page. */
+  private isLast(rows: Row[]): boolean {
+    const last = rows.at(-1)
+    if (!last) return true
+    return this.sql.exec('SELECT 1 FROM items WHERE seq > ? LIMIT 1', last.seq).toArray().length === 0
   }
 
   private isEmpty(): boolean {

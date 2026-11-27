@@ -34,6 +34,8 @@ export {
   groupBalances,
   orderEvents,
   replay,
+  firstKeys,
+  type ReplayOptions,
   type Conflict,
   type GroupState,
   type LedgerEvent,
@@ -41,3 +43,4 @@ export {
   type Rejection,
 } from './events.ts'
 export { canonicalJson, signingBytes } from './canonical.ts'
+export { shapeProblem, expenseProblem, isDate, isCurrencyCode, ID, MAX_AMOUNT } from './shape.ts'

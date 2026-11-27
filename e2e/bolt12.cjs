@@ -153,7 +153,7 @@ function fakeWallet({ alias, canPayOffers }) {
   check(await waitText(ana, '.bitcoin', 'Paid ¥1,500 to Bob (10,000 sats)', 30000), 'Offer Wallet pays the offer');
   check(offerWallet.paid.length === 1 && offerWallet.paid[0].payment === `bitcoin:?lno=${OFFER}` && offerWallet.paid[0].amount === 10_000_000, 'it was asked to pay Bob’s offer 10,000,000 msats');
   check(await waitText(bob, '.banners', 'Ana paid you ¥1,500'), 'Bob is told');
-  check((await bob.textContent('.banners')).includes('verified'), 'with the proof checked');
+  check((await bob.textContent('.banners')).includes('over Lightning'), 'and says it went over Lightning');
   await shot(ana, '3-paid');
 
   // Paying an offer from another app: type the amount there, then mark it paid

@@ -62,7 +62,7 @@ const subscribers = () => {
   check(subscribers().some((s) => s.email === 'news@example.com'), 'and is stored');
 
   // The server refuses junk
-  const res = await page.evaluate(async () => (await fetch('/relay/feedback', { method: 'POST', body: JSON.stringify({ message: 'hi', email: 'not an email' }) })).status);
+  const res = await page.evaluate(async () => (await fetch('/relay/feedback', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ message: 'hi', email: 'not an email' }) })).status);
   check(res === 400, 'a bad email address is refused');
 
   check(errors.length === 0, `no console errors ${errors.join(' | ').slice(0, 300)}`);

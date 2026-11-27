@@ -1,7 +1,7 @@
 import { t } from '@lingui/core/macro'
 import { replay, type LedgerEvent } from '@waroo/ledger'
 import { useEffect, useRef, useState } from 'react'
-import { getEvents, getGroup, onNewEvents } from '../lib/db.ts'
+import { getGroup, onNewEvents, replayGroup } from '../lib/db.ts'
 import { go } from '../lib/hooks.ts'
 import { describeEvent, type News } from '../lib/news.ts'
 
@@ -33,7 +33,7 @@ export function Banners() {
       onNewEvents(async (groupId, events: LedgerEvent[], origin) => {
         const group = await getGroup(groupId)
         if (!group) return
-        const state = replay(await getEvents(groupId))
+        const state = await replayGroup(groupId)
         for (const event of events) {
           const news = describeEvent(event, state, group.meId, state.name ?? group.name, origin === 'local')
           if (!news || !BANNER_KINDS.has(news.kind)) continue

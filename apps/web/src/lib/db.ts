@@ -3,7 +3,7 @@
  * IndexedDB. Sync reads and writes these same events; nothing here talks to
  * the network.
  */
-import { isOffer, receiveAddresses, receiveTargets, replay, type CurrencyCode, type LedgerEvent, type PersonId } from '@waroo/ledger'
+import { firstKeys, isOffer, receiveAddresses, receiveTargets, replay, type CurrencyCode, type GroupState, type LedgerEvent, type PersonId } from '@waroo/ledger'
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb'
 import { newBoxKeys, newGroupKey, newSigningKeys, sign } from './crypto.ts'
 
@@ -32,7 +32,19 @@ export interface GroupMeta {
    * rooms are still watched for a while: a phone that missed the change can
    * be handed the new key there, and concurrent changes settle on one key.
    */
-  previousKeys?: { key: string; movedAt: string; cursor?: number }[]
+  previousKeys?: {
+    key: string
+    movedAt: string
+    cursor?: number
+    /** Who was in the group, and on which key, when this phone moved on. Only they are handed the new key there. */
+    keyed?: Record<PersonId, string>
+  }[]
+  /**
+   * The key each person first joined with, as this phone first saw it. Replay
+   * rejects a back-dated join or claim that would bind them to another key.
+   * Invites and moves to a new phone carry these along.
+   */
+  pins?: Record<PersonId, string>
 }
 
 /** An event payload before the store stamps id, author, clock and time on it. */
@@ -145,7 +157,7 @@ export async function publishProfile(onlyGroupId?: string): Promise<void> {
       group = { ...group, box: keys, boxPublic: publicKey }
       await (await db()).put('groups', group)
     }
-    const state = replay(await getEvents(group.id))
+    const state = await replayGroup(group.id)
     const me = state.members.get(group.meId)
     // Removed or gone: nothing this phone writes would count.
     if (!me || me.left || (state.signed && me.key === undefined)) continue
@@ -162,7 +174,7 @@ export async function publishProfile(onlyGroupId?: string): Promise<void> {
 
 export async function listGroups(): Promise<GroupMeta[]> {
   const groups = await (await db()).getAll('groups')
-  return groups.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+  return groups.sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)))
 }
 
 export async function getGroup(id: string): Promise<GroupMeta | undefined> {
@@ -176,6 +188,29 @@ export async function putGroup(group: GroupMeta): Promise<void> {
 
 export async function getStoredEvents(groupId: string): Promise<StoredEvent[]> {
   return (await db()).getAllFromIndex('events', 'byGroup', groupId)
+}
+
+/**
+ * Replays a group using the keys this phone already knows people by, and
+ * remembers any it learns. Use this rather than `replay` for groups on this
+ * phone.
+ */
+export async function replayGroup(groupId: string, events?: LedgerEvent[]): Promise<GroupState> {
+  const log = events ?? (await getEvents(groupId))
+  const group = await getGroup(groupId)
+  const state = replay(log, { pins: group?.pins })
+  if (group?.shared) {
+    const learned = firstKeys(log, state)
+    const pins = { ...learned, ...group.pins }
+    if (Object.keys(pins).length !== Object.keys(group.pins ?? {}).length) {
+      // Read and written in one transaction, so nothing written meanwhile is lost.
+      const tx = (await db()).transaction('groups', 'readwrite')
+      const fresh = await tx.store.get(groupId)
+      if (fresh) await tx.store.put({ ...fresh, pins: { ...learned, ...fresh.pins } })
+      await tx.done
+    }
+  }
+  return state
 }
 
 export async function getEvents(groupId: string): Promise<LedgerEvent[]> {
@@ -193,7 +228,7 @@ function strip({ groupId: _g, sig: _s, pending: _p, ...event }: StoredEvent): Le
  */
 export async function append(group: GroupMeta, drafts: Draft[]): Promise<LedgerEvent[]> {
   const database = await db()
-  let clock = replay(await getEvents(group.id)).clock
+  let clock = (await replayGroup(group.id)).clock
   const now = new Date().toISOString()
   const stored: StoredEvent[] = []
   for (const draft of drafts) {

@@ -17,13 +17,16 @@ import {
   MoveChannel,
   newMoveSecret,
   type MoveMessage,
+  sealHandover,
+  doneIsGenuine,
+  helloKeys,
 } from '../lib/move.ts'
 
 type Phase =
   | { at: 'intro' }
   | { at: 'starting' }
   | { at: 'waiting'; secret: string }
-  | { at: 'confirm'; secret: string; key: string; code: string }
+  | { at: 'confirm'; secret: string; key: string; box: string; code: string }
   | { at: 'moving' }
   | { at: 'done'; count: number }
   | { at: 'stopped'; message: string }
@@ -35,6 +38,8 @@ export function MoveScreen() {
   const groups = useRef<GroupMeta[]>([])
   const phaseRef = useRef(phase)
   phaseRef.current = phase
+  const answered = useRef(false)
+  const sessionKey = useRef<string>(undefined)
 
   useEffect(() => () => channel.current?.close(), [])
 
@@ -47,13 +52,16 @@ export function MoveScreen() {
   async function onMessage(msg: MoveMessage, secret: string) {
     const now = phaseRef.current
     if (msg.type === 'hello') {
-      if (now.at !== 'waiting') {
+      // Checked and set before anything waits, so two hellos can't both count.
+      if (answered.current || now.at !== 'waiting') {
         // A second phone answered. Someone else may have the code: start over.
         await channel.current?.send({ from: 'old', type: 'cancel' })
         return stop(t`Another phone also scanned the code, so the move was stopped. Nothing changed. Start again, and keep the code to yourself.`)
       }
-      setPhase({ at: 'confirm', secret, key: msg.key, code: await moveCode(secret, msg.key) })
-    } else if (msg.type === 'done' && now.at === 'moving') {
+      answered.current = true
+      if (typeof msg.key !== 'string' || typeof msg.box !== 'string') return stop(t`The new phone needs updating first. Open Waroo on it again, then start over.`)
+      setPhase({ at: 'confirm', secret, key: msg.key, box: msg.box, code: await moveCode(secret, helloKeys(msg)) })
+    } else if (msg.type === 'done' && now.at === 'moving' && (await doneIsGenuine(msg, sessionKey.current))) {
       await forgetMoved(groups.current.map((g) => g.id))
       await forgetMovedWallets()
       channel.current?.close()
@@ -66,6 +74,8 @@ export function MoveScreen() {
 
   async function start() {
     setPhase({ at: 'starting' })
+    answered.current = false
+    sessionKey.current = undefined
     try {
       groups.current = await groupsToMove()
       if (groups.current.length === 0 && (await sendWalletsToMove()).length === 0 && (await receiveWalletsToMove()).length === 0) {
@@ -95,7 +105,7 @@ export function MoveScreen() {
     try {
       const moved = await handOver(groups.current, phase.key)
       const addresses = await lightningAddressesToMove()
-      await channel.current?.send({
+      const sealed = await sealHandover({
         from: 'old',
         type: 'groups',
         groups: moved,
@@ -104,7 +114,10 @@ export function MoveScreen() {
         sendWallets: await sendWalletsToMove(),
         receiveWallets: await receiveWalletsToMove(),
         walletNames: await walletNames(),
-      })
+
+      }, phase.box)
+      sessionKey.current = sealed.sessionKey
+      await channel.current?.send(sealed.message)
     } catch (err) {
       stop((err as Error).message)
     }

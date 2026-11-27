@@ -420,7 +420,7 @@ function Payments({ meta, state }: { meta: GroupMeta; state: GroupState }) {
           <span className="row-main">
             <span>{paidLine(state, s.from, s.to, meta.meId)}</span>
             <span className="muted">
-              {[methodName(s.method), s.bitcoin ? satsText(s.bitcoin.sats) : '', s.bitcoin?.preimage ? t`verified` : '']
+              {[methodName(s.method), s.bitcoin ? satsText(s.bitcoin.sats) : '']
                 .filter(Boolean)
                 .join(t`, `)}
             </span>

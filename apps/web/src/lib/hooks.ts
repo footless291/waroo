@@ -1,7 +1,7 @@
 import { i18n } from '@lingui/core'
 import { replay, type GroupState, type LedgerEvent } from '@waroo/ledger'
 import { useEffect, useState, useSyncExternalStore } from 'react'
-import { getEvents, getGroup, listGroups, subscribe, type GroupMeta } from './db.ts'
+import { getEvents, getGroup, replayGroup, listGroups, subscribe, type GroupMeta } from './db.ts'
 
 /** Re-runs `load` on mount and after every local write. */
 export function useLoad<T>(load: () => Promise<T>, deps: unknown[]): T | undefined {
@@ -35,7 +35,7 @@ export function useGroup(id: string): LoadedGroup | null | undefined {
     const meta = await getGroup(id)
     if (!meta) return null
     const events = await getEvents(id)
-    return { meta, events, state: replay(events) }
+    return { meta, events, state: await replayGroup(id, events) }
   }, [id])
 }
 

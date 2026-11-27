@@ -18,7 +18,7 @@ import { t } from '@lingui/core/macro'
  */
 import { orderEvents, replay, type LedgerEvent } from '@waroo/ledger'
 import { newGroupKey, roomId, unwrapGroupKey, wrapGroupKey } from './crypto.ts'
-import { append, getGroup, getStoredEvents, markAllPending, pendingEvents, putGroup, type StoredEvent } from './db.ts'
+import { append, getGroup, replayGroup, getStoredEvents, markAllPending, pendingEvents, putGroup, type StoredEvent } from './db.ts'
 import { invitesFor, inviteStatus, stopInvite } from './invites.ts'
 import type { MovedGroup } from './move.ts'
 import { setKeyFollower, syncHub } from './sync.ts'
@@ -53,7 +53,7 @@ export async function recoverMember(groupId: string, memberId: string, newKey: s
  */
 async function rotate(groupId: string, leaveOut: string): Promise<string> {
   let group = (await getGroup(groupId))!
-  const state = replay((await getStoredEvents(groupId)).map(strip))
+  const state = await replayGroup(groupId)
   const recipients = [...state.members.values()]
     .filter((m) => !m.left && m.key !== undefined && m.id !== leaveOut)
     .map((m) => ({ memberId: m.id, boxKey: m.id === group!.meId ? group!.boxPublic! : m.boxKey }))
@@ -78,9 +78,16 @@ async function rotate(groupId: string, leaveOut: string): Promise<string> {
 async function moveToKey(groupId: string, newKey: string) {
   const group = (await getGroup(groupId))!
   if (!group.key || group.key === newKey) return
+  // Who was in the group, on which key, as this phone left the old room. Only
+  // they can be handed the new key there later: anyone who turns up in the
+  // old room afterwards is someone holding the old key, which may well be
+  // the person just removed.
+  const state = await replayGroup(groupId)
+  const keyed: Record<string, string> = {}
+  for (const m of state.members.values()) if (!m.left && m.key) keyed[m.id] = m.key
   const previousKeys = [
     ...(group.previousKeys ?? []).filter((p) => p.key !== group.key && p.key !== newKey),
-    { key: group.key, movedAt: new Date().toISOString(), cursor: group.cursor ?? 0 },
+    { key: group.key, movedAt: new Date().toISOString(), cursor: group.cursor ?? 0, keyed },
   ].slice(-5)
   await putGroup({ ...group, key: newKey, cursor: 0, previousKeys })
   // Every phone copies what it has into the new room; the relay drops duplicates.
@@ -144,14 +151,20 @@ async function handOverToLatePhones(groupId: string) {
   const group = await getGroup(groupId)
   if (!group?.key || !group.previousKeys?.length) return
   const events = await getStoredEvents(groupId)
-  const state = replay(events.map(strip))
+  const state = await replayGroup(groupId, events.map(strip))
   const rekeys = handOffs(events)
   for (const previous of group.previousKeys) {
     const room = await roomId(previous.key)
     const fromRoom = rekeys.filter((r) => r.from === room)
     if (fromRoom.length === 0) continue
     const late = [...state.members.values()].filter(
-      (m) => !m.left && m.key !== undefined && m.boxKey && m.id !== group.meId && !fromRoom.some((r) => r.wrapped[m.id]),
+      (m) =>
+        !m.left &&
+        m.key !== undefined &&
+        previous.keyed?.[m.id] === m.key &&
+        m.boxKey &&
+        m.id !== group.meId &&
+        !fromRoom.some((r) => r.wrapped[m.id]),
     )
     if (late.length === 0) continue
     const { ephemeral, wrapped } = await wrapGroupKey(

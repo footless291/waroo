@@ -151,8 +151,12 @@ function explainNwcError(err: unknown, nwc: typeof import('@getalby/sdk/nwc')): 
   const detail = err instanceof Error ? err.message : String(err)
   const code = (err as { code?: string })?.code
   const tech = ` (${[code, detail].filter(Boolean).join(': ')})`
-  if (err instanceof nwc.Nip47PublishTimeoutError || err instanceof nwc.Nip47PublishError || err instanceof nwc.Nip47NetworkError) {
+  if (err instanceof nwc.Nip47NetworkError) {
     return { message: t`Waroo couldn’t reach it, so the request wasn’t sent${tech}`, certain: true }
+  }
+  // The request may have reached the wallet before the relay stopped answering.
+  if (err instanceof nwc.Nip47PublishTimeoutError || err instanceof nwc.Nip47PublishError) {
+    return { message: t`the connection to it dropped while sending the request, so it may or may not have paid${tech}`, certain: false }
   }
   if (err instanceof nwc.Nip47ReplyTimeoutError) {
     return { message: t`it got the request but didn’t answer within a minute${tech}`, certain: false }

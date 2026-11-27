@@ -51,7 +51,10 @@ export class InviteBox extends DurableObject {
       if (box) return json({ error: 'Already exists' }, 409)
       let input: { data?: unknown; expiresAt?: unknown; uses?: unknown; stopHash?: unknown }
       try {
-        input = await request.json()
+        // Read with a cap: a huge body is refused before it's parsed.
+        const text = await readCapped(request, MAX_DATA * 2)
+        if (text === null) return json({ error: 'Too large' }, 413)
+        input = JSON.parse(text)
       } catch {
         return json({ error: 'Not JSON' }, 400)
       }
@@ -86,6 +89,7 @@ export class InviteBox extends DurableObject {
         if (box.usesLeft <= 0) {
           box.state = 'used'
           box.data = null
+          await this.ctx.storage.deleteAlarm()
         }
       }
       await this.ctx.storage.put('box', box)
@@ -107,9 +111,10 @@ export class InviteBox extends DurableObject {
   }
 
   override async alarm(): Promise<void> {
+    // A used, stopped or expired box is kept (without its ticket) for good,
+    // so nobody can put a new ticket behind the same link later.
     const box = await this.ctx.storage.get<Box>('box')
     if (box?.state === 'open') await this.expire(box)
-    else await this.ctx.storage.deleteAll()
   }
 
   private async expire(box: Box): Promise<Box> {
@@ -122,4 +127,31 @@ export class InviteBox extends DurableObject {
   private status(box: Box) {
     return { state: box.state, expiresAt: box.expiresAt, usesLeft: box.usesLeft, opens: box.opens }
   }
+}
+
+/** The request body as text, or null if it's longer than `max` bytes. */
+export async function readCapped(request: Request, max: number): Promise<string | null> {
+  const declared = Number(request.headers.get('Content-Length') ?? 0)
+  if (declared > max) return null
+  if (!request.body) return ''
+  const reader = request.body.getReader()
+  const chunks: Uint8Array[] = []
+  let size = 0
+  for (;;) {
+    const { done, value } = await reader.read()
+    if (done) break
+    size += value.byteLength
+    if (size > max) {
+      await reader.cancel()
+      return null
+    }
+    chunks.push(value)
+  }
+  const all = new Uint8Array(size)
+  let at = 0
+  for (const c of chunks) {
+    all.set(c, at)
+    at += c.byteLength
+  }
+  return new TextDecoder().decode(all)
 }

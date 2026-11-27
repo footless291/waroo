@@ -8,6 +8,8 @@
  * by whoever runs the server, and the form says so.
  */
 
+import { readCapped } from './invites.ts'
+
 export interface FeedbackEnv {
   EMAIL?: SendEmail
   /**
@@ -28,6 +30,7 @@ const MAX_SHOTS = 3
 /** Base64 size of one screenshot; the app shrinks them well under this. */
 const MAX_SHOT_CHARS = 2_000_000
 const MAX_BODY = 7 * 1024 * 1024
+const MAX_PER_DAY = 300
 const EMAIL = /^[^\s@]{1,64}@[^\s@]{1,253}\.[^\s@]{2,63}$/
 
 interface Shot {
@@ -56,10 +59,15 @@ export async function feedback(request: Request, env: FeedbackEnv): Promise<Resp
   if (env.FEEDBACK_LIMIT && !(await env.FEEDBACK_LIMIT.limit({ key: ip })).success) {
     return bad('Too many messages for now. Try again in a minute.', 429)
   }
-  if (Number(request.headers.get('content-length') ?? 0) > MAX_BODY) return bad('Too large', 413)
+  // Only from the app itself: a page elsewhere can't send reports through its visitors.
+  const origin = request.headers.get('Origin')
+  if (origin !== new URL(request.url).origin) return bad('Send feedback from the app', 403)
+  if (!(request.headers.get('Content-Type') ?? '').startsWith('application/json')) return bad('Not JSON', 415)
   let report: Report
   try {
-    report = (await request.json()) as Report
+    const text = await readCapped(request, MAX_BODY)
+    if (text === null) return bad('Too large', 413)
+    report = JSON.parse(text) as Report
   } catch {
     return bad('Not JSON')
   }
@@ -81,20 +89,33 @@ export async function feedback(request: Request, env: FeedbackEnv): Promise<Resp
     if (!/^image\/(jpeg|png|webp)$/.test(s.type ?? '')) return bad('Screenshots must be images')
   }
 
+  // A cap on the whole day as well as each address, so the inbox can't be flooded.
+  if (message) {
+    await env.DB.prepare(`CREATE TABLE IF NOT EXISTS feedback_days (day TEXT PRIMARY KEY, n INTEGER NOT NULL)`).run()
+    const day = new Date().toISOString().slice(0, 10)
+    const row = await env.DB.prepare(
+      `INSERT INTO feedback_days (day, n) VALUES (?, 1) ON CONFLICT(day) DO UPDATE SET n = n + 1 RETURNING n`,
+    )
+      .bind(day)
+      .first<{ n: number }>()
+    if ((row?.n ?? 0) > MAX_PER_DAY) return bad('Lots of messages today already. Try again tomorrow, or email hello@getwaroo.app.', 429)
+  }
+
   if (report.updates) {
     await env.DB.prepare(
       `CREATE TABLE IF NOT EXISTS subscribers (email TEXT PRIMARY KEY, lang TEXT, source TEXT, created_at TEXT NOT NULL, unsubscribed_at TEXT)`,
     ).run()
     await env.DB.prepare(
       `INSERT INTO subscribers (email, lang, source, created_at) VALUES (?, ?, 'app', ?)
-       ON CONFLICT(email) DO UPDATE SET unsubscribed_at = NULL, lang = excluded.lang`,
+       ON CONFLICT(email) DO UPDATE SET lang = excluded.lang`,
     )
       .bind(email, lang, new Date().toISOString())
       .run()
   }
 
   if (message) {
-    const firstLine = message.split('\n')[0]!.slice(0, 70)
+    // No control characters in a header.
+    const firstLine = message.split('\n')[0]!.replace(/[\u0000-\u001f\u007f-\u009f\u2028\u2029]/g, ' ').slice(0, 70)
     const details = [
       `From: ${email || 'no email given'}${report.updates ? ' (wants updates)' : ''}`,
       `App: ${String(report.app ?? '').slice(0, 40)}`,

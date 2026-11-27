@@ -6,8 +6,9 @@ import { t } from '@lingui/core/macro'
  * the relay, encrypted with that secret, and is handed out only while the
  * invite is valid. See worker/invites.ts.
  */
+import { firstKeys, replay } from '@waroo/ledger'
 import { decryptJson, encryptJson, inviteId, newGroupKey, toB64url } from './crypto.ts'
-import { getSetting, setSetting, type GroupMeta } from './db.ts'
+import { getEvents, getSetting, setSetting, type GroupMeta } from './db.ts'
 import { relayHttpUrl } from './sync.ts'
 
 export type InviteState = 'open' | 'used' | 'expired' | 'stopped' | 'unknown'
@@ -32,6 +33,8 @@ export interface InviteTicket {
   g: string
   k: string
   from: string
+  /** The keys the inviter's phone knows people joined with: see GroupMeta.pins. */
+  p?: Record<string, string>
 }
 
 export const DAY = 24 * 60 * 60 * 1000
@@ -55,7 +58,9 @@ async function sha256(text: string): Promise<string> {
 export async function createInvite(group: GroupMeta, options: { days: number; oneTime: boolean }): Promise<SavedInvite> {
   const secret = newGroupKey()
   const stopToken = newGroupKey()
-  const ticket: InviteTicket = { g: group.id, k: group.key!, from: group.meId }
+  const events = await getEvents(group.id)
+  const pins = { ...firstKeys(events, replay(events, { pins: group.pins })), ...group.pins }
+  const ticket: InviteTicket = { g: group.id, k: group.key!, from: group.meId, p: pins }
   const expiresAt = Date.now() + options.days * DAY
   const res = await fetch(relayHttpUrl(`invites/${await inviteId(secret)}`), {
     method: 'PUT',
@@ -134,7 +139,8 @@ export async function openInvite(secret: string): Promise<InviteTicket> {
   const body = (await res.json().catch(() => ({}))) as { state?: InviteState; data?: string }
   if (!res.ok || !body.data) throw new InviteClosed(body.state ?? 'unknown')
   const ticket = await decryptJson<InviteTicket>(secret, body.data)
-  if (!ticket?.g || !ticket.k) throw new InviteClosed('unknown')
+  if (typeof ticket?.g !== 'string' || typeof ticket.k !== 'string' || typeof ticket.from !== 'string') throw new InviteClosed('unknown')
+  if (ticket.p !== undefined && !Object.values(ticket.p ?? 0).every((v) => typeof v === 'string')) delete ticket.p
   await setSetting(`opened:${id}`, ticket)
   return ticket
 }

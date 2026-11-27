@@ -1,5 +1,5 @@
 import { computeShares, replay, type LedgerEvent } from '@waroo/ledger'
-import { getEvents, listGroups } from './db.ts'
+import { getEvents, listGroups, replayGroup } from './db.ts'
 
 export interface ActivityItem {
   key: string
@@ -31,7 +31,7 @@ export async function recentActivity(limit = 100): Promise<ActivityItem[]> {
   const items: ActivityItem[] = []
   for (const group of await listGroups()) {
     const events = await getEvents(group.id)
-    const state = replay(events)
+    const state = await replayGroup(group.id, events)
     const byId = new Map<string, LedgerEvent>(events.map((e) => [e.id, e]))
     const name = (id: string) => (id === group.meId ? null : (state.members.get(id)?.name ?? '?'))
     const groupName = state.name ?? group.name

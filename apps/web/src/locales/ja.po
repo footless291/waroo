@@ -15,7 +15,7 @@ msgid ", "
 msgstr "、"
 
 #. placeholder {0}: g.name
-#: src/lib/move.ts:220
+#: src/lib/move.ts:286
 msgid "“{0}” didn’t arrive. Keep both phones open and try again."
 msgstr "「{0}」が届きませんでした。両方のスマホを開いたまま、もう一度お試しください。"
 
@@ -29,17 +29,17 @@ msgid "{0, plural, one {{state}, opened once} other {{state}, opened # times}}"
 msgstr "{0, plural, other {{state}、#回開かれました}}"
 
 #. placeholder {0}: phase.count
-#: src/screens/MoveScreen.tsx:188
+#: src/screens/MoveScreen.tsx:201
 msgid "{0, plural, one {Your group and wallets are on the new phone now, and gone from this one.} other {Your # groups and wallets are on the new phone now, and gone from this one.}}"
 msgstr "{0, plural, other {#個のグループとウォレットが新しいスマホに移り、このスマホからは削除されました。}}"
 
 #. placeholder {0}: phase.count
-#: src/screens/MoveInScreen.tsx:111
+#: src/screens/MoveInScreen.tsx:119
 msgid "{0, plural, one {Your group is on this phone now.} other {Your # groups are on this phone now.}}"
 msgstr "{0, plural, other {#個のグループがこのスマホに移りました。}}"
 
 #. placeholder {0}: phase.wallets
-#: src/screens/MoveInScreen.tsx:118
+#: src/screens/MoveInScreen.tsx:126
 msgid "{0, plural, one {Your wallet connection came too, in the same order.} other {Your wallet connections came too, in the same order.}}"
 msgstr "{0, plural, other {ウォレットの接続も同じ順番で移りました。}}"
 
@@ -63,19 +63,27 @@ msgstr "{addr}：{why}"
 msgid "{base}, your share {share}"
 msgstr "{base}、あなたの負担 {share}"
 
-#: src/lib/news.ts:109
+#: src/lib/news.ts:95
+msgid "{by} marked {from}’s {amount} to you as paid"
+msgstr "{by}さんが、{from}さんからあなたへの{amount}を支払い済みにしました"
+
+#: src/lib/news.ts:100
+msgid "{by} marked your {amount} to {to} as paid"
+msgstr "{by}さんが、あなたから{to}さんへの{amount}を支払い済みにしました"
+
+#: src/lib/news.ts:115
 msgid "{by} moved you to a new phone in {group}"
 msgstr "{by}さんが{group}であなたを新しいスマホに移しました"
 
-#: src/lib/news.ts:121
+#: src/lib/news.ts:127
 msgid "{by} removed {who} from {group}"
 msgstr "{by}さんが{who}さんを{group}から外しました"
 
-#: src/lib/news.ts:118
+#: src/lib/news.ts:124
 msgid "{by} removed you from {group}"
 msgstr "{by}さんがあなたを{group}から外しました"
 
-#: src/lib/news.ts:112
+#: src/lib/news.ts:118
 msgid "{by} vouched for it"
 msgstr "{by}さんが保証しました"
 
@@ -112,15 +120,15 @@ msgstr "{date}、{who}さんが支払い"
 msgid "{date}, you paid"
 msgstr "{date}、あなたが支払い"
 
-#: src/lib/news.ts:91
+#: src/lib/news.ts:94
 msgid "{from} marked {amount} as paid to you"
 msgstr "{from}さんが{amount}をあなたへの支払い済みにしました"
 
-#: src/lib/news.ts:96
+#: src/lib/news.ts:102
 msgid "{from} paid {to} {amount}"
 msgstr "{from}さんが{to}さんに{amount}を支払いました"
 
-#: src/lib/news.ts:90
+#: src/lib/news.ts:92
 msgid "{from} paid you {amount}"
 msgstr "{from}さんが{amount}を支払いました"
 
@@ -136,7 +144,7 @@ msgstr "{group}、{who}さんが支払い"
 msgid "{group}, you paid"
 msgstr "{group}、あなたが支払い"
 
-#: src/lib/news.ts:156
+#: src/lib/news.ts:163
 msgid "{group}: {count} new things"
 msgstr "{group}：新着{count}件"
 
@@ -144,7 +152,7 @@ msgstr "{group}：新着{count}件"
 msgid "{groupName} leaves this phone, and the others can’t add you to new expenses. Past expenses keep your name. To come back, you’d need a new invite."
 msgstr "{groupName}はこのスマホから削除され、ほかのメンバーはあなたを新しい支出に追加できなくなります。これまでの支出にはあなたの名前が残ります。戻るには新しい招待が必要です。"
 
-#: src/screens/JoinScreen.tsx:193
+#: src/screens/JoinScreen.tsx:198
 msgid "{inviter} invited you to"
 msgstr "{inviter}さんからの招待"
 
@@ -182,15 +190,11 @@ msgstr "{payer}さんがあなたに支払い"
 msgid "{price} per bitcoin"
 msgstr "1ビットコインあたり{price}"
 
-#: src/lib/news.ts:78
-msgid "{sats}, in {group}"
-msgstr "{sats}・{group}"
+#: src/lib/news.ts:79
+msgid "{sats} over Lightning, in {group}"
+msgstr "{sats}（ライトニング）・{group}"
 
-#: src/lib/news.ts:77
-msgid "{sats}, verified, in {group}"
-msgstr "{sats}・確認済み・{group}"
-
-#: src/lib/news.ts:94
+#: src/lib/news.ts:99
 msgid "{to} marked your {amount} as paid"
 msgstr "{to}さんがあなたの{amount}を支払い済みにしました"
 
@@ -206,7 +210,7 @@ msgstr "{toName}さんのサービスは支払いを自動で確認できませ�
 msgid "{what}: {message}"
 msgstr "{what}：{message}"
 
-#: src/lib/news.ts:146
+#: src/lib/news.ts:153
 msgid "{who} added {title}, {total}"
 msgstr "{who}さんが{title}を追加：{total}"
 
@@ -214,19 +218,19 @@ msgstr "{who}さんが{title}を追加：{total}"
 msgid "{who} can’t see this yet"
 msgstr "{who}はまだこのグループを見られません"
 
-#: src/lib/news.ts:112
+#: src/lib/news.ts:118
 msgid "{who} is back in {group} on a new phone"
 msgstr "{who}さんが新しいスマホで{group}に戻りました"
 
-#: src/lib/news.ts:103
+#: src/lib/news.ts:109
 msgid "{who} joined {group}"
 msgstr "{who}さんが{group}に参加しました"
 
-#: src/lib/news.ts:126
+#: src/lib/news.ts:132
 msgid "{who} left {group}"
 msgstr "{who}さんが{group}から退出しました"
 
-#: src/screens/RecoverScreen.tsx:133
+#: src/screens/RecoverScreen.tsx:143
 msgid "{who} lost their phone"
 msgstr "{who}さんがスマホをなくしました"
 
@@ -242,7 +246,7 @@ msgstr "{who}さんのスマホには{groupName}の新しい内容が届かな�
 msgid "{why} Ask for a new one."
 msgstr "{why}新しい招待をもらってください。"
 
-#: src/screens/JoinScreen.tsx:123
+#: src/screens/JoinScreen.tsx:127
 msgid "{why}. Check your connection and try again."
 msgstr "{why}。接続を確認して、もう一度お試しください。"
 
@@ -308,11 +312,11 @@ msgstr "1か月"
 msgid "1 week"
 msgstr "1週間"
 
-#: src/screens/JoinScreen.tsx:144
+#: src/screens/JoinScreen.tsx:148
 msgid "a group"
 msgstr "グループ"
 
-#: src/App.tsx:62
+#: src/App.tsx:63
 msgid "A new version is ready."
 msgstr "新しいバージョンがあります。"
 
@@ -377,7 +381,7 @@ msgstr "誰が何を払ったかを追加すると、Warooが誰がいくら払�
 msgid "Add your email address to get updates."
 msgstr "お知らせを受け取るには、メールアドレスを入力してください。"
 
-#: src/screens/JoinScreen.tsx:219
+#: src/screens/JoinScreen.tsx:224
 msgid "Add yourself as a new person"
 msgstr "新しいメンバーとして参加"
 
@@ -398,7 +402,7 @@ msgstr "BOLT12オファーを追加しました。"
 msgid "Adjust"
 msgstr "調整"
 
-#: src/screens/MoveInScreen.tsx:109
+#: src/screens/MoveInScreen.tsx:117
 msgid "All here"
 msgstr "移行完了"
 
@@ -407,11 +411,11 @@ msgid "all square"
 msgstr "精算済み"
 
 #: src/screens/GroupScreen.tsx:230
-#: src/screens/HomeScreen.tsx:30
+#: src/screens/HomeScreen.tsx:29
 msgid "All square"
 msgstr "精算済み"
 
-#: src/screens/JoinScreen.tsx:211
+#: src/screens/JoinScreen.tsx:216
 msgid "Already joined on another phone"
 msgstr "別のスマホで参加済み"
 
@@ -442,11 +446,11 @@ msgstr "はなこ"
 msgid "Another person"
 msgstr "ほかの人"
 
-#: src/screens/MoveScreen.tsx:53
+#: src/screens/MoveScreen.tsx:59
 msgid "Another phone also scanned the code, so the move was stopped. Nothing changed. Start again, and keep the code to yourself."
 msgstr "ほかのスマホもコードを読み取ったため、移行を中止しました。何も変わっていません。コードは人に見せずに、やり直してください。"
 
-#: src/screens/RecoverScreen.tsx:64
+#: src/screens/RecoverScreen.tsx:67
 msgid "Another phone also used the code, so this was stopped. Nothing changed. Start again."
 msgstr "ほかのスマホもコードを使ったため、中止しました。何も変わっていません。やり直してください。"
 
@@ -464,7 +468,7 @@ msgid "Appearance"
 msgstr "外観"
 
 #: src/screens/JoinScreen.tsx:49
-#: src/screens/JoinScreen.tsx:136
+#: src/screens/JoinScreen.tsx:140
 msgid "Ask for the invite link again, and open the whole link."
 msgstr "招待リンクをもう一度もらって、リンク全体を開いてください。"
 
@@ -485,7 +489,7 @@ msgstr "銀行振込"
 msgid "Bitcoin"
 msgstr "ビットコイン"
 
-#: src/lib/lightning.ts:171
+#: src/lib/lightning.ts:175
 msgid "Bitcoin price sources disagree right now, so paying is paused. Try again in a minute."
 msgstr "ビットコイン価格の情報源が一致しないため、支払いを一時停止しています。1分ほどしてからお試しください。"
 
@@ -497,11 +501,11 @@ msgstr "たろう"
 msgid "BOLT12 offer"
 msgstr "BOLT12オファー"
 
-#: src/screens/RecoverScreen.tsx:195
+#: src/screens/RecoverScreen.tsx:205
 msgid "Bringing {who} back in. Keep both phones open…"
 msgstr "{who}さんを復帰させています。両方のスマホを開いたままにしてください…"
 
-#: src/screens/MoveInScreen.tsx:104
+#: src/screens/MoveInScreen.tsx:112
 msgid "Bringing your group here. Keep both phones open…"
 msgstr "グループを移しています。両方のスマホを開いたままにしてください…"
 
@@ -535,7 +539,7 @@ msgstr "現金"
 msgid "Change your name, or leave the group"
 msgstr "名前の変更、またはグループからの退出"
 
-#: src/screens/MoveScreen.tsx:138
+#: src/screens/MoveScreen.tsx:151
 msgid "Check both phones show the same 4 numbers."
 msgstr "両方のスマホに同じ4桁の数字が表示されることを確認します。"
 
@@ -562,11 +566,11 @@ msgstr "ユーザー名とパスワードを決めてください。パスワー
 msgid "Close"
 msgstr "閉じる"
 
-#: src/screens/MoveScreen.tsx:214
+#: src/screens/MoveScreen.tsx:227
 msgid "Code {digits}"
 msgstr "コード {digits}"
 
-#: src/screens/RecoverScreen.tsx:161
+#: src/screens/RecoverScreen.tsx:171
 msgid "Code for {who}’s new phone to scan"
 msgstr "{who}さんの新しいスマホで読み取るコード"
 
@@ -574,7 +578,7 @@ msgstr "{who}さんの新しいスマホで読み取るコード"
 msgid "Code from Rizful"
 msgstr "Rizfulのコード"
 
-#: src/screens/MoveScreen.tsx:152
+#: src/screens/MoveScreen.tsx:165
 msgid "Code to scan with the new phone"
 msgstr "新しいスマホで読み取るコード"
 
@@ -621,7 +625,7 @@ msgstr "請求書をコピー"
 msgid "Copy link"
 msgstr "リンクをコピー"
 
-#: src/screens/RecoverScreen.tsx:163
+#: src/screens/RecoverScreen.tsx:173
 msgid "Copy link instead"
 msgstr "代わりにリンクをコピー"
 
@@ -633,11 +637,11 @@ msgstr "オファーをコピー"
 msgid "Couldn’t find {candidate}. Check the username is exactly as you chose it in Coinos."
 msgstr "{candidate}が見つかりません。Coinosで決めたユーザー名と完全に同じか確認してください。"
 
-#: src/lib/lightning.ts:172
+#: src/lib/lightning.ts:176
 msgid "Couldn’t get the bitcoin price right now. Try again in a minute."
 msgstr "今はビットコイン価格を取得できませんでした。1分ほどしてからお試しください。"
 
-#: src/lib/lightning.ts:165
+#: src/lib/lightning.ts:169
 msgid "Couldn’t get the bitcoin price. Check your connection."
 msgstr "ビットコイン価格を取得できませんでした。接続を確認してください。"
 
@@ -649,11 +653,11 @@ msgstr "今は名前を調べられませんでした。"
 msgid "Couldn’t look the name up. Check your connection and try again."
 msgstr "名前を調べられませんでした。接続を確認して、もう一度お試しください。"
 
-#: src/lib/invites.ts:70
+#: src/lib/invites.ts:75
 msgid "Couldn’t make the link. Check your connection and try again."
 msgstr "リンクを作れませんでした。接続を確認して、もう一度お試しください。"
 
-#: src/screens/JoinScreen.tsx:185
+#: src/screens/JoinScreen.tsx:190
 msgid "Couldn’t open the group"
 msgstr "グループを開けませんでした"
 
@@ -665,15 +669,15 @@ msgstr "招待を開けませんでした"
 msgid "Couldn’t reach Rizful. Check your connection and try again."
 msgstr "Rizfulに接続できませんでした。接続を確認して、もう一度お試しください。"
 
-#: src/lib/sync.ts:440
+#: src/lib/sync.ts:446
 msgid "Couldn’t reach the group"
 msgstr "グループに接続できませんでした"
 
-#: src/lib/lightning.ts:45
+#: src/lib/lightning.ts:47
 msgid "Couldn’t reach their Lightning address. It may not work from web apps, or you may be offline."
 msgstr "相手のライトニングアドレスに接続できませんでした。Webアプリからは使えないアドレスか、オフラインの可能性があります。"
 
-#: src/lib/move.ts:147
+#: src/lib/move.ts:208
 msgid "Couldn’t reach Waroo to hand over your groups. Check your connection and try again."
 msgstr "グループを引き渡すためにWarooに接続できませんでした。接続を確認して、もう一度お試しください。"
 
@@ -683,11 +687,11 @@ msgid "Couldn’t reach Waroo to tell the group. Check your connection and try a
 msgstr "グループに知らせるためにWarooに接続できませんでした。接続を確認して、もう一度お試しください。"
 
 #: src/components/FeedbackCard.tsx:98
-#: src/lib/invites.ts:132
+#: src/lib/invites.ts:137
 msgid "Couldn’t reach Waroo. Check your connection and try again."
 msgstr "Warooに接続できませんでした。接続を確認して、もう一度お試しください。"
 
-#: src/lib/move.ts:95
+#: src/lib/move.ts:105
 msgid "Couldn’t reach Waroo. Check your connection."
 msgstr "Warooに接続できませんでした。接続を確認してください。"
 
@@ -695,7 +699,7 @@ msgstr "Warooに接続できませんでした。接続を確認してくださ�
 msgid "Couldn’t send it right now. Try again later."
 msgstr "今は送信できませんでした。あとでもう一度お試しください。"
 
-#: src/lib/invites.ts:100
+#: src/lib/invites.ts:105
 msgid "Couldn’t turn the link off. Check your connection and try again."
 msgstr "リンクを無効にできませんでした。接続を確認して、もう一度お試しください。"
 
@@ -728,17 +732,17 @@ msgstr "支出を削除"
 msgid "Dismiss"
 msgstr "閉じる"
 
-#: src/screens/MoveScreen.tsx:167
+#: src/screens/MoveScreen.tsx:180
 msgid "Does the new phone show these numbers?"
 msgstr "新しいスマホに同じ数字が表示されていますか？"
 
-#: src/screens/MoveScreen.tsx:156
+#: src/screens/MoveScreen.tsx:169
 msgid "Don’t share this code: it’s only for your own phone."
 msgstr "このコードは共有しないでください。あなた自身のスマホ専用です。"
 
 #: src/components/BitcoinPay.tsx:225
-#: src/screens/MoveScreen.tsx:194
-#: src/screens/RecoverScreen.tsx:207
+#: src/screens/MoveScreen.tsx:207
+#: src/screens/RecoverScreen.tsx:217
 msgid "Done"
 msgstr "完了"
 
@@ -882,8 +886,8 @@ msgstr "{sum}受け取る"
 msgid "Gets back {sum}"
 msgstr "{sum}受け取る"
 
-#: src/screens/MoveScreen.tsx:148
-#: src/screens/RecoverScreen.tsx:157
+#: src/screens/MoveScreen.tsx:161
+#: src/screens/RecoverScreen.tsx:167
 msgid "Getting ready…"
 msgstr "準備中…"
 
@@ -899,7 +903,11 @@ msgstr "少なくとも1人に持ち分を設定してください"
 msgid "Give it a name"
 msgstr "名前を入力してください"
 
-#: src/screens/JoinScreen.tsx:156
+#: src/components/ErrorBoundary.tsx:32
+msgid "Go to your groups"
+msgstr "グループ一覧へ"
+
+#: src/screens/JoinScreen.tsx:160
 msgid "Group"
 msgstr "グループ"
 
@@ -917,7 +925,7 @@ msgid "Group settings"
 msgstr "グループの設定"
 
 #: src/components/TabBar.tsx:44
-#: src/screens/HomeScreen.tsx:49
+#: src/screens/HomeScreen.tsx:48
 msgid "Groups"
 msgstr "グループ"
 
@@ -925,7 +933,7 @@ msgstr "グループ"
 msgid "Hasn’t joined on a phone yet."
 msgstr "まだスマホで参加していません。"
 
-#: src/screens/JoinScreen.tsx:236
+#: src/screens/JoinScreen.tsx:241
 msgid "Have Waroo on your Home Screen? Join from there instead: open it, tap the scan button and scan the invite code. Groups joined here stay in this browser."
 msgstr "ホーム画面にWarooがありますか？そちらから参加してください：開いて読み取りボタンを押し、招待コードを読み取ります。ここで参加したグループはこのブラウザに残ります。"
 
@@ -946,11 +954,11 @@ msgstr "支払い済み"
 msgid "Idea"
 msgstr "アイデア"
 
-#: src/lib/news.ts:109
+#: src/lib/news.ts:115
 msgid "If that wasn’t you, tell the group"
 msgstr "心当たりがなければ、グループに知らせてください"
 
-#: src/screens/MoveInScreen.tsx:122
+#: src/screens/MoveInScreen.tsx:130
 msgid "If you paid from a wallet in this browser before, connect it again in Settings."
 msgstr "以前このブラウザのウォレットで支払っていた場合は、設定からもう一度接続してください。"
 
@@ -991,7 +999,7 @@ msgstr "招待する"
 msgid "Invite them, and everyone can add expenses and settle up from their own phone."
 msgstr "招待すれば、みんなが自分のスマホから支出を追加して精算できます。"
 
-#: src/lib/wallet.ts:164
+#: src/lib/wallet.ts:168
 msgid "it answered in a way Waroo couldn’t read{tech}"
 msgstr "読み取れない形式で応答がありました{tech}"
 
@@ -1003,7 +1011,7 @@ msgstr "BOLT12オファーに支払えません"
 msgid "it can’t pay BOLT12 offers yet"
 msgstr "まだBOLT12オファーに支払えません"
 
-#: src/lib/wallet.ts:170
+#: src/lib/wallet.ts:174
 msgid "it didn’t allow Waroo to pay{tech}"
 msgstr "Warooによる支払いを許可しませんでした{tech}"
 
@@ -1012,11 +1020,11 @@ msgstr "Warooによる支払いを許可しませんでした{tech}"
 msgid "It didn’t pay. Try {0}"
 msgstr "支払えませんでした。{0}で試す"
 
-#: src/lib/wallet.ts:167
+#: src/lib/wallet.ts:171
 msgid "it doesn’t have enough in it"
 msgstr "残高が足りません"
 
-#: src/lib/wallet.ts:158
+#: src/lib/wallet.ts:162
 msgid "it got the request but didn’t answer within a minute{tech}"
 msgstr "依頼は届きましたが、1分以内に応答がありませんでした{tech}"
 
@@ -1031,15 +1039,15 @@ msgid "it reported a problem ({0})"
 msgstr "問題が報告されました（{0}）"
 
 #. placeholder {0}: code ? ` (${code})` : ''
-#: src/lib/wallet.ts:174
+#: src/lib/wallet.ts:178
 msgid "it said: {detail}{0}"
 msgstr "応答：{detail}{0}"
 
-#: src/lib/wallet.ts:161
+#: src/lib/wallet.ts:165
 msgid "it uses a kind of encryption Waroo doesn’t support{tech}"
 msgstr "Warooが対応していない暗号化方式を使っています{tech}"
 
-#: src/screens/RecoverScreen.tsx:72
+#: src/screens/RecoverScreen.tsx:77
 msgid "It was cancelled on {who}’s new phone. Nothing changed."
 msgstr "{who}さんの新しいスマホで取り消されました。何も変わっていません。"
 
@@ -1047,7 +1055,7 @@ msgstr "{who}さんの新しいスマホで取り消されました。何も変�
 msgid "It’s from an older version of Waroo. Ask for a new invite link."
 msgstr "古いバージョンのWarooのリンクです。新しい招待リンクをもらってください。"
 
-#: src/lib/wallet.ts:172
+#: src/lib/wallet.ts:176
 msgid "it’s getting too many requests right now{tech}"
 msgstr "今はリクエストが多すぎます{tech}"
 
@@ -1072,15 +1080,15 @@ msgstr "居酒屋の夕食"
 msgid "Join {name} on Waroo"
 msgstr "Warooで{name}に参加しよう"
 
-#: src/screens/JoinScreen.tsx:245
+#: src/screens/JoinScreen.tsx:250
 msgid "Join as {name}"
 msgstr "{name}として参加"
 
-#: src/screens/JoinScreen.tsx:231
+#: src/screens/JoinScreen.tsx:236
 msgid "Join the group"
 msgstr "グループに参加"
 
-#: src/screens/HomeScreen.tsx:61
+#: src/screens/HomeScreen.tsx:60
 msgid "Join with a QR code"
 msgstr "QRコードで参加"
 
@@ -1126,8 +1134,8 @@ msgid "Lightning address or BOLT12 offer"
 msgstr "ライトニングアドレスまたはBOLT12オファー"
 
 #: src/screens/InviteScreen.tsx:170
-#: src/screens/MoveScreen.tsx:158
-#: src/screens/RecoverScreen.tsx:163
+#: src/screens/MoveScreen.tsx:171
+#: src/screens/RecoverScreen.tsx:173
 msgid "Link copied"
 msgstr "リンクをコピーしました"
 
@@ -1143,15 +1151,15 @@ msgstr "誰が何を注文したかを入力します。共有したものは、
 msgid "Looking for a code…"
 msgstr "コードを探しています…"
 
-#: src/screens/MoveScreen.tsx:81
+#: src/screens/MoveScreen.tsx:91
 msgid "Lost the connection. Nothing was moved; start again."
 msgstr "接続が切れました。何も移っていません。やり直してください。"
 
-#: src/screens/MoveInScreen.tsx:57
+#: src/screens/MoveInScreen.tsx:64
 msgid "Lost the connection. Start again on the other phone."
 msgstr "接続が切れました。もう一方のスマホでやり直してください。"
 
-#: src/screens/RecoverScreen.tsx:86
+#: src/screens/RecoverScreen.tsx:93
 msgid "Lost the connection. Start again."
 msgstr "接続が切れました。やり直してください。"
 
@@ -1206,7 +1214,7 @@ msgstr "{0}を下へ"
 msgid "Move {0} up"
 msgstr "{0}を上へ"
 
-#: src/screens/MoveScreen.tsx:131
+#: src/screens/MoveScreen.tsx:144
 #: src/screens/YouScreen.tsx:43
 msgid "Move to a new phone"
 msgstr "新しいスマホに移す"
@@ -1219,7 +1227,7 @@ msgstr "このスマホに移す"
 msgid "Move your groups to another phone, so you can keep adding expenses and settling up there. Have both phones with you."
 msgstr "グループを別のスマホに移して、そちらで支出の追加や精算を続けられます。両方のスマホを用意してください。"
 
-#: src/screens/MoveScreen.tsx:186
+#: src/screens/MoveScreen.tsx:199
 msgid "Moved"
 msgstr "移行完了"
 
@@ -1227,15 +1235,15 @@ msgstr "移行完了"
 msgid "Moving to a new phone"
 msgstr "新しいスマホへの移行"
 
-#: src/screens/MoveScreen.tsx:158
+#: src/screens/MoveScreen.tsx:171
 msgid "Moving within this phone? Copy the link"
 msgstr "同じスマホで移しますか？リンクをコピー"
 
-#: src/screens/MoveInScreen.tsx:104
+#: src/screens/MoveInScreen.tsx:112
 msgid "Moving your groups here. Keep both phones open…"
 msgstr "グループを移しています。両方のスマホを開いたままにしてください…"
 
-#: src/screens/MoveScreen.tsx:181
+#: src/screens/MoveScreen.tsx:194
 msgid "Moving your groups. Keep both phones open…"
 msgstr "グループを移しています。両方のスマホを開いたままにしてください…"
 
@@ -1273,8 +1281,8 @@ msgstr "まだ支出はありません"
 msgid "No payments yet"
 msgstr "まだ支払いはありません"
 
-#: src/screens/MoveScreen.tsx:175
-#: src/screens/RecoverScreen.tsx:189
+#: src/screens/MoveScreen.tsx:188
+#: src/screens/RecoverScreen.tsx:199
 msgid "No, stop"
 msgstr "いいえ、中止"
 
@@ -1290,8 +1298,8 @@ msgstr "{name}さんのアドレスは、どれも今は支払いを受け取れ
 msgid "Not found"
 msgstr "見つかりません"
 
-#: src/screens/MoveInScreen.tsx:131
-#: src/screens/MoveScreen.tsx:200
+#: src/screens/MoveInScreen.tsx:139
+#: src/screens/MoveScreen.tsx:213
 msgid "Not moved"
 msgstr "移せませんでした"
 
@@ -1299,11 +1307,11 @@ msgstr "移せませんでした"
 msgid "Not now"
 msgstr "今はしない"
 
-#: src/screens/RecoverScreen.tsx:213
+#: src/screens/RecoverScreen.tsx:223
 msgid "Nothing changed"
 msgstr "何も変わっていません"
 
-#: src/screens/MoveInScreen.tsx:111
+#: src/screens/MoveInScreen.tsx:119
 msgid "Nothing to move but your wallets."
 msgstr "移すものはウォレットだけです。"
 
@@ -1359,7 +1367,7 @@ msgstr "沖縄旅行"
 msgid "On iPhone and iPad, only apps on the Home Screen can send notifications. Tap Share, then “Add to Home Screen”, and turn them on from there."
 msgstr "iPhoneとiPadでは、ホーム画面に追加したアプリだけが通知を送れます。共有ボタンから「ホーム画面に追加」を選び、そちらで通知をオンにしてください。"
 
-#: src/screens/MoveScreen.tsx:151
+#: src/screens/MoveScreen.tsx:164
 msgid "On the new phone, open Waroo, tap the scan button and scan this code."
 msgstr "新しいスマホでWarooを開き、読み取りボタンを押してこのコードを読み取ってください。"
 
@@ -1416,7 +1424,7 @@ msgstr "ウォレットアプリで開く"
 msgid "Open invite"
 msgstr "招待を開く"
 
-#: src/screens/MoveInScreen.tsx:125
+#: src/screens/MoveInScreen.tsx:133
 msgid "Open my groups"
 msgstr "グループを開く"
 
@@ -1426,16 +1434,16 @@ msgstr "Rizfulを開く"
 
 #: src/screens/JoinScreen.tsx:37
 #: src/screens/JoinScreen.tsx:78
-#: src/screens/JoinScreen.tsx:137
-#: src/screens/MoveInScreen.tsx:134
+#: src/screens/JoinScreen.tsx:141
+#: src/screens/MoveInScreen.tsx:142
 msgid "Open Waroo"
 msgstr "Warooを開く"
 
-#: src/screens/MoveScreen.tsx:136
+#: src/screens/MoveScreen.tsx:149
 msgid "Open Waroo on the new phone, from its Home Screen."
 msgstr "新しいスマホで、ホーム画面からWarooを開きます。"
 
-#: src/screens/JoinScreen.tsx:189
+#: src/screens/JoinScreen.tsx:194
 msgid "Opening the group…"
 msgstr "グループを開いています…"
 
@@ -1502,7 +1510,7 @@ msgstr "一部の支払いです。{left}が残ります。"
 msgid "Paste"
 msgstr "貼り付け"
 
-#: src/screens/MoveScreen.tsx:161
+#: src/screens/MoveScreen.tsx:174
 msgid "Paste it under the scanner in the other app. You’ll still check the numbers on both."
 msgstr "もう一方のアプリの読み取り画面の下に貼り付けてください。数字の確認は両方で行います。"
 
@@ -1554,7 +1562,7 @@ msgstr "{0}で支払い中…"
 msgid "Payment method"
 msgstr "支払い方法"
 
-#: src/lib/news.ts:85
+#: src/lib/news.ts:87
 msgid "Payment sent: {amount} to {to}"
 msgstr "支払い完了：{to}さんに{amount}"
 
@@ -1623,7 +1631,7 @@ msgstr "ウォレットアプリで支払うためのQRコード"
 msgid "Receive"
 msgstr "受け取り"
 
-#: src/App.tsx:64
+#: src/App.tsx:65
 msgid "Reload"
 msgstr "再読み込み"
 
@@ -1733,7 +1741,7 @@ msgstr "フィードバックを送る"
 msgid "Send the others a link to <0>{name}</0>. They open it, pick who they are, and the group appears on their phone with everything added so far."
 msgstr "<0>{name}</0>へのリンクを送りましょう。開いて自分を選ぶと、これまでの内容ごとグループが相手のスマホに表示されます。"
 
-#: src/screens/RecoverScreen.tsx:166
+#: src/screens/RecoverScreen.tsx:176
 msgid "Sending the link? {who} pastes it under the scanner in Waroo. You’ll still check the numbers together."
 msgstr "リンクを送る場合は、{who}さんがWarooの読み取り画面の下に貼り付けます。数字の確認は一緒に行います。"
 
@@ -1790,8 +1798,8 @@ msgstr "{0}さんの持ち分"
 msgid "Show QR code"
 msgstr "QRコードを表示"
 
-#: src/screens/MoveScreen.tsx:144
-#: src/screens/RecoverScreen.tsx:153
+#: src/screens/MoveScreen.tsx:157
+#: src/screens/RecoverScreen.tsx:163
 msgid "Show the code"
 msgstr "コードを表示"
 
@@ -1818,7 +1826,7 @@ msgstr "誰か"
 msgid "Someone"
 msgstr "誰か"
 
-#: src/screens/JoinScreen.tsx:218
+#: src/screens/JoinScreen.tsx:223
 msgid "Someone else"
 msgstr "ほかの人"
 
@@ -1826,11 +1834,15 @@ msgstr "ほかの人"
 msgid "Someone in this expense isn’t in the group"
 msgstr "この支出に、グループにいない人が含まれています"
 
+#: src/components/ErrorBoundary.tsx:29
+msgid "Something in it didn’t look right. Your groups and keys are safe on this phone."
+msgstr "表示できない内容がありました。グループと鍵はこのスマホに安全に残っています。"
+
 #: src/screens/ExpenseScreen.tsx:407
 msgid "Split"
 msgstr "割り方"
 
-#: src/screens/HomeScreen.tsx:52
+#: src/screens/HomeScreen.tsx:51
 msgid "Split anything with anyone"
 msgstr "誰とでも割り勘"
 
@@ -1847,16 +1859,16 @@ msgstr "残りを{0}さんと分ける"
 msgid "Splitting with friends?"
 msgstr "友だちと割り勘しますか？"
 
-#: src/screens/HomeScreen.tsx:58
+#: src/screens/HomeScreen.tsx:57
 msgid "Start a group"
 msgstr "グループを作る"
 
-#: src/screens/HomeScreen.tsx:54
+#: src/screens/HomeScreen.tsx:53
 msgid "Start a group for a trip, a flat or a dinner, then invite the others from their own phones."
 msgstr "旅行やシェアハウス、食事会のグループを作って、みんなを自分のスマホから招待しましょう。"
 
-#: src/screens/MoveScreen.tsx:203
-#: src/screens/RecoverScreen.tsx:216
+#: src/screens/MoveScreen.tsx:216
+#: src/screens/RecoverScreen.tsx:226
 msgid "Start again"
 msgstr "やり直す"
 
@@ -1874,11 +1886,11 @@ msgstr "{0}での受け取りをやめますか？グループで使われなく
 msgid "Stop paying with {0}? You can connect it again any time."
 msgstr "{0}での支払いをやめますか？いつでも再接続できます。"
 
-#: src/screens/RecoverScreen.tsx:119
+#: src/screens/RecoverScreen.tsx:129
 msgid "Stopped. Nothing changed, and the phone that used the code got nothing."
 msgstr "中止しました。何も変わっておらず、コードを使ったスマホは何も受け取っていません。"
 
-#: src/screens/MoveScreen.tsx:126
+#: src/screens/MoveScreen.tsx:139
 msgid "Stopped. Nothing was moved. If a phone you don’t know scanned the code, that’s fine: it got nothing."
 msgstr "中止しました。何も移っていません。知らないスマホがコードを読み取っていても大丈夫です。何も受け取っていません。"
 
@@ -1910,7 +1922,7 @@ msgstr "もう一度タップで退出"
 msgid "Tap again to remove {who}"
 msgstr "もう一度タップで{who}さんを外す"
 
-#: src/screens/MoveScreen.tsx:137
+#: src/screens/MoveScreen.tsx:150
 msgid "Tap the scan button and scan the code this phone will show."
 msgstr "読み取りボタンを押して、このスマホに表示されるコードを読み取ります。"
 
@@ -1950,7 +1962,7 @@ msgstr "ライトニングアドレス（name@provider.com）やBOLT12オファ�
 msgid "That image couldn’t be read. Try a screenshot in PNG or JPEG."
 msgstr "その画像を読み込めませんでした。PNGかJPEGのスクリーンショットでお試しください。"
 
-#: src/lib/lightning.ts:72
+#: src/lib/lightning.ts:74
 msgid "That isn’t a Lightning address."
 msgstr "ライトニングアドレスではありません。"
 
@@ -1966,7 +1978,7 @@ msgstr "ウォレットの接続ではありません。nostr+walletconnect:// �
 msgid "That isn’t a Waroo invite link. It starts with this site’s address and includes “#/join”."
 msgstr "Warooの招待リンクではありません。このサイトのアドレスで始まり、「#/join」を含みます。"
 
-#: src/lib/lightning.ts:74
+#: src/lib/lightning.ts:76
 msgid "That Lightning address can’t receive payments."
 msgstr "そのライトニングアドレスは支払いを受け取れません。"
 
@@ -2002,33 +2014,46 @@ msgstr "カメラがほかのアプリで使われています。そのアプリ
 msgid "The camera stopped while Waroo was in the background."
 msgstr "Warooがバックグラウンドにある間にカメラが止まりました。"
 
-#: src/lib/sync.ts:435
+#: src/lib/wallet.ts:159
+msgid "the connection to it dropped while sending the request, so it may or may not have paid{tech}"
+msgstr "依頼を送る途中で接続が切れたため、支払われたかどうか分かりません{tech}"
+
+#: src/lib/sync.ts:441
 msgid "The group took too long to load"
 msgstr "グループの読み込みに時間がかかりすぎました"
 
-#: src/lib/lightning.ts:123
+#: src/lib/lightning.ts:127
 msgid "The invoice doesn’t match their Lightning address. Nothing was paid."
 msgstr "請求書が相手のライトニングアドレスと一致しません。支払いは行われていません。"
 
-#: src/lib/lightning.ts:128
+#: src/lib/lightning.ts:132
 msgid "The invoice had already expired. Try again."
 msgstr "請求書の期限が切れていました。もう一度お試しください。"
 
-#: src/screens/RecoverScreen.tsx:147
+#: src/screens/RecoverScreen.tsx:157
 msgid "The lost phone stops working in {groupName}, and can’t read anything new. Everyone in the group sees that you vouched. Do it only when you’re sure it’s really {who}."
 msgstr "なくしたスマホは{groupName}で使えなくなり、新しい内容も読めなくなります。あなたが保証したことはグループの全員に表示されます。本当に{who}さん本人だと確信できるときだけ行ってください。"
 
-#: src/screens/MoveScreen.tsx:63
+#: src/screens/MoveScreen.tsx:71
 msgid "The move was cancelled on the new phone. Nothing changed here."
 msgstr "新しいスマホで移行が取り消されました。このスマホでは何も変わっていません。"
 
-#: src/screens/MoveInScreen.tsx:40
+#: src/screens/MoveInScreen.tsx:43
 msgid "The move was stopped on the other phone. Nothing changed."
 msgstr "もう一方のスマホで移行が中止されました。何も変わっていません。"
 
 #: src/lib/bip353.ts:42
 msgid "The name’s records aren’t signed (DNSSEC), so Waroo can’t trust them."
 msgstr "その名前の記録は署名（DNSSEC）されていないため、Warooは信頼できません。"
+
+#: src/screens/MoveScreen.tsx:62
+#: src/screens/RecoverScreen.tsx:70
+msgid "The new phone needs updating first. Open Waroo on it again, then start over."
+msgstr "新しいスマホのWarooを更新してください。開き直してから、もう一度始めてください。"
+
+#: src/lib/move.ts:142
+msgid "The new phone’s key didn’t look right. Start again."
+msgstr "新しいスマホの鍵が正しくないようです。もう一度始めてください。"
 
 #: src/components/BitcoinPay.tsx:170
 msgid "the payment didn’t go through"
@@ -2039,8 +2064,8 @@ msgstr "支払いが完了しませんでした"
 msgid "the payment failed ({0})"
 msgstr "支払いに失敗しました（{0}）"
 
-#: src/lib/wallet.ts:173
-#: src/lib/wallet.ts:176
+#: src/lib/wallet.ts:177
+#: src/lib/wallet.ts:180
 msgid "the payment failed{tech}"
 msgstr "支払いに失敗しました{tech}"
 
@@ -2048,48 +2073,48 @@ msgstr "支払いに失敗しました{tech}"
 msgid "the phone helping you"
 msgstr "手伝ってくれている人のスマホ"
 
-#: src/lib/news.ts:121
+#: src/lib/news.ts:127
 msgid "Their expenses stay in the group"
 msgstr "支出はグループに残ります"
 
-#: src/lib/lightning.ts:120
+#: src/lib/lightning.ts:124
 msgid "Their Lightning address asked for a different amount. Nothing was paid."
 msgstr "相手のライトニングアドレスが別の金額を請求しました。支払いは行われていません。"
 
-#: src/lib/lightning.ts:66
+#: src/lib/lightning.ts:68
 msgid "Their Lightning address gave an unsafe link."
 msgstr "相手のライトニングアドレスが安全でないリンクを返しました。"
 
-#: src/lib/lightning.ts:55
+#: src/lib/lightning.ts:57
 msgid "Their Lightning address isn’t working right now."
 msgstr "相手のライトニングアドレスは今は使えません。"
 
 #. placeholder {0}: params.minSats
-#: src/lib/lightning.ts:110
+#: src/lib/lightning.ts:113
 msgid "Their Lightning address only takes {0} sats or more."
 msgstr "相手のライトニングアドレスは{0} sats以上からしか受け取れません。"
 
 #. placeholder {0}: String(body.reason ?? 'error')
-#: src/lib/lightning.ts:54
+#: src/lib/lightning.ts:56
 msgid "Their Lightning address said: {0}"
 msgstr "相手のライトニングアドレスからの応答：{0}"
 
-#: src/lib/lightning.ts:94
-#: src/lib/lightning.ts:126
+#: src/lib/lightning.ts:97
+#: src/lib/lightning.ts:130
 msgid "Their Lightning address sent an invoice that doesn’t read correctly."
 msgstr "相手のライトニングアドレスから届いた請求書を正しく読み取れません。"
 
-#: src/lib/lightning.ts:52
-#: src/lib/lightning.ts:78
+#: src/lib/lightning.ts:54
+#: src/lib/lightning.ts:80
 msgid "Their Lightning address sent back something unexpected."
 msgstr "相手のライトニングアドレスから予期しない応答がありました。"
 
 #. placeholder {0}: params.maxSats
-#: src/lib/lightning.ts:111
+#: src/lib/lightning.ts:114
 msgid "Their Lightning address takes at most {0} sats at once."
 msgstr "相手のライトニングアドレスが一度に受け取れるのは{0} satsまでです。"
 
-#: src/screens/MoveScreen.tsx:72
+#: src/screens/MoveScreen.tsx:82
 msgid "There’s nothing on this phone to move yet: no groups and no wallets."
 msgstr "このスマホには、まだ移すものがありません（グループもウォレットもありません）。"
 
@@ -2097,15 +2122,15 @@ msgstr "このスマホには、まだ移すものがありません（グルー
 msgid "There’s something new in one of your groups."
 msgstr "グループのどれかに新しい内容があります。"
 
-#: src/lib/news.ts:103
+#: src/lib/news.ts:109
 msgid "They can see the group and add expenses now"
 msgstr "グループを見て、支出を追加できるようになりました"
 
-#: src/screens/RecoverScreen.tsx:143
+#: src/screens/RecoverScreen.tsx:153
 msgid "They tap the scan button and scan the code this phone will show. Not together? Send them the link instead."
 msgstr "読み取りボタンを押して、このスマホに表示されるコードを読み取ってもらいます。一緒にいない場合は、代わりにリンクを送ってください。"
 
-#: src/lib/news.ts:126
+#: src/lib/news.ts:132
 msgid "They were all square"
 msgstr "精算済みでした"
 
@@ -2117,7 +2142,7 @@ msgstr "このブラウザではカメラを開けません。代わりに下に
 msgid "This browser can’t show notifications."
 msgstr "このブラウザは通知を表示できません。"
 
-#: src/screens/MoveInScreen.tsx:78
+#: src/screens/MoveInScreen.tsx:86
 msgid "This code isn’t complete"
 msgstr "このコードは不完全です"
 
@@ -2141,7 +2166,7 @@ msgstr "このグループはまだ共有されていません。"
 msgid "This group isn’t shared, so there’s no phone to remove."
 msgstr "このグループは共有されていないため、外すスマホはありません。"
 
-#: src/screens/JoinScreen.tsx:109
+#: src/screens/JoinScreen.tsx:112
 msgid "This invite doesn’t lead to a group. Ask for a new link."
 msgstr "この招待はグループにつながっていません。新しいリンクをもらってください。"
 
@@ -2149,19 +2174,19 @@ msgstr "この招待はグループにつながっていません。新しいリ
 msgid "This invite doesn’t work any more"
 msgstr "この招待はもう使えません"
 
-#: src/screens/JoinScreen.tsx:115
+#: src/screens/JoinScreen.tsx:119
 msgid "This invite is out of date: the group has changed since it was made. Ask for a new link."
 msgstr "この招待は古くなっています。作成後にグループが変更されました。新しいリンクをもらってください。"
 
-#: src/lib/invites.ts:113
+#: src/lib/invites.ts:118
 msgid "This invite link doesn’t work."
 msgstr "この招待リンクは使えません。"
 
-#: src/lib/invites.ts:108
+#: src/lib/invites.ts:113
 msgid "This invite link has already been used."
 msgstr "この招待リンクはすでに使われています。"
 
-#: src/lib/invites.ts:110
+#: src/lib/invites.ts:115
 msgid "This invite link has expired."
 msgstr "この招待リンクは期限切れです。"
 
@@ -2169,7 +2194,7 @@ msgstr "この招待リンクは期限切れです。"
 msgid "This invite link is out of date"
 msgstr "この招待リンクは古くなっています"
 
-#: src/lib/invites.ts:112
+#: src/lib/invites.ts:117
 msgid "This invite link was turned off."
 msgstr "この招待リンクは無効にされました。"
 
@@ -2178,19 +2203,27 @@ msgid "This is a BOLT12 offer. Your wallet needs to support BOLT12 to pay it."
 msgstr "これはBOLT12オファーです。支払うにはBOLT12対応のウォレットが必要です。"
 
 #: src/screens/JoinScreen.tsx:49
-#: src/screens/JoinScreen.tsx:135
+#: src/screens/JoinScreen.tsx:139
 msgid "This link isn’t complete"
 msgstr "このリンクは不完全です"
+
+#: src/screens/JoinScreen.tsx:104
+msgid "This phone already has a different group under this invite’s name. Ask for a new link."
+msgstr "このスマホには、この招待と同じIDの別のグループがあります。新しいリンクをもらってください。"
 
 #: src/components/NotificationsCard.tsx:49
 msgid "This phone gets a notification when someone pays you, joins a group or adds an expense, even when Waroo is closed."
 msgstr "誰かがあなたに支払ったとき、グループに参加したとき、支出を追加したときに、Warooを閉じていてもこのスマホに通知が届きます。"
 
-#: src/lib/news.ts:118
+#: src/lib/news.ts:124
 msgid "This phone won’t get anything new from the group"
 msgstr "このスマホにはグループの新しい内容が届きません"
 
-#: src/lib/wallet.ts:168
+#: src/components/ErrorBoundary.tsx:26
+msgid "This screen couldn’t be shown"
+msgstr "この画面を表示できませんでした"
+
+#: src/lib/wallet.ts:172
 msgid "this would go over the spending limit you set for Waroo"
 msgstr "Waroo用に設定した支払い上限を超えてしまいます"
 
@@ -2252,11 +2285,7 @@ msgstr "ブラウザのウォレットを使う"
 msgid "Used"
 msgstr "使用済み"
 
-#: src/screens/GroupScreen.tsx:423
-msgid "verified"
-msgstr "確認済み"
-
-#: src/screens/RecoverScreen.tsx:137
+#: src/screens/RecoverScreen.tsx:147
 msgid "Vouch for {who}’s new phone, so they’re back in {groupName} as themselves."
 msgstr "{who}さんの新しいスマホを保証すると、本人として{groupName}に復帰できます。"
 
@@ -2264,15 +2293,15 @@ msgstr "{who}さんの新しいスマホを保証すると、本人として{gro
 msgid "Vouch for {who}’s new phone, so they’re back in as themselves. The lost phone stops working in this group."
 msgstr "{who}さんの新しいスマホを保証すると、本人として復帰できます。なくしたスマホはこのグループで使えなくなります。"
 
-#: src/screens/MoveInScreen.tsx:96
+#: src/screens/MoveInScreen.tsx:104
 msgid "Waiting for {other}…"
 msgstr "{other}を待っています…"
 
-#: src/screens/RecoverScreen.tsx:171
+#: src/screens/RecoverScreen.tsx:181
 msgid "Waiting for {who}’s new phone…"
 msgstr "{who}さんの新しいスマホを待っています…"
 
-#: src/screens/MoveScreen.tsx:154
+#: src/screens/MoveScreen.tsx:167
 msgid "Waiting for the new phone…"
 msgstr "新しいスマホを待っています…"
 
@@ -2338,6 +2367,10 @@ msgstr "種類"
 msgid "What item {n} was"
 msgstr "品目{n}の内容"
 
+#: src/screens/MoveInScreen.tsx:49
+msgid "What the other phone sent didn’t open. Start again on the other phone."
+msgstr "もう一方のスマホから届いた内容を開けませんでした。もう一方のスマホでもう一度始めてください。"
+
 #: src/components/FeedbackCard.tsx:127
 msgid "What would make Waroo better for you?"
 msgstr "どうなればWarooがもっと使いやすくなりますか？"
@@ -2362,7 +2395,7 @@ msgstr "支払うとき、Warooはこの順番でウォレットに依頼しま�
 msgid "Which group is it for?"
 msgstr "どのグループの支出ですか？"
 
-#: src/screens/JoinScreen.tsx:197
+#: src/screens/JoinScreen.tsx:202
 msgid "Which one are you?"
 msgstr "あなたはどれですか？"
 
@@ -2408,11 +2441,11 @@ msgstr "有効"
 msgid "yen"
 msgstr "円"
 
-#: src/screens/RecoverScreen.tsx:184
+#: src/screens/RecoverScreen.tsx:194
 msgid "Yes, it’s {who}"
 msgstr "はい、{who}さんです"
 
-#: src/screens/MoveScreen.tsx:172
+#: src/screens/MoveScreen.tsx:185
 msgid "Yes, move my groups"
 msgstr "はい、グループを移す"
 
@@ -2437,7 +2470,7 @@ msgid "You get back"
 msgstr "受け取る額"
 
 #. placeholder {0}: money(amount, currency)
-#: src/screens/HomeScreen.tsx:35
+#: src/screens/HomeScreen.tsx:34
 msgid "You get back {0}"
 msgstr "{0}受け取る"
 
@@ -2458,7 +2491,7 @@ msgid "You owe"
 msgstr "支払う額"
 
 #. placeholder {0}: money(-amount, currency)
-#: src/screens/HomeScreen.tsx:35
+#: src/screens/HomeScreen.tsx:34
 msgid "You owe {0}"
 msgstr "{0}支払う"
 
@@ -2474,7 +2507,7 @@ msgstr "あなたが{payee}さんに支払い"
 msgid "You pay"
 msgstr "支払額"
 
-#: src/screens/JoinScreen.tsx:233
+#: src/screens/JoinScreen.tsx:238
 msgid "You’ll see the group’s expenses once you join. No account or sign-up needed."
 msgstr "参加するとグループの支出が見られます。アカウント登録は不要です。"
 
@@ -2482,7 +2515,7 @@ msgstr "参加するとグループの支出が見られます。アカウント
 msgid "You’re all square"
 msgstr "精算済みです"
 
-#: src/screens/JoinScreen.tsx:193
+#: src/screens/JoinScreen.tsx:198
 msgid "You’re invited to"
 msgstr "招待されたグループ"
 
@@ -2502,7 +2535,7 @@ msgstr "Coinosのユーザー名"
 msgid "Your email (optional)"
 msgstr "メールアドレス（任意）"
 
-#: src/screens/MoveScreen.tsx:134
+#: src/screens/MoveScreen.tsx:147
 msgid "Your groups and wallets move to the new phone, and leave this one."
 msgstr "グループとウォレットが新しいスマホに移り、このスマホからは削除されます。"
 
@@ -2510,7 +2543,7 @@ msgstr "グループとウォレットが新しいスマホに移り、このス
 msgid "Your invite links"
 msgstr "あなたの招待リンク"
 
-#: src/screens/MoveScreen.tsx:141
+#: src/screens/MoveScreen.tsx:154
 msgid "Your Lightning addresses and wallet connections come along, in the same order. A wallet that’s built into this browser stays behind."
 msgstr "ライトニングアドレスとウォレットの接続も、同じ順番で移ります。このブラウザに組み込まれたウォレットは移りません。"
 
@@ -2518,7 +2551,7 @@ msgstr "ライトニングアドレスとウォレットの接続も、同じ順
 msgid "Your message"
 msgstr "メッセージ"
 
-#: src/screens/JoinScreen.tsx:226
+#: src/screens/JoinScreen.tsx:231
 #: src/screens/MemberScreen.tsx:75
 #: src/screens/NewGroupScreen.tsx:35
 msgid "Your name"
@@ -2528,7 +2561,7 @@ msgstr "あなたの名前"
 msgid "your other phone"
 msgstr "もう一方のスマホ"
 
-#: src/lib/news.ts:147
+#: src/lib/news.ts:154
 msgid "Your share is {share}, in {group}"
 msgstr "あなたの負担は{share}・{group}"
 
@@ -2536,7 +2569,7 @@ msgstr "あなたの負担は{share}・{group}"
 msgid "Your wallet"
 msgstr "あなたのウォレット"
 
-#: src/screens/MoveInScreen.tsx:116
+#: src/screens/MoveInScreen.tsx:124
 msgid "Your wallet connection was on the lost phone: connect your wallet again in Settings, and in your wallet’s own app, turn off the connection the lost phone used."
 msgstr "ウォレットの接続はなくしたスマホにありました。設定からウォレットをもう一度接続し、ウォレットのアプリで、なくしたスマホが使っていた接続を無効にしてください。"
 
@@ -2548,6 +2581,6 @@ msgstr "ウォレットから応答がありません。オンラインか、接
 msgid "Your wallet reported the payment, but its proof didn’t check out."
 msgstr "ウォレットは支払い済みと報告しましたが、支払いの証明が一致しませんでした。"
 
-#: src/screens/MoveScreen.tsx:188
+#: src/screens/MoveScreen.tsx:201
 msgid "Your wallets are on the new phone now, and gone from this one."
 msgstr "ウォレットは新しいスマホに移り、このスマホからは削除されました。"
