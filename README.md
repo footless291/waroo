@@ -34,6 +34,7 @@ What it's designed to guarantee, and what it doesn't (yet). Details in [docs/syn
 - **Lightning address comments.** When the receiver's address takes comments, the payment's comment ("Waroo: <group name>") goes to their Lightning provider.
 - **₿names (BIP-353)** are looked up once, through Cloudflare's DNS-over-HTTPS resolver, trusting its DNSSEC check instead of validating locally.
 - **Bitcoin prices** come from our Worker, which asks several exchanges and only answers when at least two agree within 2%.
+- **Receipt scanning** reads the photo on your phone (Tesseract in WebAssembly, served from our site); the photo isn't uploaded. It fills in the shop, total and date for you to check. Allowing WebAssembly needed `'wasm-unsafe-eval'` in the page's script policy.
 - **Feedback and the updates list** are the one part the server can read: reports are emailed, and opted-in addresses are stored.
 
 ## Layout

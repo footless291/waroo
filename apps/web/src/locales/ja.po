@@ -187,7 +187,7 @@ msgctxt "a person’s name, said politely"
 msgid "{name}"
 msgstr "{name}さん"
 
-#: src/screens/ExpenseScreen.tsx:336
+#: src/screens/ExpenseScreen.tsx:363
 #: src/screens/SettleScreen.tsx:47
 msgid "{name} (you)"
 msgstr "{name}（あなた）"
@@ -232,7 +232,7 @@ msgstr "{toName}さんはまだライトニングアドレスを追加してい�
 msgid "{toName}’s provider can’t confirm payments automatically. Once you’ve paid, mark it here."
 msgstr "{toName}さんのサービスは支払いを自動で確認できません。支払いが済んだら、ここで記録してください。"
 
-#: src/screens/ExpenseScreen.tsx:170
+#: src/screens/ExpenseScreen.tsx:172
 msgid "{what}: {message}"
 msgstr "{what}：{message}"
 
@@ -268,7 +268,7 @@ msgstr "{who}さんがスマホをなくしました"
 msgid "{who} paid"
 msgstr "{who}さんが支払った"
 
-#: src/screens/ExpenseScreen.tsx:226
+#: src/screens/ExpenseScreen.tsx:228
 msgid "{who}: use a percentage like 25 or 12.5"
 msgstr "{who}さん：25や12.5のように割合を入力してください"
 
@@ -399,8 +399,8 @@ msgstr "さらに追加"
 msgid "Add as a friend"
 msgstr "友達に追加"
 
-#: src/screens/ExpenseScreen.tsx:341
-#: src/screens/ExpenseScreen.tsx:539
+#: src/screens/ExpenseScreen.tsx:368
+#: src/screens/ExpenseScreen.tsx:567
 #: src/screens/GroupScreen.tsx:202
 msgid "Add expense"
 msgstr "支出を追加"
@@ -417,7 +417,7 @@ msgstr "Warooで友達になろう"
 msgid "Add me on Waroo"
 msgstr "Warooで友達に追加"
 
-#: src/screens/ExpenseScreen.tsx:37
+#: src/screens/ExpenseScreen.tsx:39
 msgid "Add or take off an amount for anyone, and split the rest equally among the people ticked."
 msgstr "誰かの分を増減して、残りをチェックした人で均等に分けます。"
 
@@ -471,7 +471,7 @@ msgstr "{clean}を追加しました。"
 msgid "Added your BOLT12 offer."
 msgstr "BOLT12オファーを追加しました。"
 
-#: src/screens/ExpenseScreen.tsx:27
+#: src/screens/ExpenseScreen.tsx:29
 msgid "Adjust"
 msgstr "調整"
 
@@ -494,8 +494,8 @@ msgstr "精算済み"
 msgid "Already joined on another phone"
 msgstr "別のスマホで参加済み"
 
-#: src/screens/ExpenseScreen.tsx:186
-#: src/screens/ExpenseScreen.tsx:349
+#: src/screens/ExpenseScreen.tsx:188
+#: src/screens/ExpenseScreen.tsx:377
 msgid "Amount"
 msgstr "金額"
 
@@ -504,7 +504,7 @@ msgid "Amount ({currency})"
 msgstr "金額（{currency}）"
 
 #. placeholder {0}: m.name
-#: src/screens/ExpenseScreen.tsx:506
+#: src/screens/ExpenseScreen.tsx:534
 msgid "Amount for {0}"
 msgstr "{0}さんの金額"
 
@@ -760,6 +760,10 @@ msgstr "リンクをコピー"
 msgid "Couldn’t find {candidate}. Check the username is exactly as you chose it in Coinos."
 msgstr "{candidate}が見つかりません。Coinosで決めたユーザー名と完全に同じか確認してください。"
 
+#: src/screens/ExpenseScreen.tsx:354
+msgid "Couldn’t find the total. The rest is filled in: check it, and add the amount."
+msgstr "合計が見つかりませんでした。ほかの項目は入力したので、確認して金額を入れてください。"
+
 #: src/lib/lightning.ts:176
 msgid "Couldn’t get the bitcoin price right now. Try again in a minute."
 msgstr "今はビットコイン価格を取得できませんでした。1分ほどしてからお試しください。"
@@ -818,6 +822,14 @@ msgstr "Warooに接続できませんでした。接続を確認して、もう�
 msgid "Couldn’t reach Waroo. Check your connection."
 msgstr "Warooに接続できませんでした。接続を確認してください。"
 
+#: src/components/ReceiptScan.tsx:23
+msgid "Couldn’t read that photo. Try again, or fill it in by hand."
+msgstr "写真を読み取れませんでした。もう一度試すか、手で入力してください。"
+
+#: src/screens/ExpenseScreen.tsx:355
+msgid "Couldn’t read this receipt. Try a closer, flatter photo in good light, or fill it in by hand."
+msgstr "レシートを読み取れませんでした。明るい場所で、平らにして近くから撮り直すか、手で入力してください。"
+
 #: src/components/FeedbackCard.tsx:84
 msgid "Couldn’t send it right now. Try again later."
 msgstr "今は送信できませんでした。あとでもう一度お試しください。"
@@ -834,7 +846,7 @@ msgstr "グループを作成"
 msgid "Create invite link"
 msgstr "招待リンクを作成"
 
-#: src/screens/ExpenseScreen.tsx:359
+#: src/screens/ExpenseScreen.tsx:387
 #: src/screens/SettleScreen.tsx:119
 msgid "Currency"
 msgstr "通貨"
@@ -843,7 +855,7 @@ msgstr "通貨"
 msgid "Dark"
 msgstr "ダーク"
 
-#: src/screens/ExpenseScreen.tsx:379
+#: src/screens/ExpenseScreen.tsx:407
 msgid "Date"
 msgstr "日付"
 
@@ -859,7 +871,7 @@ msgstr "「{savedName}」とその中身をすべて削除しますか？元に�
 msgid "Delete everything with {name} from this phone? Their copy stays on their phone. This can’t be undone."
 msgstr "{name}さんとの記録をすべてこのスマホから削除しますか？相手のスマホの記録は残ります。元に戻せません。"
 
-#: src/screens/ExpenseScreen.tsx:543
+#: src/screens/ExpenseScreen.tsx:571
 msgid "Delete expense"
 msgstr "支出を削除"
 
@@ -911,7 +923,7 @@ msgstr "以前"
 msgid "Edit"
 msgstr "編集"
 
-#: src/screens/ExpenseScreen.tsx:341
+#: src/screens/ExpenseScreen.tsx:368
 msgid "Edit expense"
 msgstr "支出を編集"
 
@@ -919,16 +931,16 @@ msgstr "支出を編集"
 msgid "Email me now and then about Waroo updates"
 msgstr "Warooの最新情報をときどきメールで受け取る"
 
-#: src/screens/ExpenseScreen.tsx:265
+#: src/screens/ExpenseScreen.tsx:267
 #: src/screens/SettleScreen.tsx:56
 msgid "Enter an amount"
 msgstr "金額を入力してください"
 
-#: src/screens/ExpenseScreen.tsx:265
+#: src/screens/ExpenseScreen.tsx:267
 msgid "Enter what each item cost"
 msgstr "各品目の金額を入力してください"
 
-#: src/screens/ExpenseScreen.tsx:23
+#: src/screens/ExpenseScreen.tsx:25
 msgid "Equally"
 msgstr "均等"
 
@@ -949,11 +961,11 @@ msgstr "メンバー（{currency}）"
 msgid "Everything together"
 msgstr "すべての合計"
 
-#: src/screens/ExpenseScreen.tsx:26
+#: src/screens/ExpenseScreen.tsx:28
 msgid "Exact"
 msgstr "金額指定"
 
-#: src/screens/ExpenseScreen.tsx:60
+#: src/screens/ExpenseScreen.tsx:62
 msgid "Expense"
 msgstr "支出"
 
@@ -969,14 +981,18 @@ msgstr "すべてのグループの支出と支払いが、新しい順にここ
 msgid "Expired"
 msgstr "期限切れ"
 
-#: src/screens/ExpenseScreen.tsx:552
+#: src/screens/ExpenseScreen.tsx:580
 msgid "Extra {n}"
 msgstr "追加料金{n}"
 
 #. placeholder {0}: m.name
-#: src/screens/ExpenseScreen.tsx:443
+#: src/screens/ExpenseScreen.tsx:471
 msgid "Extra for {0}"
 msgstr "{0}さんの追加分"
+
+#: src/screens/ExpenseScreen.tsx:358
+msgid "Filled in {what} from the receipt. Check before saving."
+msgstr "レシートから{what}を入力しました。保存する前に確認してください。"
 
 #: src/screens/Onboarding.tsx:230
 msgid "Firefox can’t install apps, but Waroo works fine in a tab."
@@ -1085,7 +1101,7 @@ msgstr "価格を取得中…"
 msgid "Give at least one person a share"
 msgstr "少なくとも1人に持ち分を設定してください"
 
-#: src/screens/ExpenseScreen.tsx:264
+#: src/screens/ExpenseScreen.tsx:266
 msgid "Give it a name"
 msgstr "名前を入力してください"
 
@@ -1302,15 +1318,15 @@ msgid "it’s still sending the payment"
 msgstr "まだ送金中です"
 
 #: src/components/ItemsEditor.tsx:55
-#: src/screens/ExpenseScreen.tsx:551
+#: src/screens/ExpenseScreen.tsx:579
 msgid "Item {n}"
 msgstr "品目{n}"
 
-#: src/screens/ExpenseScreen.tsx:28
+#: src/screens/ExpenseScreen.tsx:30
 msgid "Items"
 msgstr "品目"
 
-#: src/screens/ExpenseScreen.tsx:345
+#: src/screens/ExpenseScreen.tsx:373
 msgid "Izakaya dinner"
 msgstr "居酒屋の夕食"
 
@@ -1383,7 +1399,7 @@ msgstr "リンクをコピーしました"
 msgid "Link turned off. Nobody else can join with it."
 msgstr "リンクを無効にしました。このリンクではもう誰も参加できません。"
 
-#: src/screens/ExpenseScreen.tsx:39
+#: src/screens/ExpenseScreen.tsx:41
 msgid "List what each person had. Shared things are split among whoever had them."
 msgstr "誰が何を注文したかを入力します。共有したものは、それを分けた人で割ります。"
 
@@ -1645,12 +1661,12 @@ msgid "One person"
 msgstr "1人"
 
 #. placeholder {0}: m.name
-#: src/screens/ExpenseScreen.tsx:478
+#: src/screens/ExpenseScreen.tsx:506
 msgid "One share fewer for {0}"
 msgstr "{0}さんの持ち分を1つ減らす"
 
 #. placeholder {0}: m.name
-#: src/screens/ExpenseScreen.tsx:494
+#: src/screens/ExpenseScreen.tsx:522
 msgid "One share more for {0}"
 msgstr "{0}さんの持ち分を1つ増やす"
 
@@ -1771,16 +1787,16 @@ msgstr "{sum}受け取る"
 msgid "Paid {0} to {toName} ({1})."
 msgstr "{toName}さんに{0}を支払いました（{1}）。"
 
-#: src/screens/ExpenseScreen.tsx:369
+#: src/screens/ExpenseScreen.tsx:397
 msgid "Paid by"
 msgstr "支払った人"
 
 #. placeholder {0}: m.name
-#: src/screens/ExpenseScreen.tsx:394
+#: src/screens/ExpenseScreen.tsx:422
 msgid "Paid by {0}"
 msgstr "{0}さんの支払額"
 
-#: src/screens/ExpenseScreen.tsx:256
+#: src/screens/ExpenseScreen.tsx:258
 msgid "Paid by {who}"
 msgstr "{who}さんの支払額"
 
@@ -1856,12 +1872,12 @@ msgstr "支払い"
 msgid "Pays in one tap"
 msgstr "ワンタップで支払い"
 
-#: src/screens/ExpenseScreen.tsx:25
+#: src/screens/ExpenseScreen.tsx:27
 msgid "Percent"
 msgstr "割合"
 
 #. placeholder {0}: m.name
-#: src/screens/ExpenseScreen.tsx:470
+#: src/screens/ExpenseScreen.tsx:498
 msgid "Percent for {0}"
 msgstr "{0}さんの割合"
 
@@ -1881,7 +1897,7 @@ msgstr "割り勘する人を少なくとも1人選んでください"
 msgid "Pick two different people"
 msgstr "別々の2人を選んでください"
 
-#: src/screens/ExpenseScreen.tsx:281
+#: src/screens/ExpenseScreen.tsx:283
 msgid "Pick who had {what}"
 msgstr "{what}を誰が注文したか選んでください"
 
@@ -1912,6 +1928,18 @@ msgstr "{toName}さんのBOLT12オファーのQRコード"
 #: src/components/BitcoinPay.tsx:262
 msgid "QR code to pay with a wallet app"
 msgstr "ウォレットアプリで支払うためのQRコード"
+
+#: src/components/ReceiptScan.tsx:50
+msgid "Read on this phone. The photo isn’t sent anywhere."
+msgstr "このスマホの中で読み取っています。写真はどこにも送られません。"
+
+#: src/components/ReceiptScan.tsx:48
+msgid "Reading the receipt"
+msgstr "レシートを読み取り中"
+
+#: src/components/ReceiptScan.tsx:36
+msgid "Reading the receipt…"
+msgstr "レシートを読み取り中…"
 
 #: src/components/WalletSection.tsx:27
 msgid "Receive"
@@ -2009,7 +2037,7 @@ msgstr "MacのSafari：「ファイル」から「Dockに追加」を選びま�
 msgid "Save"
 msgstr "保存"
 
-#: src/screens/ExpenseScreen.tsx:539
+#: src/screens/ExpenseScreen.tsx:567
 msgid "Save changes"
 msgstr "変更を保存"
 
@@ -2025,6 +2053,10 @@ msgstr "支払った人を選んでください"
 #: src/screens/ScanScreen.tsx:102
 msgid "Scan a code"
 msgstr "コードを読み取る"
+
+#: src/components/ReceiptScan.tsx:36
+msgid "Scan a receipt"
+msgstr "レシートを読み取る"
 
 #: src/screens/InviteScreen.tsx:184
 msgid "Scan it in Waroo on the other phone, with the scan button."
@@ -2095,7 +2127,7 @@ msgstr "精算"
 msgid "Settle up"
 msgstr "精算する"
 
-#: src/screens/ExpenseScreen.tsx:376
+#: src/screens/ExpenseScreen.tsx:404
 #: src/screens/InviteScreen.tsx:26
 msgid "Several people"
 msgstr "複数人"
@@ -2116,12 +2148,12 @@ msgstr "グループの人だけに共有してください"
 msgid "Shared by what each person had. Use a minus sign for a discount."
 msgstr "各人の注文額に応じて分けます。割引はマイナスで入力してください。"
 
-#: src/screens/ExpenseScreen.tsx:24
+#: src/screens/ExpenseScreen.tsx:26
 msgid "Shares"
 msgstr "持ち分"
 
 #. placeholder {0}: m.name
-#: src/screens/ExpenseScreen.tsx:490
+#: src/screens/ExpenseScreen.tsx:518
 msgid "Shares for {0}"
 msgstr "{0}さんの持ち分"
 
@@ -2177,7 +2209,7 @@ msgstr "友達リクエストが届いています"
 msgid "Something in it didn’t look right. Your groups and keys are safe on this phone."
 msgstr "表示できない内容がありました。グループと鍵はこのスマホに安全に残っています。"
 
-#: src/screens/ExpenseScreen.tsx:407
+#: src/screens/ExpenseScreen.tsx:435
 msgid "Split"
 msgstr "割り方"
 
@@ -2185,12 +2217,12 @@ msgstr "割り方"
 msgid "Split anything with anyone"
 msgstr "誰とでも割り勘"
 
-#: src/screens/ExpenseScreen.tsx:408
+#: src/screens/ExpenseScreen.tsx:436
 msgid "Split method"
 msgstr "割り方"
 
 #. placeholder {0}: m.name
-#: src/screens/ExpenseScreen.tsx:435
+#: src/screens/ExpenseScreen.tsx:463
 msgid "Split the rest with {0}"
 msgstr "残りを{0}さんと分ける"
 
@@ -2271,7 +2303,7 @@ msgstr "「インストール」をタップしたら、ホーム画面からWar
 msgid "Tap <0>Submit</0>, then <1>Copy NWC</1>."
 msgstr "<0>Submit</0>をタップし、<1>Copy NWC</1>をタップします。"
 
-#: src/screens/ExpenseScreen.tsx:543
+#: src/screens/ExpenseScreen.tsx:571
 msgid "Tap again to delete"
 msgstr "もう一度タップで削除"
 
@@ -2383,6 +2415,10 @@ msgstr "Warooがバックグラウンドにある間にカメラが止まりま�
 msgid "the connection to it dropped while sending the request, so it may or may not have paid{tech}"
 msgstr "依頼を送る途中で接続が切れたため、支払われたかどうか分かりません{tech}"
 
+#: src/screens/ExpenseScreen.tsx:350
+msgid "the date"
+msgstr "日付"
+
 #: src/lib/sync.ts:444
 msgid "The group took too long to load"
 msgstr "グループの読み込みに時間がかかりすぎました"
@@ -2437,6 +2473,14 @@ msgstr "支払いに失敗しました{tech}"
 #: src/screens/MoveInScreen.tsx:22
 msgid "the phone helping you"
 msgstr "手伝ってくれている人のスマホ"
+
+#: src/screens/ExpenseScreen.tsx:341
+msgid "the shop"
+msgstr "店名"
+
+#: src/screens/ExpenseScreen.tsx:346
+msgid "the total"
+msgstr "合計"
 
 #: src/lib/news.ts:141
 msgid "Their expenses stay in the group"
@@ -2519,7 +2563,7 @@ msgstr "このブラウザは通知を表示できません。"
 msgid "This code isn’t complete"
 msgstr "このコードは不完全です"
 
-#: src/screens/ExpenseScreen.tsx:61
+#: src/screens/ExpenseScreen.tsx:63
 msgid "This expense was deleted."
 msgstr "この支出は削除されました。"
 
@@ -2748,7 +2792,7 @@ msgstr "Warooへようこそ"
 msgid "What extra {0} is"
 msgstr "追加料金{0}の内容"
 
-#: src/screens/ExpenseScreen.tsx:344
+#: src/screens/ExpenseScreen.tsx:372
 msgid "What for"
 msgstr "内容"
 
@@ -2817,7 +2861,7 @@ msgstr "対象"
 msgid "Who paid"
 msgstr "支払った人"
 
-#: src/screens/ExpenseScreen.tsx:383
+#: src/screens/ExpenseScreen.tsx:411
 msgid "Who paid how much"
 msgstr "誰がいくら払ったか"
 

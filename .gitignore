@@ -8,3 +8,4 @@ coverage/
 *.log
 .wrangler/
 .dev.vars
+apps/web/public/ocr/

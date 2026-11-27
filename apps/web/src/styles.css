@@ -2199,3 +2199,28 @@ select {
 .check-row + .check-row {
   border-top: 1px solid var(--line);
 }
+/* Scanning a receipt, above a new expense */
+.receipt-scan {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.receipt-scan .button {
+  position: relative;
+}
+.receipt-scan .button.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+.receipt-scan .button:has(input:focus-visible) {
+  outline: 2.5px solid var(--focus);
+  outline-offset: 2px;
+}
+.receipt-scan progress {
+  width: 100%;
+  height: 6px;
+  accent-color: var(--strong);
+}
+.receipt-scan .hint:empty {
+  display: none;
+}

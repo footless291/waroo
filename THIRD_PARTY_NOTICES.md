@@ -30,3 +30,12 @@ OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
+
+## Receipt scanning
+
+The app serves, under `/ocr/`, unmodified files from:
+
+- [tesseract.js](https://github.com/naptha/tesseract.js) and [tesseract.js-core](https://github.com/naptha/tesseract.js-core) (Apache License 2.0), which compile [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) (Apache License 2.0) to WebAssembly
+- `@tesseract.js-data/jpn` and `@tesseract.js-data/eng` (MIT), packaging the `tessdata_best` integer models from [tesseract-ocr/tessdata_best](https://github.com/tesseract-ocr/tessdata_best) (Apache License 2.0)
+
+The Apache License 2.0 is at https://www.apache.org/licenses/LICENSE-2.0.

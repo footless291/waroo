@@ -10,11 +10,13 @@ import {
 import { useState, type FormEvent } from 'react'
 import { Header } from '../components/Header.tsx'
 import { DateField } from '../components/DateField.tsx'
+import { ReceiptScan } from '../components/ReceiptScan.tsx'
+import type { ReceiptGuess } from '../lib/receipt.ts'
 import { ItemsEditor, newExtra, newItem, type ExtraDraft, type ItemDraft } from '../components/ItemsEditor.tsx'
 import { Segmented } from '../components/Segmented.tsx'
 import { append, newId, type GroupMeta } from '../lib/db.ts'
 import { CURRENCIES, isRemoved, money, today, toInput } from '../lib/format.ts'
-import { go, useGroup } from '../lib/hooks.ts'
+import { go, locale, useGroup } from '../lib/hooks.ts'
 import { ledgerText } from '../lib/ledgerText.ts'
 
 type Mode = 'equal' | 'shares' | 'percent' | 'exact' | 'adjustment' | 'itemized'
@@ -331,6 +333,31 @@ function ExpenseForm({
     go(`/g/${meta.id}/expenses`)
   }
 
+  /** Fills in what a scanned receipt gave, and says what happened. */
+  function fillFromReceipt(guess: ReceiptGuess): string {
+    const found: string[] = []
+    if (guess.title && !title.trim()) {
+      setTitle(guess.title)
+      found.push(t`the shop`)
+    }
+    if (guess.currency && CURRENCIES.includes(guess.currency)) setCurrency(guess.currency)
+    if (guess.amount) {
+      setAmountText(guess.amount)
+      found.push(t`the total`)
+    }
+    if (guess.date) {
+      setDate(guess.date)
+      found.push(t`the date`)
+    }
+    if (!guess.amount) {
+      return found.length
+        ? t`Couldn’t find the total. The rest is filled in: check it, and add the amount.`
+        : t`Couldn’t read this receipt. Try a closer, flatter photo in good light, or fill it in by hand.`
+    }
+    const what = new Intl.ListFormat(locale(), { type: 'conjunction' }).format(found)
+    return t`Filled in ${what} from the receipt. Check before saving.`
+  }
+
   const nameOf = (id: string) => {
     const name = state.members.get(id)?.name ?? ''
     return id === meta.meId ? t`${name} (you)` : name
@@ -340,6 +367,7 @@ function ExpenseForm({
     <main className="screen">
       <Header title={existing ? t`Edit expense` : t`Add expense`} back={`/g/${meta.id}/expenses`} />
       <form className="form" onSubmit={save}>
+        {!existing && <ReceiptScan onRead={fillFromReceipt} />}
         <label className="field">
           <span>{t`What for`}</span>
           <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t`Izakaya dinner`} />

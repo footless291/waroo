@@ -187,7 +187,7 @@ msgctxt "a person’s name, said politely"
 msgid "{name}"
 msgstr "{name}"
 
-#: src/screens/ExpenseScreen.tsx:336
+#: src/screens/ExpenseScreen.tsx:363
 #: src/screens/SettleScreen.tsx:47
 msgid "{name} (you)"
 msgstr "{name} (you)"
@@ -232,7 +232,7 @@ msgstr "{toName} hasn’t added a Lightning address yet, so they can’t receive
 msgid "{toName}’s provider can’t confirm payments automatically. Once you’ve paid, mark it here."
 msgstr "{toName}’s provider can’t confirm payments automatically. Once you’ve paid, mark it here."
 
-#: src/screens/ExpenseScreen.tsx:170
+#: src/screens/ExpenseScreen.tsx:172
 msgid "{what}: {message}"
 msgstr "{what}: {message}"
 
@@ -268,7 +268,7 @@ msgstr "{who} lost their phone"
 msgid "{who} paid"
 msgstr "{who} paid"
 
-#: src/screens/ExpenseScreen.tsx:226
+#: src/screens/ExpenseScreen.tsx:228
 msgid "{who}: use a percentage like 25 or 12.5"
 msgstr "{who}: use a percentage like 25 or 12.5"
 
@@ -399,8 +399,8 @@ msgstr "Add another"
 msgid "Add as a friend"
 msgstr "Add as a friend"
 
-#: src/screens/ExpenseScreen.tsx:341
-#: src/screens/ExpenseScreen.tsx:539
+#: src/screens/ExpenseScreen.tsx:368
+#: src/screens/ExpenseScreen.tsx:567
 #: src/screens/GroupScreen.tsx:202
 msgid "Add expense"
 msgstr "Add expense"
@@ -417,7 +417,7 @@ msgstr "Add me as a friend on Waroo"
 msgid "Add me on Waroo"
 msgstr "Add me on Waroo"
 
-#: src/screens/ExpenseScreen.tsx:37
+#: src/screens/ExpenseScreen.tsx:39
 msgid "Add or take off an amount for anyone, and split the rest equally among the people ticked."
 msgstr "Add or take off an amount for anyone, and split the rest equally among the people ticked."
 
@@ -471,7 +471,7 @@ msgstr "Added {clean}."
 msgid "Added your BOLT12 offer."
 msgstr "Added your BOLT12 offer."
 
-#: src/screens/ExpenseScreen.tsx:27
+#: src/screens/ExpenseScreen.tsx:29
 msgid "Adjust"
 msgstr "Adjust"
 
@@ -494,8 +494,8 @@ msgstr "All square"
 msgid "Already joined on another phone"
 msgstr "Already joined on another phone"
 
-#: src/screens/ExpenseScreen.tsx:186
-#: src/screens/ExpenseScreen.tsx:349
+#: src/screens/ExpenseScreen.tsx:188
+#: src/screens/ExpenseScreen.tsx:377
 msgid "Amount"
 msgstr "Amount"
 
@@ -504,7 +504,7 @@ msgid "Amount ({currency})"
 msgstr "Amount ({currency})"
 
 #. placeholder {0}: m.name
-#: src/screens/ExpenseScreen.tsx:506
+#: src/screens/ExpenseScreen.tsx:534
 msgid "Amount for {0}"
 msgstr "Amount for {0}"
 
@@ -760,6 +760,10 @@ msgstr "Copy the link"
 msgid "Couldn’t find {candidate}. Check the username is exactly as you chose it in Coinos."
 msgstr "Couldn’t find {candidate}. Check the username is exactly as you chose it in Coinos."
 
+#: src/screens/ExpenseScreen.tsx:354
+msgid "Couldn’t find the total. The rest is filled in: check it, and add the amount."
+msgstr "Couldn’t find the total. The rest is filled in: check it, and add the amount."
+
 #: src/lib/lightning.ts:176
 msgid "Couldn’t get the bitcoin price right now. Try again in a minute."
 msgstr "Couldn’t get the bitcoin price right now. Try again in a minute."
@@ -818,6 +822,14 @@ msgstr "Couldn’t reach Waroo. Check your connection and try again."
 msgid "Couldn’t reach Waroo. Check your connection."
 msgstr "Couldn’t reach Waroo. Check your connection."
 
+#: src/components/ReceiptScan.tsx:23
+msgid "Couldn’t read that photo. Try again, or fill it in by hand."
+msgstr "Couldn’t read that photo. Try again, or fill it in by hand."
+
+#: src/screens/ExpenseScreen.tsx:355
+msgid "Couldn’t read this receipt. Try a closer, flatter photo in good light, or fill it in by hand."
+msgstr "Couldn’t read this receipt. Try a closer, flatter photo in good light, or fill it in by hand."
+
 #: src/components/FeedbackCard.tsx:84
 msgid "Couldn’t send it right now. Try again later."
 msgstr "Couldn’t send it right now. Try again later."
@@ -834,7 +846,7 @@ msgstr "Create group"
 msgid "Create invite link"
 msgstr "Create invite link"
 
-#: src/screens/ExpenseScreen.tsx:359
+#: src/screens/ExpenseScreen.tsx:387
 #: src/screens/SettleScreen.tsx:119
 msgid "Currency"
 msgstr "Currency"
@@ -843,7 +855,7 @@ msgstr "Currency"
 msgid "Dark"
 msgstr "Dark"
 
-#: src/screens/ExpenseScreen.tsx:379
+#: src/screens/ExpenseScreen.tsx:407
 msgid "Date"
 msgstr "Date"
 
@@ -859,7 +871,7 @@ msgstr "Delete “{savedName}” and everything in it? This can’t be undone."
 msgid "Delete everything with {name} from this phone? Their copy stays on their phone. This can’t be undone."
 msgstr "Delete everything with {name} from this phone? Their copy stays on their phone. This can’t be undone."
 
-#: src/screens/ExpenseScreen.tsx:543
+#: src/screens/ExpenseScreen.tsx:571
 msgid "Delete expense"
 msgstr "Delete expense"
 
@@ -911,7 +923,7 @@ msgstr "Earlier"
 msgid "Edit"
 msgstr "Edit"
 
-#: src/screens/ExpenseScreen.tsx:341
+#: src/screens/ExpenseScreen.tsx:368
 msgid "Edit expense"
 msgstr "Edit expense"
 
@@ -919,16 +931,16 @@ msgstr "Edit expense"
 msgid "Email me now and then about Waroo updates"
 msgstr "Email me now and then about Waroo updates"
 
-#: src/screens/ExpenseScreen.tsx:265
+#: src/screens/ExpenseScreen.tsx:267
 #: src/screens/SettleScreen.tsx:56
 msgid "Enter an amount"
 msgstr "Enter an amount"
 
-#: src/screens/ExpenseScreen.tsx:265
+#: src/screens/ExpenseScreen.tsx:267
 msgid "Enter what each item cost"
 msgstr "Enter what each item cost"
 
-#: src/screens/ExpenseScreen.tsx:23
+#: src/screens/ExpenseScreen.tsx:25
 msgid "Equally"
 msgstr "Equally"
 
@@ -949,11 +961,11 @@ msgstr "Everyone, in {currency}"
 msgid "Everything together"
 msgstr "Everything together"
 
-#: src/screens/ExpenseScreen.tsx:26
+#: src/screens/ExpenseScreen.tsx:28
 msgid "Exact"
 msgstr "Exact"
 
-#: src/screens/ExpenseScreen.tsx:60
+#: src/screens/ExpenseScreen.tsx:62
 msgid "Expense"
 msgstr "Expense"
 
@@ -969,14 +981,18 @@ msgstr "Expenses and payments from all your groups show up here, newest first."
 msgid "Expired"
 msgstr "Expired"
 
-#: src/screens/ExpenseScreen.tsx:552
+#: src/screens/ExpenseScreen.tsx:580
 msgid "Extra {n}"
 msgstr "Extra {n}"
 
 #. placeholder {0}: m.name
-#: src/screens/ExpenseScreen.tsx:443
+#: src/screens/ExpenseScreen.tsx:471
 msgid "Extra for {0}"
 msgstr "Extra for {0}"
+
+#: src/screens/ExpenseScreen.tsx:358
+msgid "Filled in {what} from the receipt. Check before saving."
+msgstr "Filled in {what} from the receipt. Check before saving."
 
 #: src/screens/Onboarding.tsx:230
 msgid "Firefox can’t install apps, but Waroo works fine in a tab."
@@ -1085,7 +1101,7 @@ msgstr "Getting the price…"
 msgid "Give at least one person a share"
 msgstr "Give at least one person a share"
 
-#: src/screens/ExpenseScreen.tsx:264
+#: src/screens/ExpenseScreen.tsx:266
 msgid "Give it a name"
 msgstr "Give it a name"
 
@@ -1302,15 +1318,15 @@ msgid "it’s still sending the payment"
 msgstr "it’s still sending the payment"
 
 #: src/components/ItemsEditor.tsx:55
-#: src/screens/ExpenseScreen.tsx:551
+#: src/screens/ExpenseScreen.tsx:579
 msgid "Item {n}"
 msgstr "Item {n}"
 
-#: src/screens/ExpenseScreen.tsx:28
+#: src/screens/ExpenseScreen.tsx:30
 msgid "Items"
 msgstr "Items"
 
-#: src/screens/ExpenseScreen.tsx:345
+#: src/screens/ExpenseScreen.tsx:373
 msgid "Izakaya dinner"
 msgstr "Izakaya dinner"
 
@@ -1383,7 +1399,7 @@ msgstr "Link copied"
 msgid "Link turned off. Nobody else can join with it."
 msgstr "Link turned off. Nobody else can join with it."
 
-#: src/screens/ExpenseScreen.tsx:39
+#: src/screens/ExpenseScreen.tsx:41
 msgid "List what each person had. Shared things are split among whoever had them."
 msgstr "List what each person had. Shared things are split among whoever had them."
 
@@ -1645,12 +1661,12 @@ msgid "One person"
 msgstr "One person"
 
 #. placeholder {0}: m.name
-#: src/screens/ExpenseScreen.tsx:478
+#: src/screens/ExpenseScreen.tsx:506
 msgid "One share fewer for {0}"
 msgstr "One share fewer for {0}"
 
 #. placeholder {0}: m.name
-#: src/screens/ExpenseScreen.tsx:494
+#: src/screens/ExpenseScreen.tsx:522
 msgid "One share more for {0}"
 msgstr "One share more for {0}"
 
@@ -1771,16 +1787,16 @@ msgstr "Owes you {sum}"
 msgid "Paid {0} to {toName} ({1})."
 msgstr "Paid {0} to {toName} ({1})."
 
-#: src/screens/ExpenseScreen.tsx:369
+#: src/screens/ExpenseScreen.tsx:397
 msgid "Paid by"
 msgstr "Paid by"
 
 #. placeholder {0}: m.name
-#: src/screens/ExpenseScreen.tsx:394
+#: src/screens/ExpenseScreen.tsx:422
 msgid "Paid by {0}"
 msgstr "Paid by {0}"
 
-#: src/screens/ExpenseScreen.tsx:256
+#: src/screens/ExpenseScreen.tsx:258
 msgid "Paid by {who}"
 msgstr "Paid by {who}"
 
@@ -1856,12 +1872,12 @@ msgstr "Payments"
 msgid "Pays in one tap"
 msgstr "Pays in one tap"
 
-#: src/screens/ExpenseScreen.tsx:25
+#: src/screens/ExpenseScreen.tsx:27
 msgid "Percent"
 msgstr "Percent"
 
 #. placeholder {0}: m.name
-#: src/screens/ExpenseScreen.tsx:470
+#: src/screens/ExpenseScreen.tsx:498
 msgid "Percent for {0}"
 msgstr "Percent for {0}"
 
@@ -1881,7 +1897,7 @@ msgstr "Pick at least one person to split it"
 msgid "Pick two different people"
 msgstr "Pick two different people"
 
-#: src/screens/ExpenseScreen.tsx:281
+#: src/screens/ExpenseScreen.tsx:283
 msgid "Pick who had {what}"
 msgstr "Pick who had {what}"
 
@@ -1912,6 +1928,18 @@ msgstr "QR code of {toName}’s BOLT12 offer"
 #: src/components/BitcoinPay.tsx:262
 msgid "QR code to pay with a wallet app"
 msgstr "QR code to pay with a wallet app"
+
+#: src/components/ReceiptScan.tsx:50
+msgid "Read on this phone. The photo isn’t sent anywhere."
+msgstr "Read on this phone. The photo isn’t sent anywhere."
+
+#: src/components/ReceiptScan.tsx:48
+msgid "Reading the receipt"
+msgstr "Reading the receipt"
+
+#: src/components/ReceiptScan.tsx:36
+msgid "Reading the receipt…"
+msgstr "Reading the receipt…"
 
 #: src/components/WalletSection.tsx:27
 msgid "Receive"
@@ -2009,7 +2037,7 @@ msgstr "Safari on a Mac: choose File, then Add to Dock."
 msgid "Save"
 msgstr "Save"
 
-#: src/screens/ExpenseScreen.tsx:539
+#: src/screens/ExpenseScreen.tsx:567
 msgid "Save changes"
 msgstr "Save changes"
 
@@ -2025,6 +2053,10 @@ msgstr "Say who paid"
 #: src/screens/ScanScreen.tsx:102
 msgid "Scan a code"
 msgstr "Scan a code"
+
+#: src/components/ReceiptScan.tsx:36
+msgid "Scan a receipt"
+msgstr "Scan a receipt"
 
 #: src/screens/InviteScreen.tsx:184
 msgid "Scan it in Waroo on the other phone, with the scan button."
@@ -2095,7 +2127,7 @@ msgstr "Settle"
 msgid "Settle up"
 msgstr "Settle up"
 
-#: src/screens/ExpenseScreen.tsx:376
+#: src/screens/ExpenseScreen.tsx:404
 #: src/screens/InviteScreen.tsx:26
 msgid "Several people"
 msgstr "Several people"
@@ -2116,12 +2148,12 @@ msgstr "Share it only with the group"
 msgid "Shared by what each person had. Use a minus sign for a discount."
 msgstr "Shared by what each person had. Use a minus sign for a discount."
 
-#: src/screens/ExpenseScreen.tsx:24
+#: src/screens/ExpenseScreen.tsx:26
 msgid "Shares"
 msgstr "Shares"
 
 #. placeholder {0}: m.name
-#: src/screens/ExpenseScreen.tsx:490
+#: src/screens/ExpenseScreen.tsx:518
 msgid "Shares for {0}"
 msgstr "Shares for {0}"
 
@@ -2177,7 +2209,7 @@ msgstr "Someone wants to add you as a friend"
 msgid "Something in it didn’t look right. Your groups and keys are safe on this phone."
 msgstr "Something in it didn’t look right. Your groups and keys are safe on this phone."
 
-#: src/screens/ExpenseScreen.tsx:407
+#: src/screens/ExpenseScreen.tsx:435
 msgid "Split"
 msgstr "Split"
 
@@ -2185,12 +2217,12 @@ msgstr "Split"
 msgid "Split anything with anyone"
 msgstr "Split anything with anyone"
 
-#: src/screens/ExpenseScreen.tsx:408
+#: src/screens/ExpenseScreen.tsx:436
 msgid "Split method"
 msgstr "Split method"
 
 #. placeholder {0}: m.name
-#: src/screens/ExpenseScreen.tsx:435
+#: src/screens/ExpenseScreen.tsx:463
 msgid "Split the rest with {0}"
 msgstr "Split the rest with {0}"
 
@@ -2271,7 +2303,7 @@ msgstr "Tap “Install”, then open Waroo from your Home Screen."
 msgid "Tap <0>Submit</0>, then <1>Copy NWC</1>."
 msgstr "Tap <0>Submit</0>, then <1>Copy NWC</1>."
 
-#: src/screens/ExpenseScreen.tsx:543
+#: src/screens/ExpenseScreen.tsx:571
 msgid "Tap again to delete"
 msgstr "Tap again to delete"
 
@@ -2383,6 +2415,10 @@ msgstr "The camera stopped while Waroo was in the background."
 msgid "the connection to it dropped while sending the request, so it may or may not have paid{tech}"
 msgstr "the connection to it dropped while sending the request, so it may or may not have paid{tech}"
 
+#: src/screens/ExpenseScreen.tsx:350
+msgid "the date"
+msgstr "the date"
+
 #: src/lib/sync.ts:444
 msgid "The group took too long to load"
 msgstr "The group took too long to load"
@@ -2437,6 +2473,14 @@ msgstr "the payment failed{tech}"
 #: src/screens/MoveInScreen.tsx:22
 msgid "the phone helping you"
 msgstr "the phone helping you"
+
+#: src/screens/ExpenseScreen.tsx:341
+msgid "the shop"
+msgstr "the shop"
+
+#: src/screens/ExpenseScreen.tsx:346
+msgid "the total"
+msgstr "the total"
 
 #: src/lib/news.ts:141
 msgid "Their expenses stay in the group"
@@ -2519,7 +2563,7 @@ msgstr "This browser can’t show notifications."
 msgid "This code isn’t complete"
 msgstr "This code isn’t complete"
 
-#: src/screens/ExpenseScreen.tsx:61
+#: src/screens/ExpenseScreen.tsx:63
 msgid "This expense was deleted."
 msgstr "This expense was deleted."
 
@@ -2748,7 +2792,7 @@ msgstr "Welcome to Waroo"
 msgid "What extra {0} is"
 msgstr "What extra {0} is"
 
-#: src/screens/ExpenseScreen.tsx:344
+#: src/screens/ExpenseScreen.tsx:372
 msgid "What for"
 msgstr "What for"
 
@@ -2817,7 +2861,7 @@ msgstr "Who it’s for"
 msgid "Who paid"
 msgstr "Who paid"
 
-#: src/screens/ExpenseScreen.tsx:383
+#: src/screens/ExpenseScreen.tsx:411
 msgid "Who paid how much"
 msgstr "Who paid how much"
 
