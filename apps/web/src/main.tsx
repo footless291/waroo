@@ -16,8 +16,13 @@ syncHub.setVisible(document.visibilityState === 'visible')
 document.addEventListener('visibilitychange', () => syncHub.setVisible(document.visibilityState === 'visible'))
 // Publishes this phone's box key in groups made before keys could change.
 void publishProfile()
-  .then(() => publishFriendLinks())
   .catch((err) => console.warn('profile', err))
+  // Even if that failed: friends find each other in shared groups this way.
+  .finally(() => void publishFriendLinks())
+// And again whenever the app comes back: it only writes when something changed.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') void publishFriendLinks()
+})
 
 // The language loads first: nothing renders until it's ready.
 await startI18n()
