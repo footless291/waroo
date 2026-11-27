@@ -1,9 +1,10 @@
 import { t } from '@lingui/core/macro'
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { Header } from '../components/Header.tsx'
-import { createGroup } from '../lib/db.ts'
+import { createGroup, myLastName } from '../lib/db.ts'
+import { connectedFriends, inviteFriendsTo } from '../lib/friends.ts'
 import { CURRENCIES, currencyName } from '../lib/format.ts'
-import { go } from '../lib/hooks.ts'
+import { go, useLoad } from '../lib/hooks.ts'
 
 export function NewGroupScreen() {
   const [name, setName] = useState('')
@@ -11,6 +12,11 @@ export function NewGroupScreen() {
   const [others, setOthers] = useState<string[]>([''])
   const [currency, setCurrency] = useState('JPY')
   const [busy, setBusy] = useState(false)
+  const friends = useLoad(connectedFriends, [])
+  const [invited, setInvited] = useState<string[]>([])
+  useEffect(() => {
+    void myLastName().then((n) => setMyName((typed) => typed || n))
+  }, [])
 
   const otherNames = others.map((o) => o.trim()).filter(Boolean)
   const canSave = name.trim() && myName.trim() && !busy
@@ -20,6 +26,13 @@ export function NewGroupScreen() {
     if (!canSave) return
     setBusy(true)
     const group = await createGroup({ name: name.trim(), myName: myName.trim(), otherNames, currency })
+    const chosen = (friends ?? []).filter((f) => invited.includes(f.friendship.id)).map((f) => f.friendship)
+    try {
+      await inviteFriendsTo(group.id, name.trim(), chosen)
+    } catch (err) {
+      // Offline, say: the group is made; invites can be sent from Invite people.
+      console.warn('friend invites', err)
+    }
     go(`/g/${group.id}`)
   }
 
@@ -53,6 +66,26 @@ export function NewGroupScreen() {
           ))}
           <p className="hint">{t`You can add more people later.`}</p>
         </fieldset>
+        {friends && friends.length > 0 && (
+          <fieldset className="field">
+            <legend>{t`Invite friends`}</legend>
+            <div className="friend-picks">
+              {friends.map((f) => (
+                <label key={f.friendship.id} className="check-row">
+                  <input
+                    type="checkbox"
+                    checked={invited.includes(f.friendship.id)}
+                    onChange={(e) =>
+                      setInvited((list) => (e.target.checked ? [...list, f.friendship.id] : list.filter((id) => id !== f.friendship.id)))
+                    }
+                  />
+                  <span>{f.name}</span>
+                </label>
+              ))}
+            </div>
+            <p className="hint">{t`They get an invite privately, and join from their own phone. No need to add them above too.`}</p>
+          </fieldset>
+        )}
         <label className="field">
           <span>{t`Main currency`}</span>
           <select value={currency} onChange={(e) => setCurrency(e.target.value)}>

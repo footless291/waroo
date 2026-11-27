@@ -2182,3 +2182,20 @@ select {
   color: var(--muted);
   font-weight: 600;
 }
+.friend-picks {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-field);
+  background: var(--card);
+}
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--target);
+  padding: 6px 16px;
+  font-weight: 600;
+}
+.check-row + .check-row {
+  border-top: 1px solid var(--line);
+}

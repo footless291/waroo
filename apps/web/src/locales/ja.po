@@ -162,7 +162,7 @@ msgstr "{group}、{who}さんが支払った"
 msgid "{group}, you paid"
 msgstr "{group}、あなたが支払った"
 
-#: src/lib/news.ts:177
+#: src/lib/news.ts:178
 msgid "{group}: {count} new things"
 msgstr "{group}：新着{count}件"
 
@@ -240,7 +240,7 @@ msgstr "{what}：{message}"
 msgid "{who} accepted your friend request"
 msgstr "{who}さんが友達リクエストを承認しました"
 
-#: src/lib/news.ts:167
+#: src/lib/news.ts:168
 msgid "{who} added {title}, {total}"
 msgstr "{who}さんが{title}を追加：{total}"
 
@@ -256,7 +256,7 @@ msgstr "{who}さんが新しいスマホで{group}に戻りました"
 msgid "{who} joined {group}"
 msgstr "{who}さんが{group}に参加しました"
 
-#: src/lib/news.ts:146
+#: src/lib/news.ts:147
 msgid "{who} left {group}"
 msgstr "{who}さんが{group}から退出しました"
 
@@ -517,7 +517,7 @@ msgstr "追加料金{0}の金額"
 msgid "Amounts in your own currency."
 msgstr "金額はいつもの通貨で表示されます。"
 
-#: src/screens/NewGroupScreen.tsx:36
+#: src/screens/NewGroupScreen.tsx:49
 msgid "Ana"
 msgstr "はなこ"
 
@@ -525,7 +525,7 @@ msgstr "はなこ"
 msgid "Android"
 msgstr "Android"
 
-#: src/screens/NewGroupScreen.tsx:45
+#: src/screens/NewGroupScreen.tsx:58
 msgid "Another person"
 msgstr "ほかの人"
 
@@ -584,7 +584,7 @@ msgstr "ビットコイン"
 msgid "Bitcoin price sources disagree right now, so paying is paused. Try again in a minute."
 msgstr "ビットコイン価格の情報源が一致しないため、支払いを一時停止しています。1分ほどしてからお試しください。"
 
-#: src/screens/NewGroupScreen.tsx:45
+#: src/screens/NewGroupScreen.tsx:58
 msgid "Bob"
 msgstr "たろう"
 
@@ -792,7 +792,7 @@ msgstr "招待を開けませんでした"
 msgid "Couldn’t reach Rizful. Check your connection and try again."
 msgstr "Rizfulに接続できませんでした。接続を確認して、もう一度お試しください。"
 
-#: src/lib/sync.ts:446
+#: src/lib/sync.ts:449
 msgid "Couldn’t reach the group"
 msgstr "グループに接続できませんでした"
 
@@ -826,7 +826,7 @@ msgstr "今は送信できませんでした。あとでもう一度お試しく
 msgid "Couldn’t turn the link off. Check your connection and try again."
 msgstr "リンクを無効にできませんでした。接続を確認して、もう一度お試しください。"
 
-#: src/screens/NewGroupScreen.tsx:67
+#: src/screens/NewGroupScreen.tsx:100
 msgid "Create group"
 msgstr "グループを作成"
 
@@ -1098,7 +1098,7 @@ msgid "Group"
 msgstr "グループ"
 
 #: src/screens/GroupSettingsScreen.tsx:65
-#: src/screens/NewGroupScreen.tsx:31
+#: src/screens/NewGroupScreen.tsx:44
 msgid "Group name"
 msgstr "グループ名"
 
@@ -1192,8 +1192,12 @@ msgstr "インストールしました。ホーム画面からWarooを開いて�
 msgid "Invite"
 msgstr "招待"
 
-#: src/screens/InviteScreen.tsx:275
+#: src/screens/InviteScreen.tsx:272
 msgid "Invite a friend"
+msgstr "友達を招待"
+
+#: src/screens/NewGroupScreen.tsx:71
+msgid "Invite friends"
 msgstr "友達を招待"
 
 #: src/screens/InviteScreen.tsx:193
@@ -1205,7 +1209,7 @@ msgstr "招待リンクをコピーしました。グループの人たちに送
 msgid "Invite people"
 msgstr "招待する"
 
-#: src/screens/InviteScreen.tsx:283
+#: src/screens/InviteScreen.tsx:280
 msgid "Invite sent"
 msgstr "招待を送りました"
 
@@ -1242,7 +1246,7 @@ msgstr "支払えませんでした。{0}で試す"
 msgid "it doesn’t have enough in it"
 msgstr "残高が足りません"
 
-#: src/screens/InviteScreen.tsx:294
+#: src/screens/InviteScreen.tsx:291
 msgid "It goes to them privately, and works once, for a week."
 msgstr "招待は友達だけに届き、1回だけ、1週間使えます。"
 
@@ -1408,7 +1412,7 @@ msgid "Main"
 msgstr "メイン"
 
 #: src/screens/GroupSettingsScreen.tsx:69
-#: src/screens/NewGroupScreen.tsx:57
+#: src/screens/NewGroupScreen.tsx:90
 msgid "Main currency"
 msgstr "メインの通貨"
 
@@ -1509,7 +1513,7 @@ msgid "New friend"
 msgstr "新しい友達"
 
 #: src/screens/MainTabs.tsx:44
-#: src/screens/NewGroupScreen.tsx:28
+#: src/screens/NewGroupScreen.tsx:41
 msgid "New group"
 msgstr "グループを作る"
 
@@ -1620,7 +1624,7 @@ msgstr "オファーをコピーしました"
 msgid "Offline · changes will sync later"
 msgstr "オフライン・変更はあとで同期されます"
 
-#: src/screens/NewGroupScreen.tsx:32
+#: src/screens/NewGroupScreen.tsx:45
 msgid "Okinawa trip"
 msgstr "沖縄旅行"
 
@@ -1861,7 +1865,7 @@ msgstr "割合"
 msgid "Percent for {0}"
 msgstr "{0}さんの割合"
 
-#: src/screens/NewGroupScreen.tsx:75
+#: src/screens/NewGroupScreen.tsx:108
 msgid "Person {n}"
 msgstr "メンバー{n}"
 
@@ -2052,7 +2056,7 @@ msgstr "新しい友達コードを送る"
 msgid "Send feedback"
 msgstr "フィードバックを送る"
 
-#: src/screens/InviteScreen.tsx:286
+#: src/screens/InviteScreen.tsx:283
 msgid "Send invite"
 msgstr "招待を送る"
 
@@ -2379,7 +2383,7 @@ msgstr "Warooがバックグラウンドにある間にカメラが止まりま�
 msgid "the connection to it dropped while sending the request, so it may or may not have paid{tech}"
 msgstr "依頼を送る途中で接続が切れたため、支払われたかどうか分かりません{tech}"
 
-#: src/lib/sync.ts:441
+#: src/lib/sync.ts:444
 msgid "The group took too long to load"
 msgstr "グループの読み込みに時間がかかりすぎました"
 
@@ -2491,11 +2495,15 @@ msgstr "グループのどれかに新しい内容があります。"
 msgid "They can see the group and add expenses now"
 msgstr "グループを見て、支出を追加できるようになりました"
 
+#: src/screens/NewGroupScreen.tsx:86
+msgid "They get an invite privately, and join from their own phone. No need to add them above too."
+msgstr "友達には招待が個別に届き、自分のスマホから参加します。上で名前を追加する必要はありません。"
+
 #: src/screens/RecoverScreen.tsx:154
 msgid "They tap the scan button and scan the code this phone will show. Not together? Send them the link instead."
 msgstr "読み取りボタンを押して、このスマホに表示されるコードを読み取ってもらいます。一緒にいない場合は、代わりにリンクを送ってください。"
 
-#: src/lib/news.ts:146
+#: src/lib/news.ts:147
 msgid "They were all square"
 msgstr "精算済みでした"
 
@@ -2792,7 +2800,7 @@ msgstr "どのグループ、または友達の支出ですか？"
 msgid "Which one are you?"
 msgstr "あなたはどれですか？"
 
-#: src/screens/NewGroupScreen.tsx:39
+#: src/screens/NewGroupScreen.tsx:52
 msgid "Who else?"
 msgstr "ほかに誰がいますか？"
 
@@ -2862,7 +2870,7 @@ msgstr "{name}さんとのつながりが切れました。これまでの記録
 msgid "You both paid"
 msgstr "2人とも支払った"
 
-#: src/screens/NewGroupScreen.tsx:54
+#: src/screens/NewGroupScreen.tsx:67
 msgid "You can add more people later."
 msgstr "メンバーはあとから追加できます。"
 
@@ -3023,7 +3031,7 @@ msgstr "メッセージ"
 
 #: src/screens/JoinScreen.tsx:263
 #: src/screens/MemberScreen.tsx:76
-#: src/screens/NewGroupScreen.tsx:35
+#: src/screens/NewGroupScreen.tsx:48
 msgid "Your name"
 msgstr "あなたの名前"
 
@@ -3039,11 +3047,11 @@ msgstr "あなたの名前（友達が知っている呼び方で）"
 msgid "your other phone"
 msgstr "もう一方のスマホ"
 
-#: src/lib/news.ts:168
+#: src/lib/news.ts:169
 msgid "Your share is {share}"
 msgstr "あなたの負担は{share}"
 
-#: src/lib/news.ts:168
+#: src/lib/news.ts:169
 msgid "Your share is {share}, in {group}"
 msgstr "あなたの負担は{share}・{group}"
 

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Header } from '../components/Header.tsx'
 import { QrCode } from '../components/QrCode.tsx'
 import { Segmented } from '../components/Segmented.tsx'
-import { listGroups, makeShareable, replayGroup, type GroupMeta } from '../lib/db.ts'
+import { makeShareable, type GroupMeta } from '../lib/db.ts'
 import { go, locale, useGroup } from '../lib/hooks.ts'
 import {
   createInvite,
@@ -16,7 +16,7 @@ import {
   type SavedInvite,
 } from '../lib/invites.ts'
 import { syncHub } from '../lib/sync.ts'
-import { friendIn, inviteFriend, publishFriendLinks, sharedGroups } from '../lib/friends.ts'
+import { connectedFriends, inviteFriend, publishFriendLinks, sharedGroups } from '../lib/friends.ts'
 import { groupTitle } from '../lib/title.ts'
 
 type Who = 'many' | 'one'
@@ -245,14 +245,11 @@ function InviteFriends({ group, name }: { group: GroupMeta; name: string }) {
   useEffect(() => {
     void (async () => {
       const out = []
-      for (const friendship of await listGroups()) {
-        if (!friendship.friend) continue
-        const state = await replayGroup(friendship.id)
-        const friend = friendIn(state, friendship.meId)
-        if (!friend) continue
+      // Only friends you're connected with, and not already in this group.
+      for (const { friendship, state, name } of await connectedFriends()) {
         const shared = await sharedGroups(friendship, state)
         if (shared.some((g) => g.groupId === group.id)) continue
-        out.push({ friendship, name: friend.name })
+        out.push({ friendship, name })
       }
       setFriends(out)
     })()

@@ -136,6 +136,25 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await ana.goto(B + '#/friends');
   check(await waitText(ana, '.cards', 'Dee') && !(await ana.isVisible('a.archived-link')), 'Dee is back on Ana’s list');
 
+  // Removed friends aren't offered when inviting; friends can be invited while making a group.
+  await ana.goto(B + '#/new');
+  check(await waitText(ana, '.friend-picks', 'Bob') && await waitText(ana, '.friend-picks', 'Dee'), 'a new group offers Ana’s friends');
+  await ana.fill('input[placeholder="Okinawa trip"]', 'Kyoto');
+  await ana.check('.friend-picks label:has-text("Dee") input');
+  await ana.click('text=Create group');
+  check(await waitText(ana, 'header h1', 'Kyoto'), 'the group is made');
+  await dee.goto(B + '#/');
+  check(await waitText(dee, '.friend-invites', 'Ana invited you to Kyoto', 10000), 'and Dee gets the invite');
+  await dee.click('button:has-text("Not now")');
+  // Dee removes Ana: Ana's invite list no longer offers Dee.
+  await dee.goto(B + '#/friends'); await dee.click('a.card-row:has-text("Ana")');
+  await dee.click('button:has-text("Remove Ana as a friend")');
+  await dee.click('.remove-friend button:has-text("Remove")');
+  await dee.waitForTimeout(1500);
+  await ana.goto(B + '#/new');
+  await ana.waitForSelector('.friend-picks');
+  check(!(await waitText(ana, '.friend-picks', 'Dee', 1500)), 'a friend who disconnected isn’t offered');
+
   for (const p of [ana, bob, dee]) check(p.errors.length === 0, `${p.name}: no console errors ${p.errors.join(' | ').slice(0, 300)}`);
   console.log(failed ? `${failed} FAILED` : 'ALL PASSED');
   await browser.close();

@@ -7,7 +7,9 @@
  */
 import { groupBalances, suggestTransfers, type FriendInvite, type GroupState } from '@waroo/ledger'
 import { friendToken, newSigningKeys, signText, verifyText } from './crypto.ts'
-import { append, listGroups, newId, publishProfile, putGroup, replayGroup, type GroupMeta } from './db.ts'
+import { append, listGroups, makeShareable, newId, publishProfile, putGroup, replayGroup, type GroupMeta } from './db.ts'
+import { createInvite } from './invites.ts'
+import { syncHub } from './sync.ts'
 import { groupTitle } from './title.ts'
 
 /** Groups (not friendships) this phone can speak for. */
@@ -154,4 +156,28 @@ export async function reconnect(friendship: GroupMeta, name: string): Promise<vo
   await append(next, [{ type: 'member.added', member: { id: meId, name, key: publicKey } }])
   await publishProfile(friendship.id)
   void publishFriendLinks()
+}
+
+/** Friendships that are working now (not waiting, removed or disconnected), with the friend's name. */
+export async function connectedFriends(): Promise<{ friendship: GroupMeta; state: GroupState; name: string }[]> {
+  const out = []
+  for (const friendship of await listGroups()) {
+    if (!friendship.friend || !friendship.shared) continue
+    const state = await replayGroup(friendship.id)
+    if (friendshipState(state, friendship.meId) !== 'connected') continue
+    out.push({ friendship, state, name: friendIn(state, friendship.meId)!.name })
+  }
+  return out
+}
+
+/** Invites friends to a group (made shareable first), each with their own one-person link sent privately. */
+export async function inviteFriendsTo(groupId: string, groupName: string, friendships: GroupMeta[]): Promise<void> {
+  if (friendships.length === 0) return
+  const group = await makeShareable(groupId)
+  await syncHub.ensure(groupId)
+  void publishFriendLinks()
+  for (const friendship of friendships) {
+    const invite = await createInvite(group, { days: 7, oneTime: true })
+    await inviteFriend(friendship, { id: groupId, name: groupName }, invite.secret, invite.expiresAt)
+  }
 }
