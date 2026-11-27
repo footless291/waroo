@@ -42,8 +42,8 @@ export const ICONS = {
 
 /** The main pages. */
 export const mainTabs = (): Tab[] => [
-  { path: '/', label: t`Groups`, icon: ICONS.groups },
   { path: '/friends', label: t`Friends`, icon: ICONS.friends },
+  { path: '/', label: t`Groups`, icon: ICONS.groups },
   { path: '/activity', label: t`Activity`, icon: ICONS.activity },
   { path: '/settings', label: t`Settings`, icon: ICONS.settings },
 ]

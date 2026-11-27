@@ -10,13 +10,14 @@ import { FriendsPage } from './FriendsScreen.tsx'
 import { HomePage } from './HomeScreen.tsx'
 import { SettingsPage } from './YouScreen.tsx'
 
-/** Groups, Friends, Activity and Settings, side by side: swipe or tap between them. */
+/** Friends, Groups, Activity and Settings, side by side: swipe or tap between them. */
 export function MainTabs({ current, query }: { current: string; query: string }) {
   const groups = useGroups()
   const pages = useMemo(
     () => [
-      { path: '/', content: <HomePage /> },
       { path: '/friends', content: <FriendsPage /> },
+      // Groups is where the app opens, though Friends sits first.
+      { path: '/', content: <HomePage /> },
       { path: '/activity', content: <ActivityPage /> },
       // A link like #/settings?open=wallet opens that section.
       { path: '/settings', content: <SettingsPage key={query} params={new URLSearchParams(query)} /> },

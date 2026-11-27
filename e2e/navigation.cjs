@@ -51,6 +51,9 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await page.fill('input.amount-input', '500');
   await page.click('button:has-text("Mark as paid")'); await page.waitForTimeout(300);
   check(await page.isVisible('nav.tabbar a:has-text("Payments")[aria-current="page"]'), 'group tabs are at the bottom');
+  await page.goto(B);
+  check((await page.$$eval('nav.tabbar a', (as) => as.map((a) => a.textContent.trim()))).join(',') === 'Friends,Groups,Activity,Settings', 'Friends is the first tab');
+  check(await page.isVisible('nav.tabbar a:has-text("Groups")[aria-current="page"]'), 'but the app opens on Groups');
   await makeGroup('Ramen club');
   await addExpense('Ramen', '2000');
   await page.screenshot({ path: SHOTS + '/nav-1-group.png' });
@@ -77,11 +80,14 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
 
   // Swiping
   await page.goto(B + '#/'); await page.waitForTimeout(300);
-  await swipe('left');
-  check((await hash()) === '#/friends', 'swipe left: Groups → Friends');
+  await swipe('right');
+  check((await hash()) === '#/friends', 'swipe right: Groups → Friends, the first tab');
   await page.waitForTimeout(200);
   await swipe('left');
-  check((await hash()) === '#/activity', 'swipe left: Friends → Activity');
+  check((await hash()) === '#/', 'swipe left: back to Groups');
+  await page.waitForTimeout(200);
+  await swipe('left');
+  check((await hash()) === '#/activity', 'swipe left: Groups → Activity');
   await page.waitForTimeout(200);
   await swipe('left');
   check((await hash()) === '#/settings', 'swipe left: Activity → Settings');
