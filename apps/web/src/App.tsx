@@ -7,7 +7,7 @@ import { ErrorBoundary } from './components/ErrorBoundary.tsx'
 import { listGroups } from './lib/db.ts'
 import { finishOnboarding, onboarded } from './lib/install.ts'
 import { InstallScreen, Onboarding } from './screens/Onboarding.tsx'
-import { AddFriendScreen } from './screens/FriendsScreen.tsx'
+import { AddFriendScreen, ArchivedFriendsScreen } from './screens/FriendsScreen.tsx'
 import { ExpenseScreen } from './screens/ExpenseScreen.tsx'
 import { GroupScreen } from './screens/GroupScreen.tsx'
 import { InviteScreen } from './screens/InviteScreen.tsx'
@@ -36,6 +36,7 @@ function Router() {
   if (parts[0] === 'join') return <JoinScreen params={params} />
   if (parts[0] === 'you' || parts[0] === 'settings') return <MainTabs current="/settings" query={query} />
   if (parts[0] === 'friends' && parts[1] === 'add') return <AddFriendScreen params={params} />
+  if (parts[0] === 'friends' && parts[1] === 'archived') return <ArchivedFriendsScreen />
   if (parts[0] === 'friends') return <MainTabs current="/friends" query={query} />
   if (parts[0] === 'activity') return <MainTabs current="/activity" query={query} />
   if (parts[0] === 'add') return <PickGroupScreen />

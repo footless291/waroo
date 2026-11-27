@@ -6,11 +6,11 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { Wordmark } from '../components/Header.tsx'
 import { Logo } from '../components/icons.tsx'
 import { isGroupKey, newSigningKeys } from '../lib/crypto.ts'
-import { append, getGroup, newId, publishProfile, saveJoinedGroup, type GroupMeta } from '../lib/db.ts'
+import { append, getGroup, newId, publishProfile, replayGroup, saveJoinedGroup, type GroupMeta } from '../lib/db.ts'
 import { go } from '../lib/hooks.ts'
 import { InviteClosed, openInvite, type InviteTicket } from '../lib/invites.ts'
 import { fetchGroup, syncHub } from '../lib/sync.ts'
-import { publishFriendLinks } from '../lib/friends.ts'
+import { publishFriendLinks, reconnect } from '../lib/friends.ts'
 
 type Loaded = {
   state: GroupState
@@ -102,7 +102,14 @@ function JoinGroup({ groupId, groupKey: key, from, pins }: { groupId: string; gr
       const existing = await getGroup(groupId)
       if (existing) {
         // The id alone doesn't make it the same group: an invite names both.
-        if (existing.key === key || existing.previousKeys?.some((p) => p.key === key)) go(`/g/${groupId}`)
+        if (existing.key === key || existing.previousKeys?.some((p) => p.key === key)) {
+          // A friend you'd removed sent you a new code: the friendship comes back, history and all.
+          const before = await replayGroup(groupId)
+          if (existing.friend && before.members.get(existing.meId)?.left) {
+            await reconnect(existing, before.members.get(existing.meId)!.name)
+          }
+          go(`/g/${groupId}`)
+        }
         else if (live) setProblem(t`This phone already has a different group under this invite’s name. Ask for a new link.`)
         return
       }

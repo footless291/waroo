@@ -8,12 +8,12 @@ import { QrCode } from '../components/QrCode.tsx'
 import { createFriend, deleteGroupLocally, makeShareable, myLastName, replayGroup, type GroupMeta } from '../lib/db.ts'
 import { money } from '../lib/format.ts'
 import { groupTitle } from '../lib/title.ts'
-import { go, useGroup, useGroups } from '../lib/hooks.ts'
+import { go, useGroup, useGroups, useLoad } from '../lib/hooks.ts'
 import { currentLocale } from '../lib/i18n.ts'
 import { listGroups } from '../lib/db.ts'
 import { createInvite, inviteLinkFor, invitesFor, inviteStatus, stopInvite, type SavedInvite } from '../lib/invites.ts'
 import { syncHub } from '../lib/sync.ts'
-import { friendIn, publishFriendLinks, sharedGroups, type FriendGroup } from '../lib/friends.ts'
+import { friendIn, friendshipState, publishFriendLinks, reconnect, removeFriend, sharedGroups, type FriendGroup } from '../lib/friends.ts'
 
 /**
  * Friends: people you split with outside any group. Each friendship is a
@@ -22,7 +22,13 @@ import { friendIn, publishFriendLinks, sharedGroups, type FriendGroup } from '..
  */
 export function FriendsPage() {
   const groups = useGroups()
-  const friends = groups?.filter((g) => g.friend)
+  const all = groups?.filter((g) => g.friend)
+  // Friendships you removed are archived: listed separately, history kept.
+  const removed = useLoad(
+    async () => new Set((await Promise.all((all ?? []).map(async (g) => [g.id, friendshipState(await replayGroup(g.id), g.meId)] as const))).filter(([, s]) => s === 'removed').map(([id]) => id)),
+    [groups],
+  )
+  const friends = removed ? all?.filter((g) => !removed.has(g.id)) : undefined
   return (
     <div className="screen with-tabbar">
       <PageTitle>{t`Friends`}</PageTitle>
@@ -48,19 +54,168 @@ export function FriendsPage() {
           ))}
         </ul>
       )}
+      {removed && removed.size > 0 && (
+        <a className="archived-link" href="#/friends/archived">
+          {plural(removed.size, { one: 'Removed friends (#)', other: 'Removed friends (#)' })}
+        </a>
+      )}
     </div>
   )
 }
 
+/** Friends you removed: their history stays, here, until you delete it. */
+export function ArchivedFriendsScreen() {
+  const groups = useGroups()
+  const removed = useLoad(
+    async () => {
+      const out = []
+      for (const g of groups ?? []) {
+        if (!g.friend) continue
+        const state = await replayGroup(g.id)
+        if (friendshipState(state, g.meId) === 'removed') out.push({ id: g.id, name: groupTitle(state, g) })
+      }
+      return out
+    },
+    [groups],
+  )
+  return (
+    <main className="screen">
+      <Header title={t`Removed friends`} back="/friends" />
+      <p className="lead">{t`Their history stays here until you delete it.`}</p>
+      {removed && removed.length === 0 && <p className="muted">{t`Nobody here.`}</p>}
+      <ul className="cards">
+        {(removed ?? []).map((f) => (
+          <li key={f.id}>
+            <a className="card-row" href={`#/g/${f.id}`}>
+              <span className="row-main">
+                <strong>{f.name}</strong>
+              </span>
+              <span className="chevron" aria-hidden="true">›</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </main>
+  )
+}
+
+/**
+ * On a friend's page, when it's no longer a working friendship: you removed
+ * them (archived: reconnect or delete), or they removed you (disconnected:
+ * send a new friend code or delete).
+ */
+export function FriendStatus({ friendship, state }: { friendship: GroupMeta; state: GroupState }) {
+  const status = friendshipState(state, friendship.meId)
+  const [busy, setBusy] = useState(false)
+  const name = groupTitle(state, friendship)
+  if (status !== 'removed' && status !== 'disconnected') return null
+
+  async function forget() {
+    setBusy(true)
+    for (const saved of await invitesFor(friendship.id)) await stopInvite(saved).catch(() => {})
+    syncHub.drop(friendship.id)
+    await deleteGroupLocally(friendship.id)
+    go('/friends')
+  }
+  async function comeBack() {
+    setBusy(true)
+    await reconnect(friendship, state.members.get(friendship.meId)?.name ?? '')
+    setBusy(false)
+  }
+
+  return (
+    <section className="invite-card friend-status">
+      {status === 'removed' ? (
+        <>
+          <h2>{t`You removed ${name}`}</h2>
+          <p>{t`Your history together stays here. Reconnect to split with them again.`}</p>
+          <button className="button primary" disabled={busy} onClick={() => void comeBack()}>
+            {t`Reconnect`}
+          </button>
+        </>
+      ) : (
+        <>
+          <h2>{t`Disconnected`}</h2>
+          <p>{t`You and ${name} aren’t connected any more. Your history together stays here.`}</p>
+          <a className="button primary" href={`#/friends/add?g=${friendship.id}`}>
+            {t`Send a new friend code`}
+          </a>
+        </>
+      )}
+      <ConfirmDelete name={name} busy={busy} onDelete={() => void forget()} />
+    </section>
+  )
+}
+
+function ConfirmDelete({ name, busy, onDelete }: { name: string; busy: boolean; onDelete: () => void }) {
+  const [asking, setAsking] = useState(false)
+  if (!asking) {
+    return (
+      <button className="button danger" onClick={() => setAsking(true)}>
+        {t`Delete from this phone`}
+      </button>
+    )
+  }
+  return (
+    <div className="confirm">
+      <p>{t`Delete everything with ${name} from this phone? Their copy stays on their phone. This can’t be undone.`}</p>
+      <button className="button danger-fill" disabled={busy} onClick={onDelete}>
+        {t`Delete`}
+      </button>
+      <button className="button outline" onClick={() => setAsking(false)}>
+        {t`Cancel`}
+      </button>
+    </div>
+  )
+}
+
+/** At the bottom of a friend's page: end the friendship, once you're all square. */
+export function RemoveFriend({ friendship, state }: { friendship: GroupMeta; state: GroupState }) {
+  const [asking, setAsking] = useState(false)
+  const [busy, setBusy] = useState(false)
+  if (friendshipState(state, friendship.meId) !== 'connected') return null
+  const name = groupTitle(state, friendship)
+  const square = [...groupBalances(state).values()].every((byPerson) => !byPerson.get(friendship.meId))
+
+  async function remove() {
+    setBusy(true)
+    await removeFriend(friendship)
+    go('/friends')
+  }
+
+  return (
+    <section className="remove-friend">
+      {!square ? (
+        <p className="hint pad">{t`To remove ${name} as a friend, settle up first.`}</p>
+      ) : asking ? (
+        <div className="confirm">
+          <p>{t`Remove ${name} as a friend? You’ll keep your history together, archived. They won’t be notified, but they’ll see you’re no longer connected.`}</p>
+          <button className="button danger-fill" disabled={busy} onClick={() => void remove()}>
+            {t`Remove`}
+          </button>
+          <button className="button outline" onClick={() => setAsking(false)}>
+            {t`Cancel`}
+          </button>
+        </div>
+      ) : (
+        <button className="button danger" onClick={() => setAsking(true)}>
+          {t`Remove ${name} as a friend`}
+        </button>
+      )}
+    </section>
+  )
+}
+
 function FriendRow({ group }: { group: GroupMeta }) {
-  const [summary, setSummary] = useState<{ state: GroupState; other?: string; name: string; waiting: boolean; lines: { amount: number; currency: string }[]; groups: number }>()
+  const [summary, setSummary] = useState<{ state: GroupState; other?: string; name: string; waiting: boolean; disconnected: boolean; lines: { amount: number; currency: string }[]; groups: number }>()
   useEffect(() => {
     void (async () => {
       const state = await replayGroup(group.id)
-      const other = friendIn(state, group.meId)?.id
-      const waiting = !other
+      const status = friendshipState(state, group.meId)
+      const other = status === 'disconnected' ? [...state.members.values()].find((m) => m.id !== group.meId)?.id : friendIn(state, group.meId)?.id
+      const waiting = status === 'waiting'
       const shared = waiting ? [] : await sharedGroups(group, state)
-      setSummary({ state, other, name: groupTitle(state, group), waiting, lines: totalOwed(group, state, shared), groups: shared.length })
+      setSummary({ state, other, name: groupTitle(state, group), waiting, disconnected: status === 'disconnected', lines: totalOwed(group, state, shared), groups: shared.length })
     })()
   }, [group])
   if (!summary) return <span className="card-row" />
@@ -72,6 +227,8 @@ function FriendRow({ group }: { group: GroupMeta }) {
         <strong>{summary.waiting ? t`Friend code, not used yet` : summary.name}</strong>
         {summary.waiting ? (
           <span className="muted">{t`Waiting for your friend to scan it`}</span>
+        ) : summary.disconnected ? (
+          <span className="muted">{t`Disconnected`}</span>
         ) : summary.lines.length === 0 ? (
           <span className="muted">{t`All square`}</span>
         ) : (
@@ -262,9 +419,12 @@ function FriendCode({ groupId }: { groupId: string }) {
   }
   async function cancel() {
     for (const saved of await invitesFor(groupId)) await stopInvite(saved).catch(() => {})
-    syncHub.drop(groupId)
-    await deleteGroupLocally(groupId)
-    go('/friends')
+    // A friendship with history (a reconnection code) stays; a brand-new one goes.
+    if (group && friendshipState(group.state, group.meta.meId) === 'waiting') {
+      syncHub.drop(groupId)
+      await deleteGroupLocally(groupId)
+      go('/friends')
+    } else go(`/g/${groupId}`)
   }
 
   return (

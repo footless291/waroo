@@ -142,6 +142,7 @@ export function describeEvent(
   }
 
   if (event.type === 'member.left') {
+    if (friendship) return null
     const who = name(event.memberId)
     return { id: event.id, kind: 'left', title: t`${who} left ${group}`, detail: t`They were all square` }
   }

@@ -6,8 +6,8 @@
  * groups themselves never see any of this.
  */
 import { groupBalances, suggestTransfers, type FriendInvite, type GroupState } from '@waroo/ledger'
-import { friendToken, signText, verifyText } from './crypto.ts'
-import { append, listGroups, replayGroup, type GroupMeta } from './db.ts'
+import { friendToken, newSigningKeys, signText, verifyText } from './crypto.ts'
+import { append, listGroups, newId, publishProfile, putGroup, replayGroup, type GroupMeta } from './db.ts'
 import { groupTitle } from './title.ts'
 
 /** Groups (not friendships) this phone can speak for. */
@@ -18,6 +18,19 @@ async function myGroups(): Promise<{ meta: GroupMeta; state: GroupState }[]> {
     out.push({ meta, state: await replayGroup(meta.id) })
   }
   return out
+}
+
+export type FriendshipState = 'waiting' | 'connected' | 'disconnected' | 'removed'
+
+/**
+ * Where a friendship stands, from this phone's side: waiting for the friend
+ * to join, connected, disconnected (they removed you), or removed (you did).
+ */
+export function friendshipState(state: GroupState, meId: string): FriendshipState {
+  if (state.members.get(meId)?.left) return 'removed'
+  const others = [...state.members.values()].filter((m) => m.id !== meId)
+  if (others.some((m) => !m.left)) return 'connected'
+  return others.length > 0 ? 'disconnected' : 'waiting'
 }
 
 /** The other person in a friendship, if they've joined. */
@@ -47,6 +60,8 @@ async function publishNow(): Promise<void> {
     const state = await replayGroup(friendship.id)
     const me = state.members.get(friendship.meId)
     if (!me || me.left || !me.key) continue
+    // Nothing more about your groups goes to someone who's disconnected.
+    if (!friendIn(state, friendship.meId)) continue
     const wanted = await Promise.all(groups.map(async ({ meta }) => ({ meta, t: await friendToken(meta.key!, friendship.id, meta.meId) })))
     const posted = state.friendTokens.get(friendship.meId) ?? []
     const byToken = new Map(posted.map((p) => [p.t, p.s]))
@@ -120,4 +135,23 @@ export async function pendingInvites(): Promise<(FriendInvite & { friendshipId: 
 /** Sends a friend a private invite to a group: a one-person invite link, through the friendship. */
 export async function inviteFriend(friendship: GroupMeta, group: { id: string; name: string }, secret: string, expiresAt: number) {
   await append(friendship, [{ type: 'friend.invited', secret, group: group.id, name: group.name, expiresAt }])
+}
+
+/** Ends a friendship from this side. The ledger only allows it when you're all square. */
+export async function removeFriend(friendship: GroupMeta) {
+  await append(friendship, [{ type: 'member.left', memberId: friendship.meId }])
+}
+
+/**
+ * Undoes your own removal: this phone joins the friendship again as a new
+ * member, with a new key, keeping the history. Your friend sees you're back.
+ */
+export async function reconnect(friendship: GroupMeta, name: string): Promise<void> {
+  const { keys, publicKey } = await newSigningKeys()
+  const meId = newId()
+  const next: GroupMeta = { ...friendship, meId, signing: keys, publicKey, box: undefined, boxPublic: undefined }
+  await putGroup(next)
+  await append(next, [{ type: 'member.added', member: { id: meId, name, key: publicKey } }])
+  await publishProfile(friendship.id)
+  void publishFriendLinks()
 }

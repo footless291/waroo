@@ -2154,3 +2154,31 @@ select {
 .friend-invites .invite-card h2 {
   margin-bottom: var(--space-3);
 }
+.remove-friend {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+}
+.confirm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.confirm p,
+.friend-status p {
+  margin: 0;
+}
+.friend-status {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.friend-status h2 {
+  margin: 0;
+}
+.archived-link {
+  display: block;
+  margin: var(--space-4) 4px;
+  color: var(--muted);
+  font-weight: 600;
+}

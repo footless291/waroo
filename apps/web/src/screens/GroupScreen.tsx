@@ -12,7 +12,8 @@ import { Avatar } from '../components/Avatar.tsx'
 import { NotificationsNudge } from '../components/NotificationsCard.tsx'
 import { Header } from '../components/Header.tsx'
 import { PlusIcon } from '../components/icons.tsx'
-import { FriendAcross } from './FriendsScreen.tsx'
+import { FriendAcross, FriendStatus, RemoveFriend } from './FriendsScreen.tsx'
+import { friendshipState } from '../lib/friends.ts'
 import { SyncLine } from '../components/SyncLine.tsx'
 import { groupTabs, TabBar } from '../components/TabBar.tsx'
 import { Pager } from '../components/Pager.tsx'
@@ -48,6 +49,9 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
   const currentTab = tab === 'balances' ? base : `${base}/${tab}`
   const name = groupTitle(state, meta)
   const friendship = state.kind === 'friends'
+  const friendStatus = friendship ? friendshipState(state, meta.meId) : undefined
+  // A friendship that ended (either way) can be read, not added to.
+  const ended = friendStatus === 'removed' || friendStatus === 'disconnected'
   const myself = state.members.get(meta.meId)
   // Set when someone removed this phone: their name, or null if they're unknown.
   const removedBy =
@@ -70,7 +74,8 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
       path: base,
       content: (
         <div className="screen with-tabbar page-body">
-          {alone && friendship && (
+          {friendship && <FriendStatus friendship={meta} state={state} />}
+          {friendStatus === 'waiting' && (
             <section className="invite-card">
               <h2>{t`Your friend hasn’t joined yet`}</h2>
               <a className="button primary" href={`#/friends/add?g=${groupId}`}>
@@ -90,9 +95,10 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
           {state.conflicts.length > 0 && (
             <p className="notice">{conflictsNotice(state.conflicts.length)}</p>
           )}
-          {!alone && <NotificationsNudge />}
+          {!alone && !ended && <NotificationsNudge />}
           <Balances meta={meta} state={state} />
           {friendship && <FriendAcross friendship={meta} state={state} />}
+          {friendship && <RemoveFriend friendship={meta} state={state} />}
         </div>
       ),
     },
@@ -185,7 +191,7 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
           )}
         </div>
       )}
-      {cutOff ? null : tab === 'payments' ? (
+      {cutOff || ended ? null : tab === 'payments' ? (
         <a className="fab" href={`#${base}/pay`}>
           <PlusIcon />
           {t`Add payment`}

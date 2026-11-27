@@ -234,7 +234,10 @@ class GroupSync {
     }
     this.set('syncing')
     const batch = pending.slice(0, 100)
-    const notify = batch.some(({ groupId: _g, pending: _p, sig: _s, ...event }) => isNotable(event as LedgerEvent))
+    // Ending a friendship is quiet: the other side just sees it's disconnected.
+    const notify = batch.some(
+      ({ groupId: _g, pending: _p, sig: _s, ...event }) => isNotable(event as LedgerEvent) && !(group.friend && event.type === 'member.left'),
+    )
     const items = await Promise.all(
       batch.map(async ({ groupId: _g, pending: _p, sig, ...event }) => ({
         id: event.id,
