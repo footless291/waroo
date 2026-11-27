@@ -2091,3 +2091,11 @@ select {
     transition: none;
   }
 }
+.delete-group {
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--line);
+}
+.delete-group p {
+  margin: 0;
+}

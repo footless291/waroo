@@ -555,6 +555,7 @@ msgid "Can’t reach the group · retrying"
 msgstr "Can’t reach the group · retrying"
 
 #: src/components/WalletSection.tsx:283
+#: src/screens/GroupSettingsScreen.tsx:93
 msgid "Cancel"
 msgstr "Cancel"
 
@@ -776,9 +777,18 @@ msgstr "Dark"
 msgid "Date"
 msgstr "Date"
 
+#: src/screens/GroupSettingsScreen.tsx:88
+msgid "Delete “{savedName}” and everything in it? This can’t be undone."
+msgstr "Delete “{savedName}” and everything in it? This can’t be undone."
+
 #: src/screens/ExpenseScreen.tsx:543
 msgid "Delete expense"
 msgstr "Delete expense"
+
+#: src/screens/GroupSettingsScreen.tsx:90
+#: src/screens/GroupSettingsScreen.tsx:99
+msgid "Delete group"
+msgstr "Delete group"
 
 #: src/screens/YouScreen.tsx:36
 msgid "Devices"
@@ -836,7 +846,7 @@ msgstr "Equally"
 msgid "Everyone"
 msgstr "Everyone"
 
-#: src/screens/GroupSettingsScreen.tsx:64
+#: src/screens/GroupSettingsScreen.tsx:82
 msgid "Everyone in the group sees the change."
 msgstr "Everyone in the group sees the change."
 
@@ -975,7 +985,7 @@ msgstr "Go to your groups"
 msgid "Group"
 msgstr "Group"
 
-#: src/screens/GroupSettingsScreen.tsx:47
+#: src/screens/GroupSettingsScreen.tsx:65
 #: src/screens/NewGroupScreen.tsx:31
 msgid "Group name"
 msgstr "Group name"
@@ -984,7 +994,7 @@ msgstr "Group name"
 msgid "Group sections"
 msgstr "Group sections"
 
-#: src/screens/GroupSettingsScreen.tsx:44
+#: src/screens/GroupSettingsScreen.tsx:62
 msgid "Group settings"
 msgstr "Group settings"
 
@@ -1256,7 +1266,7 @@ msgstr "Lost their phone?"
 msgid "Main"
 msgstr "Main"
 
-#: src/screens/GroupSettingsScreen.tsx:51
+#: src/screens/GroupSettingsScreen.tsx:69
 #: src/screens/NewGroupScreen.tsx:57
 msgid "Main currency"
 msgstr "Main currency"
@@ -1341,7 +1351,7 @@ msgstr "Name in {groupName}"
 msgid "New expense"
 msgstr "New expense"
 
-#: src/screens/GroupSettingsScreen.tsx:60
+#: src/screens/GroupSettingsScreen.tsx:78
 msgid "New expenses start in the main currency. Changing it doesn’t change any expense already added."
 msgstr "New expenses start in the main currency. Changing it doesn’t change any expense already added."
 
@@ -1806,7 +1816,7 @@ msgstr "Safari on a Mac: choose File, then Add to Dock."
 
 #: src/components/WalletGuides.tsx:173
 #: src/components/WalletSection.tsx:281
-#: src/screens/GroupSettingsScreen.tsx:62
+#: src/screens/GroupSettingsScreen.tsx:80
 #: src/screens/MemberScreen.tsx:81
 msgid "Save"
 msgstr "Save"
@@ -2693,6 +2703,10 @@ msgstr "You’re invited to"
 #: src/components/FeedbackCard.tsx:95
 msgid "You’re on the list for news about Waroo."
 msgstr "You’re on the list for news about Waroo."
+
+#: src/screens/GroupSettingsScreen.tsx:101
+msgid "You’re the only one in this group, so you can delete it."
+msgstr "You’re the only one in this group, so you can delete it."
 
 #: src/screens/GroupScreen.tsx:261
 msgid "Your balance"

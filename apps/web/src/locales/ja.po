@@ -555,6 +555,7 @@ msgid "Can’t reach the group · retrying"
 msgstr "グループに接続できません・再試行中"
 
 #: src/components/WalletSection.tsx:283
+#: src/screens/GroupSettingsScreen.tsx:93
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -776,9 +777,18 @@ msgstr "ダーク"
 msgid "Date"
 msgstr "日付"
 
+#: src/screens/GroupSettingsScreen.tsx:88
+msgid "Delete “{savedName}” and everything in it? This can’t be undone."
+msgstr "「{savedName}」とその中身をすべて削除しますか？元に戻せません。"
+
 #: src/screens/ExpenseScreen.tsx:543
 msgid "Delete expense"
 msgstr "支出を削除"
+
+#: src/screens/GroupSettingsScreen.tsx:90
+#: src/screens/GroupSettingsScreen.tsx:99
+msgid "Delete group"
+msgstr "グループを削除"
 
 #: src/screens/YouScreen.tsx:36
 msgid "Devices"
@@ -836,7 +846,7 @@ msgstr "均等"
 msgid "Everyone"
 msgstr "メンバー"
 
-#: src/screens/GroupSettingsScreen.tsx:64
+#: src/screens/GroupSettingsScreen.tsx:82
 msgid "Everyone in the group sees the change."
 msgstr "変更はグループの全員に表示されます。"
 
@@ -975,7 +985,7 @@ msgstr "グループ一覧へ"
 msgid "Group"
 msgstr "グループ"
 
-#: src/screens/GroupSettingsScreen.tsx:47
+#: src/screens/GroupSettingsScreen.tsx:65
 #: src/screens/NewGroupScreen.tsx:31
 msgid "Group name"
 msgstr "グループ名"
@@ -984,7 +994,7 @@ msgstr "グループ名"
 msgid "Group sections"
 msgstr "グループのメニュー"
 
-#: src/screens/GroupSettingsScreen.tsx:44
+#: src/screens/GroupSettingsScreen.tsx:62
 msgid "Group settings"
 msgstr "グループの設定"
 
@@ -1256,7 +1266,7 @@ msgstr "スマホをなくしましたか？"
 msgid "Main"
 msgstr "メイン"
 
-#: src/screens/GroupSettingsScreen.tsx:51
+#: src/screens/GroupSettingsScreen.tsx:69
 #: src/screens/NewGroupScreen.tsx:57
 msgid "Main currency"
 msgstr "メインの通貨"
@@ -1341,7 +1351,7 @@ msgstr "{groupName}での名前"
 msgid "New expense"
 msgstr "支出を追加"
 
-#: src/screens/GroupSettingsScreen.tsx:60
+#: src/screens/GroupSettingsScreen.tsx:78
 msgid "New expenses start in the main currency. Changing it doesn’t change any expense already added."
 msgstr "新しい支出はメインの通貨で始まります。変更しても、追加済みの支出は変わりません。"
 
@@ -1806,7 +1816,7 @@ msgstr "MacのSafari：「ファイル」から「Dockに追加」を選びま�
 
 #: src/components/WalletGuides.tsx:173
 #: src/components/WalletSection.tsx:281
-#: src/screens/GroupSettingsScreen.tsx:62
+#: src/screens/GroupSettingsScreen.tsx:80
 #: src/screens/MemberScreen.tsx:81
 msgid "Save"
 msgstr "保存"
@@ -2693,6 +2703,10 @@ msgstr "招待されたグループ"
 #: src/components/FeedbackCard.tsx:95
 msgid "You’re on the list for news about Waroo."
 msgstr "Warooのお知らせに登録しました。"
+
+#: src/screens/GroupSettingsScreen.tsx:101
+msgid "You’re the only one in this group, so you can delete it."
+msgstr "このグループのメンバーはあなただけなので、削除できます。"
 
 #: src/screens/GroupScreen.tsx:261
 msgid "Your balance"

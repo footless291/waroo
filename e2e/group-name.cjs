@@ -55,6 +55,22 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await bob.goto(B + '#/');
   check(await waitText(bob, '.cards', 'Okinawa 2026'), 'the group list uses the new name');
 
+  // A group that's just you can be deleted; one with others can't.
+  await ana.goto(B + '#/');
+  await ana.click('a.card-row:has-text("Okinawa 2026")');
+  await ana.click('header a.title-link');
+  check(!(await ana.isVisible('button:has-text("Delete group")')), 'a group with others in it can’t be deleted');
+  await ana.goto(B + '#/new');
+  await ana.fill('input[placeholder="Okinawa trip"]', 'Just me');
+  await ana.fill('input[placeholder="Ana"]', 'Ana');
+  await ana.click('text=Create group'); await ana.waitForTimeout(300);
+  await ana.click('header a.title-link');
+  await ana.click('button:has-text("Delete group")');
+  check(await waitText(ana, 'main', 'can’t be undone'), 'deleting asks first');
+  await ana.click('.delete-group button:has-text("Delete group")');
+  await ana.waitForTimeout(500);
+  check(await waitText(ana, '.cards', 'Okinawa 2026') && !(await ana.textContent('main')).includes('Just me'), 'a group that’s just you is deleted');
+
   for (const p of [ana, bob]) check(p.errors.length === 0, `${p.name}: no console errors ${p.errors.join(' | ').slice(0, 300)}`);
   console.log(failed ? `${failed} FAILED` : 'ALL PASSED');
   await browser.close();
