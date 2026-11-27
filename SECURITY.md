@@ -14,4 +14,4 @@ Email **hello@getwaroo.app** with what you found, how to reproduce it, and what 
 - Cross-site scripting or anything else that runs code in the app's page, since the page holds wallet connections.
 - Abuse of the relay or the feedback endpoint (storage, push or email flooding).
 
-Known limits are listed in the README under "Security, honestly". The threat model and protocol are in [docs/sync.md](docs/sync.md) and [docs/payments.md](docs/payments.md).
+Known limits are listed in the README under "Security". The threat model and protocol are in [docs/sync.md](docs/sync.md) and [docs/payments.md](docs/payments.md).
