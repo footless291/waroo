@@ -110,15 +110,15 @@ msgstr "{currency}は小数点以下{digits}桁までです"
 
 #: src/screens/GroupScreen.tsx:451
 msgid "{date}, {count} people paid"
-msgstr "{date}、{count}人が支払い"
+msgstr "{date}、{count}人が支払った"
 
 #: src/screens/GroupScreen.tsx:451
 msgid "{date}, {who} paid"
-msgstr "{date}、{who}さんが支払い"
+msgstr "{date}、{who}さんが支払った"
 
 #: src/screens/GroupScreen.tsx:451
 msgid "{date}, you paid"
-msgstr "{date}、あなたが支払い"
+msgstr "{date}、あなたが支払った"
 
 #: src/lib/news.ts:94
 msgid "{from} marked {amount} as paid to you"
@@ -134,15 +134,15 @@ msgstr "{from}さんが{amount}を支払いました"
 
 #: src/screens/ActivityScreen.tsx:21
 msgid "{group}, {count} people paid"
-msgstr "{group}、{count}人が支払い"
+msgstr "{group}、{count}人が支払った"
 
 #: src/screens/ActivityScreen.tsx:21
 msgid "{group}, {who} paid"
-msgstr "{group}、{who}さんが支払い"
+msgstr "{group}、{who}さんが支払った"
 
 #: src/screens/ActivityScreen.tsx:21
 msgid "{group}, you paid"
-msgstr "{group}、あなたが支払い"
+msgstr "{group}、あなたが支払った"
 
 #: src/lib/news.ts:163
 msgid "{group}: {count} new things"
@@ -180,11 +180,11 @@ msgstr "{names}とあなたが参加中"
 
 #: src/screens/GroupScreen.tsx:463
 msgid "{payer} paid {payee}"
-msgstr "{payer}さんが{payee}さんに支払い"
+msgstr "{payer}さんが{payee}さんに支払った"
 
 #: src/screens/GroupScreen.tsx:462
 msgid "{payer} paid you"
-msgstr "{payer}さんがあなたに支払い"
+msgstr "{payer}さんがあなたに支払った"
 
 #: src/components/BitcoinPay.tsx:475
 msgid "{price} per bitcoin"
@@ -258,11 +258,11 @@ msgstr "<0>{0}で支払えませんでした：</0>{1}。"
 
 #: src/screens/ActivityScreen.tsx:32
 msgid "<0>{from}</0> paid <1>{to}</1>"
-msgstr "<0>{from}さん</0>が<1>{to}さん</1>に支払い"
+msgstr "<0>{from}さん</0>が<1>{to}さん</1>に支払った"
 
 #: src/screens/ActivityScreen.tsx:31
 msgid "<0>{from}</0> paid <1>you</1>"
-msgstr "<0>{from}さん</0>が<1>あなた</1>に支払い"
+msgstr "<0>{from}さん</0>が<1>あなた</1>に支払った"
 
 #: src/screens/SettleScreen.tsx:111
 msgid "<0>{fromName}</0> pays <1>{toName}</1>"
@@ -290,7 +290,7 @@ msgstr "<0>{replacedBy}さんが{name}であなたを新しいスマホに移し
 
 #: src/screens/ActivityScreen.tsx:30
 msgid "<0>You</0> paid <1>{to}</1>"
-msgstr "<0>あなた</0>が<1>{to}さん</1>に支払い"
+msgstr "<0>あなた</0>が<1>{to}さん</1>に支払った"
 
 #: src/screens/GroupScreen.tsx:210
 msgid "<0>You</0> pay <1>{payee}</1>"
@@ -381,7 +381,7 @@ msgstr "最初の支出を追加して始めましょう。"
 msgid "Add to Home Screen"
 msgstr "ホーム画面に追加"
 
-#: src/screens/YouScreen.tsx:38
+#: src/screens/YouScreen.tsx:49
 msgid "Add Waroo to your Home Screen"
 msgstr "Warooをホーム画面に追加"
 
@@ -485,7 +485,7 @@ msgstr "Wallet of Satoshiなど、ライトニングアドレスのあるウォ�
 #: src/components/AppearanceCard.tsx:13
 #: src/screens/YouScreen.tsx:27
 msgid "Appearance"
-msgstr "外観"
+msgstr "表示"
 
 #: src/screens/JoinScreen.tsx:49
 #: src/screens/JoinScreen.tsx:140
@@ -779,6 +779,10 @@ msgstr "日付"
 #: src/screens/ExpenseScreen.tsx:543
 msgid "Delete expense"
 msgstr "支出を削除"
+
+#: src/screens/YouScreen.tsx:36
+msgid "Devices"
+msgstr "端末"
 
 #: src/components/Banners.tsx:79
 msgid "Dismiss"
@@ -1296,7 +1300,7 @@ msgid "Move {0} up"
 msgstr "{0}を上へ"
 
 #: src/screens/MoveScreen.tsx:144
-#: src/screens/YouScreen.tsx:49
+#: src/screens/YouScreen.tsx:44
 msgid "Move to a new phone"
 msgstr "新しいスマホに移す"
 
@@ -1304,7 +1308,7 @@ msgstr "新しいスマホに移す"
 msgid "Move to this phone"
 msgstr "このスマホに移す"
 
-#: src/screens/YouScreen.tsx:43
+#: src/screens/YouScreen.tsx:38
 msgid "Move your groups to another phone, so you can keep adding expenses and settling up there. Have both phones with you."
 msgstr "グループを別のスマホに移して、そちらで支出の追加や精算を続けられます。両方のスマホを用意してください。"
 
@@ -1313,8 +1317,8 @@ msgid "Moved"
 msgstr "移行完了"
 
 #: src/screens/YouScreen.tsx:41
-msgid "Moving to a new phone"
-msgstr "新しいスマホへの移行"
+#~ msgid "Moving to a new phone"
+#~ msgstr "新しいスマホへの移行"
 
 #: src/screens/MoveScreen.tsx:171
 msgid "Moving within this phone? Copy the link"
@@ -1838,9 +1842,13 @@ msgid "Scroll down and tap “Add to Home Screen”."
 msgstr "下にスクロールして「ホーム画面に追加」をタップします。"
 
 #: src/components/FeedbackCard.tsx:183
-#: src/components/WalletSection.tsx:28
 msgid "Send"
-msgstr "支払い"
+msgstr "送信"
+
+#: src/components/WalletSection.tsx:28
+msgctxt "wallet: the ones you pay from"
+msgid "Send"
+msgstr "送信"
 
 #: src/screens/YouScreen.tsx:33
 msgid "Send feedback"
@@ -2656,7 +2664,7 @@ msgstr "{to}さんへの支払い"
 
 #: src/screens/GroupScreen.tsx:461
 msgid "You paid {payee}"
-msgstr "あなたが{payee}さんに支払い"
+msgstr "あなたが{payee}さんに支払った"
 
 #: src/components/BitcoinPay.tsx:232
 msgid "You pay"

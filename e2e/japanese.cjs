@@ -68,7 +68,7 @@ const english = (text) => (text.match(/[A-Za-z][A-Za-z’']{2,}/g) || []).filter
   await noEnglish(hana, 'balances');
   await hana.screenshot({ path: SHOTS + '/ja-3-balances.png' });
   await hana.click('nav a:has-text("支出")'); await hana.waitForTimeout(300);
-  check(await waitText(hana, '.pager-page:not([inert])', 'あなたが支払い'), 'the expense row is a Japanese sentence');
+  check(await waitText(hana, '.pager-page:not([inert])', 'あなたが支払った'), 'the expense row is a Japanese sentence');
   await noEnglish(hana, 'expenses');
 
   // Invite, and Taro joins on an English phone

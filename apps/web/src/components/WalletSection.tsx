@@ -25,7 +25,7 @@ type Option = 'coinos' | 'rizful' | 'other'
 
 const tabs = (): { value: Tab; label: string }[] => [
   { value: 'receive', label: t`Receive` },
-  { value: 'send', label: t`Send` },
+  { value: 'send', label: t({ message: 'Send', context: 'wallet: the ones you pay from' }) },
 ]
 
 const blurb = (option: Option): string =>

@@ -33,12 +33,7 @@ export function SettingsPage({ params }: { params: URLSearchParams }) {
         <Collapsible title={t`Send feedback`} defaultOpen={opened('feedback')}>
           <FeedbackCard />
         </Collapsible>
-        {!isInstalled() && (
-          <a className="button outline" href="#/install">
-            {t`Add Waroo to your Home Screen`}
-          </a>
-        )}
-        <Collapsible title={t`Moving to a new phone`} defaultOpen={opened('move')}>
+        <Collapsible title={t`Devices`} defaultOpen={opened('move')}>
           <p>
             <Trans>
               Move your groups to another phone, so you can keep adding expenses and settling up there. Have both phones
@@ -49,6 +44,11 @@ export function SettingsPage({ params }: { params: URLSearchParams }) {
             {t`Move to a new phone`}
           </a>
         </Collapsible>
+        {!isInstalled() && (
+          <a className="button outline" href="#/install">
+            {t`Add Waroo to your Home Screen`}
+          </a>
+        )}
       </div>
     </div>
   )

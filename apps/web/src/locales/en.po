@@ -381,7 +381,7 @@ msgstr "Add the first expense to get started."
 msgid "Add to Home Screen"
 msgstr "Add to Home Screen"
 
-#: src/screens/YouScreen.tsx:38
+#: src/screens/YouScreen.tsx:49
 msgid "Add Waroo to your Home Screen"
 msgstr "Add Waroo to your Home Screen"
 
@@ -779,6 +779,10 @@ msgstr "Date"
 #: src/screens/ExpenseScreen.tsx:543
 msgid "Delete expense"
 msgstr "Delete expense"
+
+#: src/screens/YouScreen.tsx:36
+msgid "Devices"
+msgstr "Devices"
 
 #: src/components/Banners.tsx:79
 msgid "Dismiss"
@@ -1296,7 +1300,7 @@ msgid "Move {0} up"
 msgstr "Move {0} up"
 
 #: src/screens/MoveScreen.tsx:144
-#: src/screens/YouScreen.tsx:49
+#: src/screens/YouScreen.tsx:44
 msgid "Move to a new phone"
 msgstr "Move to a new phone"
 
@@ -1304,7 +1308,7 @@ msgstr "Move to a new phone"
 msgid "Move to this phone"
 msgstr "Move to this phone"
 
-#: src/screens/YouScreen.tsx:43
+#: src/screens/YouScreen.tsx:38
 msgid "Move your groups to another phone, so you can keep adding expenses and settling up there. Have both phones with you."
 msgstr "Move your groups to another phone, so you can keep adding expenses and settling up there. Have both phones with you."
 
@@ -1313,8 +1317,8 @@ msgid "Moved"
 msgstr "Moved"
 
 #: src/screens/YouScreen.tsx:41
-msgid "Moving to a new phone"
-msgstr "Moving to a new phone"
+#~ msgid "Moving to a new phone"
+#~ msgstr "Moving to a new phone"
 
 #: src/screens/MoveScreen.tsx:171
 msgid "Moving within this phone? Copy the link"
@@ -1838,7 +1842,11 @@ msgid "Scroll down and tap “Add to Home Screen”."
 msgstr "Scroll down and tap “Add to Home Screen”."
 
 #: src/components/FeedbackCard.tsx:183
+msgid "Send"
+msgstr "Send"
+
 #: src/components/WalletSection.tsx:28
+msgctxt "wallet: the ones you pay from"
 msgid "Send"
 msgstr "Send"
 
