@@ -7,6 +7,8 @@ export interface ActivityItem {
   kind: 'expense' | 'payment'
   groupId: string
   groupName: string
+  /** From a friendship: there's no group to name, just the two of you. */
+  friend?: boolean
   /** When it was added (or last changed), ISO. */
   at: string
   title: string
@@ -50,6 +52,7 @@ export async function recentActivity(limit = 100): Promise<ActivityItem[]> {
         kind: 'expense',
         groupId: group.id,
         groupName,
+        friend: state.kind === 'friends',
         at: head?.at ?? `${expense.date}T00:00:00Z`,
         title: expense.title,
         amount: expense.total,
@@ -67,6 +70,7 @@ export async function recentActivity(limit = 100): Promise<ActivityItem[]> {
         kind: 'payment',
         groupId: group.id,
         groupName,
+        friend: state.kind === 'friends',
         at: recorded.get(s.id) ?? '',
         title: '',
         amount: s.amount,

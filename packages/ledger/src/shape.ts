@@ -168,6 +168,19 @@ export function shapeProblem(e: unknown): string | undefined {
       return settlementProblem(ev.settlement)
     case 'settlement.voided':
       return isId(ev.settlementId) && optional(ev.reason, (r) => isText(r, 500)) ? undefined : 'Bad id'
+    case 'friend.linked':
+      return Array.isArray(ev.tokens) &&
+        ev.tokens.length <= 300 &&
+        ev.tokens.every((x) => isObject(x) && typeof x.t === 'string' && KEY.test(x.t) && typeof x.s === 'string' && KEY.test(x.s))
+        ? undefined
+        : 'Bad friend list'
+    case 'friend.invited':
+      return typeof ev.secret === 'string' && /^[A-Za-z0-9_-]{43}$/.test(ev.secret) &&
+        typeof ev.group === 'string' && /^[0-9a-f-]{36}$/.test(ev.group) &&
+        typeof ev.name === 'string' && ev.name.length <= 80 &&
+        typeof ev.expiresAt === 'number' && Number.isSafeInteger(ev.expiresAt)
+        ? undefined
+        : 'Bad invite'
     default:
       return 'Unknown kind of event'
   }

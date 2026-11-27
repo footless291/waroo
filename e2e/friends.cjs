@@ -67,6 +67,44 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await cai.goto(link);
   check(await waitText(cai, 'main', 'doesn’t work any more') || await waitText(cai, 'main', 'used already'), 'the code doesn’t work a second time');
 
+  // Step 2: friends in groups. Ana starts a group and invites Bob through their friendship.
+  await ana.goto(B + '#/new');
+  await ana.fill('input[placeholder="Okinawa trip"]', 'Okinawa');
+  await ana.fill('input[placeholder="Ana"]', 'Ana');
+  await ana.click('text=Create group'); await ana.waitForTimeout(300);
+  await ana.click('header a:has-text("Invite")');
+  check(await waitText(ana, '.invite-friends', 'Bob'), 'inviting people offers Ana’s friends');
+  await ana.click('.invite-friends button:has-text("Send invite")');
+  check(await waitText(ana, '.invite-friends', 'Invite sent'), 'and sends Bob a private invite');
+  await ana.screenshot({ path: SHOTS + '/friends-5-invite.png' });
+  await bob.goto(B + '#/');
+  const found = await waitText(bob, '.friend-invites', 'Ana invited you to Okinawa', 10000);
+  check(found, 'Bob finds it on his Groups page');
+  await bob.screenshot({ path: SHOTS + '/friends-6-invited.png' });
+  await bob.click('.friend-invites a:has-text("Open the invite")');
+  await bob.fill('input[autocomplete="given-name"]', 'Bob');
+  await bob.click('button:has-text("Join the group")');
+  check(await waitText(bob, 'header h1', 'Okinawa'), 'Bob joins Okinawa');
+  await bob.goto(B + '#/');
+  await bob.waitForTimeout(800);
+  check(!(await bob.isVisible('.friend-invites')), 'the invite goes away once he’s in');
+
+  // Ana adds an expense in the group; the friend page counts it.
+  await ana.goto(B + '#/'); await ana.click('a.card-row:has-text("Okinawa")');
+  await ana.waitForTimeout(1500);
+  await ana.click('a.fab');
+  await ana.fill('input[placeholder="Izakaya dinner"]', 'Hotel');
+  await ana.fill('input.amount-input', '6000');
+  await ana.click('button:has-text("Add expense")');
+  await ana.waitForTimeout(1500);
+  await ana.goto(B + '#/friends');
+  check(await waitText(ana, '.cards', 'Counting 1 group you share', 10000), 'Ana’s Friends tab counts the group they share');
+  const row = await ana.textContent('a.card-row:has-text("Bob")');
+  check(row.includes('¥4,000'), `with everything Bob owes, together: ¥1,000 between them and ¥3,000 in the group (${row})`);
+  await ana.click('a.card-row:has-text("Bob")');
+  check(await waitText(ana, '.friend-across', 'Okinawa') && await waitText(ana, '.friend-across', 'Owes you ¥3,000'), 'Bob’s page lists Okinawa and what he owes there');
+  await ana.screenshot({ path: SHOTS + '/friends-7-across.png', fullPage: true });
+
   for (const p of [ana, bob]) check(p.errors.length === 0, `${p.name}: no console errors ${p.errors.join(' | ').slice(0, 300)}`);
   console.log(failed ? `${failed} FAILED` : 'ALL PASSED');
   await browser.close();

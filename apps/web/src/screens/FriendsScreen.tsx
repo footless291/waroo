@@ -1,5 +1,5 @@
 import { Trans } from '@lingui/react/macro'
-import { t } from '@lingui/core/macro'
+import { plural, t } from '@lingui/core/macro'
 import { groupBalances, type GroupState } from '@waroo/ledger'
 import { useEffect, useState, type FormEvent } from 'react'
 import { Avatar } from '../components/Avatar.tsx'
@@ -13,6 +13,7 @@ import { currentLocale } from '../lib/i18n.ts'
 import { listGroups } from '../lib/db.ts'
 import { createInvite, inviteLinkFor, invitesFor, inviteStatus, stopInvite, type SavedInvite } from '../lib/invites.ts'
 import { syncHub } from '../lib/sync.ts'
+import { friendIn, publishFriendLinks, sharedGroups, type FriendGroup } from '../lib/friends.ts'
 
 /**
  * Friends: people you split with outside any group. Each friendship is a
@@ -52,17 +53,15 @@ export function FriendsPage() {
 }
 
 function FriendRow({ group }: { group: GroupMeta }) {
-  const [summary, setSummary] = useState<{ state: GroupState; other?: string; name: string; waiting: boolean; lines: { amount: number; currency: string }[] }>()
+  const [summary, setSummary] = useState<{ state: GroupState; other?: string; name: string; waiting: boolean; lines: { amount: number; currency: string }[]; groups: number }>()
   useEffect(() => {
-    replayGroup(group.id).then((state) => {
-      const other = [...state.members.values()].find((m) => m.id !== group.meId && !m.left)?.id
+    void (async () => {
+      const state = await replayGroup(group.id)
+      const other = friendIn(state, group.meId)?.id
       const waiting = !other
-      const lines = [...groupBalances(state)].flatMap(([currency, byPerson]) => {
-        const amount = byPerson.get(group.meId)
-        return amount ? [{ amount, currency }] : []
-      })
-      setSummary({ state, other, name: groupTitle(state, group), waiting, lines })
-    })
+      const shared = waiting ? [] : await sharedGroups(group, state)
+      setSummary({ state, other, name: groupTitle(state, group), waiting, lines: totalOwed(group, state, shared), groups: shared.length })
+    })()
   }, [group])
   if (!summary) return <span className="card-row" />
   const href = summary.waiting ? `#/friends/add?g=${group.id}` : `#/g/${group.id}`
@@ -87,9 +86,71 @@ function FriendRow({ group }: { group: GroupMeta }) {
             })}
           </span>
         )}
+        {summary.groups > 0 && (
+          <span className="muted small">{plural(summary.groups, { one: 'Counting # group you share', other: 'Counting # groups you share' })}</span>
+        )}
       </span>
       <span className="chevron" aria-hidden="true">›</span>
     </a>
+  )
+}
+
+/**
+ * Everything owed between you and a friend: between the two of you, plus
+ * what each shared group suggests you pay each other. Positive: they owe you.
+ */
+function totalOwed(friendship: GroupMeta, state: GroupState, shared: FriendGroup[]) {
+  const total = new Map<string, number>()
+  for (const [currency, byPerson] of groupBalances(state)) {
+    const mine = byPerson.get(friendship.meId)
+    if (mine) total.set(currency, mine)
+  }
+  for (const g of shared) for (const [currency, amount] of g.owed) total.set(currency, (total.get(currency) ?? 0) + amount)
+  return [...total].filter(([, amount]) => amount !== 0).map(([currency, amount]) => ({ currency, amount }))
+}
+
+/** On a friend's page: your groups with them, and the total across everything. */
+export function FriendAcross({ friendship, state }: { friendship: GroupMeta; state: GroupState }) {
+  const [shared, setShared] = useState<FriendGroup[]>()
+  useEffect(() => {
+    void sharedGroups(friendship, state).then(setShared)
+  }, [friendship, state])
+  if (!shared || shared.length === 0) return null
+  const total = totalOwed(friendship, state, shared)
+  const owedText = (owed: { amount: number; currency: string }[]) =>
+    owed.length === 0
+      ? t`All square`
+      : owed
+          .map(({ amount, currency }) => {
+            const sum = money(Math.abs(amount), currency)
+            return amount > 0 ? t`Owes you ${sum}` : t`You owe ${sum}`
+          })
+          .join(' · ')
+  return (
+    <section className="section friend-across">
+      <h2>{t`In your groups too`}</h2>
+      <ul className="cards">
+        {shared.map((g) => {
+          const owed = [...g.owed].map(([currency, amount]) => ({ currency, amount }))
+          return (
+            <li key={g.groupId}>
+              <a className="card-row" href={`#/g/${g.groupId}`}>
+                <span className="row-main">
+                  <strong>{g.name}</strong>
+                  <span className={owed.length === 0 ? 'muted' : owed[0]!.amount > 0 ? 'owed' : 'owes'}>{owedText(owed)}</span>
+                </span>
+                <span className="chevron" aria-hidden="true">›</span>
+              </a>
+            </li>
+          )
+        })}
+      </ul>
+      <p className="friend-total">
+        <span>{t`Everything together`}</span>
+        <strong className={total.length === 0 ? '' : total[0]!.amount > 0 ? 'owed' : 'owes'}>{owedText(total)}</strong>
+      </p>
+      <p className="hint pad">{t`Each group settles up on its own: open one to pay or mark a payment.`}</p>
+    </section>
   )
 }
 
@@ -174,7 +235,10 @@ function FriendCode({ groupId }: { groupId: string }) {
 
   // Once they've joined, the friendship is ready: open it.
   useEffect(() => {
-    if (joined) go(`/g/${groupId}?joined=1`)
+    if (joined) {
+      void publishFriendLinks()
+      go(`/g/${groupId}?joined=1`)
+    }
   }, [joined, groupId])
 
   if (group === null) {

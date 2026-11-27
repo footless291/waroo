@@ -4,6 +4,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { App } from './App.tsx'
 import { publishProfile } from './lib/db.ts'
+import { publishFriendLinks } from './lib/friends.ts'
 import { startI18n } from './lib/i18n.ts'
 import { syncHub } from './lib/sync.ts'
 import './lib/rekey.ts'
@@ -14,7 +15,9 @@ syncHub.start()
 syncHub.setVisible(document.visibilityState === 'visible')
 document.addEventListener('visibilitychange', () => syncHub.setVisible(document.visibilityState === 'visible'))
 // Publishes this phone's box key in groups made before keys could change.
-void publishProfile().catch((err) => console.warn('profile', err))
+void publishProfile()
+  .then(() => publishFriendLinks())
+  .catch((err) => console.warn('profile', err))
 
 // The language loads first: nothing renders until it's ready.
 await startI18n()

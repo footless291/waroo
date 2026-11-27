@@ -87,6 +87,21 @@ describe('hostile events', () => {
     assert.deepEqual([...state.members.keys()], ['ana', 'bob'])
   })
 
+  it('friend lists and invites only count between friends', () => {
+    const tokens = [{ t: 'a'.repeat(43), s: 'b'.repeat(86) }]
+    const invite = { secret: 'c'.repeat(43), group: '0f8fad5b-d9cb-469f-a165-70867728950e', name: 'Trip', expiresAt: 1e12 }
+    const group = replay([...base(), ev('ana', 4, 'KA', { type: 'friend.linked', tokens }), ev('ana', 5, 'KA', { type: 'friend.invited', ...invite })])
+    assert.equal(group.friendTokens.size + group.friendInvites.length, 0)
+    const friends = replay([
+      ev('ana', 1, 'KA', { type: 'member.added', member: { id: 'ana', name: 'Ana', key: 'KA' } }),
+      ev('ana', 2, 'KA', { type: 'group.updated', name: 'Ana', currency: 'JPY', kind: 'friends' }),
+      ev('ana', 3, 'KA', { type: 'friend.linked', tokens }),
+      ev('ana', 4, 'KA', { type: 'friend.invited', ...invite }),
+    ])
+    assert.deepEqual(friends.friendTokens.get('ana'), tokens)
+    assert.equal(friends.friendInvites[0]!.name, 'Trip')
+  })
+
   it('nobody else sets how a person they add gets paid', () => {
     const added = ev('ana', 4, 'KA', { type: 'member.added', member: { id: 'dan', name: 'Dan', receive: ['evil@example.com'] } })
     assert.equal(replay([...base(), added]).members.has('dan'), false)

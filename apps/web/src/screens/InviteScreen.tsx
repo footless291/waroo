@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Header } from '../components/Header.tsx'
 import { QrCode } from '../components/QrCode.tsx'
 import { Segmented } from '../components/Segmented.tsx'
-import { makeShareable, type GroupMeta } from '../lib/db.ts'
+import { listGroups, makeShareable, replayGroup, type GroupMeta } from '../lib/db.ts'
 import { go, locale, useGroup } from '../lib/hooks.ts'
 import {
   createInvite,
@@ -16,6 +16,7 @@ import {
   type SavedInvite,
 } from '../lib/invites.ts'
 import { syncHub } from '../lib/sync.ts'
+import { friendIn, inviteFriend, publishFriendLinks, sharedGroups } from '../lib/friends.ts'
 import { groupTitle } from '../lib/title.ts'
 
 type Who = 'many' | 'one'
@@ -70,6 +71,7 @@ export function InviteScreen({ groupId }: { groupId: string }) {
     makeShareable(groupId).then(async (g) => {
       await syncHub.ensure(g.id)
       setReady(g)
+      void publishFriendLinks()
     })
   }, [groupId])
 
@@ -143,6 +145,8 @@ export function InviteScreen({ groupId }: { groupId: string }) {
             their phone with everything added so far.
           </Trans>
         </p>
+
+        {ready && <InviteFriends group={ready} name={name} />}
 
         {!current ? (
           <section className="settings-card">
@@ -228,4 +232,66 @@ function joinedSoFar(others: string[]) {
   if (others.length === 0) return t`Joined so far: just you`
   const names = new Intl.ListFormat(locale(), { type: 'conjunction' }).format(others)
   return t`Joined so far: you, ${names}`
+}
+
+/**
+ * Friends who aren't in this group yet, to invite in one tap: a one-person
+ * invite goes to them privately, through your friendship, so no link needs
+ * sending. It shows up on their Groups page.
+ */
+function InviteFriends({ group, name }: { group: GroupMeta; name: string }) {
+  const [friends, setFriends] = useState<{ friendship: GroupMeta; name: string }[]>()
+  const [sent, setSent] = useState<Record<string, 'sending' | 'sent' | string>>({})
+  useEffect(() => {
+    void (async () => {
+      const out = []
+      for (const friendship of await listGroups()) {
+        if (!friendship.friend) continue
+        const state = await replayGroup(friendship.id)
+        const friend = friendIn(state, friendship.meId)
+        if (!friend) continue
+        const shared = await sharedGroups(friendship, state)
+        if (shared.some((g) => g.groupId === group.id)) continue
+        out.push({ friendship, name: friend.name })
+      }
+      setFriends(out)
+    })()
+  }, [group])
+  if (!friends || friends.length === 0) return null
+
+  async function send(friendship: GroupMeta) {
+    setSent((s) => ({ ...s, [friendship.id]: 'sending' }))
+    try {
+      const invite = await createInvite(group, { days: 7, oneTime: true })
+      await inviteFriend(friendship, { id: group.id, name }, invite.secret, invite.expiresAt)
+      setSent((s) => ({ ...s, [friendship.id]: 'sent' }))
+    } catch (err) {
+      setSent((s) => ({ ...s, [friendship.id]: (err as Error).message }))
+    }
+  }
+
+  return (
+    <section className="settings-card invite-friends">
+      <h2>{t`Invite a friend`}</h2>
+      <ul className="friend-invite-list">
+        {friends.map((f) => {
+          const state = sent[f.friendship.id]
+          return (
+            <li key={f.friendship.id}>
+              <span>{f.name}</span>
+              {state === 'sent' ? (
+                <span className="muted" role="status">{t`Invite sent`}</span>
+              ) : (
+                <button className="button small outline" disabled={state === 'sending'} onClick={() => void send(f.friendship)}>
+                  {t`Send invite`}
+                </button>
+              )}
+              {state && state !== 'sent' && state !== 'sending' && <span className="hint">{state}</span>}
+            </li>
+          )
+        })}
+      </ul>
+      <p className="hint">{t`It goes to them privately, and works once, for a week.`}</p>
+    </section>
+  )
 }

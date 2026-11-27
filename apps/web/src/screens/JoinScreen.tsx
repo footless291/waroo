@@ -10,6 +10,7 @@ import { append, getGroup, newId, publishProfile, saveJoinedGroup, type GroupMet
 import { go } from '../lib/hooks.ts'
 import { InviteClosed, openInvite, type InviteTicket } from '../lib/invites.ts'
 import { fetchGroup, syncHub } from '../lib/sync.ts'
+import { publishFriendLinks } from '../lib/friends.ts'
 
 type Loaded = {
   state: GroupState
@@ -178,6 +179,7 @@ function JoinGroup({ groupId, groupKey: key, from, pins }: { groupId: string; gr
     ])
     await publishProfile(groupId)
     await syncHub.ensure(groupId)
+    void publishFriendLinks()
     go(`/g/${groupId}?joined=1`)
   }
 

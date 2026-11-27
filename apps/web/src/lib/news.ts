@@ -41,6 +41,7 @@ export function isNotable(event: LedgerEvent): boolean {
     case 'member.left':
     case 'member.removed':
     case 'member.recovered':
+    case 'friend.invited':
       return true
     case 'member.added':
       return event.member.id === event.author && event.member.key !== undefined
@@ -114,6 +115,12 @@ export function describeEvent(
       return { id: event.id, kind: 'joined', title: t`${who} accepted your friend request`, detail: t`You can split costs with each other now` }
     }
     return { id: event.id, kind: 'joined', title: t`${who} joined ${group}`, detail: t`They can see the group and add expenses now` }
+  }
+
+  if (event.type === 'friend.invited') {
+    const from = name(event.author)
+    const to = event.name
+    return { id: event.id, kind: 'joined', title: t`${from} invited you to ${to}`, detail: t`It’s on your Groups page` }
   }
 
   if (event.type === 'member.recovered') {

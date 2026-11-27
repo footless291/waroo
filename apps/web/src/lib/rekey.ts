@@ -94,6 +94,8 @@ async function moveToKey(groupId: string, newKey: string) {
   await markAllPending(groupId)
   await stopOwnInvites(groupId)
   await syncHub.restart(groupId)
+  // Friend tokens are made with the group key: the new key needs new ones.
+  void import('./friends.ts').then((f) => f.publishFriendLinks())
 }
 
 /** Invite links made on this phone hold the old key: turn them off. */

@@ -12,6 +12,7 @@ import { Avatar } from '../components/Avatar.tsx'
 import { NotificationsNudge } from '../components/NotificationsCard.tsx'
 import { Header } from '../components/Header.tsx'
 import { PlusIcon } from '../components/icons.tsx'
+import { FriendAcross } from './FriendsScreen.tsx'
 import { SyncLine } from '../components/SyncLine.tsx'
 import { groupTabs, TabBar } from '../components/TabBar.tsx'
 import { Pager } from '../components/Pager.tsx'
@@ -91,6 +92,7 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
           )}
           {!alone && <NotificationsNudge />}
           <Balances meta={meta} state={state} />
+          {friendship && <FriendAcross friendship={meta} state={state} />}
         </div>
       ),
     },

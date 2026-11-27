@@ -37,6 +37,8 @@ export {
   firstKeys,
   type ReplayOptions,
   type Conflict,
+  type FriendInvite,
+  type FriendToken,
   type GroupState,
   type LedgerEvent,
   type Member,

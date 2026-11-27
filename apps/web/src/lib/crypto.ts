@@ -255,3 +255,28 @@ export async function unwrapGroupKey(
     return null
   }
 }
+
+/**
+ * Friend tokens: proof, for a friend, that you're a given member of a group
+ * they're also in, without telling them about groups they aren't in. The
+ * token is an HMAC of the friendship and your member id under the group's
+ * key, so only someone holding that key can recognise it.
+ */
+export async function friendToken(groupKey: string, friendshipId: string, memberId: string): Promise<string> {
+  const key = await crypto.subtle.importKey('raw', fromB64url(groupKey), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
+  return toB64url(await crypto.subtle.sign('HMAC', key, enc.encode(`waroo-friend-v1:${friendshipId}:${memberId}`)))
+}
+
+/** Signs a short text with a group signing key. */
+export async function signText(text: string, privateKey: CryptoKey): Promise<string> {
+  return toB64url(await crypto.subtle.sign(SIGN, privateKey, enc.encode(text)))
+}
+
+export async function verifyText(text: string, signature: string, publicKey: string): Promise<boolean> {
+  try {
+    const key = await crypto.subtle.importKey('raw', fromB64url(publicKey), ECDSA, false, ['verify'])
+    return await crypto.subtle.verify(SIGN, key, fromB64url(signature), enc.encode(text))
+  } catch {
+    return false
+  }
+}

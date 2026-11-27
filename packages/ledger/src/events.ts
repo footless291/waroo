@@ -186,7 +186,35 @@ export type LedgerEvent = EventBase &
     | { type: 'expense.deleted'; expenseId: string; basedOn: string }
     | { type: 'settlement.recorded'; settlement: Settlement }
     | { type: 'settlement.voided'; settlementId: string; reason?: string }
+    /**
+     * Friendships only. Which members of other groups the author is, in a
+     * form only someone in the same group can recognise: for each group, a
+     * keyed hash of the friendship and their member id under that group's
+     * key (`t`), signed with their key in that group (`s`). Replaces the
+     * author's previous list.
+     */
+    | { type: 'friend.linked'; tokens: FriendToken[] }
+    /**
+     * Friendships only. An invite to another group, sent privately: the
+     * invite link's secret, and the group's id (`group`, not `groupId`, which
+     * phones use for their own bookkeeping) and name.
+     */
+    | { type: 'friend.invited'; secret: string; group: string; name: string; expiresAt: number }
   )
+
+export interface FriendToken {
+  t: string
+  s: string
+}
+
+export interface FriendInvite {
+  eventId: string
+  from: PersonId
+  secret: string
+  groupId: string
+  name: string
+  expiresAt: number
+}
 
 /** Two people changed the same expense without seeing each other's change. */
 export interface Conflict {
@@ -208,6 +236,10 @@ export interface GroupState {
   name?: string
   /** 'friends' for a friendship: two people, no more. */
   kind?: 'friends'
+  /** In a friendship: each person's latest `friend.linked` list. */
+  friendTokens: Map<PersonId, FriendToken[]>
+  /** In a friendship: invites to other groups, oldest first. */
+  friendInvites: FriendInvite[]
   currency?: string
   /** True when the founder joined with a key: every event must then be signed. */
   signed: boolean
@@ -247,6 +279,8 @@ export function emptyState(): GroupState {
     expenses: new Map(),
     settlements: new Map(),
     recordedBy: new Map(),
+    friendTokens: new Map(),
+    friendInvites: [],
     heads: new Map(),
     deleted: new Set(),
     conflicts: [],
@@ -613,6 +647,16 @@ export function replay(input: Iterable<LedgerEvent>, options: ReplayOptions = {}
         }
         break
       }
+
+      case 'friend.linked':
+        if (state.kind !== 'friends') reject(e, 'Only friends share this')
+        else state.friendTokens.set(e.author, e.tokens)
+        break
+
+      case 'friend.invited':
+        if (state.kind !== 'friends') reject(e, 'Only friends share this')
+        else state.friendInvites.push({ eventId: e.id, from: e.author, secret: e.secret, groupId: e.group, name: e.name, expiresAt: e.expiresAt })
+        break
 
       case 'settlement.voided': {
         const s = state.settlements.get(e.settlementId)

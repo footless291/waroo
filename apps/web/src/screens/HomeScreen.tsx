@@ -6,7 +6,8 @@ import { PageTitle } from '../components/Header.tsx'
 import { replayGroup, type GroupMeta } from '../lib/db.ts'
 import { money } from '../lib/format.ts'
 import { groupTitle } from '../lib/title.ts'
-import { useGroups } from '../lib/hooks.ts'
+import { useGroups, useLoad } from '../lib/hooks.ts'
+import { pendingInvites } from '../lib/friends.ts'
 
 /** The group's current name (from its shared log) and this person's position in it. */
 function GroupSummary({ group }: { group: GroupMeta }) {
@@ -48,6 +49,7 @@ export function HomePage() {
   return (
     <div className="screen with-tabbar">
       <PageTitle>{t`Groups`}</PageTitle>
+      <FriendInvites />
       {groups && groups.length === 0 && (
         <section className="empty">
           <h2>{t`Split anything with anyone`}</h2>
@@ -79,5 +81,49 @@ export function HomePage() {
         </>
       )}
     </div>
+  )
+}
+
+/** Invites to groups that friends sent privately. */
+function FriendInvites() {
+  const invites = useLoad(pendingInvites, [])
+  const [dismissed, setDismissed] = useState<string[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem('waroo-dismissed-invites') ?? '[]') as string[]
+    } catch {
+      return []
+    }
+  })
+  const shown = invites?.filter((i) => !dismissed.includes(i.eventId)) ?? []
+  if (shown.length === 0) return null
+  function dismiss(id: string) {
+    const next = [...dismissed, id]
+    setDismissed(next)
+    try {
+      localStorage.setItem('waroo-dismissed-invites', JSON.stringify(next))
+    } catch {
+      // Private browsing: it comes back next time.
+    }
+  }
+  return (
+    <ul className="cards friend-invites">
+      {shown.map((i) => {
+        const from = i.fromName
+        const group = i.name
+        return (
+          <li key={i.eventId} className="invite-card">
+            <h2>{t`${from} invited you to ${group}`}</h2>
+            <div className="button-row">
+              <a className="button primary" href={`#/join?i=${i.secret}`}>
+                {t`Open the invite`}
+              </a>
+              <button className="button outline" onClick={() => dismiss(i.eventId)}>
+                {t`Not now`}
+              </button>
+            </div>
+          </li>
+        )
+      })}
+    </ul>
   )
 }

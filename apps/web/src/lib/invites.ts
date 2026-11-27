@@ -126,7 +126,20 @@ export class InviteClosed extends Error {
  * link. The ticket is kept on this phone, so opening the same link again here
  * still works after it's used.
  */
-export async function openInvite(secret: string): Promise<InviteTicket> {
+const opening = new Map<string, Promise<InviteTicket>>()
+
+export function openInvite(secret: string): Promise<InviteTicket> {
+  // Opening twice at once (a screen drawn twice) would use up a one-person
+  // link on the first and be refused on the second: share one request.
+  let pending = opening.get(secret)
+  if (!pending) {
+    pending = openOnce(secret).finally(() => opening.delete(secret))
+    opening.set(secret, pending)
+  }
+  return pending
+}
+
+async function openOnce(secret: string): Promise<InviteTicket> {
   const id = await inviteId(secret)
   const cached = (await getSetting(`opened:${id}`)) as InviteTicket | undefined
   if (cached) return cached

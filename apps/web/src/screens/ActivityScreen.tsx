@@ -17,8 +17,17 @@ function expenseLine(item: ActivityItem): string {
   const group = item.groupName
   const count = item.payers ?? 1
   const who = item.from
-  const base =
-    count > 1 ? t`${group}, ${count} people paid` : who === null ? t`${group}, you paid` : t`${group}, ${who} paid`
+  const base = item.friend
+    ? count > 1
+      ? t`You both paid`
+      : who === null
+        ? t`You paid`
+        : t`${who} paid`
+    : count > 1
+      ? t`${group}, ${count} people paid`
+      : who === null
+        ? t`${group}, you paid`
+        : t`${group}, ${who} paid`
   if (!item.myShare) return base
   const share = money(item.myShare, item.currency)
   return t`${base}, your share ${share}`
@@ -57,7 +66,7 @@ function Row({ item }: { item: ActivityItem }) {
             <>
               <span>{paymentTitle(item)}</span>
               <span className="muted">
-                {[item.groupName, methodName(item.method), item.sats ? satsText(item.sats) : '']
+                {[item.friend ? '' : item.groupName, methodName(item.method), item.sats ? satsText(item.sats) : '']
                   .filter(Boolean)
                   .join(t`, `)}
               </span>

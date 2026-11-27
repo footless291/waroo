@@ -293,6 +293,7 @@ export async function receiveGroups(
     await publishProfile(g.id)
     moved.push(g.id)
   }
+  void import('./friends.ts').then((f) => f.publishFriendLinks())
   if (!fresh) return moved
   if (receive?.length) {
     await addReceiveNamed(
