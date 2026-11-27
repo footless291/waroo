@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { PageTitle } from '../components/Header.tsx'
 import { replayGroup, type GroupMeta } from '../lib/db.ts'
 import { money } from '../lib/format.ts'
+import { groupTitle } from '../lib/title.ts'
 import { useGroups } from '../lib/hooks.ts'
 
 /** The group's current name (from its shared log) and this person's position in it. */
@@ -13,7 +14,7 @@ function GroupSummary({ group }: { group: GroupMeta }) {
   const [lines, setLines] = useState<{ amount: number; currency: string }[]>()
   useEffect(() => {
     replayGroup(group.id).then((state) => {
-      setName(state.name ?? group.name)
+      setName(groupTitle(state, group))
       const balances = groupBalances(state)
       setLines(
         [...balances].flatMap(([currency, byPerson]) => {
@@ -42,7 +43,8 @@ function GroupSummary({ group }: { group: GroupMeta }) {
 
 /** The Groups page of the main tabs. */
 export function HomePage() {
-  const groups = useGroups()
+  // Friendships have their own tab.
+  const groups = useGroups()?.filter((g) => !g.friend)
   return (
     <div className="screen with-tabbar">
       <PageTitle>{t`Groups`}</PageTitle>

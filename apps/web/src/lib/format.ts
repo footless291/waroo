@@ -57,3 +57,4 @@ export function isRemoved(state: { signed?: boolean }, member: { removedBy?: str
 export function politeName(name: string): string {
   return t({ context: 'a person’s name, said politely', message: `${name}` })
 }
+

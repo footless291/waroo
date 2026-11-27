@@ -9,6 +9,7 @@ import { go, useGroup } from '../lib/hooks.ts'
 import { doneIsGenuine, helloKeys, MoveChannel, newMoveSecret, sealHandover, type MoveMessage } from '../lib/move.ts'
 import { recoverMember } from '../lib/rekey.ts'
 import { codeLabel } from './MoveScreen.tsx'
+import { groupTitle } from '../lib/title.ts'
 
 type Phase =
   | { at: 'intro' }
@@ -49,7 +50,7 @@ export function RecoverScreen({ groupId, memberId }: { groupId: string; memberId
     return null
   }
   const who = person.name
-  const groupName = state.name ?? meta.name
+  const groupName = groupTitle(state, meta)
   const back = `/g/${groupId}/m/${memberId}`
 
   function stop(message: string) {

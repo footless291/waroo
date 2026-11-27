@@ -58,7 +58,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   // Activity
   await page.goto(B + '#/');
   await page.click('nav.tabbar a:has-text("Activity")');
-  await page.waitForFunction(() => location.hash === '#/activity' && !document.querySelectorAll('.pager-page')[1].hasAttribute('inert'));
+  await page.waitForFunction(() => location.hash === '#/activity' && !document.querySelectorAll('.pager-page')[2].hasAttribute('inert'));
   check(await waitText('.pager-page:not([inert])', 'Today'), 'Activity groups items by day');
   const titles = await page.$$eval('.pager-page:not([inert]) .cards .row-main', (els) => els.map((e) => e.textContent));
   check(titles[0]?.includes('Ramen') && titles[1]?.includes('paid') && titles[2]?.includes('Ferry'), `newest first: ${titles.map((t) => t.slice(0, 12)).join(' / ')}`);
@@ -71,24 +71,27 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   check(await page.waitForFunction(() => location.hash.endsWith('/expenses'), null, { timeout: 3000 }).then(() => true, () => false), 'an expense opens its group on Expenses');
   await page.goto(B + '#/activity');
   await page.click('a.fab:has-text("New expense")');
-  check(await waitText('main', 'Which group is it for?'), 'New expense asks which group, with two groups');
+  check(await waitText('main', 'Which group or friend is it for?'), 'New expense asks which group, with two groups');
   await page.click('.cards a:has-text("Okinawa trip")');
   check(await page.waitForSelector('h1:has-text("Add expense")', { timeout: 4000 }).then(() => true, () => false), 'then opens Add expense in that group');
 
   // Swiping
   await page.goto(B + '#/'); await page.waitForTimeout(300);
   await swipe('left');
-  check((await hash()) === '#/activity', 'swipe left: Groups → Activity');
+  check((await hash()) === '#/friends', 'swipe left: Groups → Friends');
+  await page.waitForTimeout(200);
+  await swipe('left');
+  check((await hash()) === '#/activity', 'swipe left: Friends → Activity');
   await page.waitForTimeout(200);
   await swipe('left');
   check((await hash()) === '#/settings', 'swipe left: Activity → Settings');
   await page.waitForTimeout(200);
   await swipe('right');
   check((await hash()) === '#/activity', 'swipe right goes back');
-  check(await page.evaluate(() => document.querySelectorAll('.pager-page')[1].hasAttribute('inert') === false && document.querySelectorAll('.pager-page')[0].hasAttribute('inert')), 'only the page you’re on can be used');
+  check(await page.evaluate(() => document.querySelectorAll('.pager-page')[2].hasAttribute('inert') === false && document.querySelectorAll('.pager-page')[0].hasAttribute('inert')), 'only the page you’re on can be used');
   // Tapping a tab scrolls the strip to its page
   await page.click('nav.tabbar a:has-text("Settings")');
-  check(await page.waitForFunction(() => { const s = document.querySelector('.pager'); return Math.abs(s.scrollLeft - 2 * s.clientWidth) < 2; }, null, { timeout: 3000 }).then(() => true, () => false), 'tapping a tab slides to its page');
+  check(await page.waitForFunction(() => { const s = document.querySelector('.pager'); return Math.abs(s.scrollLeft - 3 * s.clientWidth) < 2; }, null, { timeout: 3000 }).then(() => true, () => false), 'tapping a tab slides to its page');
   await page.goto(B); await page.click('a.card-row:has-text("Okinawa trip")'); await page.waitForTimeout(300);
   const gid = (await hash()).split('/')[2];
   await swipe('left');

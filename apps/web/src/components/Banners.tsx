@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { getGroup, onNewEvents, replayGroup } from '../lib/db.ts'
 import { go } from '../lib/hooks.ts'
 import { describeEvent, type News } from '../lib/news.ts'
+import { groupTitle } from '../lib/title.ts'
 
 interface Banner extends News {
   groupId: string
@@ -35,7 +36,7 @@ export function Banners() {
         if (!group) return
         const state = await replayGroup(groupId)
         for (const event of events) {
-          const news = describeEvent(event, state, group.meId, state.name ?? group.name, origin === 'local')
+          const news = describeEvent(event, state, group.meId, groupTitle(state, group), origin === 'local')
           if (!news || !BANNER_KINDS.has(news.kind)) continue
           const banner = { ...news, groupId }
           setBanners((list) => (list.some((b) => b.id === banner.id) ? list : [...list, banner].slice(-3)))

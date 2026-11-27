@@ -7,10 +7,10 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: en\n"
 
-#: src/components/BitcoinPay.tsx:462
+#: src/components/BitcoinPay.tsx:463
 #: src/screens/ActivityScreen.tsx:62
-#: src/screens/GroupScreen.tsx:425
-#: src/screens/PersonScreen.tsx:81
+#: src/screens/GroupScreen.tsx:441
+#: src/screens/PersonScreen.tsx:82
 msgid ", "
 msgstr ", "
 
@@ -24,7 +24,7 @@ msgid "“{input}” isn’t an amount"
 msgstr "“{input}” isn’t an amount"
 
 #. placeholder {0}: status.opens
-#: src/screens/InviteScreen.tsx:53
+#: src/screens/InviteScreen.tsx:54
 msgid "{0, plural, one {{state}, opened once} other {{state}, opened # times}}"
 msgstr "{0, plural, one {{state}, opened once} other {{state}, opened # times}}"
 
@@ -54,36 +54,36 @@ msgstr "{0} didn’t work: {1}"
 msgid "{0} is now number {position} of {count}."
 msgstr "{0} is now number {position} of {count}."
 
-#: src/components/BitcoinPay.tsx:136
+#: src/components/BitcoinPay.tsx:137
 msgid "{addr}: {why}"
 msgstr "{addr}: {why}"
 
 #: src/screens/ActivityScreen.tsx:24
-#: src/screens/GroupScreen.tsx:454
+#: src/screens/GroupScreen.tsx:470
 msgid "{base}, your share {share}"
 msgstr "{base}, your share {share}"
 
-#: src/lib/news.ts:95
+#: src/lib/news.ts:99
 msgid "{by} marked {from}’s {amount} to you as paid"
 msgstr "{by} marked {from}’s {amount} to you as paid"
 
-#: src/lib/news.ts:100
+#: src/lib/news.ts:104
 msgid "{by} marked your {amount} to {to} as paid"
 msgstr "{by} marked your {amount} to {to} as paid"
 
-#: src/lib/news.ts:115
+#: src/lib/news.ts:122
 msgid "{by} moved you to a new phone in {group}"
 msgstr "{by} moved you to a new phone in {group}"
 
-#: src/lib/news.ts:127
+#: src/lib/news.ts:134
 msgid "{by} removed {who} from {group}"
 msgstr "{by} removed {who} from {group}"
 
-#: src/lib/news.ts:124
+#: src/lib/news.ts:131
 msgid "{by} removed you from {group}"
 msgstr "{by} removed you from {group}"
 
-#: src/lib/news.ts:118
+#: src/lib/news.ts:125
 msgid "{by} vouched for it"
 msgstr "{by} vouched for it"
 
@@ -92,7 +92,7 @@ msgstr "{by} vouched for it"
 msgid "{clean} didn’t answer: {0}"
 msgstr "{clean} didn’t answer: {0}"
 
-#: src/screens/GroupScreen.tsx:200
+#: src/screens/GroupScreen.tsx:216
 msgid "{count, plural, one {One expense was edited by two people at once. The latest edit was kept.} other {# expenses were edited by two people at once. The latest edit was kept.}}"
 msgstr "{count, plural, one {One expense was edited by two people at once. The latest edit was kept.} other {# expenses were edited by two people at once. The latest edit was kept.}}"
 
@@ -108,27 +108,27 @@ msgstr "{currency} has no decimal places"
 msgid "{currency} takes at most {digits} decimal places"
 msgstr "{currency} takes at most {digits} decimal places"
 
-#: src/screens/GroupScreen.tsx:451
+#: src/screens/GroupScreen.tsx:467
 msgid "{date}, {count} people paid"
 msgstr "{date}, {count} people paid"
 
-#: src/screens/GroupScreen.tsx:451
+#: src/screens/GroupScreen.tsx:467
 msgid "{date}, {who} paid"
 msgstr "{date}, {who} paid"
 
-#: src/screens/GroupScreen.tsx:451
+#: src/screens/GroupScreen.tsx:467
 msgid "{date}, you paid"
 msgstr "{date}, you paid"
 
-#: src/lib/news.ts:94
+#: src/lib/news.ts:98
 msgid "{from} marked {amount} as paid to you"
 msgstr "{from} marked {amount} as paid to you"
 
-#: src/lib/news.ts:102
+#: src/lib/news.ts:106
 msgid "{from} paid {to} {amount}"
 msgstr "{from} paid {to} {amount}"
 
-#: src/lib/news.ts:92
+#: src/lib/news.ts:96
 msgid "{from} paid you {amount}"
 msgstr "{from} paid you {amount}"
 
@@ -144,17 +144,21 @@ msgstr "{group}, {who} paid"
 msgid "{group}, you paid"
 msgstr "{group}, you paid"
 
-#: src/lib/news.ts:163
+#: src/lib/news.ts:170
 msgid "{group}: {count} new things"
 msgstr "{group}: {count} new things"
 
-#: src/screens/MemberScreen.tsx:94
+#: src/screens/MemberScreen.tsx:95
 msgid "{groupName} leaves this phone, and the others can’t add you to new expenses. Past expenses keep your name. To come back, you’d need a new invite."
 msgstr "{groupName} leaves this phone, and the others can’t add you to new expenses. Past expenses keep your name. To come back, you’d need a new invite."
 
-#: src/screens/JoinScreen.tsx:198
+#: src/screens/JoinScreen.tsx:221
 msgid "{inviter} invited you to"
 msgstr "{inviter} invited you to"
+
+#: src/screens/JoinScreen.tsx:201
+msgid "{inviter} wants to add you as a friend"
+msgstr "{inviter} wants to add you as a friend"
 
 #: src/lib/format.ts:11
 msgid "{n} sats"
@@ -170,7 +174,7 @@ msgstr "{name}"
 msgid "{name} (you)"
 msgstr "{name} (you)"
 
-#: src/screens/GroupScreen.tsx:112
+#: src/screens/GroupScreen.tsx:122
 msgid "{name}: group settings"
 msgstr "{name}: group settings"
 
@@ -178,31 +182,35 @@ msgstr "{name}: group settings"
 msgid "{names} and you are here"
 msgstr "{names} and you are here"
 
-#: src/screens/GroupScreen.tsx:463
+#: src/screens/GroupScreen.tsx:479
 msgid "{payer} paid {payee}"
 msgstr "{payer} paid {payee}"
 
-#: src/screens/GroupScreen.tsx:462
+#: src/screens/GroupScreen.tsx:478
 msgid "{payer} paid you"
 msgstr "{payer} paid you"
 
-#: src/components/BitcoinPay.tsx:475
+#: src/components/BitcoinPay.tsx:476
 msgid "{price} per bitcoin"
 msgstr "{price} per bitcoin"
 
-#: src/lib/news.ts:79
+#: src/lib/news.ts:82
+msgid "{sats} over Lightning"
+msgstr "{sats} over Lightning"
+
+#: src/lib/news.ts:83
 msgid "{sats} over Lightning, in {group}"
 msgstr "{sats} over Lightning, in {group}"
 
-#: src/lib/news.ts:99
+#: src/lib/news.ts:103
 msgid "{to} marked your {amount} as paid"
 msgstr "{to} marked your {amount} as paid"
 
-#: src/components/BitcoinPay.tsx:216
+#: src/components/BitcoinPay.tsx:217
 msgid "{toName} hasn’t added a Lightning address yet, so they can’t receive bitcoin. They can add one in Settings."
 msgstr "{toName} hasn’t added a Lightning address yet, so they can’t receive bitcoin. They can add one in Settings."
 
-#: src/components/BitcoinPay.tsx:274
+#: src/components/BitcoinPay.tsx:275
 msgid "{toName}’s provider can’t confirm payments automatically. Once you’ve paid, mark it here."
 msgstr "{toName}’s provider can’t confirm payments automatically. Once you’ve paid, mark it here."
 
@@ -210,27 +218,31 @@ msgstr "{toName}’s provider can’t confirm payments automatically. Once you�
 msgid "{what}: {message}"
 msgstr "{what}: {message}"
 
-#: src/lib/news.ts:153
+#: src/lib/news.ts:114
+msgid "{who} accepted your friend request"
+msgstr "{who} accepted your friend request"
+
+#: src/lib/news.ts:160
 msgid "{who} added {title}, {total}"
 msgstr "{who} added {title}, {total}"
 
-#: src/screens/GroupScreen.tsx:196
+#: src/screens/GroupScreen.tsx:212
 msgid "{who} can’t see this yet"
 msgstr "{who} can’t see this yet"
 
-#: src/lib/news.ts:118
+#: src/lib/news.ts:125
 msgid "{who} is back in {group} on a new phone"
 msgstr "{who} is back in {group} on a new phone"
 
-#: src/lib/news.ts:109
+#: src/lib/news.ts:116
 msgid "{who} joined {group}"
 msgstr "{who} joined {group}"
 
-#: src/lib/news.ts:132
+#: src/lib/news.ts:139
 msgid "{who} left {group}"
 msgstr "{who} left {group}"
 
-#: src/screens/RecoverScreen.tsx:143
+#: src/screens/RecoverScreen.tsx:144
 msgid "{who} lost their phone"
 msgstr "{who} lost their phone"
 
@@ -238,21 +250,21 @@ msgstr "{who} lost their phone"
 msgid "{who}: use a percentage like 25 or 12.5"
 msgstr "{who}: use a percentage like 25 or 12.5"
 
-#: src/screens/PersonScreen.tsx:102
+#: src/screens/PersonScreen.tsx:103
 msgid "{who}’s phone stops getting anything new from {groupName}, and can’t add to it. What they’ve added and what they owe stay. Waroo gives the group a new key, so everyone else’s phones move over by themselves."
 msgstr "{who}’s phone stops getting anything new from {groupName}, and can’t add to it. What they’ve added and what they owe stay. Waroo gives the group a new key, so everyone else’s phones move over by themselves."
 
-#: src/screens/JoinScreen.tsx:58
+#: src/screens/JoinScreen.tsx:59
 msgid "{why} Ask for a new one."
 msgstr "{why} Ask for a new one."
 
-#: src/screens/JoinScreen.tsx:127
+#: src/screens/JoinScreen.tsx:128
 msgid "{why}. Check your connection and try again."
 msgstr "{why}. Check your connection and try again."
 
 #. placeholder {0}: label(failed)
 #. placeholder {1}: phase.reason
-#: src/components/BitcoinPay.tsx:357
+#: src/components/BitcoinPay.tsx:358
 msgid "<0>{0} couldn’t pay:</0> {1}."
 msgstr "<0>{0} couldn’t pay:</0> {1}."
 
@@ -272,19 +284,19 @@ msgstr "<0>{fromName}</0> pays <1>{toName}</1>"
 msgid "<0>{fromName}</0> pays <1>you</1>"
 msgstr "<0>{fromName}</0> pays <1>you</1>"
 
-#: src/screens/GroupScreen.tsx:212
+#: src/screens/GroupScreen.tsx:228
 msgid "<0>{payer}</0> pays <1>{payee}</1>"
 msgstr "<0>{payer}</0> pays <1>{payee}</1>"
 
-#: src/screens/GroupScreen.tsx:211
+#: src/screens/GroupScreen.tsx:227
 msgid "<0>{payer}</0> pays <1>you</1>"
 msgstr "<0>{payer}</0> pays <1>you</1>"
 
-#: src/screens/GroupScreen.tsx:141
+#: src/screens/GroupScreen.tsx:153
 msgid "<0>{remover} removed you from {name}.</0> This phone won’t get anything new from the group. To come back, ask for a new invite."
 msgstr "<0>{remover} removed you from {name}.</0> This phone won’t get anything new from the group. To come back, ask for a new invite."
 
-#: src/screens/GroupScreen.tsx:132
+#: src/screens/GroupScreen.tsx:144
 msgid "<0>{replacedBy} moved you to a new phone in {name}.</0> This phone can’t add anything any more. If that wasn’t you, tell the group."
 msgstr "<0>{replacedBy} moved you to a new phone in {name}.</0> This phone can’t add anything any more. If that wasn’t you, tell the group."
 
@@ -292,7 +304,7 @@ msgstr "<0>{replacedBy} moved you to a new phone in {name}.</0> This phone can�
 msgid "<0>You</0> paid <1>{to}</1>"
 msgstr "<0>You</0> paid <1>{to}</1>"
 
-#: src/screens/GroupScreen.tsx:210
+#: src/screens/GroupScreen.tsx:226
 msgid "<0>You</0> pay <1>{payee}</1>"
 msgstr "<0>You</0> pay <1>{payee}</1>"
 
@@ -300,15 +312,15 @@ msgstr "<0>You</0> pay <1>{payee}</1>"
 msgid "<0>You</0> pay <1>{toName}</1>"
 msgstr "<0>You</0> pay <1>{toName}</1>"
 
-#: src/screens/InviteScreen.tsx:28
+#: src/screens/InviteScreen.tsx:29
 msgid "1 day"
 msgstr "1 day"
 
-#: src/screens/InviteScreen.tsx:30
+#: src/screens/InviteScreen.tsx:31
 msgid "1 month"
 msgstr "1 month"
 
-#: src/screens/InviteScreen.tsx:29
+#: src/screens/InviteScreen.tsx:30
 msgid "1 week"
 msgstr "1 week"
 
@@ -316,11 +328,11 @@ msgstr "1 week"
 msgid "A bill-splitting app for trips, flats and dinners. Everyone adds what they paid from their own phone, and Waroo works out who owes whom."
 msgstr "A bill-splitting app for trips, flats and dinners. Everyone adds what they paid from their own phone, and Waroo works out who owes whom."
 
-#: src/screens/JoinScreen.tsx:148
+#: src/screens/JoinScreen.tsx:149
 msgid "a group"
 msgstr "a group"
 
-#: src/App.tsx:68
+#: src/App.tsx:71
 msgid "A new version is ready."
 msgstr "A new version is ready."
 
@@ -328,7 +340,7 @@ msgstr "A new version is ready."
 msgid "A tax, tip or discount needs items that come to more than zero"
 msgstr "A tax, tip or discount needs items that come to more than zero"
 
-#: src/components/TabBar.tsx:45
+#: src/components/TabBar.tsx:47
 #: src/screens/ActivityScreen.tsx:87
 msgid "Activity"
 msgstr "Activity"
@@ -338,17 +350,36 @@ msgstr "Activity"
 msgid "Add"
 msgstr "Add"
 
+#: src/screens/JoinScreen.tsx:213
+msgid "Add {inviter} as a friend"
+msgstr "Add {inviter} as a friend"
+
 #: src/components/WalletSection.tsx:77
 msgid "Add a different wallet"
 msgstr "Add a different wallet"
+
+#: src/screens/FriendsScreen.tsx:36
+#: src/screens/FriendsScreen.tsx:119
+#: src/screens/FriendsScreen.tsx:208
+#: src/screens/MainTabs.tsx:37
+msgid "Add a friend"
+msgstr "Add a friend"
+
+#: src/screens/FriendsScreen.tsx:32
+msgid "Add a friend once, then keep track of lunches, taxis and loans between the two of you, and settle up any time."
+msgstr "Add a friend once, then keep track of lunches, taxis and loans between the two of you, and settle up any time."
 
 #: src/components/FeedbackCard.tsx:151
 msgid "Add another"
 msgstr "Add another"
 
+#: src/screens/JoinScreen.tsx:213
+msgid "Add as a friend"
+msgstr "Add as a friend"
+
 #: src/screens/ExpenseScreen.tsx:341
 #: src/screens/ExpenseScreen.tsx:539
-#: src/screens/GroupScreen.tsx:178
+#: src/screens/GroupScreen.tsx:194
 msgid "Add expense"
 msgstr "Add expense"
 
@@ -356,11 +387,19 @@ msgstr "Add expense"
 msgid "Add item"
 msgstr "Add item"
 
+#: src/screens/FriendsScreen.tsx:189
+msgid "Add me as a friend on Waroo"
+msgstr "Add me as a friend on Waroo"
+
+#: src/screens/FriendsScreen.tsx:189
+msgid "Add me on Waroo"
+msgstr "Add me on Waroo"
+
 #: src/screens/ExpenseScreen.tsx:37
 msgid "Add or take off an amount for anyone, and split the rest equally among the people ticked."
 msgstr "Add or take off an amount for anyone, and split the rest equally among the people ticked."
 
-#: src/screens/GroupScreen.tsx:173
+#: src/screens/GroupScreen.tsx:189
 #: src/screens/SettleScreen.tsx:73
 msgid "Add payment"
 msgstr "Add payment"
@@ -373,7 +412,7 @@ msgstr "Add screenshots"
 msgid "Add tax, tip or discount"
 msgstr "Add tax, tip or discount"
 
-#: src/screens/GroupScreen.tsx:231
+#: src/screens/GroupScreen.tsx:247
 msgid "Add the first expense to get started."
 msgstr "Add the first expense to get started."
 
@@ -385,7 +424,7 @@ msgstr "Add to Home Screen"
 msgid "Add Waroo to your Home Screen"
 msgstr "Add Waroo to your Home Screen"
 
-#: src/screens/GroupScreen.tsx:378
+#: src/screens/GroupScreen.tsx:394
 msgid "Add what someone paid for, and Waroo works out who owes what."
 msgstr "Add what someone paid for, and Waroo works out who owes what."
 
@@ -393,7 +432,7 @@ msgstr "Add what someone paid for, and Waroo works out who owes what."
 msgid "Add your email address to get updates."
 msgstr "Add your email address to get updates."
 
-#: src/screens/JoinScreen.tsx:224
+#: src/screens/JoinScreen.tsx:247
 msgid "Add yourself as a new person"
 msgstr "Add yourself as a new person"
 
@@ -418,16 +457,17 @@ msgstr "Adjust"
 msgid "All here"
 msgstr "All here"
 
-#: src/screens/GroupScreen.tsx:350
+#: src/screens/GroupScreen.tsx:366
 msgid "all square"
 msgstr "all square"
 
-#: src/screens/GroupScreen.tsx:230
-#: src/screens/HomeScreen.tsx:29
+#: src/screens/FriendsScreen.tsx:77
+#: src/screens/GroupScreen.tsx:246
+#: src/screens/HomeScreen.tsx:30
 msgid "All square"
 msgstr "All square"
 
-#: src/screens/JoinScreen.tsx:216
+#: src/screens/JoinScreen.tsx:239
 msgid "Already joined on another phone"
 msgstr "Already joined on another phone"
 
@@ -470,7 +510,7 @@ msgstr "Another person"
 msgid "Another phone also scanned the code, so the move was stopped. Nothing changed. Start again, and keep the code to yourself."
 msgstr "Another phone also scanned the code, so the move was stopped. Nothing changed. Start again, and keep the code to yourself."
 
-#: src/screens/RecoverScreen.tsx:67
+#: src/screens/RecoverScreen.tsx:68
 msgid "Another phone also used the code, so this was stopped. Nothing changed. Start again."
 msgstr "Another phone also used the code, so this was stopped. Nothing changed. Start again."
 
@@ -487,8 +527,8 @@ msgstr "Any wallet with a Lightning address works, like Wallet of Satoshi. Or pa
 msgid "Appearance"
 msgstr "Appearance"
 
-#: src/screens/JoinScreen.tsx:49
-#: src/screens/JoinScreen.tsx:140
+#: src/screens/JoinScreen.tsx:50
+#: src/screens/JoinScreen.tsx:141
 msgid "Ask for the invite link again, and open the whole link."
 msgstr "Ask for the invite link again, and open the whole link."
 
@@ -504,7 +544,7 @@ msgstr "at the top right, in the address bar"
 msgid "Back"
 msgstr "Back"
 
-#: src/components/TabBar.tsx:50
+#: src/components/TabBar.tsx:52
 msgid "Balances"
 msgstr "Balances"
 
@@ -529,7 +569,7 @@ msgstr "Bob"
 msgid "BOLT12 offer"
 msgstr "BOLT12 offer"
 
-#: src/screens/RecoverScreen.tsx:205
+#: src/screens/RecoverScreen.tsx:206
 msgid "Bringing {who} back in. Keep both phones open…"
 msgstr "Bringing {who} back in. Keep both phones open…"
 
@@ -546,7 +586,7 @@ msgstr "Browser wallet"
 msgid "Bug"
 msgstr "Bug"
 
-#: src/screens/InviteScreen.tsx:51
+#: src/screens/InviteScreen.tsx:52
 msgid "Can’t check right now"
 msgstr "Can’t check right now"
 
@@ -559,12 +599,16 @@ msgstr "Can’t reach the group · retrying"
 msgid "Cancel"
 msgstr "Cancel"
 
+#: src/screens/FriendsScreen.tsx:228
+msgid "Cancel this code"
+msgstr "Cancel this code"
+
 #: src/screens/ActivityScreen.tsx:9
 #: src/screens/SettleScreen.tsx:14
 msgid "Cash"
 msgstr "Cash"
 
-#: src/screens/GroupScreen.tsx:355
+#: src/screens/GroupScreen.tsx:371
 msgid "Change your name, or leave the group"
 msgstr "Change your name, or leave the group"
 
@@ -572,7 +616,7 @@ msgstr "Change your name, or leave the group"
 msgid "Check both phones show the same 4 numbers."
 msgstr "Check both phones show the same 4 numbers."
 
-#: src/components/BitcoinPay.tsx:302
+#: src/components/BitcoinPay.tsx:303
 msgid "Check your wallet to see whether it went through before trying again."
 msgstr "Check your wallet to see whether it went through before trying again."
 
@@ -583,7 +627,7 @@ msgstr "Checking your wallet…"
 
 #: src/components/WalletGuides.tsx:104
 #: src/components/WalletGuides.tsx:310
-#: src/screens/InviteScreen.tsx:206
+#: src/screens/InviteScreen.tsx:207
 msgid "Checking…"
 msgstr "Checking…"
 
@@ -603,7 +647,7 @@ msgstr "Close"
 msgid "Code {digits}"
 msgstr "Code {digits}"
 
-#: src/screens/RecoverScreen.tsx:171
+#: src/screens/RecoverScreen.tsx:172
 msgid "Code for {who}’s new phone to scan"
 msgstr "Code for {who}’s new phone to scan"
 
@@ -666,19 +710,20 @@ msgstr "Continue in the browser"
 msgid "Continue to the invite in the browser"
 msgstr "Continue to the invite in the browser"
 
-#: src/components/BitcoinPay.tsx:268
+#: src/components/BitcoinPay.tsx:269
 msgid "Copy invoice"
 msgstr "Copy invoice"
 
-#: src/screens/InviteScreen.tsx:170
+#: src/screens/FriendsScreen.tsx:223
+#: src/screens/InviteScreen.tsx:171
 msgid "Copy link"
 msgstr "Copy link"
 
-#: src/screens/RecoverScreen.tsx:173
+#: src/screens/RecoverScreen.tsx:174
 msgid "Copy link instead"
 msgstr "Copy link instead"
 
-#: src/components/BitcoinPay.tsx:446
+#: src/components/BitcoinPay.tsx:447
 msgid "Copy offer"
 msgstr "Copy offer"
 
@@ -710,11 +755,11 @@ msgstr "Couldn’t look the name up. Check your connection and try again."
 msgid "Couldn’t make the link. Check your connection and try again."
 msgstr "Couldn’t make the link. Check your connection and try again."
 
-#: src/screens/JoinScreen.tsx:190
+#: src/screens/JoinScreen.tsx:192
 msgid "Couldn’t open the group"
 msgstr "Couldn’t open the group"
 
-#: src/screens/JoinScreen.tsx:59
+#: src/screens/JoinScreen.tsx:60
 msgid "Couldn’t open the invite"
 msgstr "Couldn’t open the invite"
 
@@ -735,7 +780,7 @@ msgid "Couldn’t reach Waroo to hand over your groups. Check your connection an
 msgstr "Couldn’t reach Waroo to hand over your groups. Check your connection and try again."
 
 #: src/lib/rekey.ts:70
-#: src/screens/MemberScreen.tsx:57
+#: src/screens/MemberScreen.tsx:58
 msgid "Couldn’t reach Waroo to tell the group. Check your connection and try again."
 msgstr "Couldn’t reach Waroo to tell the group. Check your connection and try again."
 
@@ -760,7 +805,7 @@ msgstr "Couldn’t turn the link off. Check your connection and try again."
 msgid "Create group"
 msgstr "Create group"
 
-#: src/screens/InviteScreen.tsx:157
+#: src/screens/InviteScreen.tsx:158
 msgid "Create invite link"
 msgstr "Create invite link"
 
@@ -794,7 +839,7 @@ msgstr "Delete group"
 msgid "Devices"
 msgstr "Devices"
 
-#: src/components/Banners.tsx:79
+#: src/components/Banners.tsx:80
 msgid "Dismiss"
 msgstr "Dismiss"
 
@@ -806,9 +851,9 @@ msgstr "Does the new phone show these numbers?"
 msgid "Don’t share this code: it’s only for your own phone."
 msgstr "Don’t share this code: it’s only for your own phone."
 
-#: src/components/BitcoinPay.tsx:225
+#: src/components/BitcoinPay.tsx:226
 #: src/screens/MoveScreen.tsx:207
-#: src/screens/RecoverScreen.tsx:217
+#: src/screens/RecoverScreen.tsx:218
 msgid "Done"
 msgstr "Done"
 
@@ -816,7 +861,7 @@ msgstr "Done"
 msgid "Earlier"
 msgstr "Earlier"
 
-#: src/screens/GroupScreen.tsx:356
+#: src/screens/GroupScreen.tsx:372
 msgid "Edit"
 msgstr "Edit"
 
@@ -841,8 +886,8 @@ msgstr "Enter what each item cost"
 msgid "Equally"
 msgstr "Equally"
 
-#: src/screens/GroupScreen.tsx:294
-#: src/screens/GroupScreen.tsx:338
+#: src/screens/GroupScreen.tsx:310
+#: src/screens/GroupScreen.tsx:354
 msgid "Everyone"
 msgstr "Everyone"
 
@@ -850,7 +895,7 @@ msgstr "Everyone"
 msgid "Everyone in the group sees the change."
 msgstr "Everyone in the group sees the change."
 
-#: src/screens/GroupScreen.tsx:294
+#: src/screens/GroupScreen.tsx:310
 msgid "Everyone, in {currency}"
 msgstr "Everyone, in {currency}"
 
@@ -862,7 +907,7 @@ msgstr "Exact"
 msgid "Expense"
 msgstr "Expense"
 
-#: src/components/TabBar.tsx:51
+#: src/components/TabBar.tsx:53
 msgid "Expenses"
 msgstr "Expenses"
 
@@ -870,7 +915,7 @@ msgstr "Expenses"
 msgid "Expenses and payments from all your groups show up here, newest first."
 msgstr "Expenses and payments from all your groups show up here, newest first."
 
-#: src/screens/InviteScreen.tsx:48
+#: src/screens/InviteScreen.tsx:49
 msgid "Expired"
 msgstr "Expired"
 
@@ -887,11 +932,11 @@ msgstr "Extra for {0}"
 msgid "Firefox can’t install apps, but Waroo works fine in a tab."
 msgstr "Firefox can’t install apps, but Waroo works fine in a tab."
 
-#: src/screens/InviteScreen.tsx:38
+#: src/screens/InviteScreen.tsx:39
 msgid "For one person, until {date}"
 msgstr "For one person, until {date}"
 
-#: src/screens/InviteScreen.tsx:38
+#: src/screens/InviteScreen.tsx:39
 msgid "For several people, until {date}"
 msgstr "For several people, until {date}"
 
@@ -902,6 +947,23 @@ msgstr "Free. Just a username and a password."
 #: src/components/WalletSection.tsx:35
 msgid "Free. Sign up with email; one code sets up everything."
 msgstr "Free. Sign up with email; one code sets up everything."
+
+#: src/screens/FriendsScreen.tsx:211
+msgid "Friend code"
+msgstr "Friend code"
+
+#: src/screens/FriendsScreen.tsx:73
+msgid "Friend code, not used yet"
+msgstr "Friend code, not used yet"
+
+#: src/screens/JoinScreen.tsx:200
+msgid "Friend request"
+msgstr "Friend request"
+
+#: src/components/TabBar.tsx:46
+#: src/screens/FriendsScreen.tsx:27
+msgid "Friends"
+msgstr "Friends"
 
 #: src/components/WalletGuides.tsx:149
 msgid "Friends can pay you at <0>{address}</0>."
@@ -915,11 +977,11 @@ msgstr "Friends pay you at these, in order. If the first can’t take a payment,
 msgid "Friends will pay you at {candidate}"
 msgstr "Friends will pay you at {candidate}"
 
-#: src/components/BitcoinPay.tsx:458
+#: src/components/BitcoinPay.tsx:459
 msgid "from {list}"
 msgstr "from {list}"
 
-#: src/components/BitcoinPay.tsx:463
+#: src/components/BitcoinPay.tsx:464
 msgid "from {list} and {more} more"
 msgstr "from {list} and {more} more"
 
@@ -939,8 +1001,8 @@ msgstr "Get a notification when someone pays you, joins a group or adds an expen
 msgid "Get a notification when someone pays you, joins a group or adds an expense. What happened is worked out on this phone; the server never sees it."
 msgstr "Get a notification when someone pays you, joins a group or adds an expense. What happened is worked out on this phone; the server never sees it."
 
-#: src/screens/GroupScreen.tsx:438
-#: src/screens/MemberScreen.tsx:110
+#: src/screens/GroupScreen.tsx:454
+#: src/screens/MemberScreen.tsx:111
 msgid "get back {sum}"
 msgstr "get back {sum}"
 
@@ -952,20 +1014,20 @@ msgstr "Get back into a group"
 msgid "Get started"
 msgstr "Get started"
 
-#: src/screens/GroupScreen.tsx:438
+#: src/screens/GroupScreen.tsx:454
 msgid "gets back {sum}"
 msgstr "gets back {sum}"
 
-#: src/screens/PersonScreen.tsx:79
+#: src/screens/PersonScreen.tsx:80
 msgid "Gets back {sum}"
 msgstr "Gets back {sum}"
 
 #: src/screens/MoveScreen.tsx:161
-#: src/screens/RecoverScreen.tsx:167
+#: src/screens/RecoverScreen.tsx:168
 msgid "Getting ready…"
 msgstr "Getting ready…"
 
-#: src/components/BitcoinPay.tsx:311
+#: src/components/BitcoinPay.tsx:312
 msgid "Getting the price…"
 msgstr "Getting the price…"
 
@@ -981,7 +1043,7 @@ msgstr "Give it a name"
 msgid "Go to your groups"
 msgstr "Go to your groups"
 
-#: src/screens/JoinScreen.tsx:160
+#: src/screens/JoinScreen.tsx:161
 msgid "Group"
 msgstr "Group"
 
@@ -990,7 +1052,7 @@ msgstr "Group"
 msgid "Group name"
 msgstr "Group name"
 
-#: src/screens/GroupScreen.tsx:181
+#: src/screens/GroupScreen.tsx:197
 msgid "Group sections"
 msgstr "Group sections"
 
@@ -998,29 +1060,33 @@ msgstr "Group sections"
 msgid "Group settings"
 msgstr "Group settings"
 
-#: src/components/TabBar.tsx:44
-#: src/screens/HomeScreen.tsx:48
+#: src/components/TabBar.tsx:45
+#: src/screens/HomeScreen.tsx:50
 msgid "Groups"
 msgstr "Groups"
 
-#: src/screens/PersonScreen.tsx:72
+#: src/screens/PersonScreen.tsx:73
 msgid "Hasn’t joined on a phone yet."
 msgstr "Hasn’t joined on a phone yet."
 
-#: src/screens/JoinScreen.tsx:241
+#: src/screens/JoinScreen.tsx:264
 msgid "Have Waroo on your Home Screen? Join from there instead: open it, tap the scan button and scan the invite code. Groups joined here stay in this browser."
 msgstr "Have Waroo on your Home Screen? Join from there instead: open it, tap the scan button and scan the invite code. Groups joined here stay in this browser."
 
-#: src/screens/PersonScreen.tsx:93
+#: src/screens/FriendsScreen.tsx:210
+msgid "Have your friend scan this with Waroo, or send them the link."
+msgstr "Have your friend scan this with Waroo, or send them the link."
+
+#: src/screens/PersonScreen.tsx:94
 msgid "Help {who} back in"
 msgstr "Help {who} back in"
 
-#: src/screens/InviteScreen.tsx:173
+#: src/screens/InviteScreen.tsx:174
 msgid "Hide QR code"
 msgstr "Hide QR code"
 
-#: src/components/BitcoinPay.tsx:276
-#: src/components/BitcoinPay.tsx:450
+#: src/components/BitcoinPay.tsx:277
+#: src/components/BitcoinPay.tsx:451
 msgid "I’ve paid it"
 msgstr "I’ve paid it"
 
@@ -1028,7 +1094,7 @@ msgstr "I’ve paid it"
 msgid "Idea"
 msgstr "Idea"
 
-#: src/lib/news.ts:115
+#: src/lib/news.ts:122
 msgid "If that wasn’t you, tell the group"
 msgstr "If that wasn’t you, tell the group"
 
@@ -1036,15 +1102,15 @@ msgstr "If that wasn’t you, tell the group"
 msgid "If you paid from a wallet in this browser before, connect it again in Settings."
 msgstr "If you paid from a wallet in this browser before, connect it again in Settings."
 
-#: src/lib/news.ts:68
+#: src/lib/news.ts:70
 msgid "In {group}"
 msgstr "In {group}"
 
-#: src/screens/PersonScreen.tsx:71
+#: src/screens/PersonScreen.tsx:72
 msgid "In {groupName} on their phone."
 msgstr "In {groupName} on their phone."
 
-#: src/components/BitcoinPay.tsx:236
+#: src/components/BitcoinPay.tsx:237
 msgid "In bitcoin"
 msgstr "In bitcoin"
 
@@ -1068,20 +1134,20 @@ msgstr "Install Waroo"
 msgid "Installed. Open Waroo from your Home Screen to carry on there."
 msgstr "Installed. Open Waroo from your Home Screen to carry on there."
 
-#: src/screens/GroupScreen.tsx:123
+#: src/screens/GroupScreen.tsx:134
 msgid "Invite"
 msgstr "Invite"
 
-#: src/screens/InviteScreen.tsx:188
+#: src/screens/InviteScreen.tsx:189
 msgid "Invite link copied. Paste it to the people in this group."
 msgstr "Invite link copied. Paste it to the people in this group."
 
-#: src/screens/GroupScreen.tsx:75
-#: src/screens/InviteScreen.tsx:137
+#: src/screens/GroupScreen.tsx:85
+#: src/screens/InviteScreen.tsx:138
 msgid "Invite people"
 msgstr "Invite people"
 
-#: src/screens/GroupScreen.tsx:73
+#: src/screens/GroupScreen.tsx:83
 msgid "Invite them, and everyone can add expenses and settle up from their own phone."
 msgstr "Invite them, and everyone can add expenses and settle up from their own phone."
 
@@ -1106,7 +1172,7 @@ msgid "it didn’t allow Waroo to pay{tech}"
 msgstr "it didn’t allow Waroo to pay{tech}"
 
 #. placeholder {0}: label(next)
-#: src/components/BitcoinPay.tsx:384
+#: src/components/BitcoinPay.tsx:385
 msgid "It didn’t pay. Try {0}"
 msgstr "It didn’t pay. Try {0}"
 
@@ -1119,7 +1185,7 @@ msgid "it got the request but didn’t answer within a minute{tech}"
 msgstr "it got the request but didn’t answer within a minute{tech}"
 
 #. placeholder {0}: label(failed)
-#: src/components/BitcoinPay.tsx:365
+#: src/components/BitcoinPay.tsx:366
 msgid "It may still have paid. Check {0} before trying again, so you don’t pay twice."
 msgstr "It may still have paid. Check {0} before trying again, so you don’t pay twice."
 
@@ -1141,11 +1207,15 @@ msgstr "it said: {detail}{0}"
 msgid "it uses a kind of encryption Waroo doesn’t support{tech}"
 msgstr "it uses a kind of encryption Waroo doesn’t support{tech}"
 
-#: src/screens/RecoverScreen.tsx:77
+#: src/screens/RecoverScreen.tsx:78
 msgid "It was cancelled on {who}’s new phone. Nothing changed."
 msgstr "It was cancelled on {who}’s new phone. Nothing changed."
 
-#: src/screens/JoinScreen.tsx:36
+#: src/screens/FriendsScreen.tsx:215
+msgid "It works once, for a week. This page moves on by itself when they’ve joined."
+msgstr "It works once, for a week. This page moves on by itself when they’ve joined."
+
+#: src/screens/JoinScreen.tsx:37
 msgid "It’s from an older version of Waroo. Ask for a new invite link."
 msgstr "It’s from an older version of Waroo. Ask for a new invite link."
 
@@ -1170,27 +1240,27 @@ msgstr "Items"
 msgid "Izakaya dinner"
 msgstr "Izakaya dinner"
 
-#: src/screens/InviteScreen.tsx:112
+#: src/screens/InviteScreen.tsx:113
 msgid "Join {name} on Waroo"
 msgstr "Join {name} on Waroo"
 
-#: src/screens/JoinScreen.tsx:250
+#: src/screens/JoinScreen.tsx:273
 msgid "Join as {name}"
 msgstr "Join as {name}"
 
-#: src/screens/JoinScreen.tsx:236
+#: src/screens/JoinScreen.tsx:259
 msgid "Join the group"
 msgstr "Join the group"
 
-#: src/screens/HomeScreen.tsx:60
+#: src/screens/HomeScreen.tsx:62
 msgid "Join with a QR code"
 msgstr "Join with a QR code"
 
-#: src/screens/InviteScreen.tsx:227
+#: src/screens/InviteScreen.tsx:228
 msgid "Joined so far: just you"
 msgstr "Joined so far: just you"
 
-#: src/screens/InviteScreen.tsx:229
+#: src/screens/InviteScreen.tsx:230
 msgid "Joined so far: you, {names}"
 msgstr "Joined so far: you, {names}"
 
@@ -1203,19 +1273,19 @@ msgstr "Keep it"
 msgid "Language"
 msgstr "Language"
 
-#: src/screens/MemberScreen.tsx:98
+#: src/screens/MemberScreen.tsx:99
 msgid "Leave group"
 msgstr "Leave group"
 
-#: src/screens/MemberScreen.tsx:89
+#: src/screens/MemberScreen.tsx:90
 msgid "Leave the group"
 msgstr "Leave the group"
 
-#: src/screens/MemberScreen.tsx:98
+#: src/screens/MemberScreen.tsx:99
 msgid "Leaving…"
 msgstr "Leaving…"
 
-#: src/screens/PersonScreen.tsx:67
+#: src/screens/PersonScreen.tsx:68
 msgid "Left the group."
 msgstr "Left the group."
 
@@ -1227,14 +1297,15 @@ msgstr "Light"
 msgid "Lightning address or BOLT12 offer"
 msgstr "Lightning address or BOLT12 offer"
 
-#: src/screens/InviteScreen.tsx:170
+#: src/screens/FriendsScreen.tsx:223
+#: src/screens/InviteScreen.tsx:171
 #: src/screens/MoveScreen.tsx:171
 #: src/screens/Onboarding.tsx:258
-#: src/screens/RecoverScreen.tsx:173
+#: src/screens/RecoverScreen.tsx:174
 msgid "Link copied"
 msgstr "Link copied"
 
-#: src/screens/InviteScreen.tsx:128
+#: src/screens/InviteScreen.tsx:129
 msgid "Link turned off. Nobody else can join with it."
 msgstr "Link turned off. Nobody else can join with it."
 
@@ -1254,15 +1325,15 @@ msgstr "Lost the connection. Nothing was moved; start again."
 msgid "Lost the connection. Start again on the other phone."
 msgstr "Lost the connection. Start again on the other phone."
 
-#: src/screens/RecoverScreen.tsx:93
+#: src/screens/RecoverScreen.tsx:94
 msgid "Lost the connection. Start again."
 msgstr "Lost the connection. Start again."
 
-#: src/screens/PersonScreen.tsx:88
+#: src/screens/PersonScreen.tsx:89
 msgid "Lost their phone?"
 msgstr "Lost their phone?"
 
-#: src/screens/MainTabs.tsx:43
+#: src/screens/MainTabs.tsx:52
 msgid "Main"
 msgstr "Main"
 
@@ -1275,15 +1346,23 @@ msgstr "Main currency"
 msgid "Make a Coinos account"
 msgstr "Make a Coinos account"
 
-#: src/screens/InviteScreen.tsx:183
+#: src/screens/InviteScreen.tsx:184
 msgid "Make a different link"
 msgstr "Make a different link"
+
+#: src/screens/FriendsScreen.tsx:127
+msgid "Make a friend code"
+msgstr "Make a friend code"
 
 #: src/components/WalletGuides.tsx:246
 msgid "Make a Rizful account"
 msgstr "Make a Rizful account"
 
-#: src/screens/InviteScreen.tsx:157
+#: src/screens/FriendsScreen.tsx:211
+msgid "Making the code…"
+msgstr "Making the code…"
+
+#: src/screens/InviteScreen.tsx:158
 msgid "Making the link…"
 msgstr "Making the link…"
 
@@ -1295,7 +1374,7 @@ msgstr "Mark as paid"
 msgid "Mark it as paid"
 msgstr "Mark it as paid"
 
-#: src/screens/GroupScreen.tsx:443
+#: src/screens/GroupScreen.tsx:459
 msgid "More about {name}"
 msgstr "More about {name}"
 
@@ -1342,11 +1421,11 @@ msgstr "Moving your groups here. Keep both phones open…"
 msgid "Moving your groups. Keep both phones open…"
 msgstr "Moving your groups. Keep both phones open…"
 
-#: src/screens/MemberScreen.tsx:77
+#: src/screens/MemberScreen.tsx:78
 msgid "Name in {groupName}"
 msgstr "Name in {groupName}"
 
-#: src/screens/MainTabs.tsx:40
+#: src/screens/MainTabs.tsx:49
 #: src/screens/PickGroupScreen.tsx:19
 msgid "New expense"
 msgstr "New expense"
@@ -1355,7 +1434,11 @@ msgstr "New expense"
 msgid "New expenses start in the main currency. Changing it doesn’t change any expense already added."
 msgstr "New expenses start in the main currency. Changing it doesn’t change any expense already added."
 
-#: src/screens/MainTabs.tsx:34
+#: src/lib/title.ts:13
+msgid "New friend"
+msgstr "New friend"
+
+#: src/screens/MainTabs.tsx:43
 #: src/screens/NewGroupScreen.tsx:28
 msgid "New group"
 msgstr "New group"
@@ -1376,28 +1459,28 @@ msgstr "No browser wallet found."
 msgid "No camera found on this device. Paste the invite link below instead."
 msgstr "No camera found on this device. Paste the invite link below instead."
 
-#: src/screens/GroupScreen.tsx:377
+#: src/screens/GroupScreen.tsx:393
 msgid "No expenses yet"
 msgstr "No expenses yet"
 
-#: src/screens/GroupScreen.tsx:409
+#: src/screens/GroupScreen.tsx:425
 msgid "No payments yet"
 msgstr "No payments yet"
 
 #: src/screens/MoveScreen.tsx:188
-#: src/screens/RecoverScreen.tsx:199
+#: src/screens/RecoverScreen.tsx:200
 msgid "No, stop"
 msgstr "No, stop"
 
-#: src/screens/GroupScreen.tsx:231
+#: src/screens/GroupScreen.tsx:247
 msgid "Nobody owes anybody."
 msgstr "Nobody owes anybody."
 
-#: src/components/BitcoinPay.tsx:467
+#: src/components/BitcoinPay.tsx:468
 msgid "None of {name}’s addresses could take a payment right now. {problems}"
 msgstr "None of {name}’s addresses could take a payment right now. {problems}"
 
-#: src/screens/GroupScreen.tsx:38
+#: src/screens/GroupScreen.tsx:39
 msgid "Not found"
 msgstr "Not found"
 
@@ -1410,7 +1493,7 @@ msgstr "Not moved"
 msgid "Not now"
 msgstr "Not now"
 
-#: src/screens/RecoverScreen.tsx:223
+#: src/screens/RecoverScreen.tsx:224
 msgid "Nothing changed"
 msgstr "Nothing changed"
 
@@ -1418,11 +1501,11 @@ msgstr "Nothing changed"
 msgid "Nothing to move but your wallets."
 msgstr "Nothing to move but your wallets."
 
-#: src/screens/GroupScreen.tsx:230
+#: src/screens/GroupScreen.tsx:246
 msgid "Nothing to split yet"
 msgstr "Nothing to split yet"
 
-#: src/components/BitcoinPay.tsx:362
+#: src/components/BitcoinPay.tsx:363
 msgid "Nothing was paid."
 msgstr "Nothing was paid."
 
@@ -1454,7 +1537,7 @@ msgstr "Notifications aren’t available right now"
 msgid "Notifications weren’t turned on."
 msgstr "Notifications weren’t turned on."
 
-#: src/components/BitcoinPay.tsx:446
+#: src/components/BitcoinPay.tsx:447
 msgid "Offer copied"
 msgstr "Offer copied"
 
@@ -1478,7 +1561,7 @@ msgstr "On iPhone, the Home Screen app keeps its own data, apart from Safari. To
 msgid "On the new phone, open Waroo, tap the scan button and scan this code."
 msgstr "On the new phone, open Waroo, tap the scan button and scan this code."
 
-#: src/screens/InviteScreen.tsx:25
+#: src/screens/InviteScreen.tsx:26
 msgid "One person"
 msgstr "One person"
 
@@ -1500,7 +1583,7 @@ msgstr "Only on this phone so far"
 msgid "only you so far"
 msgstr "only you so far"
 
-#: src/components/BitcoinPay.tsx:395
+#: src/components/BitcoinPay.tsx:396
 msgid "Open another wallet app"
 msgstr "Open another wallet app"
 
@@ -1516,9 +1599,9 @@ msgstr "Open Coinos settings"
 msgid "Open Coinos’s Nostr settings, then tap <0>New connection</0>, name it Waroo, and set a budget if you like."
 msgstr "Open Coinos’s Nostr settings, then tap <0>New connection</0>, name it Waroo, and set a budget if you like."
 
-#: src/components/BitcoinPay.tsx:257
-#: src/components/BitcoinPay.tsx:395
-#: src/components/BitcoinPay.tsx:435
+#: src/components/BitcoinPay.tsx:258
+#: src/components/BitcoinPay.tsx:396
+#: src/components/BitcoinPay.tsx:436
 msgid "Open in wallet app"
 msgstr "Open in wallet app"
 
@@ -1526,8 +1609,8 @@ msgstr "Open in wallet app"
 msgid "Open in your browser"
 msgstr "Open in your browser"
 
-#: src/components/BitcoinPay.tsx:260
-#: src/components/BitcoinPay.tsx:438
+#: src/components/BitcoinPay.tsx:261
+#: src/components/BitcoinPay.tsx:439
 msgid "Open in your wallet app"
 msgstr "Open in your wallet app"
 
@@ -1543,9 +1626,9 @@ msgstr "Open my groups"
 msgid "Open Rizful"
 msgstr "Open Rizful"
 
-#: src/screens/JoinScreen.tsx:37
-#: src/screens/JoinScreen.tsx:78
-#: src/screens/JoinScreen.tsx:141
+#: src/screens/JoinScreen.tsx:38
+#: src/screens/JoinScreen.tsx:79
+#: src/screens/JoinScreen.tsx:142
 #: src/screens/MoveInScreen.tsx:142
 msgid "Open Waroo"
 msgstr "Open Waroo"
@@ -1554,11 +1637,11 @@ msgstr "Open Waroo"
 msgid "Open Waroo on the new phone, from its Home Screen."
 msgstr "Open Waroo on the new phone, from its Home Screen."
 
-#: src/screens/JoinScreen.tsx:194
+#: src/screens/JoinScreen.tsx:196
 msgid "Opening the group…"
 msgstr "Opening the group…"
 
-#: src/screens/JoinScreen.tsx:81
+#: src/screens/JoinScreen.tsx:82
 msgid "Opening the invite…"
 msgstr "Opening the invite…"
 
@@ -1570,8 +1653,8 @@ msgstr "Or mark it as paid another way"
 msgid "Or paste the invite link"
 msgstr "Or paste the invite link"
 
-#: src/components/BitcoinPay.tsx:259
-#: src/components/BitcoinPay.tsx:437
+#: src/components/BitcoinPay.tsx:260
+#: src/components/BitcoinPay.tsx:438
 msgid "Or scan it with a wallet on another phone:"
 msgstr "Or scan it with a wallet on another phone:"
 
@@ -1581,22 +1664,26 @@ msgstr "Or scan it with a wallet on another phone:"
 msgid "Other"
 msgstr "Other"
 
-#: src/screens/GroupScreen.tsx:439
-#: src/screens/MemberScreen.tsx:110
+#: src/screens/GroupScreen.tsx:455
+#: src/screens/MemberScreen.tsx:111
 msgid "owe {sum}"
 msgstr "owe {sum}"
 
-#: src/screens/GroupScreen.tsx:439
+#: src/screens/GroupScreen.tsx:455
 msgid "owes {sum}"
 msgstr "owes {sum}"
 
-#: src/screens/PersonScreen.tsx:79
+#: src/screens/PersonScreen.tsx:80
 msgid "Owes {sum}"
 msgstr "Owes {sum}"
 
+#: src/screens/FriendsScreen.tsx:84
+msgid "Owes you {sum}"
+msgstr "Owes you {sum}"
+
 #. placeholder {0}: money(amount, currency)
 #. placeholder {1}: satsText(phase.sats)
-#: src/components/BitcoinPay.tsx:220
+#: src/components/BitcoinPay.tsx:221
 msgid "Paid {0} to {toName} ({1})."
 msgstr "Paid {0} to {toName} ({1})."
 
@@ -1629,12 +1716,12 @@ msgstr "Paste it under the scanner in the other app. You’ll still check the nu
 msgid "Paste the code"
 msgstr "Paste the code"
 
-#: src/components/BitcoinPay.tsx:471
+#: src/components/BitcoinPay.tsx:472
 msgid "Pay {amount} with bitcoin"
 msgstr "Pay {amount} with bitcoin"
 
 #. placeholder {0}: satsText(sats)
-#: src/components/BitcoinPay.tsx:430
+#: src/components/BitcoinPay.tsx:431
 msgid "Pay exactly <0>{0}</0>. You’ll type the amount in your wallet."
 msgstr "Pay exactly <0>{0}</0>. You’ll type the amount in your wallet."
 
@@ -1646,26 +1733,26 @@ msgstr "Pay in one tap"
 msgid "Pay in one tap (optional)"
 msgstr "Pay in one tap (optional)"
 
-#: src/components/BitcoinPay.tsx:409
+#: src/components/BitcoinPay.tsx:410
 msgid "Pay their Lightning address instead"
 msgstr "Pay their Lightning address instead"
 
 #. placeholder {0}: label(next)
-#: src/components/BitcoinPay.tsx:385
+#: src/components/BitcoinPay.tsx:386
 msgid "Pay with {0}"
 msgstr "Pay with {0}"
 
-#: src/components/BitcoinPay.tsx:213
-#: src/components/BitcoinPay.tsx:311
+#: src/components/BitcoinPay.tsx:214
+#: src/components/BitcoinPay.tsx:312
 msgid "Pay with bitcoin"
 msgstr "Pay with bitcoin"
 
-#: src/components/BitcoinPay.tsx:399
+#: src/components/BitcoinPay.tsx:400
 msgid "Paying from another phone? Show a QR code"
 msgstr "Paying from another phone? Show a QR code"
 
 #. placeholder {0}: label(next)
-#: src/components/BitcoinPay.tsx:380
+#: src/components/BitcoinPay.tsx:381
 msgid "Paying with {0}…"
 msgstr "Paying with {0}…"
 
@@ -1673,11 +1760,11 @@ msgstr "Paying with {0}…"
 msgid "Payment method"
 msgstr "Payment method"
 
-#: src/lib/news.ts:87
+#: src/lib/news.ts:91
 msgid "Payment sent: {amount} to {to}"
 msgstr "Payment sent: {amount} to {to}"
 
-#: src/components/TabBar.tsx:52
+#: src/components/TabBar.tsx:54
 msgid "Payments"
 msgstr "Payments"
 
@@ -1718,7 +1805,7 @@ msgstr "Pick who had {what}"
 msgid "Point the camera at a friend’s invite code, or at your other phone’s code when you’re moving."
 msgstr "Point the camera at a friend’s invite code, or at your other phone’s code when you’re moving."
 
-#: src/components/BitcoinPay.tsx:240
+#: src/components/BitcoinPay.tsx:241
 msgid "Price"
 msgstr "Price"
 
@@ -1730,15 +1817,15 @@ msgstr "Price of item {n}"
 msgid "Put Waroo on your Home Screen"
 msgstr "Put Waroo on your Home Screen"
 
-#: src/screens/InviteScreen.tsx:178
+#: src/screens/InviteScreen.tsx:179
 msgid "QR code for the invite link"
 msgstr "QR code for the invite link"
 
-#: src/components/BitcoinPay.tsx:439
+#: src/components/BitcoinPay.tsx:440
 msgid "QR code of {toName}’s BOLT12 offer"
 msgstr "QR code of {toName}’s BOLT12 offer"
 
-#: src/components/BitcoinPay.tsx:261
+#: src/components/BitcoinPay.tsx:262
 msgid "QR code to pay with a wallet app"
 msgstr "QR code to pay with a wallet app"
 
@@ -1746,7 +1833,7 @@ msgstr "QR code to pay with a wallet app"
 msgid "Receive"
 msgstr "Receive"
 
-#: src/App.tsx:70
+#: src/App.tsx:73
 msgid "Reload"
 msgstr "Reload"
 
@@ -1759,7 +1846,7 @@ msgstr "Remove"
 msgid "Remove {0}"
 msgstr "Remove {0}"
 
-#: src/screens/PersonScreen.tsx:110
+#: src/screens/PersonScreen.tsx:111
 msgid "Remove {who}"
 msgstr "Remove {who}"
 
@@ -1768,11 +1855,11 @@ msgstr "Remove {who}"
 msgid "Remove extra {0}"
 msgstr "Remove extra {0}"
 
-#: src/screens/PersonScreen.tsx:100
+#: src/screens/PersonScreen.tsx:101
 msgid "Remove from the group"
 msgstr "Remove from the group"
 
-#: src/screens/GroupScreen.tsx:157
+#: src/screens/GroupScreen.tsx:169
 msgid "Remove from this phone"
 msgstr "Remove from this phone"
 
@@ -1790,15 +1877,15 @@ msgstr "Remove screenshot {0}"
 msgid "Removed {0}."
 msgstr "Removed {0}."
 
-#: src/screens/PersonScreen.tsx:66
+#: src/screens/PersonScreen.tsx:67
 msgid "Removed by {by}."
 msgstr "Removed by {by}."
 
-#: src/screens/PersonScreen.tsx:69
+#: src/screens/PersonScreen.tsx:70
 msgid "Removed by {by}. Their expenses stay, and they can join again as {who} with a new invite."
 msgstr "Removed by {by}. Their expenses stay, and they can join again as {who} with a new invite."
 
-#: src/screens/PersonScreen.tsx:110
+#: src/screens/PersonScreen.tsx:111
 msgid "Removing…"
 msgstr "Removing…"
 
@@ -1817,7 +1904,7 @@ msgstr "Safari on a Mac: choose File, then Add to Dock."
 #: src/components/WalletGuides.tsx:173
 #: src/components/WalletSection.tsx:281
 #: src/screens/GroupSettingsScreen.tsx:80
-#: src/screens/MemberScreen.tsx:81
+#: src/screens/MemberScreen.tsx:82
 msgid "Save"
 msgstr "Save"
 
@@ -1825,7 +1912,7 @@ msgstr "Save"
 msgid "Save changes"
 msgstr "Save changes"
 
-#: src/screens/MemberScreen.tsx:41
+#: src/screens/MemberScreen.tsx:42
 msgid "Saved. Everyone in the group sees the new name."
 msgstr "Saved. Everyone in the group sees the new name."
 
@@ -1838,7 +1925,7 @@ msgstr "Say who paid"
 msgid "Scan a code"
 msgstr "Scan a code"
 
-#: src/screens/InviteScreen.tsx:179
+#: src/screens/InviteScreen.tsx:180
 msgid "Scan it in Waroo on the other phone, with the scan button."
 msgstr "Scan it in Waroo on the other phone, with the scan button."
 
@@ -1864,11 +1951,15 @@ msgstr "Send"
 msgid "Send feedback"
 msgstr "Send feedback"
 
-#: src/screens/InviteScreen.tsx:140
+#: src/screens/FriendsScreen.tsx:219
+msgid "Send the link"
+msgstr "Send the link"
+
+#: src/screens/InviteScreen.tsx:141
 msgid "Send the others a link to <0>{name}</0>. They open it, pick who they are, and the group appears on their phone with everything added so far."
 msgstr "Send the others a link to <0>{name}</0>. They open it, pick who they are, and the group appears on their phone with everything added so far."
 
-#: src/screens/RecoverScreen.tsx:176
+#: src/screens/RecoverScreen.tsx:177
 msgid "Sending the link? {who} pastes it under the scanner in Waroo. You’ll still check the numbers together."
 msgstr "Sending the link? {who} pastes it under the scanner in Waroo. You’ll still check the numbers together."
 
@@ -1880,23 +1971,23 @@ msgstr "Sending…"
 msgid "Set up"
 msgstr "Set up"
 
-#: src/components/TabBar.tsx:46
+#: src/components/TabBar.tsx:48
 #: src/screens/YouScreen.tsx:19
 msgid "Settings"
 msgstr "Settings"
 
-#: src/screens/GroupScreen.tsx:311
+#: src/screens/GroupScreen.tsx:327
 msgid "Settle"
 msgstr "Settle"
 
-#: src/screens/GroupScreen.tsx:280
-#: src/screens/GroupScreen.tsx:300
+#: src/screens/GroupScreen.tsx:296
+#: src/screens/GroupScreen.tsx:316
 #: src/screens/SettleScreen.tsx:73
 msgid "Settle up"
 msgstr "Settle up"
 
 #: src/screens/ExpenseScreen.tsx:376
-#: src/screens/InviteScreen.tsx:24
+#: src/screens/InviteScreen.tsx:25
 msgid "Several people"
 msgstr "Several people"
 
@@ -1904,11 +1995,11 @@ msgstr "Several people"
 msgid "Share"
 msgstr "Share"
 
-#: src/screens/InviteScreen.tsx:165
+#: src/screens/InviteScreen.tsx:166
 msgid "Share invite link"
 msgstr "Share invite link"
 
-#: src/screens/InviteScreen.tsx:192
+#: src/screens/InviteScreen.tsx:193
 msgid "Share it only with the group"
 msgstr "Share it only with the group"
 
@@ -1925,14 +2016,18 @@ msgstr "Shares"
 msgid "Shares for {0}"
 msgstr "Shares for {0}"
 
-#: src/screens/InviteScreen.tsx:173
+#: src/screens/InviteScreen.tsx:174
 msgid "Show QR code"
 msgstr "Show QR code"
 
 #: src/screens/MoveScreen.tsx:157
-#: src/screens/RecoverScreen.tsx:163
+#: src/screens/RecoverScreen.tsx:164
 msgid "Show the code"
 msgstr "Show the code"
+
+#: src/screens/GroupScreen.tsx:76
+msgid "Show the friend code"
+msgstr "Show the friend code"
 
 #: src/components/FeedbackCard.tsx:183
 msgid "Sign me up"
@@ -1946,24 +2041,28 @@ msgstr "Sign up with an email and a password. The email is how you get back in i
 msgid "So we can reply"
 msgstr "So we can reply"
 
-#: src/screens/PersonScreen.tsx:35
+#: src/screens/PersonScreen.tsx:36
 msgid "someone"
 msgstr "someone"
 
 #: src/lib/news.ts:66
-#: src/screens/GroupScreen.tsx:57
-#: src/screens/GroupScreen.tsx:60
-#: src/screens/GroupScreen.tsx:188
+#: src/screens/GroupScreen.tsx:59
+#: src/screens/GroupScreen.tsx:62
+#: src/screens/GroupScreen.tsx:204
 msgid "Someone"
 msgstr "Someone"
 
-#: src/screens/JoinScreen.tsx:223
+#: src/screens/JoinScreen.tsx:246
 msgid "Someone else"
 msgstr "Someone else"
 
 #: src/lib/ledgerText.ts:24
 msgid "Someone in this expense isn’t in the group"
 msgstr "Someone in this expense isn’t in the group"
+
+#: src/screens/JoinScreen.tsx:201
+msgid "Someone wants to add you as a friend"
+msgstr "Someone wants to add you as a friend"
 
 #: src/components/ErrorBoundary.tsx:29
 msgid "Something in it didn’t look right. Your groups and keys are safe on this phone."
@@ -1973,7 +2072,7 @@ msgstr "Something in it didn’t look right. Your groups and keys are safe on th
 msgid "Split"
 msgstr "Split"
 
-#: src/screens/HomeScreen.tsx:51
+#: src/screens/HomeScreen.tsx:53
 msgid "Split anything with anyone"
 msgstr "Split anything with anyone"
 
@@ -1986,20 +2085,24 @@ msgstr "Split method"
 msgid "Split the rest with {0}"
 msgstr "Split the rest with {0}"
 
-#: src/screens/GroupScreen.tsx:72
+#: src/screens/FriendsScreen.tsx:30
+msgid "Split with a friend, no group needed"
+msgstr "Split with a friend, no group needed"
+
+#: src/screens/GroupScreen.tsx:82
 msgid "Splitting with friends?"
 msgstr "Splitting with friends?"
 
-#: src/screens/HomeScreen.tsx:57
+#: src/screens/HomeScreen.tsx:59
 msgid "Start a group"
 msgstr "Start a group"
 
-#: src/screens/HomeScreen.tsx:53
+#: src/screens/HomeScreen.tsx:55
 msgid "Start a group for a trip, a flat or a dinner, then invite the others from their own phones."
 msgstr "Start a group for a trip, a flat or a dinner, then invite the others from their own phones."
 
 #: src/screens/MoveScreen.tsx:216
-#: src/screens/RecoverScreen.tsx:226
+#: src/screens/RecoverScreen.tsx:227
 msgid "Start again"
 msgstr "Start again"
 
@@ -2023,7 +2126,7 @@ msgstr "Stop getting paid at {0}? Your groups will stop using it."
 msgid "Stop paying with {0}? You can connect it again any time."
 msgstr "Stop paying with {0}? You can connect it again any time."
 
-#: src/screens/RecoverScreen.tsx:129
+#: src/screens/RecoverScreen.tsx:130
 msgid "Stopped. Nothing changed, and the phone that used the code got nothing."
 msgstr "Stopped. Nothing changed, and the phone that used the code got nothing."
 
@@ -2031,7 +2134,7 @@ msgstr "Stopped. Nothing changed, and the phone that used the code got nothing."
 msgid "Stopped. Nothing was moved. If a phone you don’t know scanned the code, that’s fine: it got nothing."
 msgstr "Stopped. Nothing was moved. If a phone you don’t know scanned the code, that’s fine: it got nothing."
 
-#: src/components/BitcoinPay.tsx:479
+#: src/components/BitcoinPay.tsx:480
 msgid "Straight from your wallet to {name}’s, at today’s price. The payment is checked automatically and recorded in {currency}."
 msgstr "Straight from your wallet to {name}’s, at today’s price. The payment is checked automatically and recorded in {currency}."
 
@@ -2063,11 +2166,11 @@ msgstr "Tap <0>Submit</0>, then <1>Copy NWC</1>."
 msgid "Tap again to delete"
 msgstr "Tap again to delete"
 
-#: src/screens/MemberScreen.tsx:98
+#: src/screens/MemberScreen.tsx:99
 msgid "Tap again to leave"
 msgstr "Tap again to leave"
 
-#: src/screens/PersonScreen.tsx:110
+#: src/screens/PersonScreen.tsx:111
 msgid "Tap again to remove {who}"
 msgstr "Tap again to remove {who}"
 
@@ -2183,7 +2286,7 @@ msgstr "The invoice doesn’t match their Lightning address. Nothing was paid."
 msgid "The invoice had already expired. Try again."
 msgstr "The invoice had already expired. Try again."
 
-#: src/screens/RecoverScreen.tsx:157
+#: src/screens/RecoverScreen.tsx:158
 msgid "The lost phone stops working in {groupName}, and can’t read anything new. Everyone in the group sees that you vouched. Do it only when you’re sure it’s really {who}."
 msgstr "The lost phone stops working in {groupName}, and can’t read anything new. Everyone in the group sees that you vouched. Do it only when you’re sure it’s really {who}."
 
@@ -2200,7 +2303,7 @@ msgid "The name’s records aren’t signed (DNSSEC), so Waroo can’t trust the
 msgstr "The name’s records aren’t signed (DNSSEC), so Waroo can’t trust them."
 
 #: src/screens/MoveScreen.tsx:62
-#: src/screens/RecoverScreen.tsx:70
+#: src/screens/RecoverScreen.tsx:71
 msgid "The new phone needs updating first. Open Waroo on it again, then start over."
 msgstr "The new phone needs updating first. Open Waroo on it again, then start over."
 
@@ -2208,7 +2311,7 @@ msgstr "The new phone needs updating first. Open Waroo on it again, then start o
 msgid "The new phone’s key didn’t look right. Start again."
 msgstr "The new phone’s key didn’t look right. Start again."
 
-#: src/components/BitcoinPay.tsx:170
+#: src/components/BitcoinPay.tsx:171
 msgid "the payment didn’t go through"
 msgstr "the payment didn’t go through"
 
@@ -2226,7 +2329,7 @@ msgstr "the payment failed{tech}"
 msgid "the phone helping you"
 msgstr "the phone helping you"
 
-#: src/lib/news.ts:127
+#: src/lib/news.ts:134
 msgid "Their expenses stay in the group"
 msgstr "Their expenses stay in the group"
 
@@ -2271,19 +2374,19 @@ msgstr "Their Lightning address takes at most {0} sats at once."
 msgid "There’s nothing on this phone to move yet: no groups and no wallets."
 msgstr "There’s nothing on this phone to move yet: no groups and no wallets."
 
-#: src/sw.ts:100
+#: src/sw.ts:101
 msgid "There’s something new in one of your groups."
 msgstr "There’s something new in one of your groups."
 
-#: src/lib/news.ts:109
+#: src/lib/news.ts:116
 msgid "They can see the group and add expenses now"
 msgstr "They can see the group and add expenses now"
 
-#: src/screens/RecoverScreen.tsx:153
+#: src/screens/RecoverScreen.tsx:154
 msgid "They tap the scan button and scan the code this phone will show. Not together? Send them the link instead."
 msgstr "They tap the scan button and scan the code this phone will show. Not together? Send them the link instead."
 
-#: src/lib/news.ts:132
+#: src/lib/news.ts:139
 msgid "They were all square"
 msgstr "They were all square"
 
@@ -2303,11 +2406,15 @@ msgstr "This code isn’t complete"
 msgid "This expense was deleted."
 msgstr "This expense was deleted."
 
+#: src/screens/JoinScreen.tsx:204
+msgid "This friend code has been used already. Ask for a new one."
+msgstr "This friend code has been used already. Ask for a new one."
+
 #: src/components/FeedbackCard.tsx:189
 msgid "This goes by email to the people making Waroo, and isn’t end-to-end encrypted like your groups, so leave out anything private. We get only what you write and attach here, plus the app version, your language and your phone and browser type, to help fix bugs. Nothing from your groups or wallets is included. Your email is only used to reply and, if you ask, for news, which you can stop any time."
 msgstr "This goes by email to the people making Waroo, and isn’t end-to-end encrypted like your groups, so leave out anything private. We get only what you write and attach here, plus the app version, your language and your phone and browser type, to help fix bugs. Nothing from your groups or wallets is included. Your email is only used to reply and, if you ask, for news, which you can stop any time."
 
-#: src/screens/GroupScreen.tsx:39
+#: src/screens/GroupScreen.tsx:40
 msgid "This group isn’t on this device."
 msgstr "This group isn’t on this device."
 
@@ -2319,15 +2426,15 @@ msgstr "This group isn’t shared yet."
 msgid "This group isn’t shared, so there’s no phone to remove."
 msgstr "This group isn’t shared, so there’s no phone to remove."
 
-#: src/screens/JoinScreen.tsx:112
+#: src/screens/JoinScreen.tsx:113
 msgid "This invite doesn’t lead to a group. Ask for a new link."
 msgstr "This invite doesn’t lead to a group. Ask for a new link."
 
-#: src/screens/JoinScreen.tsx:58
+#: src/screens/JoinScreen.tsx:59
 msgid "This invite doesn’t work any more"
 msgstr "This invite doesn’t work any more"
 
-#: src/screens/JoinScreen.tsx:119
+#: src/screens/JoinScreen.tsx:120
 msgid "This invite is out of date: the group has changed since it was made. Ask for a new link."
 msgstr "This invite is out of date: the group has changed since it was made. Ask for a new link."
 
@@ -2343,7 +2450,7 @@ msgstr "This invite link has already been used."
 msgid "This invite link has expired."
 msgstr "This invite link has expired."
 
-#: src/screens/JoinScreen.tsx:35
+#: src/screens/JoinScreen.tsx:36
 msgid "This invite link is out of date"
 msgstr "This invite link is out of date"
 
@@ -2351,16 +2458,16 @@ msgstr "This invite link is out of date"
 msgid "This invite link was turned off."
 msgstr "This invite link was turned off."
 
-#: src/components/BitcoinPay.tsx:404
+#: src/components/BitcoinPay.tsx:405
 msgid "This is a BOLT12 offer. Your wallet needs to support BOLT12 to pay it."
 msgstr "This is a BOLT12 offer. Your wallet needs to support BOLT12 to pay it."
 
-#: src/screens/JoinScreen.tsx:49
-#: src/screens/JoinScreen.tsx:139
+#: src/screens/JoinScreen.tsx:50
+#: src/screens/JoinScreen.tsx:140
 msgid "This link isn’t complete"
 msgstr "This link isn’t complete"
 
-#: src/screens/JoinScreen.tsx:104
+#: src/screens/JoinScreen.tsx:105
 msgid "This phone already has a different group under this invite’s name. Ask for a new link."
 msgstr "This phone already has a different group under this invite’s name. Ask for a new link."
 
@@ -2368,7 +2475,7 @@ msgstr "This phone already has a different group under this invite’s name. Ask
 msgid "This phone gets a notification when someone pays you, joins a group or adds an expense, even when Waroo is closed."
 msgstr "This phone gets a notification when someone pays you, joins a group or adds an expense, even when Waroo is closed."
 
-#: src/lib/news.ts:124
+#: src/lib/news.ts:131
 msgid "This phone won’t get anything new from the group"
 msgstr "This phone won’t get anything new from the group"
 
@@ -2380,7 +2487,7 @@ msgstr "This screen couldn’t be shown"
 msgid "this would go over the spending limit you set for Waroo"
 msgstr "this would go over the spending limit you set for Waroo"
 
-#: src/components/BitcoinPay.tsx:315
+#: src/components/BitcoinPay.tsx:316
 msgid "Tip: <0>set up one-tap payments</0>, so you don’t have to switch apps."
 msgstr "Tip: <0>set up one-tap payments</0>, so you don’t have to switch apps."
 
@@ -2397,11 +2504,11 @@ msgid "Too many messages for now. Try again in a minute."
 msgstr "Too many messages for now. Try again in a minute."
 
 #. placeholder {0}: label(next)
-#: src/components/BitcoinPay.tsx:383
+#: src/components/BitcoinPay.tsx:384
 msgid "Try {0}"
 msgstr "Try {0}"
 
-#: src/screens/InviteScreen.tsx:210
+#: src/screens/InviteScreen.tsx:211
 msgid "Turn off"
 msgstr "Turn off"
 
@@ -2410,7 +2517,7 @@ msgid "Turn off notifications"
 msgstr "Turn off notifications"
 
 #. placeholder {0}: describe(i)
-#: src/screens/InviteScreen.tsx:209
+#: src/screens/InviteScreen.tsx:210
 msgid "Turn off: {0}"
 msgstr "Turn off: {0}"
 
@@ -2422,7 +2529,7 @@ msgstr "Turn on"
 msgid "Turn on notifications"
 msgstr "Turn on notifications"
 
-#: src/screens/InviteScreen.tsx:50
+#: src/screens/InviteScreen.tsx:51
 msgid "Turned off"
 msgstr "Turned off"
 
@@ -2434,15 +2541,15 @@ msgstr "Up to date · {who}"
 msgid "Use my browser wallet"
 msgstr "Use my browser wallet"
 
-#: src/screens/InviteScreen.tsx:46
+#: src/screens/InviteScreen.tsx:47
 msgid "Used"
 msgstr "Used"
 
-#: src/screens/RecoverScreen.tsx:147
+#: src/screens/RecoverScreen.tsx:148
 msgid "Vouch for {who}’s new phone, so they’re back in {groupName} as themselves."
 msgstr "Vouch for {who}’s new phone, so they’re back in {groupName} as themselves."
 
-#: src/screens/PersonScreen.tsx:90
+#: src/screens/PersonScreen.tsx:91
 msgid "Vouch for {who}’s new phone, so they’re back in as themselves. The lost phone stops working in this group."
 msgstr "Vouch for {who}’s new phone, so they’re back in as themselves. The lost phone stops working in this group."
 
@@ -2450,7 +2557,7 @@ msgstr "Vouch for {who}’s new phone, so they’re back in as themselves. The l
 msgid "Waiting for {other}…"
 msgstr "Waiting for {other}…"
 
-#: src/screens/RecoverScreen.tsx:181
+#: src/screens/RecoverScreen.tsx:182
 msgid "Waiting for {who}’s new phone…"
 msgstr "Waiting for {who}’s new phone…"
 
@@ -2458,9 +2565,13 @@ msgstr "Waiting for {who}’s new phone…"
 msgid "Waiting for the new phone…"
 msgstr "Waiting for the new phone…"
 
-#: src/components/BitcoinPay.tsx:271
+#: src/components/BitcoinPay.tsx:272
 msgid "Waiting for the payment… This updates by itself once it goes through."
 msgstr "Waiting for the payment… This updates by itself once it goes through."
+
+#: src/screens/FriendsScreen.tsx:75
+msgid "Waiting for your friend to scan it"
+msgstr "Waiting for your friend to scan it"
 
 #: src/screens/YouScreen.tsx:21
 msgid "Wallet"
@@ -2483,7 +2594,7 @@ msgstr "Wallets"
 msgid "Wallets for sending or receiving"
 msgstr "Wallets for sending or receiving"
 
-#: src/components/BitcoinPay.tsx:448
+#: src/components/BitcoinPay.tsx:449
 msgid "Waroo can’t see payments to an offer. Once you’ve paid, mark it here."
 msgstr "Waroo can’t see payments to an offer. Once you’ve paid, mark it here."
 
@@ -2548,7 +2659,7 @@ msgstr "What would you like?"
 msgid "What you did, what you expected, and what happened instead."
 msgstr "What you did, what you expected, and what happened instead."
 
-#: src/screens/GroupScreen.tsx:410
+#: src/screens/GroupScreen.tsx:426
 msgid "When someone pays someone back, in bitcoin, cash or otherwise, it shows up here."
 msgstr "When someone pays someone back, in bitcoin, cash or otherwise, it shows up here."
 
@@ -2557,10 +2668,14 @@ msgid "When you pay, Waroo asks these in order. If one can’t pay, you’ll see
 msgstr "When you pay, Waroo asks these in order. If one can’t pay, you’ll see why and choose whether to try the next. You can always pay by opening your wallet app instead."
 
 #: src/screens/PickGroupScreen.tsx:20
-msgid "Which group is it for?"
-msgstr "Which group is it for?"
+#~ msgid "Which group is it for?"
+#~ msgstr "Which group is it for?"
 
-#: src/screens/JoinScreen.tsx:202
+#: src/screens/PickGroupScreen.tsx:20
+msgid "Which group or friend is it for?"
+msgstr "Which group or friend is it for?"
+
+#: src/screens/JoinScreen.tsx:225
 msgid "Which one are you?"
 msgstr "Which one are you?"
 
@@ -2572,8 +2687,8 @@ msgstr "Who else?"
 msgid "Who had item {n}"
 msgstr "Who had item {n}"
 
-#: src/screens/InviteScreen.tsx:149
 #: src/screens/InviteScreen.tsx:150
+#: src/screens/InviteScreen.tsx:151
 msgid "Who it’s for"
 msgstr "Who it’s for"
 
@@ -2585,7 +2700,7 @@ msgstr "Who paid"
 msgid "Who paid how much"
 msgstr "Who paid how much"
 
-#: src/screens/InviteScreen.tsx:194
+#: src/screens/InviteScreen.tsx:195
 msgid "Whoever opens the link while it works can join and see the group’s expenses. Nobody else can read them, not even Waroo."
 msgstr "Whoever opens the link while it works can join and see the group’s expenses. Nobody else can read them, not even Waroo."
 
@@ -2593,20 +2708,20 @@ msgstr "Whoever opens the link while it works can join and see the group’s exp
 msgid "Without this, paying opens Coinos so you can approve it there. To pay without switching apps:"
 msgstr "Without this, paying opens Coinos so you can approve it there. To pay without switching apps:"
 
-#: src/screens/InviteScreen.tsx:44
+#: src/screens/InviteScreen.tsx:45
 msgid "Works"
 msgstr "Works"
 
-#: src/screens/InviteScreen.tsx:153
 #: src/screens/InviteScreen.tsx:154
+#: src/screens/InviteScreen.tsx:155
 msgid "Works for"
 msgstr "Works for"
 
-#: src/components/BitcoinPay.tsx:298
+#: src/components/BitcoinPay.tsx:299
 msgid "yen"
 msgstr "yen"
 
-#: src/screens/RecoverScreen.tsx:194
+#: src/screens/RecoverScreen.tsx:195
 msgid "Yes, it’s {who}"
 msgstr "Yes, it’s {who}"
 
@@ -2618,9 +2733,13 @@ msgstr "Yes, move my groups"
 msgid "Yesterday"
 msgstr "Yesterday"
 
-#: src/screens/GroupScreen.tsx:188
+#: src/screens/GroupScreen.tsx:204
 msgid "You"
 msgstr "You"
+
+#: src/screens/GroupScreen.tsx:178
+msgid "You and {name} are friends on Waroo now"
+msgstr "You and {name} are friends on Waroo now"
 
 #: src/screens/NewGroupScreen.tsx:54
 msgid "You can add more people later."
@@ -2630,20 +2749,24 @@ msgstr "You can add more people later."
 msgid "You can change this later in Settings."
 msgstr "You can change this later in Settings."
 
-#: src/screens/MemberScreen.tsx:113
+#: src/screens/MemberScreen.tsx:114
 msgid "You can leave once you’re all square. Right now you {what}."
 msgstr "You can leave once you’re all square. Right now you {what}."
 
-#: src/screens/GroupScreen.tsx:254
+#: src/lib/news.ts:114
+msgid "You can split costs with each other now"
+msgstr "You can split costs with each other now"
+
+#: src/screens/GroupScreen.tsx:270
 msgid "You get back"
 msgstr "You get back"
 
 #. placeholder {0}: money(amount, currency)
-#: src/screens/HomeScreen.tsx:34
+#: src/screens/HomeScreen.tsx:35
 msgid "You get back {0}"
 msgstr "You get back {0}"
 
-#: src/screens/GroupScreen.tsx:256
+#: src/screens/GroupScreen.tsx:272
 msgid "You get back from {from}"
 msgstr "You get back from {from}"
 
@@ -2651,40 +2774,52 @@ msgstr "You get back from {from}"
 msgid "You get notified when friends add expenses or pay you."
 msgstr "You get notified when friends add expenses or pay you."
 
-#: src/screens/MemberScreen.tsx:72
+#: src/screens/MemberScreen.tsx:73
 msgid "You in this group"
 msgstr "You in this group"
 
-#: src/screens/GroupScreen.tsx:165
+#: src/screens/GroupScreen.tsx:180
 msgid "You joined {name} as {myName}"
 msgstr "You joined {name} as {myName}"
 
-#: src/screens/GroupScreen.tsx:252
+#: src/screens/GroupScreen.tsx:268
 msgid "You owe"
 msgstr "You owe"
 
 #. placeholder {0}: money(-amount, currency)
-#: src/screens/HomeScreen.tsx:34
+#: src/screens/HomeScreen.tsx:35
 msgid "You owe {0}"
 msgstr "You owe {0}"
 
-#: src/screens/GroupScreen.tsx:252
+#: src/screens/FriendsScreen.tsx:84
+msgid "You owe {sum}"
+msgstr "You owe {sum}"
+
+#: src/screens/GroupScreen.tsx:268
 msgid "You owe {to}"
 msgstr "You owe {to}"
 
-#: src/screens/GroupScreen.tsx:461
+#: src/screens/GroupScreen.tsx:477
 msgid "You paid {payee}"
 msgstr "You paid {payee}"
 
-#: src/components/BitcoinPay.tsx:232
+#: src/components/BitcoinPay.tsx:233
 msgid "You pay"
 msgstr "You pay"
 
-#: src/screens/JoinScreen.tsx:238
+#: src/screens/JoinScreen.tsx:207
+msgid "You’ll be able to split costs with each other and settle up, without making a group."
+msgstr "You’ll be able to split costs with each other and settle up, without making a group."
+
+#: src/screens/FriendsScreen.tsx:121
+msgid "You’ll get a code for your friend to scan with Waroo, or a link to send them."
+msgstr "You’ll get a code for your friend to scan with Waroo, or a link to send them."
+
+#: src/screens/JoinScreen.tsx:261
 msgid "You’ll see the group’s expenses once you join. No account or sign-up needed."
 msgstr "You’ll see the group’s expenses once you join. No account or sign-up needed."
 
-#: src/screens/GroupScreen.tsx:264
+#: src/screens/GroupScreen.tsx:280
 msgid "You’re all square"
 msgstr "You’re all square"
 
@@ -2696,7 +2831,7 @@ msgstr "You’re in an app’s own browser, which can’t add apps to your Home 
 msgid "You’re in LINE’s browser, which can’t add apps to your Home Screen."
 msgstr "You’re in LINE’s browser, which can’t add apps to your Home Screen."
 
-#: src/screens/JoinScreen.tsx:198
+#: src/screens/JoinScreen.tsx:221
 msgid "You’re invited to"
 msgstr "You’re invited to"
 
@@ -2708,7 +2843,7 @@ msgstr "You’re on the list for news about Waroo."
 msgid "You’re the only one in this group, so you can delete it."
 msgstr "You’re the only one in this group, so you can delete it."
 
-#: src/screens/GroupScreen.tsx:261
+#: src/screens/GroupScreen.tsx:277
 msgid "Your balance"
 msgstr "Your balance"
 
@@ -2724,6 +2859,10 @@ msgstr "Your device"
 msgid "Your email (optional)"
 msgstr "Your email (optional)"
 
+#: src/screens/GroupScreen.tsx:74
+msgid "Your friend hasn’t joined yet"
+msgstr "Your friend hasn’t joined yet"
+
 #: src/screens/MoveScreen.tsx:147
 msgid "Your groups and wallets move to the new phone, and leave this one."
 msgstr "Your groups and wallets move to the new phone, and leave this one."
@@ -2736,7 +2875,7 @@ msgstr "Your groups are end-to-end encrypted: our server passes them along but c
 msgid "Your groups stay put: browsers can clear the data of sites you haven’t opened for a while."
 msgstr "Your groups stay put: browsers can clear the data of sites you haven’t opened for a while."
 
-#: src/screens/InviteScreen.tsx:200
+#: src/screens/InviteScreen.tsx:201
 msgid "Your invite links"
 msgstr "Your invite links"
 
@@ -2748,17 +2887,29 @@ msgstr "Your Lightning addresses and wallet connections come along, in the same 
 msgid "Your message"
 msgstr "Your message"
 
-#: src/screens/JoinScreen.tsx:231
-#: src/screens/MemberScreen.tsx:75
+#: src/screens/JoinScreen.tsx:254
+#: src/screens/MemberScreen.tsx:76
 #: src/screens/NewGroupScreen.tsx:35
 msgid "Your name"
 msgstr "Your name"
+
+#: src/screens/JoinScreen.tsx:209
+msgid "Your name, as they know you"
+msgstr "Your name, as they know you"
+
+#: src/screens/FriendsScreen.tsx:123
+msgid "Your name, as your friend knows you"
+msgstr "Your name, as your friend knows you"
 
 #: src/screens/MoveInScreen.tsx:22
 msgid "your other phone"
 msgstr "your other phone"
 
-#: src/lib/news.ts:154
+#: src/lib/news.ts:161
+msgid "Your share is {share}"
+msgstr "Your share is {share}"
+
+#: src/lib/news.ts:161
 msgid "Your share is {share}, in {group}"
 msgstr "Your share is {share}, in {group}"
 
@@ -2774,7 +2925,7 @@ msgstr "Your wallet connection was on the lost phone: connect your wallet again 
 msgid "Your wallet didn’t answer. Check it’s online and the connection allows payments."
 msgstr "Your wallet didn’t answer. Check it’s online and the connection allows payments."
 
-#: src/components/BitcoinPay.tsx:179
+#: src/components/BitcoinPay.tsx:180
 msgid "Your wallet reported the payment, but its proof didn’t check out."
 msgstr "Your wallet reported the payment, but its proof didn’t check out."
 

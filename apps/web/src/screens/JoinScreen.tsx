@@ -168,6 +168,7 @@ function JoinGroup({ groupId, groupKey: key, from, pins }: { groupId: string; gr
       shared: true,
       cursor: loaded.cursor,
       pins: { ...firstKeys(loaded.received.map((r) => r.event), loaded.state), ...pins },
+      ...(loaded.state.kind === 'friends' ? { friend: true } : {}),
     }
     await saveJoinedGroup(group, loaded.received)
     await append(group, [
@@ -193,6 +194,27 @@ function JoinGroup({ groupId, groupKey: key, from, pins }: { groupId: string; gr
         </section>
       ) : !state ? (
         <p className="muted" role="status">{t`Opening the group…`}</p>
+      ) : state.kind === 'friends' ? (
+        <form className="form" onSubmit={join}>
+          <div className="join-title">
+            <p className="muted">{t`Friend request`}</p>
+            <h1>{inviter ? t`${inviter} wants to add you as a friend` : t`Someone wants to add you as a friend`}</h1>
+          </div>
+          {[...state.members.values()].filter((m) => !m.left).length >= 2 ? (
+            <p className="notice">{t`This friend code has been used already. Ask for a new one.`}</p>
+          ) : (
+            <>
+              <p className="muted">{t`You’ll be able to split costs with each other and settle up, without making a group.`}</p>
+              <label className="field">
+                <span>{t`Your name, as they know you`}</span>
+                <input value={newName} onChange={(e) => setNewName(e.target.value)} autoComplete="given-name" maxLength={80} />
+              </label>
+              <button className="button primary" disabled={!canJoin}>
+                {inviter ? t`Add ${inviter} as a friend` : t`Add as a friend`}
+              </button>
+            </>
+          )}
+        </form>
       ) : (
         <form className="form" onSubmit={join}>
           <div className="join-title">

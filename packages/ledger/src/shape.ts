@@ -157,7 +157,7 @@ export function shapeProblem(e: unknown): string | undefined {
         ? undefined
         : 'Bad key hand-off'
     case 'group.updated':
-      return optional(ev.name, (n) => typeof n === 'string') && optional(ev.currency, (c) => typeof c === 'string')
+      return optional(ev.name, (n) => typeof n === 'string') && optional(ev.currency, (c) => typeof c === 'string') && optional(ev.kind, (k) => typeof k === 'string')
         ? undefined
         : 'Bad group update'
     case 'expense.saved':

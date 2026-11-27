@@ -17,6 +17,7 @@ import { groupTabs, TabBar } from '../components/TabBar.tsx'
 import { Pager } from '../components/Pager.tsx'
 import { deleteGroupLocally, type GroupMeta } from '../lib/db.ts'
 import { formatDate, money, politeName, satsText } from '../lib/format.ts'
+import { groupTitle } from '../lib/title.ts'
 import { methodName } from './ActivityScreen.tsx'
 import { go, locale, useGroup } from '../lib/hooks.ts'
 import { syncHub } from '../lib/sync.ts'
@@ -44,7 +45,8 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
   const base = `/g/${groupId}`
   const tabs = groupTabs(groupId)
   const currentTab = tab === 'balances' ? base : `${base}/${tab}`
-  const name = state.name ?? meta.name
+  const name = groupTitle(state, meta)
+  const friendship = state.kind === 'friends'
   const myself = state.members.get(meta.meId)
   // Set when someone removed this phone: their name, or null if they're unknown.
   const removedBy =
@@ -67,7 +69,15 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
       path: base,
       content: (
         <div className="screen with-tabbar page-body">
-          {alone && (
+          {alone && friendship && (
+            <section className="invite-card">
+              <h2>{t`Your friend hasn’t joined yet`}</h2>
+              <a className="button primary" href={`#/friends/add?g=${groupId}`}>
+                {t`Show the friend code`}
+              </a>
+            </section>
+          )}
+          {alone && !friendship && (
             <section className="invite-card">
               <h2>{notJoined.length > 0 ? cantSeeYet(notJoined.map((m) => m.name)) : t`Splitting with friends?`}</h2>
               <p>{t`Invite them, and everyone can add expenses and settle up from their own phone.`}</p>
@@ -106,7 +116,7 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
       <div className="screen shell-top">
         <Header
           title={
-            cutOff ? (
+            cutOff || friendship ? (
               name
             ) : (
               <a className="title-link" href={`#${base}/edit`} aria-label={t`${name}: group settings`}>
@@ -117,11 +127,13 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
               </a>
             )
           }
-          back="/"
+          back={friendship ? '/friends' : '/'}
           action={
-            <a className="button small" href={`#${base}/invite`}>
-              {t`Invite`}
-            </a>
+            friendship ? undefined : (
+              <a className="button small" href={`#${base}/invite`}>
+                {t`Invite`}
+              </a>
+            )
           }
         />
         <SyncLine groupId={groupId} state={state} meId={meta.meId} />
@@ -162,9 +174,13 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
       <Pager pages={pages} current={currentTab} />
       {toast && (
         <div className="toast" role="status">
-          <Trans>
-            You joined {name} as {myName}
-          </Trans>
+          {friendship ? (
+            <Trans>You and {name} are friends on Waroo now</Trans>
+          ) : (
+            <Trans>
+              You joined {name} as {myName}
+            </Trans>
+          )}
         </div>
       )}
       {cutOff ? null : tab === 'payments' ? (

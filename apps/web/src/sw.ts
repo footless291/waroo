@@ -19,6 +19,7 @@ import { messages as en } from './locales/en.po'
 import { messages as ja } from './locales/ja.po'
 import { describeEvent, severalNews, type News } from './lib/news.ts'
 import { openItems, relayHttpUrl } from './lib/sync.ts'
+import { groupTitle } from './lib/title.ts'
 
 declare const self: ServiceWorkerGlobalScope
 
@@ -80,7 +81,7 @@ async function onPush() {
         const fresh = await catchUp(group)
         if (fresh.length === 0) continue
         const state = await replayGroup(group.id)
-        const name = state.name ?? group.name
+        const name = groupTitle(state, group)
         const news = fresh
           .map((e) => describeEvent(e, state, group.meId, name, e.author === group.meId))
           .filter((n): n is News => n !== null)

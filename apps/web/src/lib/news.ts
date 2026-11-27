@@ -65,7 +65,9 @@ export function describeEvent(
 ): News | null {
   const name = (id: string) => state.members.get(id)?.name ?? t`Someone`
   const group = groupName
-  const inGroup = t`In ${group}`
+  // A friendship is named after the friend, so "in Ana" would read oddly: leave it out.
+  const friendship = state.kind === 'friends'
+  const inGroup = friendship ? '' : t`In ${group}`
   // Only what the group actually accepted is news: an event replay threw out
   // (wrong key, not a member, a forgery) says nothing about anyone.
   if (state.rejected.some((r) => r.eventId === event.id)) return null
@@ -76,7 +78,9 @@ export function describeEvent(
     const sats = s.bitcoin ? satsText(s.bitcoin.sats) : ''
     const detail = !s.bitcoin
       ? inGroup
-      : t`${sats} over Lightning, in ${group}`
+      : friendship
+        ? t`${sats} over Lightning`
+        : t`${sats} over Lightning, in ${group}`
     const base = { id: s.id }
     const from = name(s.from)
     const to = name(s.to)
@@ -106,6 +110,9 @@ export function describeEvent(
 
   if (isNotable(event) && (event.type === 'member.added' || event.type === 'member.claimed')) {
     const who = name(event.type === 'member.added' ? event.member.id : event.memberId)
+    if (friendship) {
+      return { id: event.id, kind: 'joined', title: t`${who} accepted your friend request`, detail: t`You can split costs with each other now` }
+    }
     return { id: event.id, kind: 'joined', title: t`${who} joined ${group}`, detail: t`They can see the group and add expenses now` }
   }
 
@@ -151,7 +158,7 @@ export function describeEvent(
       id: event.id,
       kind: 'expense',
       title: t`${who} added ${title}, ${total}`,
-      detail: myShare ? t`Your share is ${share}, in ${group}` : inGroup,
+      detail: myShare ? (friendship ? t`Your share is ${share}` : t`Your share is ${share}, in ${group}`) : inGroup,
     }
   }
   return null

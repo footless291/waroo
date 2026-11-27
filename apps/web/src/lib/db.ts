@@ -45,6 +45,8 @@ export interface GroupMeta {
    * Invites and moves to a new phone carry these along.
    */
   pins?: Record<PersonId, string>
+  /** A friendship (two people), shown under Friends. Mirrors the log's `group.updated.kind`. */
+  friend?: boolean
 }
 
 /** An event payload before the store stamps id, author, clock and time on it. */
@@ -199,6 +201,13 @@ export async function replayGroup(groupId: string, events?: LedgerEvent[]): Prom
   const log = events ?? (await getEvents(groupId))
   const group = await getGroup(groupId)
   const state = replay(log, { pins: group?.pins })
+  if (group && (state.kind === 'friends') !== !!group.friend) {
+    const tx = (await db()).transaction('groups', 'readwrite')
+    const fresh = await tx.store.get(groupId)
+    if (fresh) await tx.store.put({ ...fresh, friend: state.kind === 'friends' })
+    await tx.done
+    notify()
+  }
   if (group?.shared) {
     const learned = firstKeys(log, state)
     const pins = { ...learned, ...group.pins }
@@ -319,6 +328,39 @@ export async function createGroup(input: {
   ])
   await publishProfile(group.id)
   return group
+}
+
+/** Starts a friendship: a group of one, waiting for the friend to join with a one-person invite. */
+export async function createFriend(input: { myName: string; currency: CurrencyCode }): Promise<GroupMeta> {
+  const { keys, publicKey } = await newSigningKeys()
+  const group: GroupMeta = {
+    id: newId(),
+    name: input.myName,
+    currency: input.currency,
+    meId: newId(),
+    createdAt: new Date().toISOString(),
+    key: newGroupKey(),
+    signing: keys,
+    publicKey,
+    shared: false,
+    friend: true,
+  }
+  await (await db()).put('groups', group)
+  await append(group, [
+    { type: 'member.added', member: { id: group.meId, name: input.myName, key: publicKey } },
+    { type: 'group.updated', name: input.myName, currency: input.currency, kind: 'friends' },
+  ])
+  await publishProfile(group.id)
+  return group
+}
+
+/** The name this person used last, to fill in next time. */
+export async function myLastName(): Promise<string> {
+  for (const group of await listGroups()) {
+    const name = (await replayGroup(group.id)).members.get(group.meId)?.name
+    if (name) return name
+  }
+  return ''
 }
 
 /**

@@ -16,6 +16,7 @@ import {
   type SavedInvite,
 } from '../lib/invites.ts'
 import { syncHub } from '../lib/sync.ts'
+import { groupTitle } from '../lib/title.ts'
 
 type Who = 'many' | 'one'
 type Days = '1' | '7' | '30'
@@ -86,7 +87,7 @@ export function InviteScreen({ groupId }: { groupId: string }) {
     go('/')
     return null
   }
-  const name = group?.state.name ?? group?.meta.name ?? ''
+  const name = group ? groupTitle(group.state, group.meta) : ''
   const link = current ? inviteLinkFor(current.secret) : ''
   const joined = group ? [...group.state.members.values()].filter((m) => m.key && !m.left) : []
   const canShare = typeof navigator.share === 'function'

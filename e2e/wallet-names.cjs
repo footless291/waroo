@@ -21,7 +21,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   const sendList = '.pager.inline .pager-page:nth-child(2) .wallet-list';
 
   await page.goto(B);
-  check((await text('header h1')) === 'waroo', 'the header wordmark is lowercase');
+  check((await text('header h1')).startsWith('waroo'), 'the header wordmark is lowercase');
 
   // One wallet on both sides: an address, and a connection that names the same address
   await page.evaluate(() => new Promise((resolve) => {

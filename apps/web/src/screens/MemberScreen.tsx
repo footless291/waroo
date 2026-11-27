@@ -4,6 +4,7 @@ import { useState, type FormEvent } from 'react'
 import { Header } from '../components/Header.tsx'
 import { append, deleteGroupLocally, pendingEvents } from '../lib/db.ts'
 import { money } from '../lib/format.ts'
+import { groupTitle } from '../lib/title.ts'
 import { go, locale, useGroup } from '../lib/hooks.ts'
 import { syncHub } from '../lib/sync.ts'
 
@@ -24,7 +25,7 @@ export function MemberScreen({ groupId }: { groupId: string }) {
   const me = state.members.get(meta.meId)
   const savedName = me?.name ?? ''
   const shownName = name ?? savedName
-  const groupName = state.name ?? meta.name
+  const groupName = groupTitle(state, meta)
 
   // What this person still owes or is owed, in every currency.
   const open = [...groupBalances(state)].flatMap(([currency, byPerson]) => {

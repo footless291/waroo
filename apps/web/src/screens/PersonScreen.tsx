@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { Avatar } from '../components/Avatar.tsx'
 import { Header } from '../components/Header.tsx'
 import { money } from '../lib/format.ts'
+import { groupTitle } from '../lib/title.ts'
 import { go, useGroup } from '../lib/hooks.ts'
 import { removeMember } from '../lib/rekey.ts'
 
@@ -26,7 +27,7 @@ export function PersonScreen({ groupId, memberId }: { groupId: string; memberId:
     go(`/g/${groupId}`)
     return null
   }
-  const groupName = state.name ?? meta.name
+  const groupName = groupTitle(state, meta)
   const me = state.members.get(meta.meId)
   const canRemove = state.signed && person.key !== undefined && !person.left && me?.key !== undefined
   // Anyone who's joined on a phone (or was removed) can be vouched back in.

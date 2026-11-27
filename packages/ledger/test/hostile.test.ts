@@ -75,6 +75,18 @@ describe('hostile events', () => {
     assert.equal(replay([...base(), carol, real, voided]).settlements.size, 1)
   })
 
+  it('a friendship stays between two people', () => {
+    const events = [
+      ev('ana', 1, 'KA', { type: 'member.added', member: { id: 'ana', name: 'Ana', key: 'KA' } }),
+      ev('ana', 2, 'KA', { type: 'group.updated', name: 'Ana', currency: 'JPY', kind: 'friends' }),
+      ev('bob', 3, 'KB', { type: 'member.added', member: { id: 'bob', name: 'Bob', key: 'KB' } }),
+      ev('cai', 4, 'KC', { type: 'member.added', member: { id: 'cai', name: 'Cai', key: 'KC' } }),
+    ]
+    const state = replay(events)
+    assert.equal(state.kind, 'friends')
+    assert.deepEqual([...state.members.keys()], ['ana', 'bob'])
+  })
+
   it('nobody else sets how a person they add gets paid', () => {
     const added = ev('ana', 4, 'KA', { type: 'member.added', member: { id: 'dan', name: 'Dan', receive: ['evil@example.com'] } })
     assert.equal(replay([...base(), added]).members.has('dan'), false)

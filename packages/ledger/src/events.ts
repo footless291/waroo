@@ -172,8 +172,11 @@ export type LedgerEvent = EventBase &
     | { type: 'member.rekeyed'; memberId: PersonId; key: string }
     /** A member leaves. Only they can, and only when they owe and are owed nothing. */
     | { type: 'member.left'; memberId: PersonId }
-    /** Sets the group's name and/or main currency. */
-    | { type: 'group.updated'; name?: string; currency?: string }
+    /**
+     * Sets the group's name and/or main currency. `kind: 'friends'` marks a
+     * friendship: a group of two, shown under Friends rather than Groups.
+     */
+    | { type: 'group.updated'; name?: string; currency?: string; kind?: 'friends' }
     /**
      * Creates or edits an expense. `basedOn` is the id of the event holding
      * the version this edit started from (absent for a new expense). If the
@@ -203,6 +206,8 @@ export interface Rejection {
 export interface GroupState {
   /** From the latest `group.updated`, if any. */
   name?: string
+  /** 'friends' for a friendship: two people, no more. */
+  kind?: 'friends'
   currency?: string
   /** True when the founder joined with a key: every event must then be signed. */
   signed: boolean
@@ -382,6 +387,9 @@ export function replay(input: Iterable<LedgerEvent>, options: ReplayOptions = {}
     switch (e.type) {
       case 'member.added':
         if (state.members.has(e.member.id)) reject(e, 'Already a member')
+        else if (state.kind === 'friends' && [...state.members.values()].filter((m) => !m.left).length >= 2) {
+          reject(e, 'A friendship is between two people')
+        }
         else if (founding && e.member.id !== e.author) reject(e, 'The founder must add themselves')
         else if (!founding && !selfJoin && e.member.key !== undefined) {
           reject(e, 'Only the person themselves can add their key')
@@ -512,7 +520,12 @@ export function replay(input: Iterable<LedgerEvent>, options: ReplayOptions = {}
           reject(e, `Unknown currency code: ${e.currency}`)
           break
         }
+        if (e.kind !== undefined && e.kind !== 'friends') {
+          reject(e, 'Unknown kind of group')
+          break
+        }
         if (e.name !== undefined) state.name = e.name.trim()
+        if (e.kind !== undefined) state.kind = e.kind
         if (e.currency !== undefined) state.currency = e.currency
         break
 

@@ -1,7 +1,7 @@
 import { t } from '@lingui/core/macro'
-import { replay } from '@waroo/ledger'
 import { Header } from '../components/Header.tsx'
-import { getEvents } from '../lib/db.ts'
+import { replayGroup } from '../lib/db.ts'
+import { groupTitle } from '../lib/title.ts'
 import { useGroups, useLoad } from '../lib/hooks.ts'
 
 /** "New expense" from Activity, with more than one group: which group is it for? */
@@ -10,14 +10,14 @@ export function PickGroupScreen() {
   const names = useLoad(
     async () =>
       Object.fromEntries(
-        await Promise.all((groups ?? []).map(async (g) => [g.id, replay(await getEvents(g.id)).name ?? g.name] as const)),
+        await Promise.all((groups ?? []).map(async (g) => [g.id, groupTitle(await replayGroup(g.id), g)] as const)),
       ),
     [groups],
   )
   return (
     <main className="screen">
       <Header title={t`New expense`} back="/activity" />
-      <p className="lead">{t`Which group is it for?`}</p>
+      <p className="lead">{t`Which group or friend is it for?`}</p>
       <ul className="cards">
         {(groups ?? []).map((g) => (
           <li key={g.id}>

@@ -4,6 +4,7 @@ import { fiatToSats, isOffer, receiveTargets, type GroupState } from '@waroo/led
 import { useEffect, useState } from 'react'
 import { append, newId, type GroupMeta } from '../lib/db.ts'
 import { money, satsText } from '../lib/format.ts'
+import { groupTitle } from '../lib/title.ts'
 import { locale } from '../lib/hooks.ts'
 import { btcPrice, checkPaid, getInvoice, payParams, provesPayment, type CheckedInvoice } from '../lib/lightning.ts'
 import { payOfferWithWallet, payWithWallet, WalletPayError } from '../lib/wallet.ts'
@@ -128,7 +129,7 @@ export function BitcoinPay(props: {
         return
       }
       try {
-        const invoice = await getInvoice(await payParams(addr), sats, `Waroo: ${state.name ?? meta.name}`)
+        const invoice = await getInvoice(await payParams(addr), sats, state.kind === 'friends' ? 'Waroo' : `Waroo: ${groupTitle(state, meta)}`)
         setPhase({ at: 'ready', quote: { invoice, sats: invoice.sats, price: rate.price, source: rate.source, target }, next })
         return
       } catch (err) {
