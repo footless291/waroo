@@ -15,6 +15,8 @@ const english = (text) => (text.match(/[A-Za-z][A-Za-z’']{2,}/g) || []).filter
   const browser = await chromium.launch();
   const mk = async (name, locale) => {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, locale });
+    // These tests start past the first-run guide (e2e/onboarding.cjs covers it).
+    await ctx.addInitScript(() => { try { localStorage.setItem("waroo-onboarded", "1") } catch {} });
     await ctx.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: B.slice(0, -1) });
     const page = await ctx.newPage();
     page.errors = [];

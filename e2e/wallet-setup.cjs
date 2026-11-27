@@ -10,6 +10,8 @@ const lnurl = (name, domain) => JSON.stringify({ tag: 'payRequest', callback: `h
 (async () => {
   const browser = await chromium.launch();
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
+  // These tests start past the first-run guide (e2e/onboarding.cjs covers it).
+  await ctx.addInitScript(() => { try { localStorage.setItem("waroo-onboarded", "1") } catch {} });
   await ctx.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: B.slice(0, -1) });
   await ctx.route('https://coinos.io/.well-known/lnurlp/**', (route) => {
     const name = route.request().url().split('/').pop();

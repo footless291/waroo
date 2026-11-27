@@ -1930,3 +1930,164 @@ select {
   flex: none;
   color: var(--muted);
 }
+
+/* First run: language, welcome, Home Screen */
+.onboarding {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding-bottom: calc(28px + env(safe-area-inset-bottom));
+}
+.onboarding-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.onboarding-dots {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  padding: calc(20px + env(safe-area-inset-top)) 0 var(--space-4);
+  list-style: none;
+}
+.onboarding-dots li {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--pill);
+  background: var(--line);
+  transition: width 0.25s ease;
+}
+.onboarding-dots li.past {
+  background: var(--field-border);
+}
+.onboarding-dots li.on {
+  width: 22px;
+  background: var(--strong);
+}
+.onboarding-step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  flex: 1;
+}
+.onboarding-step h1 {
+  margin: var(--space-4) 0 0;
+  font-size: 1.9rem;
+  line-height: 1.15;
+  font-weight: 700;
+}
+.onboarding-alt {
+  margin: -8px 0 var(--space-2);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.onboarding-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: auto;
+  padding-top: var(--space-4);
+}
+.language-choices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.language-choice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 72px;
+  padding: 0 24px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-card);
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+.language-choice.on {
+  border-color: var(--strong);
+}
+.language-choice:focus-visible {
+  outline: 2.5px solid var(--focus);
+  outline-offset: 2px;
+}
+.language-check {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--pill);
+  background: var(--strong);
+  color: var(--on-strong);
+  font-size: 1rem;
+}
+/* The welcome is the one piece of night on the page, like the balance card. */
+.welcome-card {
+  padding: 28px 24px;
+  border-radius: var(--radius-hero);
+  background: var(--hero);
+  color: var(--hero-text);
+}
+.welcome-card h1 {
+  margin: 0 0 var(--space-3);
+  color: var(--hero-number);
+  font-size: 2.1rem;
+}
+.welcome-card p {
+  margin: 0 0 var(--space-3);
+  line-height: 1.55;
+}
+.welcome-card p:last-child {
+  margin-bottom: 0;
+  color: var(--hero-muted);
+}
+.welcome-points {
+  margin: 0;
+  padding-left: 1.2em;
+  line-height: 1.6;
+}
+.welcome-points li + li {
+  margin-top: 6px;
+}
+.install-guide {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.install-guide .notice p {
+  margin: 0 0 var(--space-3);
+}
+.install-guide .notice p:last-child {
+  margin-bottom: 0;
+}
+.install-steps {
+  margin: 0;
+  padding: 18px 20px 18px 40px;
+  border-radius: var(--radius-card);
+  background: var(--card);
+  line-height: 1.6;
+}
+.install-steps li + li {
+  margin-top: 10px;
+}
+.install-now {
+  display: flex;
+  flex-direction: column;
+}
+.install-computer p {
+  margin: 0 0 var(--space-2);
+}
+.inline-icon {
+  vertical-align: -3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .onboarding-dots li {
+    transition: none;
+  }
+}

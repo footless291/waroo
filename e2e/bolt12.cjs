@@ -61,6 +61,8 @@ function fakeWallet({ alias, canPayOffers }) {
   const oldWallet = fakeWallet({ alias: 'Old Wallet', canPayOffers: false });
   const mk = async (name) => {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
+    // These tests start past the first-run guide (e2e/onboarding.cjs covers it).
+    await ctx.addInitScript(() => { try { localStorage.setItem("waroo-onboarded", "1") } catch {} });
     await ctx.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: B.slice(0, -1) });
     await ctx.route('**/relay/rate?*', (route) => route.fulfill({ headers: cors, body: JSON.stringify({ currency: 'JPY', price: '15000000.00', source: 'Test', at: new Date().toISOString() }) }));
     // DNS-over-HTTPS: ₿bob@phoenix.example has an offer; ₿nobody has nothing; ₿unsigned isn't DNSSEC-signed

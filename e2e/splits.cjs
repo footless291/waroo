@@ -7,6 +7,8 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
 (async () => {
   const browser = await chromium.launch();
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
+  // These tests start past the first-run guide (e2e/onboarding.cjs covers it).
+  await ctx.addInitScript(() => { try { localStorage.setItem("waroo-onboarded", "1") } catch {} });
   const ana = await ctx.newPage();
   const errors = [];
   ana.on('pageerror', (e) => errors.push(String(e)));

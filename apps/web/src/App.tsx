@@ -1,8 +1,12 @@
 import { t } from '@lingui/core/macro'
+import { useEffect, useState } from 'react'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import { Banners } from './components/Banners.tsx'
 import { go, useRoute } from './lib/hooks.ts'
 import { ErrorBoundary } from './components/ErrorBoundary.tsx'
+import { listGroups } from './lib/db.ts'
+import { finishOnboarding, onboarded } from './lib/install.ts'
+import { InstallScreen, Onboarding } from './screens/Onboarding.tsx'
 import { ExpenseScreen } from './screens/ExpenseScreen.tsx'
 import { GroupScreen } from './screens/GroupScreen.tsx'
 import { InviteScreen } from './screens/InviteScreen.tsx'
@@ -33,6 +37,7 @@ function Router() {
   if (parts[0] === 'activity') return <MainTabs current="/activity" query={query} />
   if (parts[0] === 'add') return <PickGroupScreen />
   if (parts[0] === 'scan') return <ScanScreen />
+  if (parts[0] === 'install') return <InstallScreen />
   if (parts[0] === 'move') return <MoveScreen />
   if (parts[0] === 'move-in') return <MoveInScreen params={params} />
   if (parts[0] === 'g' && parts[1]) {
@@ -74,8 +79,33 @@ navigator.serviceWorker?.addEventListener('message', (event) => {
   if (data?.type === 'open' && typeof data.route === 'string' && data.route.startsWith('/')) go(data.route)
 })
 
+/** First run: the guide. Anyone who already has groups (from before the guide existed) skips it. */
+function useFirstRun(): [boolean | undefined, () => void] {
+  const [show, setShow] = useState<boolean | undefined>(() => (onboarded() ? false : undefined))
+  useEffect(() => {
+    if (show !== undefined) return
+    listGroups().then(
+      (groups) => {
+        if (groups.length > 0) finishOnboarding()
+        setShow(groups.length === 0)
+      },
+      () => setShow(true),
+    )
+  }, [show])
+  return [show, () => setShow(false)]
+}
+
 export function App() {
   const route = useRoute()
+  const [firstRun, done] = useFirstRun()
+  if (firstRun === undefined) return null
+  if (firstRun) {
+    return (
+      <ErrorBoundary>
+        <Onboarding onDone={done} />
+      </ErrorBoundary>
+    )
+  }
   return (
     <>
       <ErrorBoundary key={route.split('?')[0]!.split('/').slice(0, 3).join('/').replace(/^\/(activity|settings)$/, '/')}>

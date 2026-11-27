@@ -312,11 +312,15 @@ msgstr "1 month"
 msgid "1 week"
 msgstr "1 week"
 
+#: src/screens/Onboarding.tsx:114
+msgid "A bill-splitting app for trips, flats and dinners. Everyone adds what they paid from their own phone, and Waroo works out who owes whom."
+msgstr "A bill-splitting app for trips, flats and dinners. Everyone adds what they paid from their own phone, and Waroo works out who owes whom."
+
 #: src/screens/JoinScreen.tsx:148
 msgid "a group"
 msgstr "a group"
 
-#: src/App.tsx:63
+#: src/App.tsx:68
 msgid "A new version is ready."
 msgstr "A new version is ready."
 
@@ -372,6 +376,14 @@ msgstr "Add tax, tip or discount"
 #: src/screens/GroupScreen.tsx:231
 msgid "Add the first expense to get started."
 msgstr "Add the first expense to get started."
+
+#: src/screens/Onboarding.tsx:283
+msgid "Add to Home Screen"
+msgstr "Add to Home Screen"
+
+#: src/screens/YouScreen.tsx:38
+msgid "Add Waroo to your Home Screen"
+msgstr "Add Waroo to your Home Screen"
 
 #: src/screens/GroupScreen.tsx:378
 msgid "Add what someone paid for, and Waroo works out who owes what."
@@ -438,9 +450,17 @@ msgstr "Amount for {0}"
 msgid "Amount of extra {0}"
 msgstr "Amount of extra {0}"
 
+#: src/screens/Onboarding.tsx:126
+msgid "Amounts in your own currency."
+msgstr "Amounts in your own currency."
+
 #: src/screens/NewGroupScreen.tsx:36
 msgid "Ana"
 msgstr "Ana"
+
+#: src/screens/Onboarding.tsx:173
+msgid "Android"
+msgstr "Android"
 
 #: src/screens/NewGroupScreen.tsx:45
 msgid "Another person"
@@ -463,7 +483,7 @@ msgid "Any wallet with a Lightning address works, like Wallet of Satoshi. Or pas
 msgstr "Any wallet with a Lightning address works, like Wallet of Satoshi. Or paste a BOLT12 offer (lno1…) or a ₿name that has one, like Phoenix gives you."
 
 #: src/components/AppearanceCard.tsx:13
-#: src/screens/YouScreen.tsx:26
+#: src/screens/YouScreen.tsx:27
 msgid "Appearance"
 msgstr "Appearance"
 
@@ -471,6 +491,14 @@ msgstr "Appearance"
 #: src/screens/JoinScreen.tsx:140
 msgid "Ask for the invite link again, and open the whole link."
 msgstr "Ask for the invite link again, and open the whole link."
+
+#: src/screens/Onboarding.tsx:202
+msgid "at the bottom of Safari (at the top on iPad)"
+msgstr "at the bottom of Safari (at the top on iPad)"
+
+#: src/screens/Onboarding.tsx:202
+msgid "at the top right, in the address bar"
+msgstr "at the top right, in the address bar"
 
 #: src/components/Header.tsx:33
 msgid "Back"
@@ -562,6 +590,10 @@ msgstr "Checking…"
 msgid "Choose a username and a password. Write the password down: it’s the only way back into your wallet."
 msgstr "Choose a username and a password. Write the password down: it’s the only way back into your wallet."
 
+#: src/screens/Onboarding.tsx:228
+msgid "Chrome or Edge: click the install icon at the right of the address bar, or find “Install” in the browser’s menu."
+msgstr "Chrome or Edge: click the install icon at the right of the address bar, or find “Install” in the browser’s menu."
+
 #: src/components/WalletSection.tsx:91
 msgid "Close"
 msgstr "Close"
@@ -586,11 +618,19 @@ msgstr "Code to scan with the new phone"
 msgid "Come back here and tap Paste."
 msgstr "Come back here and tap Paste."
 
+#: src/screens/Onboarding.tsx:174
+msgid "Computer"
+msgstr "Computer"
+
 #: src/components/WalletGuides.tsx:205
 #: src/components/WalletGuides.tsx:269
 #: src/components/WalletGuides.tsx:414
 msgid "Connect"
 msgstr "Connect"
+
+#: src/screens/Onboarding.tsx:120
+msgid "Connect a digital wallet, and you can settle up with friends instantly, right from the app."
+msgstr "Connect a digital wallet, and you can settle up with friends instantly, right from the app."
 
 #: src/components/WalletGuides.tsx:356
 #: src/components/WalletGuides.tsx:370
@@ -617,6 +657,14 @@ msgstr "Connected. Waroo asks Coinos to pay only when you confirm a payment."
 msgid "Connecting…"
 msgstr "Connecting…"
 
+#: src/screens/Onboarding.tsx:69
+msgid "Continue in the browser"
+msgstr "Continue in the browser"
+
+#: src/screens/Onboarding.tsx:69
+msgid "Continue to the invite in the browser"
+msgstr "Continue to the invite in the browser"
+
 #: src/components/BitcoinPay.tsx:268
 msgid "Copy invoice"
 msgstr "Copy invoice"
@@ -632,6 +680,10 @@ msgstr "Copy link instead"
 #: src/components/BitcoinPay.tsx:446
 msgid "Copy offer"
 msgstr "Copy offer"
+
+#: src/screens/Onboarding.tsx:258
+msgid "Copy the link"
+msgstr "Copy the link"
 
 #: src/components/WalletGuides.tsx:111
 msgid "Couldn’t find {candidate}. Check the username is exactly as you chose it in Coinos."
@@ -817,6 +869,10 @@ msgstr "Extra {n}"
 msgid "Extra for {0}"
 msgstr "Extra for {0}"
 
+#: src/screens/Onboarding.tsx:230
+msgid "Firefox can’t install apps, but Waroo works fine in a tab."
+msgstr "Firefox can’t install apps, but Waroo works fine in a tab."
+
 #: src/screens/InviteScreen.tsx:38
 msgid "For one person, until {date}"
 msgstr "For one person, until {date}"
@@ -877,6 +933,10 @@ msgstr "get back {sum}"
 #: src/screens/MoveInScreen.tsx:21
 msgid "Get back into a group"
 msgstr "Get back into a group"
+
+#: src/screens/Onboarding.tsx:130
+msgid "Get started"
+msgstr "Get started"
 
 #: src/screens/GroupScreen.tsx:438
 msgid "gets back {sum}"
@@ -974,6 +1034,10 @@ msgstr "In {groupName} on their phone."
 msgid "In bitcoin"
 msgstr "In bitcoin"
 
+#: src/screens/Onboarding.tsx:218
+msgid "In Chrome, tap the menu ⋮ at the top right."
+msgstr "In Chrome, tap the menu ⋮ at the top right."
+
 #: src/components/WalletGuides.tsx:259
 msgid "In Rizful, tap <0>Get code</0> and copy it. That one code sets up both getting paid and paying."
 msgstr "In Rizful, tap <0>Get code</0> and copy it. That one code sets up both getting paid and paying."
@@ -981,6 +1045,14 @@ msgstr "In Rizful, tap <0>Get code</0> and copy it. That one code sets up both g
 #: src/components/WalletGuides.tsx:409
 msgid "In your wallet app (Alby Hub, Zeus, Primal and others), make a new Nostr Wallet Connect connection for Waroo, ideally with a budget, and paste it here. It stays on this phone."
 msgstr "In your wallet app (Alby Hub, Zeus, Primal and others), make a new Nostr Wallet Connect connection for Waroo, ideally with a budget, and paste it here. It stays on this phone."
+
+#: src/screens/Onboarding.tsx:196
+msgid "Install Waroo"
+msgstr "Install Waroo"
+
+#: src/screens/Onboarding.tsx:181
+msgid "Installed. Open Waroo from your Home Screen to carry on there."
+msgstr "Installed. Open Waroo from your Home Screen to carry on there."
 
 #: src/screens/GroupScreen.tsx:123
 msgid "Invite"
@@ -998,6 +1070,10 @@ msgstr "Invite people"
 #: src/screens/GroupScreen.tsx:73
 msgid "Invite them, and everyone can add expenses and settle up from their own phone."
 msgstr "Invite them, and everyone can add expenses and settle up from their own phone."
+
+#: src/screens/Onboarding.tsx:172
+msgid "iPhone or iPad"
+msgstr "iPhone or iPad"
 
 #: src/lib/wallet.ts:168
 msgid "it answered in a way Waroo couldn’t read{tech}"
@@ -1032,6 +1108,10 @@ msgstr "it got the request but didn’t answer within a minute{tech}"
 #: src/components/BitcoinPay.tsx:365
 msgid "It may still have paid. Check {0} before trying again, so you don’t pay twice."
 msgstr "It may still have paid. Check {0} before trying again, so you don’t pay twice."
+
+#: src/screens/Onboarding.tsx:165
+msgid "It opens like any app, full screen."
+msgstr "It opens like any app, full screen."
 
 #. placeholder {0}: (err as Error)?.message ?? err
 #: src/lib/wallet.ts:94
@@ -1105,7 +1185,7 @@ msgid "Keep it"
 msgstr "Keep it"
 
 #: src/components/AppearanceCard.tsx:35
-#: src/screens/YouScreen.tsx:29
+#: src/screens/YouScreen.tsx:30
 msgid "Language"
 msgstr "Language"
 
@@ -1135,6 +1215,7 @@ msgstr "Lightning address or BOLT12 offer"
 
 #: src/screens/InviteScreen.tsx:170
 #: src/screens/MoveScreen.tsx:171
+#: src/screens/Onboarding.tsx:258
 #: src/screens/RecoverScreen.tsx:173
 msgid "Link copied"
 msgstr "Link copied"
@@ -1215,7 +1296,7 @@ msgid "Move {0} up"
 msgstr "Move {0} up"
 
 #: src/screens/MoveScreen.tsx:144
-#: src/screens/YouScreen.tsx:43
+#: src/screens/YouScreen.tsx:49
 msgid "Move to a new phone"
 msgstr "Move to a new phone"
 
@@ -1223,7 +1304,7 @@ msgstr "Move to a new phone"
 msgid "Move to this phone"
 msgstr "Move to this phone"
 
-#: src/screens/YouScreen.tsx:37
+#: src/screens/YouScreen.tsx:43
 msgid "Move your groups to another phone, so you can keep adding expenses and settling up there. Have both phones with you."
 msgstr "Move your groups to another phone, so you can keep adding expenses and settling up there. Have both phones with you."
 
@@ -1231,7 +1312,7 @@ msgstr "Move your groups to another phone, so you can keep adding expenses and s
 msgid "Moved"
 msgstr "Moved"
 
-#: src/screens/YouScreen.tsx:35
+#: src/screens/YouScreen.tsx:41
 msgid "Moving to a new phone"
 msgstr "Moving to a new phone"
 
@@ -1264,6 +1345,14 @@ msgstr "New expenses start in the main currency. Changing it doesn’t change an
 #: src/screens/NewGroupScreen.tsx:28
 msgid "New group"
 msgstr "New group"
+
+#: src/screens/Onboarding.tsx:130
+msgid "Next"
+msgstr "Next"
+
+#: src/screens/Onboarding.tsx:124
+msgid "No account and no sign-up."
+msgstr "No account and no sign-up."
 
 #: src/lib/wallet.ts:59
 msgid "No browser wallet found."
@@ -1327,7 +1416,7 @@ msgstr "Nothing was paid."
 msgid "Nothing yet"
 msgstr "Nothing yet"
 
-#: src/screens/YouScreen.tsx:23
+#: src/screens/YouScreen.tsx:24
 msgid "Notifications"
 msgstr "Notifications"
 
@@ -1366,6 +1455,10 @@ msgstr "Okinawa trip"
 #: src/components/NotificationsCard.tsx:67
 msgid "On iPhone and iPad, only apps on the Home Screen can send notifications. Tap Share, then “Add to Home Screen”, and turn them on from there."
 msgstr "On iPhone and iPad, only apps on the Home Screen can send notifications. Tap Share, then “Add to Home Screen”, and turn them on from there."
+
+#: src/screens/Onboarding.tsx:255
+msgid "On iPhone, the Home Screen app keeps its own data, apart from Safari. To join from there: copy this link, then in the app tap “Join with a QR code” and paste it."
+msgstr "On iPhone, the Home Screen app keeps its own data, apart from Safari. To join from there: copy this link, then in the app tap “Join with a QR code” and paste it."
 
 #: src/screens/MoveScreen.tsx:164
 msgid "On the new phone, open Waroo, tap the scan button and scan this code."
@@ -1414,6 +1507,10 @@ msgstr "Open Coinos’s Nostr settings, then tap <0>New connection</0>, name it 
 #: src/components/BitcoinPay.tsx:435
 msgid "Open in wallet app"
 msgstr "Open in wallet app"
+
+#: src/screens/Onboarding.tsx:154
+msgid "Open in your browser"
+msgstr "Open in your browser"
 
 #: src/components/BitcoinPay.tsx:260
 #: src/components/BitcoinPay.tsx:438
@@ -1615,6 +1712,10 @@ msgstr "Price"
 msgid "Price of item {n}"
 msgstr "Price of item {n}"
 
+#: src/screens/Onboarding.tsx:65
+msgid "Put Waroo on your Home Screen"
+msgstr "Put Waroo on your Home Screen"
+
 #: src/screens/InviteScreen.tsx:178
 msgid "QR code for the invite link"
 msgstr "QR code for the invite link"
@@ -1631,7 +1732,7 @@ msgstr "QR code to pay with a wallet app"
 msgid "Receive"
 msgstr "Receive"
 
-#: src/App.tsx:65
+#: src/App.tsx:70
 msgid "Reload"
 msgstr "Reload"
 
@@ -1695,6 +1796,10 @@ msgstr "Rename {shown}"
 msgid "Rizful sent back something unexpected. Try again with a new code."
 msgstr "Rizful sent back something unexpected. Try again with a new code."
 
+#: src/screens/Onboarding.tsx:229
+msgid "Safari on a Mac: choose File, then Add to Dock."
+msgstr "Safari on a Mac: choose File, then Add to Dock."
+
 #: src/components/WalletGuides.tsx:173
 #: src/components/WalletSection.tsx:281
 #: src/screens/GroupSettingsScreen.tsx:62
@@ -1728,12 +1833,16 @@ msgstr "Scan it in Waroo on the other phone, with the scan button."
 msgid "Screenshot {0}"
 msgstr "Screenshot {0}"
 
+#: src/screens/Onboarding.tsx:210
+msgid "Scroll down and tap “Add to Home Screen”."
+msgstr "Scroll down and tap “Add to Home Screen”."
+
 #: src/components/FeedbackCard.tsx:183
 #: src/components/WalletSection.tsx:28
 msgid "Send"
 msgstr "Send"
 
-#: src/screens/YouScreen.tsx:32
+#: src/screens/YouScreen.tsx:33
 msgid "Send feedback"
 msgstr "Send feedback"
 
@@ -1754,7 +1863,7 @@ msgid "Set up"
 msgstr "Set up"
 
 #: src/components/TabBar.tsx:46
-#: src/screens/YouScreen.tsx:18
+#: src/screens/YouScreen.tsx:19
 msgid "Settings"
 msgstr "Settings"
 
@@ -1772,6 +1881,10 @@ msgstr "Settle up"
 #: src/screens/InviteScreen.tsx:24
 msgid "Several people"
 msgstr "Several people"
+
+#: src/screens/Onboarding.tsx:266
+msgid "Share"
+msgstr "Share"
 
 #: src/screens/InviteScreen.tsx:165
 msgid "Share invite link"
@@ -1876,6 +1989,12 @@ msgstr "Start again"
 msgid "Starting the camera…"
 msgstr "Starting the camera…"
 
+#. placeholder {0}: steps.indexOf(step) + 1
+#. placeholder {1}: steps.length
+#: src/screens/Onboarding.tsx:55
+msgid "Step {0} of {1}"
+msgstr "Step {0} of {1}"
+
 #. placeholder {0}: nameOf(w)
 #: src/components/WalletSection.tsx:197
 msgid "Stop getting paid at {0}? Your groups will stop using it."
@@ -1906,6 +2025,18 @@ msgstr "Syncing…"
 msgid "System"
 msgstr "System"
 
+#: src/screens/Onboarding.tsx:219
+msgid "Tap “Add to Home screen” or “Install app”."
+msgstr "Tap “Add to Home screen” or “Install app”."
+
+#: src/screens/Onboarding.tsx:211
+msgid "Tap “Add”, then open Waroo from your Home Screen."
+msgstr "Tap “Add”, then open Waroo from your Home Screen."
+
+#: src/screens/Onboarding.tsx:220
+msgid "Tap “Install”, then open Waroo from your Home Screen."
+msgstr "Tap “Install”, then open Waroo from your Home Screen."
+
 #: src/components/WalletGuides.tsx:193
 msgid "Tap <0>Submit</0>, then <1>Copy NWC</1>."
 msgstr "Tap <0>Submit</0>, then <1>Copy NWC</1>."
@@ -1925,6 +2056,10 @@ msgstr "Tap again to remove {who}"
 #: src/screens/MoveScreen.tsx:150
 msgid "Tap the scan button and scan the code this phone will show."
 msgstr "Tap the scan button and scan the code this phone will show."
+
+#: src/screens/Onboarding.tsx:206
+msgid "Tap the Share button <0/> {where}."
+msgstr "Tap the Share button <0/> {where}."
 
 #: src/components/ItemsEditor.tsx:118
 msgid "Tax, tip or discount"
@@ -2309,7 +2444,7 @@ msgstr "Waiting for the new phone…"
 msgid "Waiting for the payment… This updates by itself once it goes through."
 msgstr "Waiting for the payment… This updates by itself once it goes through."
 
-#: src/screens/YouScreen.tsx:20
+#: src/screens/YouScreen.tsx:21
 msgid "Wallet"
 msgstr "Wallet"
 
@@ -2345,6 +2480,18 @@ msgstr "Waroo couldn’t reach it, so the request wasn’t sent{tech}"
 #: src/components/WalletGuides.tsx:77
 msgid "Waroo couldn’t read what you copied. Press and hold the box, then choose Paste."
 msgstr "Waroo couldn’t read what you copied. Press and hold the box, then choose Paste."
+
+#: src/screens/Onboarding.tsx:144
+msgid "Waroo is already on this phone’s Home Screen."
+msgstr "Waroo is already on this phone’s Home Screen."
+
+#: src/screens/Onboarding.tsx:226
+msgid "Waroo is made for phones, but works on a computer too:"
+msgstr "Waroo is made for phones, but works on a computer too:"
+
+#: src/screens/Onboarding.tsx:112
+msgid "Welcome to Waroo"
+msgstr "Welcome to Waroo"
 
 #. placeholder {0}: index + 1
 #: src/components/ItemsEditor.tsx:120
@@ -2461,6 +2608,10 @@ msgstr "You"
 msgid "You can add more people later."
 msgstr "You can add more people later."
 
+#: src/screens/Onboarding.tsx:103
+msgid "You can change this later in Settings."
+msgstr "You can change this later in Settings."
+
 #: src/screens/MemberScreen.tsx:113
 msgid "You can leave once you’re all square. Right now you {what}."
 msgstr "You can leave once you’re all square. Right now you {what}."
@@ -2477,6 +2628,10 @@ msgstr "You get back {0}"
 #: src/screens/GroupScreen.tsx:256
 msgid "You get back from {from}"
 msgstr "You get back from {from}"
+
+#: src/screens/Onboarding.tsx:166
+msgid "You get notified when friends add expenses or pay you."
+msgstr "You get notified when friends add expenses or pay you."
 
 #: src/screens/MemberScreen.tsx:72
 msgid "You in this group"
@@ -2515,6 +2670,14 @@ msgstr "You’ll see the group’s expenses once you join. No account or sign-up
 msgid "You’re all square"
 msgstr "You’re all square"
 
+#: src/screens/Onboarding.tsx:159
+msgid "You’re in an app’s own browser, which can’t add apps to your Home Screen. Open its menu (often ⋯ or ⋮) and choose Open in browser, or open getwaroo.app in Safari or Chrome."
+msgstr "You’re in an app’s own browser, which can’t add apps to your Home Screen. Open its menu (often ⋯ or ⋮) and choose Open in browser, or open getwaroo.app in Safari or Chrome."
+
+#: src/screens/Onboarding.tsx:152
+msgid "You’re in LINE’s browser, which can’t add apps to your Home Screen."
+msgstr "You’re in LINE’s browser, which can’t add apps to your Home Screen."
+
 #: src/screens/JoinScreen.tsx:198
 msgid "You’re invited to"
 msgstr "You’re invited to"
@@ -2531,6 +2694,10 @@ msgstr "Your balance"
 msgid "Your Coinos username"
 msgstr "Your Coinos username"
 
+#: src/screens/Onboarding.tsx:170
+msgid "Your device"
+msgstr "Your device"
+
 #: src/components/FeedbackCard.tsx:166
 msgid "Your email (optional)"
 msgstr "Your email (optional)"
@@ -2538,6 +2705,14 @@ msgstr "Your email (optional)"
 #: src/screens/MoveScreen.tsx:147
 msgid "Your groups and wallets move to the new phone, and leave this one."
 msgstr "Your groups and wallets move to the new phone, and leave this one."
+
+#: src/screens/Onboarding.tsx:125
+msgid "Your groups are end-to-end encrypted: our server passes them along but can’t read them."
+msgstr "Your groups are end-to-end encrypted: our server passes them along but can’t read them."
+
+#: src/screens/Onboarding.tsx:167
+msgid "Your groups stay put: browsers can clear the data of sites you haven’t opened for a while."
+msgstr "Your groups stay put: browsers can clear the data of sites you haven’t opened for a while."
 
 #: src/screens/InviteScreen.tsx:200
 msgid "Your invite links"

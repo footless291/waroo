@@ -11,6 +11,8 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   const browser = await chromium.launch();
   const mk = async (name, camera) => {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
+    // These tests start past the first-run guide (e2e/onboarding.cjs covers it).
+    await ctx.addInitScript(() => { try { localStorage.setItem("waroo-onboarded", "1") } catch {} });
     await ctx.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: B.slice(0, -1) });
     if (camera) await ctx.addInitScript(({ svg, deny }) => {
       navigator.mediaDevices.getUserMedia = async () => {

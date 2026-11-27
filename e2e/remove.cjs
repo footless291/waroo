@@ -10,6 +10,8 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   const browser = await chromium.launch();
   const mk = async (name) => {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
+    // These tests start past the first-run guide (e2e/onboarding.cjs covers it).
+    await ctx.addInitScript(() => { try { localStorage.setItem("waroo-onboarded", "1") } catch {} });
     await ctx.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: B.slice(0, -1) });
     const page = await ctx.newPage();
     page.errors = [];

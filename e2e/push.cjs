@@ -32,6 +32,8 @@ const b64 = (s) => Buffer.from(s, 'base64url');
   const browser = await chromium.launch({ channel: 'chromium' });
   const mk = async (name) => {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
+    // These tests start past the first-run guide (e2e/onboarding.cjs covers it).
+    await ctx.addInitScript(() => { try { localStorage.setItem("waroo-onboarded", "1") } catch {} });
     await ctx.grantPermissions(['clipboard-read', 'clipboard-write', 'notifications'], { origin: B.slice(0, -1) });
     const page = await ctx.newPage();
     page.errors = [];

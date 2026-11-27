@@ -6,6 +6,7 @@ import { FeedbackCard } from '../components/FeedbackCard.tsx'
 import { PageTitle } from '../components/Header.tsx'
 import { NotificationsCard } from '../components/NotificationsCard.tsx'
 import { WalletSection } from '../components/WalletSection.tsx'
+import { isInstalled } from '../lib/install.ts'
 
 /**
  * Settings. Every section starts closed; a link can open one, e.g.
@@ -32,6 +33,11 @@ export function SettingsPage({ params }: { params: URLSearchParams }) {
         <Collapsible title={t`Send feedback`} defaultOpen={opened('feedback')}>
           <FeedbackCard />
         </Collapsible>
+        {!isInstalled() && (
+          <a className="button outline" href="#/install">
+            {t`Add Waroo to your Home Screen`}
+          </a>
+        )}
         <Collapsible title={t`Moving to a new phone`} defaultOpen={opened('move')}>
           <p>
             <Trans>
