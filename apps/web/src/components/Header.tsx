@@ -64,7 +64,7 @@ export function PageTitle({ children }: { children: ReactNode }) {
 export function AppHeader() {
   return (
     <Header
-      title="waroo"
+      title={<Wordmark />}
       action={
         <a className="icon-button" href="#/scan" aria-label={t`Scan a code`}>
           <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -74,5 +74,15 @@ export function AppHeader() {
         </a>
       }
     />
+  )
+}
+
+/** "waroo" with a small "beta" pill at its upper right. */
+export function Wordmark() {
+  return (
+    <span className="wordmark">
+      waroo
+      <span className="beta-pill">beta</span>
+    </span>
   )
 }

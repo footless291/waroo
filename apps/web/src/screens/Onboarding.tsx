@@ -1,7 +1,7 @@
 import { Trans } from '@lingui/react/macro'
 import { t } from '@lingui/core/macro'
 import { useEffect, useState, type ReactNode } from 'react'
-import { Header } from '../components/Header.tsx'
+import { Header, Wordmark } from '../components/Header.tsx'
 import { Logo } from '../components/icons.tsx'
 import { Segmented } from '../components/Segmented.tsx'
 import { currentLocale, LANGUAGES, setLanguage, type Locale } from '../lib/i18n.ts'
@@ -50,7 +50,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
       <div className="onboarding-top">
         <span className="join-brand">
           <Logo size={28} />
-          <span>waroo</span>
+          <Wordmark />
         </span>
         <ol className="onboarding-dots" aria-label={t`Step ${steps.indexOf(step) + 1} of ${steps.length}`}>
           {steps.map((s) => (

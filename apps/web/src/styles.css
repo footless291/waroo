@@ -2099,3 +2099,20 @@ select {
 .delete-group p {
   margin: 0;
 }
+/* "beta", tucked against the wordmark's upper right */
+.wordmark {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+.beta-pill {
+  margin-top: 0.1em;
+  padding: 2px 7px 3px;
+  border-radius: var(--pill);
+  background: var(--primary);
+  color: var(--on-primary);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+}

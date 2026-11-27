@@ -3,6 +3,7 @@ import { t } from '@lingui/core/macro'
 import { roomId } from '../lib/crypto.ts'
 import { firstKeys, replay, type GroupState, type LedgerEvent } from '@waroo/ledger'
 import { useEffect, useState, type FormEvent } from 'react'
+import { Wordmark } from '../components/Header.tsx'
 import { Logo } from '../components/icons.tsx'
 import { isGroupKey, newSigningKeys } from '../lib/crypto.ts'
 import { append, getGroup, newId, publishProfile, saveJoinedGroup, type GroupMeta } from '../lib/db.ts'
@@ -69,7 +70,7 @@ function JoinByInvite({ secret }: { secret: string }) {
     <main className="screen">
       <div className="join-brand">
         <Logo size={32} />
-        <span>waroo</span>
+        <Wordmark />
       </div>
       {problem ? (
         <section className="empty">
@@ -183,7 +184,7 @@ function JoinGroup({ groupId, groupKey: key, from, pins }: { groupId: string; gr
     <main className="screen">
       <div className="join-brand">
         <Logo size={32} />
-        <span>waroo</span>
+        <Wordmark />
       </div>
       {problem ? (
         <section className="empty">
