@@ -34,7 +34,15 @@ const satsText = (n: number) => {
  * Events that should wake the others' phones. The sender decides, since the
  * relay can't read anything. Edits, renames and the like stay quiet.
  */
+/** Expenses and payments brought in from elsewhere carry ids starting "imp-". */
+export function isImported(event: LedgerEvent): boolean {
+  if (event.type === 'expense.saved') return event.expense.id.startsWith('imp-')
+  if (event.type === 'settlement.recorded') return event.settlement.id.startsWith('imp-')
+  return false
+}
+
 export function isNotable(event: LedgerEvent): boolean {
+  if (isImported(event)) return false
   switch (event.type) {
     case 'settlement.recorded':
     case 'member.claimed':
@@ -69,6 +77,8 @@ export function describeEvent(
   // A friendship is named after the friend, so "in Ana" would read oddly: leave it out.
   const friendship = state.kind === 'friends'
   const inGroup = friendship ? '' : t`In ${group}`
+  // Imported history (from Splitwise) isn't news: it already happened.
+  if (isImported(event)) return null
   // Only what the group actually accepted is news: an event replay threw out
   // (wrong key, not a member, a forgery) says nothing about anyone.
   if (state.rejected.some((r) => r.eventId === event.id)) return null

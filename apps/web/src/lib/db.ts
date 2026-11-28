@@ -235,13 +235,14 @@ function strip({ groupId: _g, sig: _s, pending: _p, ...event }: StoredEvent): Le
  * highest clock in the group's log, so they sort after everything seen. In a
  * signed group each event is signed and queued for the relay.
  */
-export async function append(group: GroupMeta, drafts: Draft[]): Promise<LedgerEvent[]> {
+export async function append(group: GroupMeta, drafts: Draft[], options: { at?: (i: number) => string } = {}): Promise<LedgerEvent[]> {
   const database = await db()
   let clock = (await replayGroup(group.id)).clock
   const now = new Date().toISOString()
   const stored: StoredEvent[] = []
-  for (const draft of drafts) {
-    const event = { ...draft, id: newId(), author: group.meId, clock: ++clock, at: now } as LedgerEvent
+  for (const [i, draft] of drafts.entries()) {
+    // `at` is for display only: an import dates each entry as it happened.
+    const event = { ...draft, id: newId(), author: group.meId, clock: ++clock, at: options.at?.(i) ?? now } as LedgerEvent
     stored.push(await stamp(group, event))
   }
   const tx = database.transaction('events', 'readwrite')

@@ -2224,3 +2224,16 @@ select {
 .receipt-scan .hint:empty {
   display: none;
 }
+.file-pick {
+  position: relative;
+}
+.file-pick:has(input:focus-visible) {
+  outline: 2.5px solid var(--focus);
+  outline-offset: 2px;
+}
+.who-row {
+  margin-top: var(--space-3);
+}
+.import-preview p {
+  margin: 0 0 var(--space-3);
+}

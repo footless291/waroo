@@ -33,6 +33,12 @@ export function SettingsPage({ params }: { params: URLSearchParams }) {
         <Collapsible title={t`Send feedback`} defaultOpen={opened('feedback')}>
           <FeedbackCard />
         </Collapsible>
+        <Collapsible title={t`Import`} defaultOpen={opened('import')}>
+          <p>{t`Bring your history over from Splitwise: a friend’s or a group’s expenses and payments, with their dates.`}</p>
+          <a className="button outline" href="#/import">
+            {t`Import from Splitwise`}
+          </a>
+        </Collapsible>
         <Collapsible title={t`Devices`} defaultOpen={opened('move')}>
           <p>
             <Trans>

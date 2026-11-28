@@ -1,0 +1,15 @@
+Note: does not include group expenses
+
+Date,Description,Category,Cost,Currency,Ana,Bob
+
+2024-06-01,Movie,Movies,6000.00,JPY,0.00,0.00
+2024-06-02,Shinkansen,Bus/train,10000.00,JPY,-10000.00,10000.00
+2024-06-03,Hotel,Hotel,8000.00,JPY,8000.00,-8000.00
+2024-06-04,Groceries,Groceries,5645.00,JPY,-2822.50,2822.50
+2024-06-05,Ana paid Bob,Payment,4822.50,JPY,4822.50,-4822.50
+2024-06-06,"Gas, for the car",Gas/fuel,7500.00,JPY,-3750.00,3750.00
+2024-06-07,Flights,Plane,1856.00,USD,1856.00,-1856.00
+2024-06-08,Bob paid Ana,Payment,1856.00,USD,-1856.00,1856.00
+
+2024-06-09,Total balance, , ,JPY,-3750.00,3750.00
+2024-06-09,Total balance, , ,USD,0.00,0.00

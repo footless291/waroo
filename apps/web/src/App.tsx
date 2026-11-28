@@ -7,6 +7,7 @@ import { ErrorBoundary } from './components/ErrorBoundary.tsx'
 import { listGroups } from './lib/db.ts'
 import { finishOnboarding, onboarded } from './lib/install.ts'
 import { InstallScreen, Onboarding } from './screens/Onboarding.tsx'
+import { ImportScreen } from './screens/ImportScreen.tsx'
 import { AddFriendScreen, ArchivedFriendsScreen } from './screens/FriendsScreen.tsx'
 import { ExpenseScreen } from './screens/ExpenseScreen.tsx'
 import { GroupScreen } from './screens/GroupScreen.tsx'
@@ -42,6 +43,7 @@ function Router() {
   if (parts[0] === 'add') return <PickGroupScreen />
   if (parts[0] === 'scan') return <ScanScreen />
   if (parts[0] === 'install') return <InstallScreen />
+  if (parts[0] === 'import') return <ImportScreen />
   if (parts[0] === 'move') return <MoveScreen />
   if (parts[0] === 'move-in') return <MoveInScreen params={params} />
   if (parts[0] === 'g' && parts[1]) {

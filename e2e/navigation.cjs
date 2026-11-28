@@ -110,7 +110,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   // Settings
   await page.goto(B + '#/settings');
   const toggles = await page.$$eval('button.collapsible-toggle', (els) => els.map((e) => [e.textContent, e.getAttribute('aria-expanded')]));
-  check(toggles.length === 6 && toggles.every(([, open]) => open === 'false'), 'every Settings section starts closed');
+  check(toggles.length === 7 && toggles.every(([, open]) => open === 'false'), 'every Settings section starts closed');
   await page.click('button.collapsible-toggle:has-text("Wallet")');
   check(await waitText('.collapsible.open', 'Friends pay you') || await waitText('.collapsible.open', 'When you pay'), 'opening Wallet shows it');
   await page.screenshot({ path: SHOTS + '/nav-3-settings.png' });
