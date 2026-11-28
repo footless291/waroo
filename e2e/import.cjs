@@ -94,6 +94,13 @@ Date,Description,Category,Cost,Currency,Ana,Bob
   await ana.click('.pager-page:not([inert]) button.show-more');
   const after = await ana.$$eval('.pager-page:not([inert]) .cards li', (l) => l.length);
   check(after === 41, `and Show more shows the rest (${after})`);
+  await ana.goto(B + '#/activity'); await ana.waitForTimeout(800);
+  const rows = await ana.$$eval('.pager-page:not([inert]) .cards li', (l) => l.length);
+  check(rows === 30 && await ana.isVisible('.pager-page:not([inert]) button.show-more'), `Activity shows 30 too, with Show more (${rows})`);
+  check(await waitText(ana, '.pager-page:not([inert])', 'July 2024') && await waitText(ana, '.pager-page:not([inert])', 'you borrowed ¥500'), 'by month, in colour');
+  await ana.click('.pager-page:not([inert]) button.show-more');
+  check(await waitText(ana, '.pager-page:not([inert])', 'June 2024') && await waitText(ana, '.pager-page:not([inert])', 'Jun 5, 2024'), 'and older months, with dates, after Show more');
+  await ana.screenshot({ path: SHOTS + '/lists-3-activity.png' });
 
   await bob.goto(B + '#/friends');
   check(await waitText(bob, '.cards', 'Owes you ¥21,250', 10000), 'Bob sees the same balance (¥3,750 from the first file, ¥17,500 from the second)');

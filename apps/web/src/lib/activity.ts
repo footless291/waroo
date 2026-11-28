@@ -1,6 +1,7 @@
 import { computeShares, replay, type LedgerEvent } from '@waroo/ledger'
 import { getEvents, listGroups, replayGroup } from './db.ts'
 import { groupTitle } from './title.ts'
+import { localDay } from '../components/MonthList.tsx'
 
 export interface ActivityItem {
   key: string
@@ -22,6 +23,10 @@ export interface ActivityItem {
   to?: string | null
   /** For expenses: this person's share, if any. */
   myShare?: number
+  /** When it happened, YYYY-MM-DD: an expense's date, a payment's day. */
+  date: string
+  /** For expenses: what it meant for this person, paid minus share (positive: lent). */
+  myNet?: number
   method?: string
   sats?: number
 }
@@ -30,7 +35,7 @@ export interface ActivityItem {
  * Recent expenses and payments across every group on this phone, newest
  * first. Expenses count from their latest version; deleted ones are gone.
  */
-export async function recentActivity(limit = 100): Promise<ActivityItem[]> {
+export async function recentActivity(): Promise<ActivityItem[]> {
   const items: ActivityItem[] = []
   for (const group of await listGroups()) {
     const events = await getEvents(group.id)
@@ -60,6 +65,8 @@ export async function recentActivity(limit = 100): Promise<ActivityItem[]> {
         from: name(payers[0]!),
         payers: payers.length,
         myShare,
+        date: expense.date,
+        myNet: (expense.payers[group.meId] ?? 0) - (myShare ?? 0),
       })
     }
     const recorded = new Map<string, string>()
@@ -79,8 +86,10 @@ export async function recentActivity(limit = 100): Promise<ActivityItem[]> {
         to: name(s.to),
         method: s.method,
         sats: s.bitcoin?.sats,
+        date: localDay(s.bitcoin?.settledAt ?? recorded.get(s.id)),
       })
     }
   }
-  return items.sort((a, b) => b.at.localeCompare(a.at)).slice(0, limit)
+  // By when it happened; on the same day, the most recently added first.
+  return items.sort((a, b) => b.date.localeCompare(a.date) || b.at.localeCompare(a.at))
 }

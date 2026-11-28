@@ -11,6 +11,7 @@ import {
 } from '@waroo/ledger'
 import { useEffect, useState } from 'react'
 import { Avatar } from '../components/Avatar.tsx'
+import { byMonth, localDay, monthLabel, PAGE, ShowMore } from '../components/MonthList.tsx'
 import { NotificationsNudge } from '../components/NotificationsCard.tsx'
 import { Header } from '../components/Header.tsx'
 import { PlusIcon } from '../components/icons.tsx'
@@ -404,46 +405,6 @@ function Everyone({
   )
 }
 
-const PAGE = 30
-
-/** "November 2026": the heading over a month of expenses or payments. */
-function monthLabel(key: string) {
-  return new Intl.DateTimeFormat(locale(), { month: 'long', year: 'numeric' }).format(new Date(`${key}-01T00:00:00`))
-}
-
-/** Items, newest first, in sections by month: [YYYY-MM, items][] */
-function byMonth<T>(items: T[], dateOf: (item: T) => string): [string, T[]][] {
-  const out: [string, T[]][] = []
-  for (const item of items) {
-    const key = dateOf(item).slice(0, 7)
-    const last = out.at(-1)
-    if (last && last[0] === key) last[1].push(item)
-    else out.push([key, [item]])
-  }
-  return out
-}
-
-function ShowMore({ shown, total, onMore }: { shown: number; total: number; onMore: () => void }) {
-  if (shown >= total) return null
-  const left = total - shown
-  return (
-    <button className="button outline show-more" onClick={onMore}>
-      {plural(left, { one: 'Show # more', other: 'Show more (# left)' })}
-    </button>
-  )
-}
-
-/** Small stacked avatars: who paid, or who paid whom. */
-function Faces({ state, ids }: { state: GroupState; ids: string[] }) {
-  return (
-    <span className="faces" aria-hidden="true">
-      {ids.slice(0, 2).map((id) => (
-        <Avatar key={id} state={state} id={id} />
-      ))}
-    </span>
-  )
-}
-
 function Expenses({ meta, state }: { meta: GroupMeta; state: GroupState }) {
   const [limit, setLimit] = useState(PAGE)
   if (state.expenses.size === 0) {
@@ -470,7 +431,6 @@ function Expenses({ meta, state }: { meta: GroupMeta; state: GroupState }) {
               return (
                 <li key={e.id}>
                   <a className="card-row" href={`#/g/${meta.id}/e/${e.id}`}>
-                    <Faces state={state} ids={payers} />
                     <span className="row-main">
                       <strong>{e.title}</strong>
                       <span className="muted">{expenseLine(state, meta.meId, formatDate(e.date), payers, undefined, e.currency)}</span>
@@ -517,7 +477,6 @@ function Payments({ meta, state, events }: { meta: GroupMeta; state: GroupState;
           <ul className="cards">
             {payments.map((s) => (
               <li key={s.id} className="card-row">
-                <Faces state={state} ids={[s.from, s.to]} />
                 <span className="row-main">
                   <span>{paidLine(state, s.from, s.to, meta.meId)}</span>
                   <span className="muted">
@@ -535,14 +494,6 @@ function Payments({ meta, state, events }: { meta: GroupMeta; state: GroupState;
       <ShowMore shown={shown.length} total={all.length} onMore={() => setLimit(limit + PAGE)} />
     </>
   )
-}
-
-/** An ISO time as this phone's local date, YYYY-MM-DD; '' if there's none. */
-function localDay(iso: string): string {
-  const d = new Date(iso)
-  if (!iso || Number.isNaN(d.getTime())) return ''
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
 }
 
 function PencilIcon() {

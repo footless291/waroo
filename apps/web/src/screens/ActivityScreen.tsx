@@ -2,8 +2,10 @@ import { t } from '@lingui/core/macro'
 import { Trans } from '@lingui/react/macro'
 import { PageTitle } from '../components/Header.tsx'
 import { recentActivity, type ActivityItem } from '../lib/activity.ts'
-import { money, satsText } from '../lib/format.ts'
-import { locale, useLoad } from '../lib/hooks.ts'
+import { useState } from 'react'
+import { byMonth, monthLabel, PAGE, ShowMore } from '../components/MonthList.tsx'
+import { formatDate, money, satsText } from '../lib/format.ts'
+import { useLoad } from '../lib/hooks.ts'
 
 export function methodName(method: string | undefined): string {
   if (method === 'cash') return t`Cash`
@@ -12,7 +14,7 @@ export function methodName(method: string | undefined): string {
   return t`Other`
 }
 
-/** "Okinawa trip, Ana paid, your share ¥1,000" */
+/** "Nov 20, Okinawa trip, Ana paid" */
 function expenseLine(item: ActivityItem): string {
   const group = item.groupName
   const count = item.payers ?? 1
@@ -28,9 +30,7 @@ function expenseLine(item: ActivityItem): string {
       : who === null
         ? t`${group}, you paid`
         : t`${group}, ${who} paid`
-  if (!item.myShare) return base
-  const share = money(item.myShare, item.currency)
-  return t`${base}, your share ${share}`
+  return item.date ? `${formatDate(item.date)}${t`, `}${base}` : base
 }
 
 function paymentTitle(item: ActivityItem) {
@@ -41,18 +41,10 @@ function paymentTitle(item: ActivityItem) {
   return <Trans><strong>{from}</strong> paid <strong>{to}</strong></Trans>
 }
 
-/** "Today", "Yesterday", or a date. */
-function dayLabel(iso: string): string {
-  const d = new Date(iso)
-  const today = new Date()
-  const yesterday = new Date(Date.now() - 86_400_000)
-  if (d.toDateString() === today.toDateString()) return t`Today`
-  if (d.toDateString() === yesterday.toDateString()) return t`Yesterday`
-  return new Intl.DateTimeFormat(locale(), { month: 'short', day: 'numeric', weekday: 'short' }).format(d)
-}
-
 function Row({ item }: { item: ActivityItem }) {
   const href = `#/g/${item.groupId}/${item.kind === 'expense' ? 'expenses' : 'payments'}`
+  const net = item.myNet ?? 0
+  const sum = money(Math.abs(net), item.currency)
   return (
     <li>
       <a className="card-row" href={href}>
@@ -66,31 +58,32 @@ function Row({ item }: { item: ActivityItem }) {
             <>
               <span>{paymentTitle(item)}</span>
               <span className="muted">
-                {[item.friend ? '' : item.groupName, methodName(item.method), item.sats ? satsText(item.sats) : '']
+                {[item.date ? formatDate(item.date) : '', item.friend ? '' : item.groupName, methodName(item.method), item.sats ? satsText(item.sats) : '']
                   .filter(Boolean)
                   .join(t`, `)}
               </span>
             </>
           )}
         </span>
-        <span className="amount">{money(item.amount, item.currency)}</span>
+        {item.kind === 'expense' ? (
+          <span className="row-end">
+            <span className="amount">{money(item.amount, item.currency)}</span>
+            {net > 0 && <span className="owed small">{t`you lent ${sum}`}</span>}
+            {net < 0 && <span className="owes small">{t`you borrowed ${sum}`}</span>}
+          </span>
+        ) : (
+          <span className={`amount${item.to === null ? ' owed' : item.from === null ? ' owes' : ''}`}>{money(item.amount, item.currency)}</span>
+        )}
       </a>
     </li>
   )
 }
 
-/** Recent expenses and payments in every group. Tapping one opens it in its group. */
+/** Expenses and payments in every group and friendship, by month, newest first. Tapping one opens it where it belongs. */
 export function ActivityPage() {
   const items = useLoad(() => recentActivity(), [])
-
-  // Grouped by day, newest first.
-  const days: { label: string; items: ActivityItem[] }[] = []
-  for (const item of items ?? []) {
-    const label = item.at ? dayLabel(item.at) : t`Earlier`
-    const last = days.at(-1)
-    if (last?.label === label) last.items.push(item)
-    else days.push({ label, items: [item] })
-  }
+  const [limit, setLimit] = useState(PAGE)
+  const shown = (items ?? []).slice(0, limit)
   return (
     <div className="screen with-tabbar">
       <PageTitle>{t`Activity`}</PageTitle>
@@ -100,16 +93,17 @@ export function ActivityPage() {
           <p>{t`Expenses and payments from all your groups show up here, newest first.`}</p>
         </section>
       )}
-      {days.map((day) => (
-        <section key={day.label} className="section">
-          <h2 className="section-title">{day.label}</h2>
+      {byMonth(shown, (i) => i.date).map(([month, monthItems]) => (
+        <section key={month || 'undated'} className="section month">
+          <h2 className="section-title">{month ? monthLabel(month) : t`Earlier`}</h2>
           <ul className="cards">
-            {day.items.map((item) => (
+            {monthItems.map((item) => (
               <Row key={item.key} item={item} />
             ))}
           </ul>
         </section>
       ))}
+      {items && <ShowMore shown={shown.length} total={items.length} onMore={() => setLimit(limit + PAGE)} />}
     </div>
   )
 }
