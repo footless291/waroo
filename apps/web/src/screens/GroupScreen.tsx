@@ -15,7 +15,7 @@ import { byMonth, localDay, monthLabel, PAGE, ShowMore } from '../components/Mon
 import { NotificationsNudge } from '../components/NotificationsCard.tsx'
 import { Header } from '../components/Header.tsx'
 import { PlusIcon } from '../components/icons.tsx'
-import { FriendAcross, FriendStatus } from './FriendsScreen.tsx'
+import { FriendAcross, FriendMoney, FriendStatus } from './FriendsScreen.tsx'
 import { friendshipState } from '../lib/friends.ts'
 import { SyncLine } from '../components/SyncLine.tsx'
 import { groupTabs, TabBar } from '../components/TabBar.tsx'
@@ -78,6 +78,7 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
       content: (
         <div className="screen with-tabbar page-body">
           {friendship && <FriendStatus friendship={meta} state={state} />}
+          {friendship && <FriendMoney friendship={meta} state={state} />}
           {friendStatus === 'waiting' && (
             <section className="invite-card">
               <h2>{t`Your friend hasn’t joined yet`}</h2>
@@ -453,9 +454,12 @@ function Expenses({ meta, state }: { meta: GroupMeta; state: GroupState }) {
   )
 }
 
+/** A payment in the list: settling up, or money sent outside the balance (a gift). */
+type PaymentRow = (Settlement & { gift?: false }) | { gift: true; id: string; from: string; to: string; amount: number; currency: string; note?: string; bitcoin?: Settlement['bitcoin']; method?: undefined }
+
 function Payments({ meta, state, events }: { meta: GroupMeta; state: GroupState; events: LedgerEvent[] }) {
   const [limit, setLimit] = useState(PAGE)
-  if (state.settlements.size === 0) {
+  if (state.settlements.size === 0 && state.sent.size === 0) {
     return (
       <section className="empty">
         <h2>{t`No payments yet`}</h2>
@@ -465,9 +469,13 @@ function Payments({ meta, state, events }: { meta: GroupMeta; state: GroupState;
   }
   // A payment's date is when it was recorded (or, for one paid in bitcoin, when it went through).
   const recorded = new Map<string, string>()
-  for (const e of events) if (e.type === 'settlement.recorded') recorded.set(e.settlement.id, e.at)
-  const when = (s: Settlement) => localDay(s.bitcoin?.settledAt ?? recorded.get(s.id) ?? '')
-  const all = [...state.settlements.values()].reverse().sort((a, b) => when(b).localeCompare(when(a)))
+  for (const e of events) {
+    if (e.type === 'settlement.recorded') recorded.set(e.settlement.id, e.at)
+    if (e.type === 'money.sent') recorded.set(e.sent.id, e.at)
+  }
+  const when = (s: PaymentRow) => localDay(s.bitcoin?.settledAt ?? recorded.get(s.id) ?? '')
+  const rows: PaymentRow[] = [...[...state.settlements.values()].map((s) => ({ ...s, gift: false as const })), ...[...state.sent.values()].map((x) => ({ ...x, gift: true as const }))]
+  const all = rows.reverse().sort((a, b) => when(b).localeCompare(when(a)))
   const shown = all.slice(0, limit)
   return (
     <>
@@ -478,9 +486,9 @@ function Payments({ meta, state, events }: { meta: GroupMeta; state: GroupState;
             {payments.map((s) => (
               <li key={s.id} className="card-row">
                 <span className="row-main">
-                  <span>{paidLine(state, s.from, s.to, meta.meId)}</span>
+                  <span>{s.gift ? sentLine(state, s.from, s.to, meta.meId) : paidLine(state, s.from, s.to, meta.meId)}</span>
                   <span className="muted">
-                    {[when(s) ? formatDate(when(s)) : '', methodName(s.method), s.bitcoin ? satsText(s.bitcoin.sats) : '']
+                    {[when(s) ? formatDate(when(s)) : '', s.note ?? '', s.gift ? '' : methodName(s.method), s.bitcoin ? satsText(s.bitcoin.sats) : '']
                       .filter(Boolean)
                       .join(t`, `)}
                   </span>
@@ -494,6 +502,15 @@ function Payments({ meta, state, events }: { meta: GroupMeta; state: GroupState;
       <ShowMore shown={shown.length} total={all.length} onMore={() => setLimit(limit + PAGE)} />
     </>
   )
+}
+
+/** "You sent Bob", "Bob sent you": money outside the balance. */
+function sentLine(state: GroupState, from: string, to: string, meId: string) {
+  const payer = nameOf(state, from, meId)
+  const payee = nameOf(state, to, meId)
+  if (from === meId) return t`You sent ${payee}`
+  if (to === meId) return t`${payer} sent you`
+  return t`${payer} sent ${payee}`
 }
 
 function PencilIcon() {

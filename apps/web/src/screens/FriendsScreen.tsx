@@ -5,7 +5,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { Avatar } from '../components/Avatar.tsx'
 import { Header, PageTitle } from '../components/Header.tsx'
 import { QrCode } from '../components/QrCode.tsx'
-import { createFriend, deleteGroupLocally, makeShareable, myLastName, replayGroup, type GroupMeta } from '../lib/db.ts'
+import { append, createFriend, deleteGroupLocally, makeShareable, myLastName, replayGroup, type GroupMeta } from '../lib/db.ts'
 import { money } from '../lib/format.ts'
 import { groupTitle } from '../lib/title.ts'
 import { go, useGroup, useGroups, useLoad } from '../lib/hooks.ts'
@@ -207,7 +207,7 @@ export function RemoveFriend({ friendship, state }: { friendship: GroupMeta; sta
 }
 
 function FriendRow({ group }: { group: GroupMeta }) {
-  const [summary, setSummary] = useState<{ state: GroupState; other?: string; name: string; waiting: boolean; disconnected: boolean; lines: { amount: number; currency: string }[]; groups: number }>()
+  const [summary, setSummary] = useState<{ state: GroupState; other?: string; name: string; waiting: boolean; disconnected: boolean; asks: string[]; lines: { amount: number; currency: string }[]; groups: number }>()
   useEffect(() => {
     void (async () => {
       const state = await replayGroup(group.id)
@@ -215,7 +215,7 @@ function FriendRow({ group }: { group: GroupMeta }) {
       const other = status === 'disconnected' ? [...state.members.values()].find((m) => m.id !== group.meId)?.id : friendIn(state, group.meId)?.id
       const waiting = status === 'waiting'
       const shared = waiting ? [] : await sharedGroups(group, state)
-      setSummary({ state, other, name: groupTitle(state, group), waiting, disconnected: status === 'disconnected', lines: totalOwed(group, state, shared), groups: shared.length })
+      setSummary({ state, other, name: groupTitle(state, group), waiting, disconnected: status === 'disconnected', asks: [...state.requests.values()].filter((r) => !r.outcome && r.to === group.meId).map((r) => money(r.amount, r.currency)), lines: totalOwed(group, state, shared), groups: shared.length })
     })()
   }, [group])
   if (!summary) return <span className="card-row" />
@@ -243,6 +243,9 @@ function FriendRow({ group }: { group: GroupMeta }) {
             })}
           </span>
         )}
+        {summary.asks.map((sum) => (
+          <span key={sum} className="ask">{t`Asks you for ${sum}`}</span>
+        ))}
         {summary.groups > 0 && (
           <span className="muted small">{plural(summary.groups, { one: 'Counting # group you share', other: 'Counting # groups you share' })}</span>
         )}
@@ -453,5 +456,62 @@ function FriendCode({ groupId }: { groupId: string }) {
         </button>
       </section>
     </main>
+  )
+}
+
+/**
+ * On a friend's page: send them money or ask for some, and any requests
+ * still open between you, to pay, decline or cancel.
+ */
+export function FriendMoney({ friendship, state }: { friendship: GroupMeta; state: GroupState }) {
+  const [busy, setBusy] = useState(false)
+  if (friendshipState(state, friendship.meId) !== 'connected') return null
+  const name = groupTitle(state, friendship)
+  const open = [...state.requests.values()].filter((r) => !r.outcome)
+  const base = `#/g/${friendship.id}`
+
+  async function close(requestId: string, outcome: 'declined' | 'cancelled') {
+    setBusy(true)
+    await append(friendship, [{ type: 'request.closed', requestId, outcome }])
+    setBusy(false)
+  }
+
+  return (
+    <section className="friend-money">
+      <div className="button-row">
+        <a className="button outline" href={`${base}/send`}>
+          {t`Send money`}
+        </a>
+        <a className="button outline" href={`${base}/request`}>
+          {t`Ask for money`}
+        </a>
+      </div>
+      {open.map((r) => {
+        const sum = money(r.amount, r.currency)
+        const mine = r.from === friendship.meId
+        return (
+          <div key={r.id} className={`request-card${mine ? '' : ' to-me'}`}>
+            <p>
+              <strong>{mine ? t`You asked ${name} for ${sum}` : t`${name} asks you for ${sum}`}</strong>
+              {r.note && <span className="muted">{r.note}</span>}
+            </p>
+            {mine ? (
+              <button className="button small outline" disabled={busy} onClick={() => void close(r.id, 'cancelled')}>
+                {t`Cancel`}
+              </button>
+            ) : (
+              <div className="button-row">
+                <a className="button small primary" href={`${base}/send?request=${r.id}`}>
+                  {t`Pay`}
+                </a>
+                <button className="button small outline" disabled={busy} onClick={() => void close(r.id, 'declined')}>
+                  {t`Decline`}
+                </button>
+              </div>
+            )}
+          </div>
+        )
+      })}
+    </section>
   )
 }

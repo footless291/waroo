@@ -9,8 +9,8 @@ msgstr ""
 
 #: src/components/BitcoinPay.tsx:463
 #: src/screens/ActivityScreen.tsx:33
-#: src/screens/ActivityScreen.tsx:63
-#: src/screens/GroupScreen.tsx:485
+#: src/screens/ActivityScreen.tsx:68
+#: src/screens/GroupScreen.tsx:493
 #: src/screens/PersonScreen.tsx:85
 msgid ", "
 msgstr "、"
@@ -45,7 +45,7 @@ msgid "{0, plural, one {# is here already and will be skipped.} other {# are her
 msgstr "{0, plural, other {#件はすでにあるため、スキップされます。}}"
 
 #. placeholder {0}: summary.groups
-#: src/screens/FriendsScreen.tsx:247
+#: src/screens/FriendsScreen.tsx:250
 msgid "{0, plural, one {Counting # group you share} other {Counting # groups you share}}"
 msgstr "{0, plural, other {共通のグループ#件を含む}}"
 
@@ -85,35 +85,40 @@ msgstr "{0}は使えませんでした：{1}"
 msgid "{0} is now number {position} of {count}."
 msgstr "{0}は{count}件中{position}番目になりました。"
 
+#. placeholder {0}: money(amount, currency)
+#: src/screens/SendScreen.tsx:140
+msgid "{0} to {name}, straight to their wallet."
+msgstr "{name}さんに{0}を、相手のウォレットへ直接送ります。"
+
 #: src/components/BitcoinPay.tsx:137
 msgid "{addr}: {why}"
 msgstr "{addr}：{why}"
 
-#: src/screens/GroupScreen.tsx:526
+#: src/screens/GroupScreen.tsx:543
 msgid "{base}, your share {share}"
 msgstr "{base}、あなたの負担 {share}"
 
-#: src/lib/news.ts:110
+#: src/lib/news.ts:114
 msgid "{by} marked {from}’s {amount} to you as paid"
 msgstr "{by}さんが、{from}さんからあなたへの{amount}を支払い済みにしました"
 
-#: src/lib/news.ts:115
+#: src/lib/news.ts:119
 msgid "{by} marked your {amount} to {to} as paid"
 msgstr "{by}さんが、あなたから{to}さんへの{amount}を支払い済みにしました"
 
-#: src/lib/news.ts:139
+#: src/lib/news.ts:167
 msgid "{by} moved you to a new phone in {group}"
 msgstr "{by}さんが{group}であなたを新しいスマホに移しました"
 
-#: src/lib/news.ts:151
+#: src/lib/news.ts:179
 msgid "{by} removed {who} from {group}"
 msgstr "{by}さんが{who}さんを{group}から外しました"
 
-#: src/lib/news.ts:148
+#: src/lib/news.ts:176
 msgid "{by} removed you from {group}"
 msgstr "{by}さんがあなたを{group}から外しました"
 
-#: src/lib/news.ts:142
+#: src/lib/news.ts:170
 msgid "{by} vouched for it"
 msgstr "{by}さんが保証しました"
 
@@ -122,7 +127,7 @@ msgstr "{by}さんが保証しました"
 msgid "{clean} didn’t answer: {0}"
 msgstr "{clean}から応答がありません：{0}"
 
-#: src/screens/GroupScreen.tsx:226
+#: src/screens/GroupScreen.tsx:227
 msgid "{count, plural, one {One expense was edited by two people at once. The latest edit was kept.} other {# expenses were edited by two people at once. The latest edit was kept.}}"
 msgstr "{count, plural, other {#件の支出が2人に同時に編集されました。最新の編集を残しています。}}"
 
@@ -138,15 +143,15 @@ msgstr "{currency}には小数点以下がありません"
 msgid "{currency} takes at most {digits} decimal places"
 msgstr "{currency}は小数点以下{digits}桁までです"
 
-#: src/screens/GroupScreen.tsx:523
+#: src/screens/GroupScreen.tsx:540
 msgid "{date}, {count} people paid"
 msgstr "{date}、{count}人が支払った"
 
-#: src/screens/GroupScreen.tsx:523
+#: src/screens/GroupScreen.tsx:540
 msgid "{date}, {who} paid"
 msgstr "{date}、{who}さんが支払った"
 
-#: src/screens/GroupScreen.tsx:523
+#: src/screens/GroupScreen.tsx:540
 msgid "{date}, you paid"
 msgstr "{date}、あなたが支払った"
 
@@ -154,25 +159,33 @@ msgstr "{date}、あなたが支払った"
 msgid "{expenses, plural, one {# expense} other {# expenses}} and {payments, plural, one {# payment} other {# payments}} to import."
 msgstr "支出{expenses, plural, other {#件}}と支払い{payments, plural, other {#件}}を取り込みます。"
 
+#: src/lib/news.ts:147
+msgid "{from} asks you for {amount}"
+msgstr "{from}さんから{amount}の支払い依頼"
+
 #: src/screens/HomeScreen.tsx:115
 msgid "{from} invited you to {group}"
 msgstr "{from}さんから「{group}」への招待が届いています"
 
-#: src/lib/news.ts:133
+#: src/lib/news.ts:161
 msgid "{from} invited you to {to}"
 msgstr "{from}さんから「{to}」への招待が届きました"
 
-#: src/lib/news.ts:109
+#: src/lib/news.ts:113
 msgid "{from} marked {amount} as paid to you"
 msgstr "{from}さんが{amount}をあなたへの支払い済みにしました"
 
-#: src/lib/news.ts:117
+#: src/lib/news.ts:121
 msgid "{from} paid {to} {amount}"
 msgstr "{from}さんが{to}さんに{amount}を支払いました"
 
-#: src/lib/news.ts:107
+#: src/lib/news.ts:111
 msgid "{from} paid you {amount}"
 msgstr "{from}さんが{amount}を支払いました"
+
+#: src/lib/news.ts:139
+msgid "{from} sent you {amount}"
+msgstr "{from}さんから{amount}が届きました"
 
 #: src/screens/ActivityScreen.tsx:29
 msgid "{group}, {count} people paid"
@@ -186,7 +199,7 @@ msgstr "{group}、{who}さんが支払った"
 msgid "{group}, you paid"
 msgstr "{group}、あなたが支払った"
 
-#: src/lib/news.ts:188
+#: src/lib/news.ts:216
 msgid "{group}: {count} new things"
 msgstr "{group}：新着{count}件"
 
@@ -220,7 +233,39 @@ msgstr "{name}さん"
 msgid "{name} (you)"
 msgstr "{name}（あなた）"
 
-#: src/screens/GroupScreen.tsx:132
+#. placeholder {0}: money(asked.amount, asked.currency)
+#. placeholder {1}: asked.note
+#: src/screens/SendScreen.tsx:101
+msgid "{name} asked you for {0}: {1}"
+msgstr "{name}さんから{0}の依頼：{1}"
+
+#. placeholder {0}: money(asked.amount, asked.currency)
+#: src/screens/SendScreen.tsx:101
+msgid "{name} asked you for {0}."
+msgstr "{name}さんから{0}の依頼です。"
+
+#: src/screens/FriendsScreen.tsx:495
+msgid "{name} asks you for {sum}"
+msgstr "{name}さんから{sum}の依頼"
+
+#: src/screens/SendScreen.tsx:269
+msgid "{name} gets a notification, and can pay straight from their wallet."
+msgstr "{name}さんに通知が届き、ウォレットから直接支払えます。"
+
+#. placeholder {0}: money(owedHere.amount, currency)
+#: src/screens/SendScreen.tsx:244
+msgid "{name} owes you {0}. Paying settles it."
+msgstr "{name}さんはあなたに{0}の支払いが残っています。支払われると精算されます。"
+
+#: src/screens/SendScreen.tsx:25
+msgid "{name} paid for something of yours. It’s recorded as an expense they paid and your payment to them, so the balance doesn’t change, but your history shows what it was for."
+msgstr "{name}さんがあなたの分を立て替えた場合です。{name}さんが払った支出と、あなたからの支払いとして記録されるので、残高は変わらず、何の支払いかが履歴に残ります。"
+
+#: src/screens/SendScreen.tsx:24
+msgid "{name} will owe you this back."
+msgstr "{name}さんがこの金額をあなたに返す形になります。"
+
+#: src/screens/GroupScreen.tsx:133
 msgid "{name}: group settings"
 msgstr "{name}：グループの設定"
 
@@ -228,13 +273,21 @@ msgstr "{name}：グループの設定"
 msgid "{names} and you are here"
 msgstr "{names}とあなたが参加中"
 
-#: src/screens/GroupScreen.tsx:535
+#: src/screens/GroupScreen.tsx:552
 msgid "{payer} paid {payee}"
 msgstr "{payer}さんが{payee}さんに支払った"
 
-#: src/screens/GroupScreen.tsx:534
+#: src/screens/GroupScreen.tsx:551
 msgid "{payer} paid you"
 msgstr "{payer}さんがあなたに支払った"
+
+#: src/screens/GroupScreen.tsx:513
+msgid "{payer} sent {payee}"
+msgstr "{payer}さんが{payee}さんに送った"
+
+#: src/screens/GroupScreen.tsx:512
+msgid "{payer} sent you"
+msgstr "{payer}さんがあなたに送った"
 
 #: src/screens/ImportScreen.tsx:166
 msgid "{person} in Splitwise is"
@@ -244,11 +297,11 @@ msgstr "Splitwiseの{person}さんは"
 msgid "{price} per bitcoin"
 msgstr "1ビットコインあたり{price}"
 
-#: src/lib/news.ts:93
+#: src/lib/news.ts:97
 msgid "{sats} over Lightning"
 msgstr "{sats}（ライトニング）"
 
-#: src/lib/news.ts:94
+#: src/lib/news.ts:98
 msgid "{sats} over Lightning, in {group}"
 msgstr "{sats}（ライトニング）・{group}"
 
@@ -256,7 +309,7 @@ msgstr "{sats}（ライトニング）・{group}"
 msgid "{savedName} leaves this phone, and the others can’t add you to new expenses. Past expenses keep your name. To come back, you’d need a new invite."
 msgstr "「{savedName}」はこのスマホから消え、ほかのメンバーはあなたを新しい支出に追加できなくなります。過去の支出にはあなたの名前が残ります。戻るには新しい招待が必要です。"
 
-#: src/lib/news.ts:114
+#: src/lib/news.ts:118
 msgid "{to} marked your {amount} as paid"
 msgstr "{to}さんがあなたの{amount}を支払い済みにしました"
 
@@ -272,27 +325,31 @@ msgstr "{toName}さんのサービスは支払いを自動で確認できませ�
 msgid "{what}: {message}"
 msgstr "{what}：{message}"
 
-#: src/lib/news.ts:125
+#: src/lib/news.ts:129
 msgid "{who} accepted your friend request"
 msgstr "{who}さんが友達リクエストを承認しました"
 
-#: src/lib/news.ts:178
+#: src/lib/news.ts:206
 msgid "{who} added {title}, {total}"
 msgstr "{who}さんが{title}を追加：{total}"
 
-#: src/screens/GroupScreen.tsx:222
+#: src/screens/GroupScreen.tsx:223
 msgid "{who} can’t see this yet"
 msgstr "{who}はまだこのグループを見られません"
 
-#: src/lib/news.ts:142
+#: src/lib/news.ts:155
+msgid "{who} declined your request for {amount}"
+msgstr "{who}さんが{amount}の依頼を断りました"
+
+#: src/lib/news.ts:170
 msgid "{who} is back in {group} on a new phone"
 msgstr "{who}さんが新しいスマホで{group}に戻りました"
 
-#: src/lib/news.ts:127
+#: src/lib/news.ts:131
 msgid "{who} joined {group}"
 msgstr "{who}さんが{group}に参加しました"
 
-#: src/lib/news.ts:157
+#: src/lib/news.ts:185
 msgid "{who} left {group}"
 msgstr "{who}さんが{group}から退出しました"
 
@@ -326,13 +383,21 @@ msgstr "{why}。接続を確認して、もう一度お試しください。"
 msgid "<0>{0} couldn’t pay:</0> {1}."
 msgstr "<0>{0}で支払えませんでした：</0>{1}。"
 
-#: src/screens/ActivityScreen.tsx:41
+#: src/screens/ActivityScreen.tsx:46
 msgid "<0>{from}</0> paid <1>{to}</1>"
 msgstr "<0>{from}さん</0>が<1>{to}さん</1>に支払った"
 
-#: src/screens/ActivityScreen.tsx:40
+#: src/screens/ActivityScreen.tsx:45
 msgid "<0>{from}</0> paid <1>you</1>"
 msgstr "<0>{from}さん</0>が<1>あなた</1>に支払った"
+
+#: src/screens/ActivityScreen.tsx:42
+msgid "<0>{from}</0> sent <1>{to}</1>"
+msgstr "<0>{from}さん</0>が<1>{to}さん</1>に送った"
+
+#: src/screens/ActivityScreen.tsx:41
+msgid "<0>{from}</0> sent <1>you</1>"
+msgstr "<0>{from}さん</0>が<1>あなた</1>に送った"
 
 #: src/screens/SettleScreen.tsx:111
 msgid "<0>{fromName}</0> pays <1>{toName}</1>"
@@ -342,33 +407,37 @@ msgstr "<0>{fromName}さん</0>が<1>{toName}さん</1>に支払う"
 msgid "<0>{fromName}</0> pays <1>you</1>"
 msgstr "<0>{fromName}さん</0>が<1>あなた</1>に支払う"
 
-#: src/screens/GroupScreen.tsx:238
+#: src/screens/GroupScreen.tsx:239
 msgid "<0>{payer}</0> pays <1>{payee}</1>"
 msgstr "<0>{payer}さん</0>が<1>{payee}さん</1>に支払う"
 
-#: src/screens/GroupScreen.tsx:237
+#: src/screens/GroupScreen.tsx:238
 msgid "<0>{payer}</0> pays <1>you</1>"
 msgstr "<0>{payer}さん</0>が<1>あなた</1>に支払う"
 
-#: src/screens/GroupScreen.tsx:163
+#: src/screens/GroupScreen.tsx:164
 msgid "<0>{remover} removed you from {name}.</0> This phone won’t get anything new from the group. To come back, ask for a new invite."
 msgstr "<0>{remover}さんがあなたを{name}から外しました。</0>このスマホにはグループの新しい内容が届きません。戻るには新しい招待をもらってください。"
 
-#: src/screens/GroupScreen.tsx:154
+#: src/screens/GroupScreen.tsx:155
 msgid "<0>{replacedBy} moved you to a new phone in {name}.</0> This phone can’t add anything any more. If that wasn’t you, tell the group."
 msgstr "<0>{replacedBy}さんが{name}であなたを新しいスマホに移しました。</0>このスマホからは何も追加できません。心当たりがなければ、グループに知らせてください。"
 
-#: src/screens/ActivityScreen.tsx:39
+#: src/screens/ActivityScreen.tsx:44
 msgid "<0>You</0> paid <1>{to}</1>"
 msgstr "<0>あなた</0>が<1>{to}さん</1>に支払った"
 
-#: src/screens/GroupScreen.tsx:236
+#: src/screens/GroupScreen.tsx:237
 msgid "<0>You</0> pay <1>{payee}</1>"
 msgstr "<0>あなた</0>が<1>{payee}さん</1>に支払う"
 
 #: src/screens/SettleScreen.tsx:103
 msgid "<0>You</0> pay <1>{toName}</1>"
 msgstr "<0>あなた</0>が<1>{toName}さん</1>に支払う"
+
+#: src/screens/ActivityScreen.tsx:40
+msgid "<0>You</0> sent <1>{to}</1>"
+msgstr "<0>あなた</0>が<1>{to}さん</1>に送った"
 
 #: src/screens/InviteScreen.tsx:30
 msgid "1 day"
@@ -386,11 +455,15 @@ msgstr "1週間"
 msgid "A bill-splitting app for trips, flats and dinners. Everyone adds what they paid from their own phone, and Waroo works out who owes whom."
 msgstr "旅行やシェアハウス、飲み会のための割り勘アプリです。払った分をそれぞれ自分のスマホから記録すると、誰が誰にいくら払えばいいかをWarooが計算します。"
 
+#: src/screens/SendScreen.tsx:23
+msgid "A gift, or anything outside Waroo. Your balance with {name} doesn’t change."
+msgstr "プレゼントや、Waroo以外のことのため。{name}さんとの残高は変わりません。"
+
 #: src/screens/JoinScreen.tsx:157
 msgid "a group"
 msgstr "グループ"
 
-#: src/App.tsx:74
+#: src/App.tsx:77
 msgid "A new version is ready."
 msgstr "新しいバージョンがあります。"
 
@@ -399,7 +472,7 @@ msgid "A tax, tip or discount needs items that come to more than zero"
 msgstr "税・チップ・割引には、合計がゼロより大きい品目が必要です"
 
 #: src/components/TabBar.tsx:47
-#: src/screens/ActivityScreen.tsx:89
+#: src/screens/ActivityScreen.tsx:94
 msgid "Activity"
 msgstr "履歴"
 
@@ -421,8 +494,8 @@ msgid "Add a different wallet"
 msgstr "別のウォレットを追加"
 
 #: src/screens/FriendsScreen.tsx:43
-#: src/screens/FriendsScreen.tsx:337
-#: src/screens/FriendsScreen.tsx:432
+#: src/screens/FriendsScreen.tsx:340
+#: src/screens/FriendsScreen.tsx:435
 #: src/screens/MainTabs.tsx:38
 msgid "Add a friend"
 msgstr "友達を追加"
@@ -441,7 +514,7 @@ msgstr "友達に追加"
 
 #: src/screens/ExpenseScreen.tsx:368
 #: src/screens/ExpenseScreen.tsx:567
-#: src/screens/GroupScreen.tsx:204
+#: src/screens/GroupScreen.tsx:205
 msgid "Add expense"
 msgstr "支出を追加"
 
@@ -449,11 +522,11 @@ msgstr "支出を追加"
 msgid "Add item"
 msgstr "品目を追加"
 
-#: src/screens/FriendsScreen.tsx:410
+#: src/screens/FriendsScreen.tsx:413
 msgid "Add me as a friend on Waroo"
 msgstr "Warooで友達になろう"
 
-#: src/screens/FriendsScreen.tsx:410
+#: src/screens/FriendsScreen.tsx:413
 msgid "Add me on Waroo"
 msgstr "Warooで友達に追加"
 
@@ -461,7 +534,7 @@ msgstr "Warooで友達に追加"
 msgid "Add or take off an amount for anyone, and split the rest equally among the people ticked."
 msgstr "誰かの分を増減して、残りをチェックした人で均等に分けます。"
 
-#: src/screens/GroupScreen.tsx:199
+#: src/screens/GroupScreen.tsx:200
 #: src/screens/SettleScreen.tsx:73
 msgid "Add payment"
 msgstr "支払いを追加"
@@ -474,7 +547,7 @@ msgstr "スクリーンショットを追加"
 msgid "Add tax, tip or discount"
 msgstr "税・チップ・割引を追加"
 
-#: src/screens/GroupScreen.tsx:257
+#: src/screens/GroupScreen.tsx:258
 msgid "Add the first expense to get started."
 msgstr "最初の支出を追加して始めましょう。"
 
@@ -486,7 +559,7 @@ msgstr "ホーム画面に追加"
 msgid "Add Waroo to your Home Screen"
 msgstr "Warooをホーム画面に追加"
 
-#: src/screens/GroupScreen.tsx:414
+#: src/screens/GroupScreen.tsx:415
 msgid "Add what someone paid for, and Waroo works out who owes what."
 msgstr "誰が何を払ったかを追加すると、Warooが誰がいくら払うべきかを計算します。"
 
@@ -519,14 +592,14 @@ msgstr "調整"
 msgid "All here"
 msgstr "移行完了"
 
-#: src/screens/GroupScreen.tsx:373
+#: src/screens/GroupScreen.tsx:374
 #: src/screens/ImportScreen.tsx:214
 msgid "all square"
 msgstr "精算済み"
 
 #: src/screens/FriendsScreen.tsx:233
-#: src/screens/FriendsScreen.tsx:279
-#: src/screens/GroupScreen.tsx:256
+#: src/screens/FriendsScreen.tsx:282
+#: src/screens/GroupScreen.tsx:257
 #: src/screens/HomeScreen.tsx:31
 msgid "All square"
 msgstr "精算済み"
@@ -537,6 +610,8 @@ msgstr "別のスマホで参加済み"
 
 #: src/screens/ExpenseScreen.tsx:188
 #: src/screens/ExpenseScreen.tsx:377
+#: src/screens/SendScreen.tsx:106
+#: src/screens/SendScreen.tsx:250
 msgid "Amount"
 msgstr "金額"
 
@@ -591,10 +666,27 @@ msgstr "Wallet of Satoshiなど、ライトニングアドレスのあるウォ�
 msgid "Appearance"
 msgstr "表示"
 
+#: src/screens/SendScreen.tsx:226
+msgid "Ask {name} for money"
+msgstr "{name}さんに支払いを依頼"
+
+#. placeholder {0}: money(amount, currency)
+#: src/screens/SendScreen.tsx:267
+msgid "Ask for {0}"
+msgstr "{0}を依頼する"
+
+#: src/screens/FriendsScreen.tsx:486
+msgid "Ask for money"
+msgstr "支払いを依頼"
+
 #: src/screens/JoinScreen.tsx:51
 #: src/screens/JoinScreen.tsx:149
 msgid "Ask for the invite link again, and open the whole link."
 msgstr "招待リンクをもう一度もらって、リンク全体を開いてください。"
+
+#: src/screens/FriendsScreen.tsx:247
+msgid "Asks you for {sum}"
+msgstr "{sum}の依頼"
 
 #: src/screens/Onboarding.tsx:202
 msgid "at the bottom of Safari (at the top on iPad)"
@@ -665,11 +757,12 @@ msgstr "グループに接続できません・再試行中"
 #: src/components/WalletSection.tsx:283
 #: src/screens/FriendsScreen.tsx:166
 #: src/screens/FriendsScreen.tsx:197
+#: src/screens/FriendsScreen.tsx:500
 #: src/screens/GroupSettingsScreen.tsx:145
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: src/screens/FriendsScreen.tsx:452
+#: src/screens/FriendsScreen.tsx:455
 msgid "Cancel this code"
 msgstr "このコードを取り消す"
 
@@ -678,7 +771,11 @@ msgstr "このコードを取り消す"
 msgid "Cash"
 msgstr "現金"
 
-#: src/screens/GroupScreen.tsx:384
+#: src/screens/SendScreen.tsx:157
+msgid "Change the amount"
+msgstr "金額を変更"
+
+#: src/screens/GroupScreen.tsx:385
 msgid "Change your name"
 msgstr "名前を変更"
 
@@ -749,6 +846,10 @@ msgstr "ここに戻って「貼り付け」をタップします。"
 msgid "Computer"
 msgstr "パソコン"
 
+#: src/screens/SendScreen.tsx:127
+msgid "Concert ticket"
+msgstr "コンサートのチケット"
+
 #: src/components/WalletGuides.tsx:205
 #: src/components/WalletGuides.tsx:269
 #: src/components/WalletGuides.tsx:414
@@ -800,7 +901,7 @@ msgstr "ブラウザのまま招待を開く"
 msgid "Copy invoice"
 msgstr "請求書をコピー"
 
-#: src/screens/FriendsScreen.tsx:447
+#: src/screens/FriendsScreen.tsx:450
 #: src/screens/InviteScreen.tsx:175
 msgid "Copy link"
 msgstr "リンクをコピー"
@@ -908,6 +1009,8 @@ msgid "Create invite link"
 msgstr "招待リンクを作成"
 
 #: src/screens/ExpenseScreen.tsx:387
+#: src/screens/SendScreen.tsx:110
+#: src/screens/SendScreen.tsx:254
 #: src/screens/SettleScreen.tsx:119
 msgid "Currency"
 msgstr "通貨"
@@ -919,6 +1022,10 @@ msgstr "ダーク"
 #: src/screens/ExpenseScreen.tsx:407
 msgid "Date"
 msgstr "日付"
+
+#: src/screens/FriendsScreen.tsx:508
+msgid "Decline"
+msgstr "断る"
 
 #: src/screens/FriendsScreen.tsx:163
 msgid "Delete"
@@ -969,10 +1076,11 @@ msgstr "このコードは共有しないでください。あなた自身のス
 #: src/components/BitcoinPay.tsx:226
 #: src/screens/MoveScreen.tsx:207
 #: src/screens/RecoverScreen.tsx:218
+#: src/screens/SendScreen.tsx:153
 msgid "Done"
 msgstr "完了"
 
-#: src/screens/FriendsScreen.tsx:309
+#: src/screens/FriendsScreen.tsx:312
 msgid "Each group settles up on its own: open one to pay or mark a payment."
 msgstr "精算はグループごとに行います。グループを開いて、支払うか支払いを記録してください。"
 
@@ -980,7 +1088,7 @@ msgstr "精算はグループごとに行います。グループを開いて、
 msgid "Each person in Splitwise needs to be someone different here."
 msgstr "Splitwiseの各メンバーには、それぞれ別の人を選んでください。"
 
-#: src/screens/ActivityScreen.tsx:98
+#: src/screens/ActivityScreen.tsx:103
 msgid "Earlier"
 msgstr "以前"
 
@@ -997,6 +1105,8 @@ msgid "Email me now and then about Waroo updates"
 msgstr "Warooの最新情報をときどきメールで受け取る"
 
 #: src/screens/ExpenseScreen.tsx:267
+#: src/screens/SendScreen.tsx:60
+#: src/screens/SendScreen.tsx:198
 #: src/screens/SettleScreen.tsx:56
 msgid "Enter an amount"
 msgstr "金額を入力してください"
@@ -1009,8 +1119,8 @@ msgstr "各品目の金額を入力してください"
 msgid "Equally"
 msgstr "均等"
 
-#: src/screens/GroupScreen.tsx:320
-#: src/screens/GroupScreen.tsx:364
+#: src/screens/GroupScreen.tsx:321
+#: src/screens/GroupScreen.tsx:365
 msgid "Everyone"
 msgstr "メンバー"
 
@@ -1018,7 +1128,7 @@ msgstr "メンバー"
 msgid "Everyone in the group sees the change."
 msgstr "変更はグループの全員に表示されます。"
 
-#: src/screens/GroupScreen.tsx:320
+#: src/screens/GroupScreen.tsx:321
 msgid "Everyone, in {currency}"
 msgstr "メンバー（{currency}）"
 
@@ -1026,7 +1136,7 @@ msgstr "メンバー（{currency}）"
 msgid "Everything in this file is here already."
 msgstr "このファイルの内容はすべて取り込み済みです。"
 
-#: src/screens/FriendsScreen.tsx:306
+#: src/screens/FriendsScreen.tsx:309
 msgid "Everything together"
 msgstr "すべての合計"
 
@@ -1042,7 +1152,7 @@ msgstr "支出"
 msgid "Expenses"
 msgstr "支出"
 
-#: src/screens/ActivityScreen.tsx:93
+#: src/screens/ActivityScreen.tsx:98
 msgid "Expenses and payments from all your groups show up here, newest first."
 msgstr "すべてのグループの支出と支払いが、新しい順にここに表示されます。"
 
@@ -1083,7 +1193,7 @@ msgstr "無料。ユーザー名とパスワードだけ。"
 msgid "Free. Sign up with email; one code sets up everything."
 msgstr "無料。メールで登録、コード1つですべて設定。"
 
-#: src/screens/FriendsScreen.tsx:435
+#: src/screens/FriendsScreen.tsx:438
 msgid "Friend code"
 msgstr "友達コード"
 
@@ -1141,7 +1251,7 @@ msgstr "誰かがあなたに支払ったとき、グループに参加したと
 msgid "Get a notification when someone pays you, joins a group or adds an expense. What happened is worked out on this phone; the server never sees it."
 msgstr "誰かがあなたに支払ったとき、グループに参加したとき、支出を追加したときに通知を受け取れます。内容はこのスマホで作られ、サーバーには届きません。"
 
-#: src/screens/GroupScreen.tsx:510
+#: src/screens/GroupScreen.tsx:527
 #: src/screens/GroupSettingsScreen.tsx:166
 msgid "get back {sum}"
 msgstr "{sum}受け取る"
@@ -1154,7 +1264,7 @@ msgstr "グループに戻る"
 msgid "Get started"
 msgstr "はじめる"
 
-#: src/screens/GroupScreen.tsx:510
+#: src/screens/GroupScreen.tsx:527
 msgid "gets back {sum}"
 msgstr "{sum}受け取る"
 
@@ -1192,7 +1302,7 @@ msgstr "グループ"
 msgid "Group name"
 msgstr "グループ名"
 
-#: src/screens/GroupScreen.tsx:207
+#: src/screens/GroupScreen.tsx:208
 msgid "Group sections"
 msgstr "グループのメニュー"
 
@@ -1205,6 +1315,10 @@ msgstr "グループの設定"
 msgid "Groups"
 msgstr "グループ"
 
+#: src/screens/SendScreen.tsx:127
+msgid "Happy birthday!"
+msgstr "お誕生日おめでとう！"
+
 #: src/screens/PersonScreen.tsx:76
 msgid "Hasn’t joined on a phone yet."
 msgstr "まだスマホで参加していません。"
@@ -1213,7 +1327,7 @@ msgstr "まだスマホで参加していません。"
 msgid "Have Waroo on your Home Screen? Join from there instead: open it, tap the scan button and scan the invite code. Groups joined here stay in this browser."
 msgstr "ホーム画面にWarooがありますか？そちらから参加してください：開いて読み取りボタンを押し、招待コードを読み取ります。ここで参加したグループはこのブラウザに残ります。"
 
-#: src/screens/FriendsScreen.tsx:434
+#: src/screens/FriendsScreen.tsx:437
 msgid "Have your friend scan this with Waroo, or send them the link."
 msgstr "友達にWarooでこのコードを読み取ってもらうか、リンクを送ってください。"
 
@@ -1234,7 +1348,7 @@ msgstr "支払い済み"
 msgid "Idea"
 msgstr "アイデア"
 
-#: src/lib/news.ts:139
+#: src/lib/news.ts:167
 msgid "If that wasn’t you, tell the group"
 msgstr "心当たりがなければ、グループに知らせてください"
 
@@ -1264,7 +1378,7 @@ msgstr "取り込んだ記録は元の日付のままです。誰にも通知は
 msgid "Importing…"
 msgstr "取り込み中…"
 
-#: src/lib/news.ts:79
+#: src/lib/news.ts:83
 msgid "In {group}"
 msgstr "{group}"
 
@@ -1288,7 +1402,7 @@ msgstr "Rizfulで<0>Get code</0>をタップしてコピーします。このコ
 msgid "In Splitwise, open a friend or a group, choose Export as spreadsheet, and pick the file here. Everything stays on this phone until you import it."
 msgstr "Splitwiseで友達かグループを開き、「Export as spreadsheet」でファイルを書き出して、ここで選んでください。取り込むまで、内容はこのスマホから出ません。"
 
-#: src/screens/FriendsScreen.tsx:288
+#: src/screens/FriendsScreen.tsx:291
 msgid "In your groups too"
 msgstr "共通のグループでも"
 
@@ -1304,7 +1418,7 @@ msgstr "Warooをインストール"
 msgid "Installed. Open Waroo from your Home Screen to carry on there."
 msgstr "インストールしました。ホーム画面からWarooを開いて続けてください。"
 
-#: src/screens/GroupScreen.tsx:144
+#: src/screens/GroupScreen.tsx:145
 msgid "Invite"
 msgstr "招待"
 
@@ -1320,7 +1434,7 @@ msgstr "友達を招待"
 msgid "Invite link copied. Paste it to the people in this group."
 msgstr "招待リンクをコピーしました。グループの人たちに送ってください。"
 
-#: src/screens/GroupScreen.tsx:94
+#: src/screens/GroupScreen.tsx:95
 #: src/screens/InviteScreen.tsx:140
 msgid "Invite people"
 msgstr "招待する"
@@ -1329,7 +1443,7 @@ msgstr "招待する"
 msgid "Invite sent"
 msgstr "招待を送りました"
 
-#: src/screens/GroupScreen.tsx:92
+#: src/screens/GroupScreen.tsx:93
 msgid "Invite them, and everyone can add expenses and settle up from their own phone."
 msgstr "招待すれば、みんなが自分のスマホから支出を追加して精算できます。"
 
@@ -1397,7 +1511,7 @@ msgstr "Warooが対応していない暗号化方式を使っています{tech}"
 msgid "It was cancelled on {who}’s new phone. Nothing changed."
 msgstr "{who}さんの新しいスマホで取り消されました。何も変わっていません。"
 
-#: src/screens/FriendsScreen.tsx:439
+#: src/screens/FriendsScreen.tsx:442
 msgid "It works once, for a week. This page moves on by itself when they’ve joined."
 msgstr "1回だけ、1週間使えます。友達が参加すると、この画面は自動で切り替わります。"
 
@@ -1409,7 +1523,7 @@ msgstr "古いバージョンのWarooのリンクです。新しい招待リン�
 msgid "it’s getting too many requests right now{tech}"
 msgstr "今はリクエストが多すぎます{tech}"
 
-#: src/lib/news.ts:133
+#: src/lib/news.ts:161
 msgid "It’s on your Groups page"
 msgstr "グループのページに表示されています"
 
@@ -1454,6 +1568,10 @@ msgstr "参加済み：あなただけ"
 msgid "Joined so far: you, {names}"
 msgstr "参加済み：あなた、{names}"
 
+#: src/screens/SendScreen.tsx:17
+msgid "Just sending"
+msgstr "送るだけ"
+
 #: src/components/RankedList.tsx:137
 msgid "Keep it"
 msgstr "残す"
@@ -1479,6 +1597,10 @@ msgstr "退出中…"
 msgid "Left the group."
 msgstr "グループから退出しました。"
 
+#: src/screens/SendScreen.tsx:18
+msgid "Lending"
+msgstr "貸す"
+
 #: src/components/AppearanceCard.tsx:16
 msgid "Light"
 msgstr "ライト"
@@ -1487,7 +1609,7 @@ msgstr "ライト"
 msgid "Lightning address or BOLT12 offer"
 msgstr "ライトニングアドレスまたはBOLT12オファー"
 
-#: src/screens/FriendsScreen.tsx:447
+#: src/screens/FriendsScreen.tsx:450
 #: src/screens/InviteScreen.tsx:175
 #: src/screens/MoveScreen.tsx:171
 #: src/screens/Onboarding.tsx:258
@@ -1540,7 +1662,7 @@ msgstr "Coinosのアカウントを作る"
 msgid "Make a different link"
 msgstr "別のリンクを作る"
 
-#: src/screens/FriendsScreen.tsx:345
+#: src/screens/FriendsScreen.tsx:348
 msgid "Make a friend code"
 msgstr "友達コードを作る"
 
@@ -1548,7 +1670,7 @@ msgstr "友達コードを作る"
 msgid "Make a Rizful account"
 msgstr "Rizfulのアカウントを作る"
 
-#: src/screens/FriendsScreen.tsx:435
+#: src/screens/FriendsScreen.tsx:438
 msgid "Making the code…"
 msgstr "コードを作成中…"
 
@@ -1564,7 +1686,11 @@ msgstr "支払い済みにする"
 msgid "Mark it as paid"
 msgstr "支払い済みにする"
 
-#: src/screens/GroupScreen.tsx:515
+#: src/screens/SendScreen.tsx:244
+msgid "Money outside your balance, like a gift or a split you didn’t write down."
+msgstr "残高とは別のお金です。プレゼントや、記録していなかった割り勘など。"
+
+#: src/screens/GroupScreen.tsx:532
 msgid "More about {name}"
 msgstr "{name}さんの詳細"
 
@@ -1634,6 +1760,7 @@ msgid "New group"
 msgstr "グループを作る"
 
 #: src/screens/Onboarding.tsx:130
+#: src/screens/SendScreen.tsx:132
 msgid "Next"
 msgstr "次へ"
 
@@ -1649,11 +1776,11 @@ msgstr "ブラウザのウォレットが見つかりません。"
 msgid "No camera found on this device. Paste the invite link below instead."
 msgstr "この端末にカメラが見つかりません。代わりに下に招待リンクを貼り付けてください。"
 
-#: src/screens/GroupScreen.tsx:413
+#: src/screens/GroupScreen.tsx:414
 msgid "No expenses yet"
 msgstr "まだ支出はありません"
 
-#: src/screens/GroupScreen.tsx:461
+#: src/screens/GroupScreen.tsx:465
 msgid "No payments yet"
 msgstr "まだ支払いはありません"
 
@@ -1666,7 +1793,7 @@ msgstr "いいえ、中止"
 msgid "Nobody here."
 msgstr "まだいません。"
 
-#: src/screens/GroupScreen.tsx:257
+#: src/screens/GroupScreen.tsx:258
 msgid "Nobody owes anybody."
 msgstr "貸し借りはありません。"
 
@@ -1678,7 +1805,7 @@ msgstr "{name}さんのアドレスは、どれも今は支払いを受け取れ
 msgid "Not found"
 msgstr "見つかりません"
 
-#: src/screens/GroupScreen.tsx:442
+#: src/screens/GroupScreen.tsx:443
 msgid "not involved"
 msgstr "関係なし"
 
@@ -1692,6 +1819,11 @@ msgstr "移せませんでした"
 msgid "Not now"
 msgstr "今はしない"
 
+#: src/screens/SendScreen.tsx:126
+#: src/screens/SendScreen.tsx:263
+msgid "Note (optional)"
+msgstr "メモ（任意）"
+
 #: src/screens/RecoverScreen.tsx:224
 msgid "Nothing changed"
 msgstr "何も変わっていません"
@@ -1700,7 +1832,7 @@ msgstr "何も変わっていません"
 msgid "Nothing to move but your wallets."
 msgstr "移すものはウォレットだけです。"
 
-#: src/screens/GroupScreen.tsx:256
+#: src/screens/GroupScreen.tsx:257
 msgid "Nothing to split yet"
 msgstr "まだ割り勘するものはありません"
 
@@ -1708,7 +1840,7 @@ msgstr "まだ割り勘するものはありません"
 msgid "Nothing was paid."
 msgstr "支払いは行われていません。"
 
-#: src/screens/ActivityScreen.tsx:92
+#: src/screens/ActivityScreen.tsx:97
 msgid "Nothing yet"
 msgstr "まだ何もありません"
 
@@ -1817,6 +1949,10 @@ msgstr "ウォレットアプリで開く"
 msgid "Open invite"
 msgstr "招待を開く"
 
+#: src/lib/news.ts:147
+msgid "Open it to pay or decline"
+msgstr "開いて、支払うか断ってください"
+
 #: src/screens/MoveInScreen.tsx:133
 msgid "Open my groups"
 msgstr "グループを開く"
@@ -1867,12 +2003,12 @@ msgstr "または別のスマホのウォレットで読み取ってください
 msgid "Other"
 msgstr "その他"
 
-#: src/screens/GroupScreen.tsx:511
+#: src/screens/GroupScreen.tsx:528
 #: src/screens/GroupSettingsScreen.tsx:166
 msgid "owe {sum}"
 msgstr "{sum}支払う"
 
-#: src/screens/GroupScreen.tsx:511
+#: src/screens/GroupScreen.tsx:528
 msgid "owes {sum}"
 msgstr "{sum}支払う"
 
@@ -1881,7 +2017,7 @@ msgid "Owes {sum}"
 msgstr "{sum}支払う"
 
 #: src/screens/FriendsScreen.tsx:240
-#: src/screens/FriendsScreen.tsx:283
+#: src/screens/FriendsScreen.tsx:286
 msgid "Owes you {sum}"
 msgstr "{sum}受け取る"
 
@@ -1920,9 +2056,17 @@ msgstr "もう一方のアプリの読み取り画面の下に貼り付けてく
 msgid "Paste the code"
 msgstr "コードを貼り付け"
 
+#: src/screens/FriendsScreen.tsx:505
+msgid "Pay"
+msgstr "支払う"
+
 #: src/components/BitcoinPay.tsx:472
 msgid "Pay {amount} with bitcoin"
 msgstr "{amount}をビットコインで支払う"
+
+#: src/screens/SendScreen.tsx:96
+msgid "Pay {name}"
+msgstr "{name}さんに支払う"
 
 #. placeholder {0}: satsText(sats)
 #: src/components/BitcoinPay.tsx:431
@@ -1951,6 +2095,10 @@ msgstr "{0}で支払う"
 msgid "Pay with bitcoin"
 msgstr "ビットコインで支払う"
 
+#: src/screens/SendScreen.tsx:19
+msgid "Paying for something"
+msgstr "立て替え分"
+
 #: src/components/BitcoinPay.tsx:400
 msgid "Paying from another phone? Show a QR code"
 msgstr "別のスマホから支払いますか？QRコードを表示"
@@ -1964,7 +2112,7 @@ msgstr "{0}で支払い中…"
 msgid "Payment method"
 msgstr "支払い方法"
 
-#: src/lib/news.ts:102
+#: src/lib/news.ts:106
 msgid "Payment sent: {amount} to {to}"
 msgstr "支払い完了：{to}さんに{amount}"
 
@@ -2012,6 +2160,10 @@ msgstr "別々の2人を選んでください"
 #: src/screens/ExpenseScreen.tsx:283
 msgid "Pick who had {what}"
 msgstr "{what}を誰が注文したか選んでください"
+
+#: src/screens/SendScreen.tsx:264
+msgid "Pizza last night"
+msgstr "昨日のピザ"
 
 #: src/screens/ScanScreen.tsx:103
 msgid "Point the camera at a friend’s invite code, or at your other phone’s code when you’re moving."
@@ -2061,7 +2213,7 @@ msgstr "受け取り"
 msgid "Reconnect"
 msgstr "もう一度つながる"
 
-#: src/App.tsx:76
+#: src/App.tsx:79
 msgid "Reload"
 msgstr "再読み込み"
 
@@ -2096,7 +2248,7 @@ msgstr "追加料金{0}を削除"
 msgid "Remove from the group"
 msgstr "グループから外す"
 
-#: src/screens/GroupScreen.tsx:179
+#: src/screens/GroupScreen.tsx:180
 msgid "Remove from this phone"
 msgstr "このスマホから削除"
 
@@ -2157,6 +2309,10 @@ msgstr "変更を保存"
 msgid "Saved. Everyone in the group sees the new name."
 msgstr "保存しました。グループの全員に新しい名前が表示されます。"
 
+#: src/screens/SendScreen.tsx:64
+msgid "Say what it was for"
+msgstr "何の支払いか入力してください"
+
 #: src/lib/ledgerText.ts:13
 msgid "Say who paid"
 msgstr "支払った人を選んでください"
@@ -2204,7 +2360,15 @@ msgstr "フィードバックを送る"
 msgid "Send invite"
 msgstr "招待を送る"
 
-#: src/screens/FriendsScreen.tsx:443
+#: src/screens/FriendsScreen.tsx:483
+msgid "Send money"
+msgstr "お金を送る"
+
+#: src/screens/SendScreen.tsx:96
+msgid "Send money to {name}"
+msgstr "{name}さんにお金を送る"
+
+#: src/screens/FriendsScreen.tsx:446
 msgid "Send the link"
 msgstr "リンクを送る"
 
@@ -2229,12 +2393,12 @@ msgstr "設定する"
 msgid "Settings"
 msgstr "設定"
 
-#: src/screens/GroupScreen.tsx:337
+#: src/screens/GroupScreen.tsx:338
 msgid "Settle"
 msgstr "精算"
 
-#: src/screens/GroupScreen.tsx:306
-#: src/screens/GroupScreen.tsx:326
+#: src/screens/GroupScreen.tsx:307
+#: src/screens/GroupScreen.tsx:327
 #: src/screens/SettleScreen.tsx:73
 msgid "Settle up"
 msgstr "精算する"
@@ -2278,7 +2442,7 @@ msgstr "QRコードを表示"
 msgid "Show the code"
 msgstr "コードを表示"
 
-#: src/screens/GroupScreen.tsx:85
+#: src/screens/GroupScreen.tsx:86
 msgid "Show the friend code"
 msgstr "友達コードを表示"
 
@@ -2298,10 +2462,10 @@ msgstr "返信が必要な場合"
 msgid "someone"
 msgstr "誰か"
 
-#: src/lib/news.ts:75
+#: src/lib/news.ts:79
 #: src/screens/GroupScreen.tsx:67
 #: src/screens/GroupScreen.tsx:70
-#: src/screens/GroupScreen.tsx:214
+#: src/screens/GroupScreen.tsx:215
 msgid "Someone"
 msgstr "誰か"
 
@@ -2316,6 +2480,10 @@ msgstr "この支出に、グループにいない人が含まれています"
 #: src/screens/JoinScreen.tsx:210
 msgid "Someone wants to add you as a friend"
 msgstr "友達リクエストが届いています"
+
+#: src/screens/SendScreen.tsx:235
+msgid "Something else"
+msgstr "それ以外"
 
 #: src/components/ErrorBoundary.tsx:29
 msgid "Something in it didn’t look right. Your groups and keys are safe on this phone."
@@ -2342,7 +2510,7 @@ msgstr "残りを{0}さんと分ける"
 msgid "Split with a friend, no group needed"
 msgstr "グループを作らずに、友達と割り勘"
 
-#: src/screens/GroupScreen.tsx:91
+#: src/screens/GroupScreen.tsx:92
 msgid "Splitting with friends?"
 msgstr "友達と割り勘しますか？"
 
@@ -2598,7 +2766,7 @@ msgstr "店名"
 msgid "the total"
 msgstr "合計"
 
-#: src/lib/news.ts:151
+#: src/lib/news.ts:179
 msgid "Their expenses stay in the group"
 msgstr "支出はグループに残ります"
 
@@ -2651,7 +2819,7 @@ msgstr "このスマホには、まだ移すものがありません（グルー
 msgid "There’s something new in one of your groups."
 msgstr "グループのどれかに新しい内容があります。"
 
-#: src/lib/news.ts:127
+#: src/lib/news.ts:131
 msgid "They can see the group and add expenses now"
 msgstr "グループを見て、支出を追加できるようになりました"
 
@@ -2663,7 +2831,7 @@ msgstr "友達には招待が個別に届き、自分のスマホから参加し
 msgid "They tap the scan button and scan the code this phone will show. Not together? Send them the link instead."
 msgstr "読み取りボタンを押して、このスマホに表示されるコードを読み取ってもらいます。一緒にいない場合は、代わりにリンクを送ってください。"
 
-#: src/lib/news.ts:157
+#: src/lib/news.ts:185
 msgid "They were all square"
 msgstr "精算済みでした"
 
@@ -2752,7 +2920,7 @@ msgstr "このスマホには、この招待と同じIDの別のグループが�
 msgid "This phone gets a notification when someone pays you, joins a group or adds an expense, even when Waroo is closed."
 msgstr "誰かがあなたに支払ったとき、グループに参加したとき、支出を追加したときに、Warooを閉じていてもこのスマホに通知が届きます。"
 
-#: src/lib/news.ts:148
+#: src/lib/news.ts:176
 msgid "This phone won’t get anything new from the group"
 msgstr "このスマホにはグループの新しい内容が届きません"
 
@@ -2912,6 +3080,11 @@ msgstr "追加料金{0}の内容"
 msgid "What for"
 msgstr "内容"
 
+#: src/screens/SendScreen.tsx:230
+#: src/screens/SendScreen.tsx:232
+msgid "What for?"
+msgstr "何のため？"
+
 #: src/components/FeedbackCard.tsx:117
 msgid "What happened?"
 msgstr "何が起きましたか？"
@@ -2928,6 +3101,14 @@ msgstr "品目{n}の内容"
 msgid "What the other phone sent didn’t open. Start again on the other phone."
 msgstr "もう一方のスマホから届いた内容を開けませんでした。もう一方のスマホでもう一度始めてください。"
 
+#: src/screens/SendScreen.tsx:234
+msgid "What they owe you"
+msgstr "貸している分"
+
+#: src/screens/SendScreen.tsx:126
+msgid "What was it?"
+msgstr "何の代金？"
+
 #: src/components/FeedbackCard.tsx:127
 msgid "What would make Waroo better for you?"
 msgstr "どうなればWarooがもっと使いやすくなりますか？"
@@ -2940,7 +3121,12 @@ msgstr "どんな機能がほしいですか？"
 msgid "What you did, what you expected, and what happened instead."
 msgstr "何をしたか、どうなるはずだったか、実際にどうなったか。"
 
-#: src/screens/GroupScreen.tsx:462
+#: src/screens/SendScreen.tsx:121
+#: src/screens/SendScreen.tsx:122
+msgid "What’s it for?"
+msgstr "何のため？"
+
+#: src/screens/GroupScreen.tsx:466
 msgid "When someone pays someone back, in bitcoin, cash or otherwise, it shows up here."
 msgstr "誰かが誰かに返済すると、ビットコインでも現金でも、ここに表示されます。"
 
@@ -3018,11 +3204,11 @@ msgstr "はい、グループを移す"
 #~ msgid "Yesterday"
 #~ msgstr "昨日"
 
-#: src/screens/GroupScreen.tsx:214
+#: src/screens/GroupScreen.tsx:215
 msgid "You"
 msgstr "あなた"
 
-#: src/screens/GroupScreen.tsx:188
+#: src/screens/GroupScreen.tsx:189
 msgid "You and {name} are friends on Waroo now"
 msgstr "{name}さんとWarooで友達になりました"
 
@@ -3030,8 +3216,12 @@ msgstr "{name}さんとWarooで友達になりました"
 msgid "You and {name} aren’t connected any more. Your history together stays here."
 msgstr "{name}さんとのつながりが切れました。これまでの記録はここに残ります。"
 
-#: src/screens/ActivityScreen.tsx:72
-#: src/screens/GroupScreen.tsx:441
+#: src/screens/FriendsScreen.tsx:495
+msgid "You asked {name} for {sum}"
+msgstr "{name}さんに{sum}を依頼中"
+
+#: src/screens/ActivityScreen.tsx:77
+#: src/screens/GroupScreen.tsx:442
 msgid "you borrowed {sum}"
 msgstr "{sum}借りた"
 
@@ -3051,11 +3241,11 @@ msgstr "あとから設定で変更できます。"
 msgid "You can leave once you’re all square. Right now you {what}."
 msgstr "精算が済むと退出できます。現在：{what}。"
 
-#: src/lib/news.ts:125
+#: src/lib/news.ts:129
 msgid "You can split costs with each other now"
 msgstr "お互いに割り勘できるようになりました"
 
-#: src/screens/GroupScreen.tsx:280
+#: src/screens/GroupScreen.tsx:281
 msgid "You get back"
 msgstr "受け取る額"
 
@@ -3068,7 +3258,7 @@ msgstr "{0}受け取る"
 msgid "you get back {sum}"
 msgstr "{sum}受け取る"
 
-#: src/screens/GroupScreen.tsx:282
+#: src/screens/GroupScreen.tsx:283
 msgid "You get back from {from}"
 msgstr "{from}から受け取る額"
 
@@ -3080,16 +3270,16 @@ msgstr "友達が支出を追加したり、あなたに支払ったりすると
 #~ msgid "You in this group"
 #~ msgstr "このグループでのあなた"
 
-#: src/screens/GroupScreen.tsx:190
+#: src/screens/GroupScreen.tsx:191
 msgid "You joined {name} as {myName}"
 msgstr "{name}に{myName}として参加しました"
 
-#: src/screens/ActivityScreen.tsx:71
-#: src/screens/GroupScreen.tsx:440
+#: src/screens/ActivityScreen.tsx:76
+#: src/screens/GroupScreen.tsx:441
 msgid "you lent {sum}"
 msgstr "{sum}貸した"
 
-#: src/screens/GroupScreen.tsx:278
+#: src/screens/GroupScreen.tsx:279
 msgid "You owe"
 msgstr "支払う額"
 
@@ -3103,11 +3293,11 @@ msgid "you owe {sum}"
 msgstr "{sum}支払う"
 
 #: src/screens/FriendsScreen.tsx:240
-#: src/screens/FriendsScreen.tsx:283
+#: src/screens/FriendsScreen.tsx:286
 msgid "You owe {sum}"
 msgstr "{sum}支払う"
 
-#: src/screens/GroupScreen.tsx:278
+#: src/screens/GroupScreen.tsx:279
 msgid "You owe {to}"
 msgstr "{to}さんへの支払い"
 
@@ -3115,7 +3305,7 @@ msgstr "{to}さんへの支払い"
 msgid "You paid"
 msgstr "あなたが支払った"
 
-#: src/screens/GroupScreen.tsx:533
+#: src/screens/GroupScreen.tsx:550
 msgid "You paid {payee}"
 msgstr "あなたが{payee}さんに支払った"
 
@@ -3127,11 +3317,15 @@ msgstr "支払額"
 msgid "You removed {name}"
 msgstr "{name}さんを友達から削除しました"
 
+#: src/screens/GroupScreen.tsx:511
+msgid "You sent {payee}"
+msgstr "あなたが{payee}さんに送った"
+
 #: src/screens/JoinScreen.tsx:216
 msgid "You’ll be able to split costs with each other and settle up, without making a group."
 msgstr "グループを作らなくても、お互いに割り勘して精算できるようになります。"
 
-#: src/screens/FriendsScreen.tsx:339
+#: src/screens/FriendsScreen.tsx:342
 msgid "You’ll get a code for your friend to scan with Waroo, or a link to send them."
 msgstr "友達にWarooで読み取ってもらうコードか、送るためのリンクができます。"
 
@@ -3139,7 +3333,7 @@ msgstr "友達にWarooで読み取ってもらうコードか、送るための�
 msgid "You’ll see the group’s expenses once you join. No account or sign-up needed."
 msgstr "参加するとグループの支出が見られます。アカウント登録は不要です。"
 
-#: src/screens/GroupScreen.tsx:290
+#: src/screens/GroupScreen.tsx:291
 msgid "You’re all square"
 msgstr "精算済みです"
 
@@ -3163,7 +3357,7 @@ msgstr "Warooのお知らせに登録しました。"
 msgid "You’re the only one in this group, so you can delete it."
 msgstr "このグループのメンバーはあなただけなので、削除できます。"
 
-#: src/screens/GroupScreen.tsx:287
+#: src/screens/GroupScreen.tsx:288
 msgid "Your balance"
 msgstr "あなたの残高"
 
@@ -3183,7 +3377,7 @@ msgstr "お使いの端末"
 msgid "Your email (optional)"
 msgstr "メールアドレス（任意）"
 
-#: src/screens/GroupScreen.tsx:83
+#: src/screens/GroupScreen.tsx:84
 msgid "Your friend hasn’t joined yet"
 msgstr "友達はまだ参加していません"
 
@@ -3225,7 +3419,7 @@ msgstr "あなたの名前"
 msgid "Your name, as they know you"
 msgstr "あなたの名前（相手が知っている呼び方で）"
 
-#: src/screens/FriendsScreen.tsx:341
+#: src/screens/FriendsScreen.tsx:344
 msgid "Your name, as your friend knows you"
 msgstr "あなたの名前（友達が知っている呼び方で）"
 
@@ -3233,11 +3427,11 @@ msgstr "あなたの名前（友達が知っている呼び方で）"
 msgid "your other phone"
 msgstr "もう一方のスマホ"
 
-#: src/lib/news.ts:179
+#: src/lib/news.ts:207
 msgid "Your share is {share}"
 msgstr "あなたの負担は{share}"
 
-#: src/lib/news.ts:179
+#: src/lib/news.ts:207
 msgid "Your share is {share}, in {group}"
 msgstr "あなたの負担は{share}・{group}"
 

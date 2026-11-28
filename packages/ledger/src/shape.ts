@@ -168,6 +168,20 @@ export function shapeProblem(e: unknown): string | undefined {
       return settlementProblem(ev.settlement)
     case 'settlement.voided':
       return isId(ev.settlementId) && optional(ev.reason, (r) => isText(r, 500)) ? undefined : 'Bad id'
+    case 'money.sent': {
+      const x = ev.sent as unknown
+      if (!isObject(x) || !isId(x.id) || !isId(x.from) || !isId(x.to)) return 'Bad payment'
+      if (!isAmount(x.amount) || !isCurrencyCode(x.currency) || !optional(x.note, (n) => isText(n, 200))) return 'Bad payment'
+      return x.bitcoin === undefined ? undefined : settlementProblem({ id: x.id, from: x.from, to: x.to, amount: x.amount, currency: x.currency, method: 'bitcoin', bitcoin: x.bitcoin })
+    }
+    case 'payment.requested': {
+      const r = ev.request as unknown
+      if (!isObject(r) || !isId(r.id) || !isId(r.from) || !isId(r.to)) return 'Bad request'
+      if (!isAmount(r.amount) || !isCurrencyCode(r.currency) || !optional(r.note, (n) => isText(n, 200))) return 'Bad request'
+      return optional(r.settles, (v) => typeof v === 'boolean') ? undefined : 'Bad request'
+    }
+    case 'request.closed':
+      return isId(ev.requestId) && ['paid', 'declined', 'cancelled'].includes(ev.outcome) ? undefined : 'Bad request'
     case 'friend.linked':
       return Array.isArray(ev.tokens) &&
         ev.tokens.length <= 300 &&

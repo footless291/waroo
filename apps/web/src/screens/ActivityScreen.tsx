@@ -36,6 +36,11 @@ function expenseLine(item: ActivityItem): string {
 function paymentTitle(item: ActivityItem) {
   const from = item.from
   const to = item.to
+  if (item.gift) {
+    if (from === null) return <Trans><strong>You</strong> sent <strong>{to}</strong></Trans>
+    if (to === null) return <Trans><strong>{from}</strong> sent <strong>you</strong></Trans>
+    return <Trans><strong>{from}</strong> sent <strong>{to}</strong></Trans>
+  }
   if (from === null) return <Trans><strong>You</strong> paid <strong>{to}</strong></Trans>
   if (to === null) return <Trans><strong>{from}</strong> paid <strong>you</strong></Trans>
   return <Trans><strong>{from}</strong> paid <strong>{to}</strong></Trans>
@@ -58,7 +63,7 @@ function Row({ item }: { item: ActivityItem }) {
             <>
               <span>{paymentTitle(item)}</span>
               <span className="muted">
-                {[item.date ? formatDate(item.date) : '', item.friend ? '' : item.groupName, methodName(item.method), item.sats ? satsText(item.sats) : '']
+                {[item.date ? formatDate(item.date) : '', item.friend ? '' : item.groupName, item.note ?? '', item.gift ? '' : methodName(item.method), item.sats ? satsText(item.sats) : '']
                   .filter(Boolean)
                   .join(t`, `)}
               </span>

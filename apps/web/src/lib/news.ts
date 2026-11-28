@@ -50,7 +50,11 @@ export function isNotable(event: LedgerEvent): boolean {
     case 'member.removed':
     case 'member.recovered':
     case 'friend.invited':
+    case 'money.sent':
+    case 'payment.requested':
       return true
+    case 'request.closed':
+      return event.outcome === 'declined'
     case 'member.added':
       return event.member.id === event.author && event.member.key !== undefined
     case 'expense.saved':
@@ -125,6 +129,30 @@ export function describeEvent(
       return { id: event.id, kind: 'joined', title: t`${who} accepted your friend request`, detail: t`You can split costs with each other now` }
     }
     return { id: event.id, kind: 'joined', title: t`${who} joined ${group}`, detail: t`They can see the group and add expenses now` }
+  }
+
+  if (event.type === 'money.sent') {
+    const x = event.sent
+    if (x.to !== meId) return null
+    const from = name(x.from)
+    const amount = money(x.amount, x.currency)
+    return { id: event.id, kind: 'paid-you', title: t`${from} sent you ${amount}`, detail: x.note ?? (x.bitcoin ? satsText(x.bitcoin.sats) : '') }
+  }
+
+  if (event.type === 'payment.requested') {
+    const r = event.request
+    if (r.to !== meId) return null
+    const from = name(r.from)
+    const amount = money(r.amount, r.currency)
+    return { id: event.id, kind: 'expense', title: t`${from} asks you for ${amount}`, detail: r.note ?? t`Open it to pay or decline` }
+  }
+
+  if (event.type === 'request.closed' && event.outcome === 'declined') {
+    const r = state.requests.get(event.requestId)
+    if (!r || r.from !== meId) return null
+    const who = name(event.author)
+    const amount = money(r.amount, r.currency)
+    return { id: event.id, kind: 'left', title: t`${who} declined your request for ${amount}`, detail: r.note ?? '' }
   }
 
   if (event.type === 'friend.invited') {

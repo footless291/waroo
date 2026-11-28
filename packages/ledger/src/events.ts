@@ -15,7 +15,7 @@
  * Groups that have never been shared may be unsigned; nothing else changes.
  */
 
-import { computeBalances, type Balances, type Settlement } from './balances.ts'
+import { computeBalances, type Balances, type BitcoinProof, type Settlement } from './balances.ts'
 import { minorDigits } from './money.ts'
 import { computeShares, validateExpense, type Expense, type PersonId } from './splits.ts'
 import { isCurrencyCode, shapeProblem } from './shape.ts'
@@ -195,12 +195,53 @@ export type LedgerEvent = EventBase &
      */
     | { type: 'friend.linked'; tokens: FriendToken[] }
     /**
+     * Money sent that doesn't count towards anyone's balance: a gift, or
+     * paying for something outside the app. Only the sender records it.
+     */
+    | { type: 'money.sent'; sent: Sent }
+    /** Asking someone for money. Only the person asking can. */
+    | { type: 'payment.requested'; request: PaymentRequest }
+    /**
+     * A request is done with: paid or declined (by whoever was asked), or
+     * cancelled (by whoever asked).
+     */
+    | { type: 'request.closed'; requestId: string; outcome: 'paid' | 'declined' | 'cancelled' }
+    /**
      * Friendships only. An invite to another group, sent privately: the
      * invite link's secret, and the group's id (`group`, not `groupId`, which
      * phones use for their own bookkeeping) and name.
      */
     | { type: 'friend.invited'; secret: string; group: string; name: string; expiresAt: number }
   )
+
+/** Money sent outside any debt. Balances ignore it. */
+export interface Sent {
+  id: string
+  from: PersonId
+  to: PersonId
+  amount: number
+  currency: string
+  note?: string
+  bitcoin?: BitcoinProof
+}
+
+export interface PaymentRequest {
+  id: string
+  /** Who's asking (and gets paid). */
+  from: PersonId
+  /** Who's asked to pay. */
+  to: PersonId
+  amount: number
+  currency: string
+  note?: string
+  /** Paying it settles what `to` owes `from`, rather than being money outside the balance. */
+  settles?: boolean
+}
+
+export interface OpenRequest extends PaymentRequest {
+  /** Undefined while open. */
+  outcome?: 'paid' | 'declined' | 'cancelled'
+}
 
 export interface FriendToken {
   t: string
@@ -236,6 +277,10 @@ export interface GroupState {
   name?: string
   /** 'friends' for a friendship: two people, no more. */
   kind?: 'friends'
+  /** Money sent outside any debt, by id. */
+  sent: Map<string, Sent>
+  /** Requests for money, by id, open or closed. */
+  requests: Map<string, OpenRequest>
   /** In a friendship: each person's latest `friend.linked` list. */
   friendTokens: Map<PersonId, FriendToken[]>
   /** In a friendship: invites to other groups, oldest first. */
@@ -279,6 +324,8 @@ export function emptyState(): GroupState {
     expenses: new Map(),
     settlements: new Map(),
     recordedBy: new Map(),
+    sent: new Map(),
+    requests: new Map(),
     friendTokens: new Map(),
     friendInvites: [],
     heads: new Map(),
@@ -645,6 +692,37 @@ export function replay(input: Iterable<LedgerEvent>, options: ReplayOptions = {}
           state.settlements.set(s.id, s)
           state.recordedBy.set(s.id, e.author)
         }
+        break
+      }
+
+      case 'money.sent': {
+        const x = e.sent
+        if (state.sent.has(x.id)) reject(e, 'Already recorded')
+        else if (x.from !== e.author) reject(e, 'Only the person who sent it can record it')
+        else if (!state.members.has(x.to) || x.to === x.from || state.members.get(x.to)!.left) reject(e, 'Sent to someone not here')
+        else if (!Number.isSafeInteger(x.amount) || x.amount <= 0) reject(e, 'Amount must be a positive whole number of minor units')
+        else if (!isKnownCurrency(x.currency)) reject(e, `Unknown currency code: ${x.currency}`)
+        else state.sent.set(x.id, x)
+        break
+      }
+
+      case 'payment.requested': {
+        const r = e.request
+        if (state.requests.has(r.id)) reject(e, 'Already asked')
+        else if (r.from !== e.author) reject(e, 'Only the person asking can ask')
+        else if (!state.members.has(r.to) || r.to === r.from || state.members.get(r.to)!.left) reject(e, 'Asking someone not here')
+        else if (!Number.isSafeInteger(r.amount) || r.amount <= 0) reject(e, 'Amount must be a positive whole number of minor units')
+        else if (!isKnownCurrency(r.currency)) reject(e, `Unknown currency code: ${r.currency}`)
+        else state.requests.set(r.id, { ...r })
+        break
+      }
+
+      case 'request.closed': {
+        const r = state.requests.get(e.requestId)
+        if (!r) reject(e, 'No such request')
+        else if (r.outcome) reject(e, 'Already closed')
+        else if (e.outcome === 'cancelled' ? e.author !== r.from : e.author !== r.to) reject(e, 'Not yours to close')
+        else r.outcome = e.outcome
         break
       }
 

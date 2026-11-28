@@ -1,8 +1,8 @@
 import { Trans } from '@lingui/react/macro'
 import { t } from '@lingui/core/macro'
-import { fiatToSats, isOffer, receiveTargets, type GroupState } from '@waroo/ledger'
+import { fiatToSats, isOffer, receiveTargets, type BitcoinProof, type GroupState } from '@waroo/ledger'
 import { useEffect, useState } from 'react'
-import { append, newId, type GroupMeta } from '../lib/db.ts'
+import { append, newId, type Draft, type GroupMeta } from '../lib/db.ts'
 import { money, satsText } from '../lib/format.ts'
 import { groupTitle } from '../lib/title.ts'
 import { locale } from '../lib/hooks.ts'
@@ -59,6 +59,13 @@ export function BitcoinPay(props: {
   /** The payment is recorded: the screen should stop offering other ways to pay. */
   onRecorded: () => void
   onPaid: () => void
+  /**
+   * What to write once it's paid, given the proof. Settling up by default; a
+   * gift, a loan or a request being paid write something else.
+   */
+  drafts?: (proof: BitcoinProof) => Draft[]
+  /** Comment for the receiver's Lightning provider, where it takes one. */
+  comment?: string
 }) {
   const { meta, state, to, amount, currency, onPaid, onRecorded } = props
   const toMember = state.members.get(to)
@@ -78,28 +85,21 @@ export function BitcoinPay(props: {
   useEffect(() => setPhase((p) => (p.at === 'ready' || p.at === 'error' ? { at: 'idle' } : p)), [amount])
 
   async function record(quote: Quote, preimage?: string, paymentHash?: string) {
-    await append(meta, [
-      {
-        type: 'settlement.recorded',
-        settlement: {
-          id: newId(),
-          from: meta.meId,
-          to,
-          amount,
-          currency,
-          method: 'bitcoin',
-          bitcoin: {
-            sats: quote.sats,
-            btcPrice: quote.price,
-            rateSource: quote.source,
-            paymentHash: (quote.invoice?.paymentHash ?? paymentHash ?? '').toLowerCase(),
-            ...(quote.offer ? { offer: true } : {}),
-            ...(preimage ? { preimage: preimage.toLowerCase() } : {}),
-            settledAt: new Date().toISOString(),
-          },
-        },
-      },
-    ])
+    const bitcoin: BitcoinProof = {
+      sats: quote.sats,
+      btcPrice: quote.price,
+      rateSource: quote.source,
+      paymentHash: (quote.invoice?.paymentHash ?? paymentHash ?? '').toLowerCase(),
+      ...(quote.offer ? { offer: true } : {}),
+      ...(preimage ? { preimage: preimage.toLowerCase() } : {}),
+      settledAt: new Date().toISOString(),
+    }
+    await append(
+      meta,
+      props.drafts?.(bitcoin) ?? [
+        { type: 'settlement.recorded', settlement: { id: newId(), from: meta.meId, to, amount, currency, method: 'bitcoin', bitcoin } },
+      ],
+    )
     setPhase({ at: 'paid', sats: quote.sats })
     onRecorded()
   }
@@ -129,7 +129,7 @@ export function BitcoinPay(props: {
         return
       }
       try {
-        const invoice = await getInvoice(await payParams(addr), sats, state.kind === 'friends' ? 'Waroo' : `Waroo: ${groupTitle(state, meta)}`)
+        const invoice = await getInvoice(await payParams(addr), sats, props.comment ?? (state.kind === 'friends' ? 'Waroo' : `Waroo: ${groupTitle(state, meta)}`))
         setPhase({ at: 'ready', quote: { invoice, sats: invoice.sats, price: rate.price, source: rate.source, target }, next })
         return
       } catch (err) {

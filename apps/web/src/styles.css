@@ -2310,3 +2310,36 @@ a.person-row:focus-visible {
   width: 100%;
   margin-top: var(--space-4);
 }
+/* Sending and asking for money, on a friend's page */
+.friend-money {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+.friend-money .button-row .button {
+  flex: 1;
+}
+.request-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 14px var(--space-4);
+  border-radius: var(--radius-card);
+  background: var(--card);
+}
+.request-card.to-me {
+  box-shadow: inset 0 0 0 2px var(--primary);
+}
+.request-card p {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+.ask {
+  color: var(--owes);
+  font-size: 0.9rem;
+  font-weight: 600;
+}

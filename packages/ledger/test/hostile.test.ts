@@ -107,3 +107,30 @@ describe('hostile events', () => {
     assert.equal(replay([...base(), added]).members.has('dan'), false)
   })
 })
+
+describe('sending and asking', () => {
+  const two = () => [
+    ev('ana', 1, 'KA', { type: 'member.added', member: { id: 'ana', name: 'Ana', key: 'KA' } }),
+    ev('bob', 2, 'KB', { type: 'member.added', member: { id: 'bob', name: 'Bob', key: 'KB' } }),
+  ]
+  it('money sent changes no balance, and only the sender records it', () => {
+    const sent = { id: 'g1', from: 'ana', to: 'bob', amount: 3000, currency: 'JPY', note: 'Happy birthday' }
+    const state = replay([...two(), ev('ana', 3, 'KA', { type: 'money.sent', sent }), ev('bob', 4, 'KB', { type: 'money.sent', sent: { ...sent, id: 'g2' } })])
+    assert.deepEqual([...state.sent.keys()], ['g1'])
+    assert.equal(groupBalances(state).size, 0)
+  })
+
+  it('requests: asked by the payee, paid or declined by the payer, cancelled by the asker', () => {
+    const request = { id: 'r1', from: 'bob', to: 'ana', amount: 2000, currency: 'JPY' }
+    const state = replay([
+      ...two(),
+      ev('bob', 3, 'KB', { type: 'payment.requested', request }),
+      ev('bob', 4, 'KB', { type: 'request.closed', requestId: 'r1', outcome: 'declined' }),
+      ev('ana', 5, 'KA', { type: 'request.closed', requestId: 'r1', outcome: 'paid' }),
+    ])
+    assert.equal(state.requests.get('r1')!.outcome, 'paid')
+    assert.equal(state.rejected.length, 1)
+    const forged = replay([...two(), ev('ana', 3, 'KA', { type: 'payment.requested', request })])
+    assert.equal(forged.requests.size, 0)
+  })
+})

@@ -8,6 +8,7 @@ import { listGroups } from './lib/db.ts'
 import { finishOnboarding, onboarded } from './lib/install.ts'
 import { InstallScreen, Onboarding } from './screens/Onboarding.tsx'
 import { ImportScreen } from './screens/ImportScreen.tsx'
+import { RequestScreen, SendScreen } from './screens/SendScreen.tsx'
 import { AddFriendScreen, ArchivedFriendsScreen } from './screens/FriendsScreen.tsx'
 import { ExpenseScreen } from './screens/ExpenseScreen.tsx'
 import { GroupScreen } from './screens/GroupScreen.tsx'
@@ -55,6 +56,8 @@ function Router() {
     if (parts[2] === 'pay') return <SettleScreen groupId={groupId} params={params} />
     if (parts[2] === 'me') return <MemberScreen groupId={groupId} />
     if (parts[2] === 'edit') return <GroupSettingsScreen groupId={groupId} />
+    if (parts[2] === 'send') return <SendScreen groupId={groupId} params={params} />
+    if (parts[2] === 'request') return <RequestScreen groupId={groupId} />
     if (parts[2] === 'm' && parts[3] && parts[4] === 'recover') return <RecoverScreen groupId={groupId} memberId={parts[3]} />
     if (parts[2] === 'm' && parts[3]) return <PersonScreen groupId={groupId} memberId={parts[3]} />
     const tab = parts[2] === 'expenses' || parts[2] === 'payments' ? parts[2] : 'balances'

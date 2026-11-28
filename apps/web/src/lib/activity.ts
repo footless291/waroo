@@ -23,6 +23,9 @@ export interface ActivityItem {
   to?: string | null
   /** For expenses: this person's share, if any. */
   myShare?: number
+  /** For payments: money sent outside the balance (a gift), not settling up. */
+  gift?: boolean
+  note?: string
   /** When it happened, YYYY-MM-DD: an expense's date, a payment's day. */
   date: string
   /** For expenses: what it meant for this person, paid minus share (positive: lent). */
@@ -70,7 +73,29 @@ export async function recentActivity(): Promise<ActivityItem[]> {
       })
     }
     const recorded = new Map<string, string>()
-    for (const e of events) if (e.type === 'settlement.recorded') recorded.set(e.settlement.id, e.at)
+    for (const e of events) {
+      if (e.type === 'settlement.recorded') recorded.set(e.settlement.id, e.at)
+      if (e.type === 'money.sent') recorded.set(e.sent.id, e.at)
+    }
+    for (const x of state.sent.values()) {
+      items.push({
+        key: `g:${group.id}:${x.id}`,
+        kind: 'payment',
+        gift: true,
+        groupId: group.id,
+        groupName,
+        friend: state.kind === 'friends',
+        at: recorded.get(x.id) ?? '',
+        title: '',
+        amount: x.amount,
+        currency: x.currency,
+        from: name(x.from),
+        to: name(x.to),
+        note: x.note,
+        sats: x.bitcoin?.sats,
+        date: localDay(x.bitcoin?.settledAt ?? recorded.get(x.id)),
+      })
+    }
     for (const s of state.settlements.values()) {
       items.push({
         key: `p:${group.id}:${s.id}`,
