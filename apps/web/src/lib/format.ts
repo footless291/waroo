@@ -33,10 +33,11 @@ export function currencyName(code: CurrencyCode): string {
   }
 }
 
+/** "Nov 20", or "Nov 20, 2024" when it's not this year. */
 export function formatDate(iso: string): string {
-  return new Intl.DateTimeFormat(locale(), { month: 'short', day: 'numeric' }).format(
-    new Date(`${iso}T00:00:00`),
-  )
+  const date = new Date(`${iso}T00:00:00`)
+  const thisYear = date.getFullYear() === new Date().getFullYear()
+  return new Intl.DateTimeFormat(locale(), { month: 'short', day: 'numeric', ...(thisYear ? {} : { year: 'numeric' }) }).format(date)
 }
 
 export const today = () => {

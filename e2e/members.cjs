@@ -61,14 +61,16 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   check(await waitText(bob, '.hero', 'You owe Ana'), 'Bob joined and owes Ana ¥4,000');
 
   // Bob renames himself
-  await bob.click('.people a[aria-label="Change your name, or leave the group"]');
-  check(await bob.waitForSelector('h1:has-text("You in this group")', { timeout: 4000 }).then(() => true, () => false), 'Bob’s own row leads to his settings');
+  await bob.click('.people a[aria-label="Change your name"]');
+  check(await bob.waitForSelector('h1:has-text("Your name")', { timeout: 4000 }).then(() => true, () => false), 'the pencil by Bob’s name lets him change it');
   await bob.fill('input[autocomplete="given-name"]', 'Bobby');
   await bob.click('button:has-text("Save")');
   check(await waitText(bob, 'main', 'Saved'), 'Bob saves his new name');
   check(await waitText(ana, '.people', 'Bobby'), 'Ana sees Bob’s new name');
 
-  // Leaving is blocked while he owes money
+  // Leaving is in the group's settings, and blocked while he owes money
+  await bob.click('a[aria-label="Back"]');
+  await bob.click('header a.title-link');
   check(await waitText(bob, 'main', 'Right now you owe ¥4,000'), 'leaving says what’s still owed');
   check(await bob.isDisabled('button:has-text("Leave group")'), 'and can’t be done yet');
   await bob.screenshot({ path: SHOTS + '/mem-1-blocked.png' });
@@ -93,7 +95,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
 
   // Square now: Bob leaves
   await bob.click('nav a:has-text("Balances")');
-  await bob.click('.people a[aria-label="Change your name, or leave the group"]');
+  await bob.click('header a.title-link');
   await bob.click('button:has-text("Leave group")');
   check(await waitText(bob, 'button.danger', 'Tap again to leave'), 'leaving asks for a second tap');
   await bob.click('button:has-text("Tap again to leave")');

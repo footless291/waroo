@@ -3,6 +3,7 @@ import { t } from '@lingui/core/macro'
 import { groupBalances } from '@waroo/ledger'
 import { useState } from 'react'
 import { Avatar } from '../components/Avatar.tsx'
+import { RemoveFriend } from './FriendsScreen.tsx'
 import { Header } from '../components/Header.tsx'
 import { money } from '../lib/format.ts'
 import { groupTitle } from '../lib/title.ts'
@@ -69,7 +70,9 @@ export function PersonScreen({ groupId, memberId }: { groupId: string; memberId:
               : person.removedBy
                 ? t`Removed by ${by}. Their expenses stay, and they can join again as ${who} with a new invite.`
                 : person.key
-                  ? t`In ${groupName} on their phone.`
+                  ? state.kind === 'friends'
+                    ? t`Connected with you on Waroo.`
+                    : t`In ${groupName} on their phone.`
                   : t`Hasn’t joined on a phone yet.`}
           </p>
           {balances.length > 0 && (
@@ -96,7 +99,9 @@ export function PersonScreen({ groupId, memberId }: { groupId: string; memberId:
           </section>
         )}
 
-        {canRemove && (
+        {state.kind === 'friends' && <RemoveFriend friendship={meta} state={state} />}
+
+        {canRemove && state.kind !== 'friends' && (
           <section className="settings-card">
             <h2>{t`Remove from the group`}</h2>
             <p>

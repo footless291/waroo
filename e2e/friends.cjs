@@ -106,7 +106,9 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await ana.screenshot({ path: SHOTS + '/friends-7-across.png', fullPage: true });
 
   // Removing a friend: only when all square.
-  check(await waitText(ana, 'main', 'To remove Bob as a friend, settle up first'), 'Bob can’t be removed while he owes Ana');
+  await ana.click('.people a.person-row:has-text("Bob")');
+  check(await waitText(ana, 'main', 'To remove Bob as a friend, settle up first'), 'Bob’s options say he can’t be removed while he owes Ana');
+  check(!(await waitText(ana, 'main', 'Remove from the group', 1000)), 'and don’t offer removing him from a “group”');
   await ana.goto(B + '#/friends/add');
   await ana.fill('input[autocomplete="given-name"]', 'Ana');
   await ana.click('button:has-text("Make a friend code")');
@@ -117,6 +119,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await dee.fill('input[autocomplete="given-name"]', 'Dee');
   await dee.click('button:has-text("Add Ana as a friend")');
   check(await waitText(ana, 'header h1', 'Dee', 10000), 'Ana and Dee are friends');
+  await ana.click('.people a.person-row:has-text("Dee")');
   await ana.click('button:has-text("Remove Dee as a friend")');
   await ana.click('.remove-friend button:has-text("Remove")');
   await ana.waitForTimeout(800);
@@ -148,6 +151,7 @@ const check = (c, m) => { console.log(c ? 'ok  ' : 'FAIL', m); if (!c) failed++;
   await dee.click('button:has-text("Not now")');
   // Dee removes Ana: Ana's invite list no longer offers Dee.
   await dee.goto(B + '#/friends'); await dee.click('a.card-row:has-text("Ana")');
+  await dee.click('.people a.person-row:has-text("Ana")');
   await dee.click('button:has-text("Remove Ana as a friend")');
   await dee.click('.remove-friend button:has-text("Remove")');
   await dee.waitForTimeout(1500);

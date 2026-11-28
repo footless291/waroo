@@ -70,8 +70,33 @@ Date,Description,Category,Cost,Currency,Ana,Bob
   await ana.selectOption('select', { label: 'Friend: Bob' });
   check(await waitText(ana, '.import-preview', 'Everything in this file is here already'), 'importing again adds nothing');
 
+  // Expense and payment lists: by month, years shown when not this year, payment dates, show more.
+  await ana.goto(B + '#/friends'); await ana.click('a.card-row:has-text("Bob")'); await ana.click('nav a:has-text("Expenses")');
+  check(await waitText(ana, '.pager-page:not([inert])', 'June 2024'), 'expenses are under their month');
+  check(await waitText(ana, '.pager-page:not([inert])', 'Jun 4, 2024'), 'with the year, as it’s not this year');
+  check(await waitText(ana, '.pager-page:not([inert])', 'you borrowed ¥2,823') || await waitText(ana, '.pager-page:not([inert])', 'you borrowed ¥2,822'), 'and what it meant for Ana, in colour');
+  await ana.waitForTimeout(800); await ana.screenshot({ path: SHOTS + '/lists-1-expenses.png' });
+  await ana.click('nav a:has-text("Payments")');
+  check(await waitText(ana, '.pager-page:not([inert])', 'Jun 5, 2024'), 'payments show their dates');
+  await ana.waitForTimeout(800); await ana.screenshot({ path: SHOTS + '/lists-2-payments.png' });
+  const many = ['Date,Description,Category,Cost,Currency,Ana,Bob', ''];
+  for (let i = 1; i <= 35; i++) many.push(`2024-07-${String(Math.min(i, 28)).padStart(2, '0')},Snack ${i},Dining out,1000.00,JPY,-500.00,500.00`);
+  const manyFile = path.join(SHOTS, 'splitwise-many.csv');
+  fs.writeFileSync(manyFile, many.join('\n'));
+  await ana.goto(B + '#/settings?open=import');
+  await ana.click('a:has-text("Import from Splitwise")');
+  await ana.setInputFiles('input[type=file]', manyFile);
+  await ana.selectOption('select', { label: 'Friend: Bob' });
+  await ana.click('.import-preview button:has-text("Import")');
+  await waitText(ana, 'main', 'Snack', 10000);
+  const before = await ana.$$eval('.pager-page:not([inert]) .cards li', (l) => l.length);
+  check(before === 30 && await ana.isVisible('.pager-page:not([inert]) button.show-more'), `a long list shows 30 at first, with Show more (${before})`);
+  await ana.click('.pager-page:not([inert]) button.show-more');
+  const after = await ana.$$eval('.pager-page:not([inert]) .cards li', (l) => l.length);
+  check(after === 41, `and Show more shows the rest (${after})`);
+
   await bob.goto(B + '#/friends');
-  check(await waitText(bob, '.cards', 'Owes you ¥3,750', 10000), 'Bob sees the same balance');
+  check(await waitText(bob, '.cards', 'Owes you ¥21,250', 10000), 'Bob sees the same balance (¥3,750 from the first file, ¥17,500 from the second)');
   check(!(await bob.isVisible('.banners .banner-body')), 'and no banners about old expenses');
   await bob.goto(B + '#/activity');
   check(!(await waitText(bob, 'main', 'Today', 1500)), 'Activity files them under their own dates');

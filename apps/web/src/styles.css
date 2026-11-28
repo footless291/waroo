@@ -2237,3 +2237,76 @@ select {
 .import-preview p {
   margin: 0 0 var(--space-3);
 }
+/* People rows: the whole row opens the person; your own has a pencil by the name. */
+.person-row {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 52px;
+  color: inherit;
+  text-decoration: none;
+}
+a.person-row:focus-visible {
+  outline: 2.5px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-field);
+}
+.person-row .name {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+.name-edit {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin: -6px 0;
+  border-radius: var(--pill);
+  color: var(--muted);
+}
+.name-edit:focus-visible {
+  outline: 2.5px solid var(--focus);
+}
+.chevron-icon {
+  flex: none;
+  color: var(--muted);
+}
+
+/* Expense and payment lists: by month, with faces and colour */
+.section.month + .section.month {
+  margin-top: var(--space-5);
+}
+.faces {
+  display: flex;
+  flex: none;
+}
+.faces .avatar {
+  width: 34px;
+  height: 34px;
+  font-size: 0.9rem;
+  border: 2px solid var(--card);
+}
+.faces .avatar + .avatar {
+  margin-left: -12px;
+}
+.row-end {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+.small {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.muted.small {
+  font-weight: 500;
+}
+.show-more {
+  width: 100%;
+  margin-top: var(--space-4);
+}

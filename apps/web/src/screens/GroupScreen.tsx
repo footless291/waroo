@@ -5,6 +5,8 @@ import {
   groupBalances,
   suggestTransfers,
   type GroupState,
+  type LedgerEvent,
+  type Settlement,
   type Transfer,
 } from '@waroo/ledger'
 import { useEffect, useState } from 'react'
@@ -12,7 +14,7 @@ import { Avatar } from '../components/Avatar.tsx'
 import { NotificationsNudge } from '../components/NotificationsCard.tsx'
 import { Header } from '../components/Header.tsx'
 import { PlusIcon } from '../components/icons.tsx'
-import { FriendAcross, FriendStatus, RemoveFriend } from './FriendsScreen.tsx'
+import { FriendAcross, FriendStatus } from './FriendsScreen.tsx'
 import { friendshipState } from '../lib/friends.ts'
 import { SyncLine } from '../components/SyncLine.tsx'
 import { groupTabs, TabBar } from '../components/TabBar.tsx'
@@ -43,7 +45,7 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
       </main>
     )
   }
-  const { meta, state } = group
+  const { meta, state, events } = group
   const base = `/g/${groupId}`
   const tabs = groupTabs(groupId)
   const currentTab = tab === 'balances' ? base : `${base}/${tab}`
@@ -98,7 +100,6 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
           {!alone && !ended && <NotificationsNudge />}
           <Balances meta={meta} state={state} />
           {friendship && <FriendAcross friendship={meta} state={state} />}
-          {friendship && <RemoveFriend friendship={meta} state={state} />}
         </div>
       ),
     },
@@ -114,7 +115,7 @@ export function GroupScreen({ groupId, tab, joined }: { groupId: string; tab: Ta
       path: `${base}/payments`,
       content: (
         <div className="screen with-tabbar page-body">
-          <Payments meta={meta} state={state} />
+          <Payments meta={meta} state={state} events={events} />
         </div>
       ),
     },
@@ -366,22 +367,31 @@ function Everyone({
           .map(({ id: person }) => {
             const amount = amounts?.get(person) ?? 0
             const me = person === meta.meId
+            const standingText =
+              amount === 0 || !currency ? (
+                <span className="muted">{t`all square`}</span>
+              ) : (
+                <span className={`amount ${amount > 0 ? 'owed' : 'owes'}`}>{standing(amount, currency, me)}</span>
+              )
             return (
               <li key={person}>
-                <Avatar state={state} id={person} />
-                <span className="name">{nameOf(state, person, meta.meId)}</span>
-                {amount === 0 || !currency ? (
-                  <span className="muted">{t`all square`}</span>
-                ) : (
-                  <span className={`amount ${amount > 0 ? 'owed' : 'owes'}`}>{standing(amount, currency, me)}</span>
-                )}
                 {me ? (
-                  <a className="button small outline" href={`#/g/${meta.id}/me`} aria-label={t`Change your name, or leave the group`}>
-                    {t`Edit`}
-                  </a>
+                  <div className="person-row">
+                    <Avatar state={state} id={person} />
+                    <span className="name">
+                      {nameOf(state, person, meta.meId)}
+                      <a className="name-edit" href={`#/g/${meta.id}/me`} aria-label={t`Change your name`}>
+                        <PencilIcon />
+                      </a>
+                    </span>
+                    {standingText}
+                  </div>
                 ) : (
-                  <a className="icon-button person-more" href={`#/g/${meta.id}/m/${person}`} aria-label={moreAbout(state.members.get(person)?.name ?? '')}>
-                    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                  <a className="person-row" href={`#/g/${meta.id}/m/${person}`} aria-label={moreAbout(state.members.get(person)?.name ?? '')}>
+                    <Avatar state={state} id={person} />
+                    <span className="name">{nameOf(state, person, meta.meId)}</span>
+                    {standingText}
+                    <svg className="chevron-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
                       <path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </a>
@@ -394,7 +404,48 @@ function Everyone({
   )
 }
 
+const PAGE = 30
+
+/** "November 2026": the heading over a month of expenses or payments. */
+function monthLabel(key: string) {
+  return new Intl.DateTimeFormat(locale(), { month: 'long', year: 'numeric' }).format(new Date(`${key}-01T00:00:00`))
+}
+
+/** Items, newest first, in sections by month: [YYYY-MM, items][] */
+function byMonth<T>(items: T[], dateOf: (item: T) => string): [string, T[]][] {
+  const out: [string, T[]][] = []
+  for (const item of items) {
+    const key = dateOf(item).slice(0, 7)
+    const last = out.at(-1)
+    if (last && last[0] === key) last[1].push(item)
+    else out.push([key, [item]])
+  }
+  return out
+}
+
+function ShowMore({ shown, total, onMore }: { shown: number; total: number; onMore: () => void }) {
+  if (shown >= total) return null
+  const left = total - shown
+  return (
+    <button className="button outline show-more" onClick={onMore}>
+      {plural(left, { one: 'Show # more', other: 'Show more (# left)' })}
+    </button>
+  )
+}
+
+/** Small stacked avatars: who paid, or who paid whom. */
+function Faces({ state, ids }: { state: GroupState; ids: string[] }) {
+  return (
+    <span className="faces" aria-hidden="true">
+      {ids.slice(0, 2).map((id) => (
+        <Avatar key={id} state={state} id={id} />
+      ))}
+    </span>
+  )
+}
+
 function Expenses({ meta, state }: { meta: GroupMeta; state: GroupState }) {
+  const [limit, setLimit] = useState(PAGE)
   if (state.expenses.size === 0) {
     return (
       <section className="empty">
@@ -404,29 +455,46 @@ function Expenses({ meta, state }: { meta: GroupMeta; state: GroupState }) {
     )
   }
   // Newest first: by date, and among the same date, the last added first.
-  const expenses = [...state.expenses.values()].reverse().sort((a, b) => b.date.localeCompare(a.date))
+  const all = [...state.expenses.values()].reverse().sort((a, b) => b.date.localeCompare(a.date))
+  const shown = all.slice(0, limit)
   return (
-    <ul className="cards section">
-      {expenses.map((e) => {
-        const payers = Object.keys(e.payers)
-        const myShare = computeShares(e).get(meta.meId)
-        return (
-          <li key={e.id}>
-            <a className="card-row" href={`#/g/${meta.id}/e/${e.id}`}>
-              <span className="row-main">
-                <strong>{e.title}</strong>
-                <span className="muted">{expenseLine(state, meta.meId, formatDate(e.date), payers, myShare, e.currency)}</span>
-              </span>
-              <span className="amount">{money(e.total, e.currency)}</span>
-            </a>
-          </li>
-        )
-      })}
-    </ul>
+    <>
+      {byMonth(shown, (e) => e.date).map(([month, expenses]) => (
+        <section key={month} className="section month">
+          <h2 className="section-title">{monthLabel(month)}</h2>
+          <ul className="cards">
+            {expenses.map((e) => {
+              const payers = Object.keys(e.payers)
+              const mine = (e.payers[meta.meId] ?? 0) - (computeShares(e).get(meta.meId) ?? 0)
+              const sum = money(Math.abs(mine), e.currency)
+              return (
+                <li key={e.id}>
+                  <a className="card-row" href={`#/g/${meta.id}/e/${e.id}`}>
+                    <Faces state={state} ids={payers} />
+                    <span className="row-main">
+                      <strong>{e.title}</strong>
+                      <span className="muted">{expenseLine(state, meta.meId, formatDate(e.date), payers, undefined, e.currency)}</span>
+                    </span>
+                    <span className="row-end">
+                      <span className="amount">{money(e.total, e.currency)}</span>
+                      {mine > 0 && <span className="owed small">{t`you lent ${sum}`}</span>}
+                      {mine < 0 && <span className="owes small">{t`you borrowed ${sum}`}</span>}
+                      {mine === 0 && !(meta.meId in e.payers) && <span className="muted small">{t`not involved`}</span>}
+                    </span>
+                  </a>
+                </li>
+              )
+            })}
+          </ul>
+        </section>
+      ))}
+      <ShowMore shown={shown.length} total={all.length} onMore={() => setLimit(limit + PAGE)} />
+    </>
   )
 }
 
-function Payments({ meta, state }: { meta: GroupMeta; state: GroupState }) {
+function Payments({ meta, state, events }: { meta: GroupMeta; state: GroupState; events: LedgerEvent[] }) {
+  const [limit, setLimit] = useState(PAGE)
   if (state.settlements.size === 0) {
     return (
       <section className="empty">
@@ -435,24 +503,53 @@ function Payments({ meta, state }: { meta: GroupMeta; state: GroupState }) {
       </section>
     )
   }
-  // Newest first.
-  const payments = [...state.settlements.values()].reverse()
+  // A payment's date is when it was recorded (or, for one paid in bitcoin, when it went through).
+  const recorded = new Map<string, string>()
+  for (const e of events) if (e.type === 'settlement.recorded') recorded.set(e.settlement.id, e.at)
+  const when = (s: Settlement) => localDay(s.bitcoin?.settledAt ?? recorded.get(s.id) ?? '')
+  const all = [...state.settlements.values()].reverse().sort((a, b) => when(b).localeCompare(when(a)))
+  const shown = all.slice(0, limit)
   return (
-    <ul className="cards section">
-      {payments.map((s) => (
-        <li key={s.id} className="card-row">
-          <span className="row-main">
-            <span>{paidLine(state, s.from, s.to, meta.meId)}</span>
-            <span className="muted">
-              {[methodName(s.method), s.bitcoin ? satsText(s.bitcoin.sats) : '']
-                .filter(Boolean)
-                .join(t`, `)}
-            </span>
-          </span>
-          <span className="amount">{money(s.amount, s.currency)}</span>
-        </li>
+    <>
+      {byMonth(shown, when).map(([month, payments]) => (
+        <section key={month} className="section month">
+          <h2 className="section-title">{monthLabel(month)}</h2>
+          <ul className="cards">
+            {payments.map((s) => (
+              <li key={s.id} className="card-row">
+                <Faces state={state} ids={[s.from, s.to]} />
+                <span className="row-main">
+                  <span>{paidLine(state, s.from, s.to, meta.meId)}</span>
+                  <span className="muted">
+                    {[when(s) ? formatDate(when(s)) : '', methodName(s.method), s.bitcoin ? satsText(s.bitcoin.sats) : '']
+                      .filter(Boolean)
+                      .join(t`, `)}
+                  </span>
+                </span>
+                <span className={`amount${s.to === meta.meId ? ' owed' : s.from === meta.meId ? ' owes' : ''}`}>{money(s.amount, s.currency)}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
       ))}
-    </ul>
+      <ShowMore shown={shown.length} total={all.length} onMore={() => setLimit(limit + PAGE)} />
+    </>
+  )
+}
+
+/** An ISO time as this phone's local date, YYYY-MM-DD; '' if there's none. */
+function localDay(iso: string): string {
+  const d = new Date(iso)
+  if (!iso || Number.isNaN(d.getTime())) return ''
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+}
+
+function PencilIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+      <path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+    </svg>
   )
 }
 

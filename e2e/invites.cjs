@@ -96,7 +96,7 @@ const b64u = (b) => Buffer.from(b).toString('base64url');
   check(preview.includes('¥5,000') && preview.includes('¥3,000') && preview.includes('¥2,000'), 'percent: shares are ¥5,000, ¥3,000 and ¥2,000');
   await ana.screenshot({ path: SHOTS + '/inv-0-percent.png' });
   await ana.click('button:has-text("Add expense")'); await ana.waitForTimeout(400);
-  check(await waitText(ana, 'main', 'your share ¥5,000'), 'percent: saved with Ana’s share');
+  check(await waitText(ana, 'main', 'you lent ¥5,000'), 'percent: saved, and Ana lent ¥5,000');
   await ana.click('a:has-text("Villa")');
   check((await ana.inputValue('input[aria-label="Percent for Bob"]')) === '30', 'percent: editing shows the percentages again');
   await ana.click('a[aria-label="Back"]');
